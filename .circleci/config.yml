@@ -1,0 +1,24 @@
+version: 2 # use CircleCI 2.0
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
+
+    steps: # a collection of executable commands
+
+      - checkout # check out source code to working directory
+
+      - run: ./gradlew build # build and test
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+            - store_test_results:
+                path: ~/junit
+            - store_artifacts:
+                path: ~/junit
+
+      - store_artifacts: # store the uberjar as an artifact
+          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: simulator-core/libs/simulator-core.jar

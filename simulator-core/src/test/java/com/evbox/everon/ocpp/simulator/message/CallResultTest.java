@@ -6,6 +6,8 @@ import org.junit.Test;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class CallResultTest {
 
     @Test
