@@ -135,6 +135,7 @@ In same manner station is using message queue to send messages to WebSocketClien
 1. Install [Lombok plugin](https://plugins.jetbrains.com/plugin/6317-lombok-plugin) for IDEA
 1. Clone project sources
 1. Inside IDEA go 'File' -> 'Open...' then select the top-level build.gradle. Choose the 'Use local gradle distribution' option and select the directory you installed gradle into previously and click ok.
+1. Enable annotations processing for Lombok: Open 'Preferences...' -> 'Build, Execution, Deployment' -> Compiler -> Annotation Processors -> Check 'Enable annotation processing' checkbox
 
 ## Working in other IDEs
 Our primary development tool is IDEA. If you are using other IDE share your experience and propose adjustments to this README.
