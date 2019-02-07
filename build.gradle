@@ -1,0 +1,20 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.jsonschema2pojo:jsonschema2pojo-gradle-plugin:1.0.0'
+    }
+}
+
+ext {
+    guavaVersion = '27.0.1-jre'
+    jacksonVersion = '2.9.8'
+}
+
+subprojects {
+    repositories {
+        jcenter()
+    }
+}

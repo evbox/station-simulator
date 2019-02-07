@@ -1,0 +1,6 @@
+include 'simulator-core',
+        'payload:ocpp-data-types',
+        'payload:ocpp20'
+
+rootProject.name = 'station-simulator'
+

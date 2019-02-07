@@ -1,0 +1,9 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    compile 'javax.validation:validation-api:2.0.1.Final'
+    compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    compile "com.google.guava:guava:${guavaVersion}"
+}

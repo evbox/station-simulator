@@ -1,0 +1,52 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:GetVariablesRequest",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "AttributeEnumType": {
+      "type": "string",
+      "default": "Actual",
+      "additionalProperties": true,
+      "enum": [
+        "Actual",
+        "Target",
+        "MinSet",
+        "MaxSet"
+      ]
+    },
+    "GetVariableDataType": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "attributeType": {
+          "$ref": "#/definitions/AttributeEnumType"
+        },
+        "component": {
+          "$ref": "../common/types/ComponentType.json#/ComponentType"
+        },
+        "variable": {
+          "$ref": "../common/types/VariableType.json#/VariableType"
+        }
+      },
+      "required": [
+        "component",
+        "variable"
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "getVariableData": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "$ref": "#/definitions/GetVariableDataType"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "getVariableData"
+  ]
+}

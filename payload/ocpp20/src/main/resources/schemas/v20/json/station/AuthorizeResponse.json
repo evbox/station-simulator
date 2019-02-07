@@ -1,0 +1,41 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:AuthorizeResponse",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "CertificateStatusEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Accepted",
+        "SignatureError",
+        "CertificateExpired",
+        "CertificateRevoked",
+        "NoCertificateAvailable",
+        "CertChainError",
+        "ContractCancelled"
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "idTokenInfo": {
+      "$ref": "./IdTokenInfoType.json#IdTokenInfoType"
+    },
+    "certificateStatus": {
+      "$ref": "#/definitions/CertificateStatusEnumType"
+    },
+    "evseId": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "idTokenInfo"
+  ]
+}

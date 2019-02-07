@@ -1,0 +1,43 @@
+plugins {
+    id 'io.franzbecker.gradle-lombok'   version '2.0'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorApp'
+
+run {
+    if (project.hasProperty('arguments')) {
+        args(arguments.split("\\s"))
+    }
+    standardInput = System.in
+}
+
+lombok {
+    version = "1.18.4"
+    sha256 = "39f3922deb679b1852af519eb227157ef2dd0a21eec3542c8ce1b45f2df39742"
+}
+
+dependencies {
+    compile project(':payload:ocpp20')
+    compile 'info.picocli:picocli:3.9.2'
+    compile 'com.squareup.okhttp3:okhttp:3.12.1'
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+
+    compile 'org.apache.commons:commons-lang3:3.8.1'
+    compile "com.google.guava:guava:${guavaVersion}"
+
+    compile 'org.apache.logging.log4j:log4j-core:2.11.1'
+    compile 'org.slf4j:slf4j-log4j12:1.7.25'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+
+    testCompile 'org.mockito:mockito-inline:2.23.4'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.11.1'
+    testCompile 'io.undertow:undertow-core:2.0.17.Final'
+    testCompile 'org.awaitility:awaitility:3.1.5'
+}
