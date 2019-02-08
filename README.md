@@ -11,10 +11,10 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 is supported.
     1. [Run as JAR file](#run-as-jar-file)
     1. [Use as console tool](#use-as-console-tool)
     1. [Use as dependency library](#use-as-dependency-library)
-1. [How it works?](#how-it-works?)
+1. [How it works?](#how-it-works)
     1. [Design overview](#design-overview)
     1. [Dependencies](#dependencies)
-1. [How to contribute?](#how-to-contribute?)
+1. [How to contribute?](#how-to-contribute)
     1. [Working in IDEA](#working-in-idea)
 
 -----------
