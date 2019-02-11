@@ -13,10 +13,9 @@ jobs: # a collection of steps
           command: |
             mkdir -p ~/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
-          when: always
-            - store_test_results:
+      - store_test_results:
                 path: ~/junit
-            - store_artifacts:
+      - store_artifacts:
                 path: ~/junit
 
       - store_artifacts: # store the uberjar as an artifact
