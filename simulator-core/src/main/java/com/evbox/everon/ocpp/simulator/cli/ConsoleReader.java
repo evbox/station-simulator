@@ -97,7 +97,7 @@ public class ConsoleReader {
         String commands = "Available commands:\n";
         commands += "\tplug {connectorId} - plug cable to given connector\n";
         commands += "\tunplug {connectorId} - unplug cable from given connector\n";
-        commands += "\tauth {tokenId} {evseId} - authorize token at given evse";
+        commands += "\tauth {tokenId} {evseId} - authorize token at given evse\n";
         commands += "\tstat - show state of selected station";
 
         System.out.println(commands);
