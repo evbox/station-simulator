@@ -110,7 +110,20 @@ java -jar simulator-core-shadow/lib/simulator-core.jar ws://${ocpp_endpoint_url}
 
 ## Use as console tool
 There is a console tool which supports user interaction with running stations: plug cable, unplug cable, authorize token
-It starts as part of station simulator. 
+It starts as part of station simulator.
+
+**List of available actions**
+
+Press `Enter` to see list of available stations.
+To switch between stations enter station's number (e.g. 1, 2, 3) and press `Enter`.
+
+`plug {connectorId}` plug cable to given connector (e.g. `plug 1`)
+
+`unplug {connectorId}` unplug cable from given connector (e.g. `unplug 1`)
+
+`auth {tokenId} {evseId}` authorize token at given evse (e.g. `auth 045918E24B4D80 1`)
+
+`stat` show state of selected station
 
 ## Use as dependency library
 Simulator can be included as a dependency to your project. We suppose this way it can be useful for creation of automated tests for CSMS.
