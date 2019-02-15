@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorApp'
+mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
 
 run {
     if (project.hasProperty('arguments')) {
@@ -28,17 +28,20 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    compile 'ch.qos.logback:logback-core:1.2.3'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
 
     compile 'org.apache.commons:commons-lang3:3.8.1'
     compile "com.google.guava:guava:${guavaVersion}"
 
-    compile 'org.apache.logging.log4j:log4j-core:2.11.1'
-    compile 'org.slf4j:slf4j-log4j12:1.7.25'
-    compile 'org.slf4j:slf4j-api:1.7.25'
-
-    testCompile 'org.mockito:mockito-inline:2.23.4'
-    testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.11.1'
     testCompile 'io.undertow:undertow-core:2.0.17.Final'
     testCompile 'org.awaitility:awaitility:3.1.5'
+
+    testCompile 'org.mockito:mockito-junit-jupiter:2.24.0'
+    testCompile 'org.mockito:mockito-core:2.23.0'
+    testCompile("org.junit.jupiter:junit-jupiter-api:${junit5Version}")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junit5Version}")
+    testRuntime("org.junit.jupiter:junit-jupiter-params:${junit5Version}")
+    testRuntime("org.junit.vintage:junit-vintage-engine:${junit5Version}")
 }

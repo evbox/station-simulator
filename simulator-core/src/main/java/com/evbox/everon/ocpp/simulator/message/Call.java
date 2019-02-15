@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.message;
 
-import com.evbox.everon.ocpp.simulator.station.exception.ParseException;
+import com.evbox.everon.ocpp.simulator.station.exceptions.ParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
 

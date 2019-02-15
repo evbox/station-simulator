@@ -15,16 +15,17 @@ public class SimulatorConfiguration {
      * Default heartbeatInterval for all stations
      */
     private Integer heartbeatInterval;
-    private List<Station> stations;
+    private List<StationConfiguration> stations;
 
     public int getHeartbeatInterval() {
         return defaultIfNull(heartbeatInterval, DEFAULT_HEARTBEAT_INTERVAL);
     }
 
     @Data
-    public static class Station {
+    public static class StationConfiguration {
         private String id;
         private Evse evse;
+
     }
 
     @Data

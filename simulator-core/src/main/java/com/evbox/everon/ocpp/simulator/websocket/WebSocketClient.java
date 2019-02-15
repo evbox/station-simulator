@@ -1,7 +1,10 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
-import com.evbox.everon.ocpp.simulator.station.StationInboxMessage;
+import com.evbox.everon.ocpp.simulator.station.StationMessage;
+import com.evbox.everon.ocpp.simulator.station.StationMessageInbox;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +12,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.function.Consumer;
 
@@ -22,12 +26,16 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketClient.class);
 
     private final WebSocketClientAdapter webSocketClientAdapter;
-    private final BlockingQueue<StationInboxMessage> stationInbox;
+
     private final PriorityBlockingQueue<WebSocketClientInboxMessage> inbox;
     private final WebSocketClientConfiguration configuration;
     private final Executor executor;
     private final WebSocketMesageSender mesageSender;
+    private final StationMessageInbox stationMessageInbox;
+
     private volatile boolean connected = false;
+
+    private volatile String webSocketConnectionUrl;
 
     private final ImmutableMap<WebSocketClientInboxMessage.Type, Consumer<WebSocketClientInboxMessage>> messageHandlers = ImmutableMap.<WebSocketClientInboxMessage.Type,
             Consumer<WebSocketClientInboxMessage>>builder()
@@ -36,26 +44,28 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
             .put(DISCONNECT, (message) -> onDisconnect((WebSocketClientInboxMessage.Disconnect) message))
             .build();
 
+    private final String stationId;
 
-    /**
-     * Initializes WebSocketClient instance.
-     * @param executor single thread executor
-     * @param webSocketClientAdapter interface for underlying WebSocket client
-     * @param stationInbox station's queue for incoming messages
-     * @param configuration specifies configuration related to WebSocketClient
-     */
-    public WebSocketClient(Executor executor, WebSocketClientAdapter webSocketClientAdapter, BlockingQueue<StationInboxMessage> stationInbox, WebSocketClientConfiguration configuration) {
-        this.configuration = configuration;
-        this.executor = executor;
+    public WebSocketClient(StationMessageInbox stationMessageInbox, String stationId, WebSocketClientAdapter webSocketClientAdapter) {
+        this(stationMessageInbox, stationId, webSocketClientAdapter, WebSocketClientConfiguration.DEFAULT_CONFIGURATION);
+    }
+
+    public WebSocketClient(StationMessageInbox stationMessageInbox, String stationId, WebSocketClientAdapter webSocketClientAdapter, WebSocketClientConfiguration configuration) {
+        this.stationMessageInbox = stationMessageInbox;
+        this.stationId = stationId;
+        this.executor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("message-offer-worker-" + stationId).build());
+
         this.webSocketClientAdapter = webSocketClientAdapter;
-        this.stationInbox = stationInbox;
+
+        this.configuration = configuration;
         this.mesageSender = new WebSocketMesageSender(webSocketClientAdapter, configuration.getMaxSendAttempts());
         this.inbox = new PriorityBlockingQueue<>(1,
                 Comparator.comparing(WebSocketClientInboxMessage::getPriority).thenComparing(WebSocketClientInboxMessage::getSequenceId));
         webSocketClientAdapter.setListener(this);
     }
 
-    public void start() {
+    public void startAcceptingMessages() {
+
         executor.execute(() -> {
             for (;;) {
                 if (Thread.currentThread().isInterrupted()) {
@@ -70,6 +80,7 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
         return inbox;
     }
 
+    @VisibleForTesting
     public void processMessage() {
         try {
             WebSocketClientInboxMessage message = inbox.take();
@@ -84,14 +95,14 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
         if (connected) {
             String ocppMessage = (String) message.getData().orElseThrow(() -> new IllegalArgumentException("OCPP message is null"));
             mesageSender.send(ocppMessage);
-            LOGGER.info("SENT:{}", ocppMessage);
+            LOGGER.info("SENT: {}", ocppMessage);
         } else {
             inbox.put(message);
         }
     }
 
     private void onConnect(WebSocketClientInboxMessage.Connect message) {
-        webSocketClientAdapter.connect();
+        webSocketClientAdapter.connect(webSocketConnectionUrl);
 
     }
 
@@ -115,8 +126,8 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
      */
     @Override
     public void onMessage(String message) {
-        LOGGER.info("RECEIVED:{}", message);
-        stationInbox.add(new StationInboxMessage(StationInboxMessage.Type.OCPP_MESSAGE, message));
+        LOGGER.info("RECEIVED: {}", message);
+        stationMessageInbox.offer(new StationMessage(stationId, StationMessage.Type.OCPP_MESSAGE, message));
     }
 
     /**
@@ -140,7 +151,14 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
                 }
             }
 
-            webSocketClientAdapter.connect();
+            webSocketClientAdapter.connect(webSocketConnectionUrl);
         }
+    }
+
+    public void connect(String webSocketUrl) {
+
+        this.webSocketConnectionUrl = webSocketUrl;
+
+        getInbox().add(new WebSocketClientInboxMessage.Connect());
     }
 }

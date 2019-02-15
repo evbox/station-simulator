@@ -1,43 +1,44 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.evbox.everon.ocpp.simulator.station.StationMessageInbox;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.ConnectException;
-import java.util.concurrent.LinkedBlockingQueue;
 
+import static com.evbox.everon.ocpp.simulator.support.StationConstants.STATION_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class WebSocketClientTest {
 
     private long RECONNECT_INTERVAL_MS = 500;
 
     @Mock
-    private WebSocketClientAdapter webSocketClientAdapterMock;
+    WebSocketClientAdapter webSocketClientAdapterMock;
 
     @Captor
-    private ArgumentCaptor<String> messageCaptor;
+    ArgumentCaptor<String> messageCaptor;
 
-    private WebSocketClient client;
+    WebSocketClient client;
 
-    @Before
-    public void setUp() {
-        client = new WebSocketClient(Runnable::run, webSocketClientAdapterMock, new LinkedBlockingQueue<>(), new WebSocketClientConfiguration(1, RECONNECT_INTERVAL_MS));
-        given(webSocketClientAdapterMock.sendMessage(any())).willReturn(true);
+    @BeforeEach
+    void setUp() {
+        client = new WebSocketClient(new StationMessageInbox(), STATION_ID, webSocketClientAdapterMock, new WebSocketClientConfiguration(1, RECONNECT_INTERVAL_MS));
     }
 
     @Test
-    public void shouldReconnectInCaseOfBrokenConnection() {
+    void shouldReconnectInCaseOfBrokenConnection() {
         //given
         client.onOpen("connection established");
 
@@ -45,23 +46,23 @@ public class WebSocketClientTest {
         client.onFailure(new ConnectException(), "Unexpected failure");
 
         //then
-        verify(webSocketClientAdapterMock).connect();
+        verify(webSocketClientAdapterMock).connect(isNull());
     }
 
     @Test
-    public void shouldReconnectWithGivenIntervalOnSubsequentAttempts() {
+    void shouldReconnectWithGivenIntervalOnSubsequentAttempts() {
         //given
         long startTime = System.currentTimeMillis();
         //when
         client.onFailure(new ConnectException(), "Unexpected failure");
 
         //then
-        verify(webSocketClientAdapterMock).connect();
+        verify(webSocketClientAdapterMock).connect(isNull());
         assertThat(System.currentTimeMillis() - startTime).isGreaterThanOrEqualTo(RECONNECT_INTERVAL_MS);
     }
 
     @Test
-    public void shouldGiveHigherPriorityToConnectMessage() throws Exception {
+    void shouldGiveHigherPriorityToConnectMessage() throws Exception {
         //given
         client.onOpen("connection established");
         client.getInbox().put(new WebSocketClientInboxMessage.OcppMessage("{}"));
@@ -72,11 +73,11 @@ public class WebSocketClientTest {
         client.processMessage();
 
         //then
-        verify(webSocketClientAdapterMock).connect();
+        verify(webSocketClientAdapterMock).connect(isNull());
     }
 
     @Test
-    public void shouldGiveHigherPriorityToDisconnectMessage() throws Exception {
+    void shouldGiveHigherPriorityToDisconnectMessage() throws Exception {
         //given
         client.onOpen("connection established");
         client.getInbox().put(new WebSocketClientInboxMessage.OcppMessage("{}"));
@@ -91,7 +92,9 @@ public class WebSocketClientTest {
     }
 
     @Test
-    public void shouldGivePriorityBasedOnMessageSequenceId() throws Exception {
+    void shouldGivePriorityBasedOnMessageSequenceId() throws Exception {
+        given(webSocketClientAdapterMock.sendMessage(any())).willReturn(true);
+
         //given
         client.onOpen("connection established");
 

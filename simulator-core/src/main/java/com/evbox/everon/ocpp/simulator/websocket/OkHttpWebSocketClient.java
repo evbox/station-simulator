@@ -8,17 +8,15 @@ import java.util.Optional;
 
 public class OkHttpWebSocketClient extends WebSocketClientAdapter {
 
-    private final String url;
     private final OkHttpClient client;
     private WebSocket webSocket;
 
-    public OkHttpWebSocketClient(String url, OkHttpClient client) {
-        this.url = url;
+    public OkHttpWebSocketClient(OkHttpClient client) {
         this.client = client;
     }
 
     @Override
-    public void connect() {
+    public void connect(String url) {
         Request request = new Request.Builder().url(url).addHeader("Sec-WebSocket-Protocol", "ocpp2.0").build();
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {

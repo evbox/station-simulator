@@ -11,6 +11,7 @@ buildscript {
 ext {
     guavaVersion = '27.0.1-jre'
     jacksonVersion = '2.9.8'
+    junit5Version = '5.4.0'
 }
 
 subprojects {

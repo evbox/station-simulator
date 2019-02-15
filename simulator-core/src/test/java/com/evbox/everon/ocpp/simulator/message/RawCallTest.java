@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.message;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class RawCallTest {
 
     @Test
-    public void shouldParseCallResult() {
+    void shouldParseCallResult() {
         //given
         String json = "[3,\"19223201\", { \"currentTime\": \"2013-02-01T20:53:32.486Z\", \"interval\": 300, \"status\": \"Accepted\"} ]";
 
@@ -22,7 +22,7 @@ public class RawCallTest {
     }
 
     @Test
-    public void shouldParseErrorCall() {
+    void shouldParseErrorCall() {
         //given
         String json = "[4,\"19223201\",\"FormationViolation\",\"Could not parse incoming call\",{}]";
 
@@ -35,7 +35,7 @@ public class RawCallTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnUnknownMessageType() {
+    void shouldThrowExceptionOnUnknownMessageType() {
         //given
         String unknownId = "unknownId";
         String json = "[\"" + unknownId + "\",\"19223201\", { \"currentTime\": \"2013-02-01T20:53:32.486Z\", \"interval\": 300, \"status\": \"Accepted\"} ]";
@@ -48,7 +48,7 @@ public class RawCallTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnFieldValueTypeMismatch() {
+    void shouldThrowExceptionOnFieldValueTypeMismatch() {
         //given
         String json = "[3,19223201, { \"currentTime\": \"2013-02-01T20:53:32.486Z\", \"interval\": 300, \"status\": \"Accepted\"} ]";
 

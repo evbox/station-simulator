@@ -46,16 +46,16 @@ public class PayloadFactory {
 
     BootNotificationRequest createBootNotification(BootNotificationRequest.Reason reason) {
         Modem modem = new Modem();
-        modem.setIccid(new CiString.CiString20(StationHardwareInfo.MODEM_ICCID));
-        modem.setImsi(new CiString.CiString20(StationHardwareInfo.MODEM_IMSI));
+        modem.setIccid(new CiString.CiString20(StationHardwareData.MODEM_ICCID));
+        modem.setImsi(new CiString.CiString20(StationHardwareData.MODEM_IMSI));
 
         ChargingStation chargingStation = new ChargingStation()
                 .withModem(modem);
 
-        chargingStation.setVendorName(new CiString.CiString50(StationHardwareInfo.VENDOR_NAME));
-        chargingStation.setModel(new CiString.CiString20(StationHardwareInfo.MODEL));
-        chargingStation.setSerialNumber(new CiString.CiString20(StationHardwareInfo.SERIAL_NUMBER));
-        chargingStation.setFirmwareVersion(new CiString.CiString50(StationHardwareInfo.FIRMWARE_VERSION));
+        chargingStation.setVendorName(new CiString.CiString50(StationHardwareData.VENDOR_NAME));
+        chargingStation.setModel(new CiString.CiString20(StationHardwareData.MODEL));
+        chargingStation.setSerialNumber(new CiString.CiString20(StationHardwareData.SERIAL_NUMBER));
+        chargingStation.setFirmwareVersion(new CiString.CiString50(StationHardwareData.FIRMWARE_VERSION));
 
         return new BootNotificationRequest()
                 .withReason(reason)

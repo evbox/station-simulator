@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station;
 
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -18,8 +19,8 @@ public class StationState {
     private int heartbeatInterval;
     private List<Evse> evses;
 
-    public StationState(StationConfiguration configuration) {
-        this.evses = initEvses(configuration.getEvseCount(), configuration.getConnectorsPerEvseCount());
+    public StationState(SimulatorConfiguration.StationConfiguration configuration) {
+        this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
     }
 
     public static StationState copyOf(StationState stationState) {

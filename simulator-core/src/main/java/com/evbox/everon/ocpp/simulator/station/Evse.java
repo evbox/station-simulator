@@ -26,7 +26,7 @@ public class Evse {
         return new Evse(evse.id, connectorsCopy, evse.authorizedToken, evse.charging, evse.seqNo, evse.transactionId);
     }
 
-    enum ConnectorState {
+    public enum ConnectorState {
         AVAILABLE, OCCUPIED, LOCKED
     }
 

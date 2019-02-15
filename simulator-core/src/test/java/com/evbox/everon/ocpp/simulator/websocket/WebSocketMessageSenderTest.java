@@ -1,36 +1,35 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class WebSocketMessageSenderTest {
 
     private static int MAX_SEND_ATTEMPTS = 5;
 
     @Mock
-    private WebSocketClientAdapter webSocketClientAdapterMock;
+    WebSocketClientAdapter webSocketClientAdapterMock;
 
-    private WebSocketMesageSender mesageSender;
+    WebSocketMesageSender mesageSender;
 
-    @Before
-    public void setUp() {
-         mesageSender = new WebSocketMesageSender(webSocketClientAdapterMock, MAX_SEND_ATTEMPTS);
+    @BeforeEach
+    void setUp() {
+        mesageSender = new WebSocketMesageSender(webSocketClientAdapterMock, MAX_SEND_ATTEMPTS);
     }
 
     @Test
-    public void shouldRetrySendingMessages() {
+    void shouldRetrySendingMessages() {
         //given
         given(webSocketClientAdapterMock.sendMessage(any())).willReturn(false);
-
 
 
         //when

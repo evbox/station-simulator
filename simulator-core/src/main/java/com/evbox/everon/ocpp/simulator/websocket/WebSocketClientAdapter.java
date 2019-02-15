@@ -30,7 +30,7 @@ public abstract class WebSocketClientAdapter {
         this.listener = Optional.of(listener);
     }
 
-    public abstract void connect();
+    public abstract void connect(String url);
 
     public abstract void disconnect();
 

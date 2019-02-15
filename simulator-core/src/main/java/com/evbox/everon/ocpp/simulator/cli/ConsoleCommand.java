@@ -1,6 +1,9 @@
 package com.evbox.everon.ocpp.simulator.cli;
 
-import com.evbox.everon.ocpp.simulator.user.interaction.UserAction;
+import com.evbox.everon.ocpp.simulator.station.actions.Authorize;
+import com.evbox.everon.ocpp.simulator.station.actions.Plug;
+import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
+import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,15 +13,15 @@ import java.util.stream.Stream;
 
 /**
  * Contains list of console commands representing user actions applicable to certain station.
- * For each command there is a validation logic and mapping to {@link com.evbox.everon.ocpp.simulator.user.interaction.UserAction}
+ * For each command there is a validation logic and mapping to {@link UserMessage}
  */
 public enum ConsoleCommand {
 
     PLUG {
         @Override
-        public UserAction toUserAction(List<String> args) {
+        public UserMessage toUserMessage(List<String> args) {
             validateArgs(args);
-            return new UserAction.Plug(Integer.valueOf(args.get(0)));
+            return new Plug(Integer.valueOf(args.get(0)));
         }
 
         @Override
@@ -32,9 +35,9 @@ public enum ConsoleCommand {
 
     UNPLUG {
         @Override
-        public UserAction toUserAction(List<String> args) {
+        public UserMessage toUserMessage(List<String> args) {
             validateArgs(args);
-            return new UserAction.Unplug(Integer.valueOf(args.get(0)));
+            return new Unplug(Integer.valueOf(args.get(0)));
         }
 
         @Override
@@ -48,9 +51,9 @@ public enum ConsoleCommand {
 
     AUTH {
         @Override
-        public UserAction toUserAction(List<String> args) {
+        public UserMessage toUserMessage(List<String> args) {
             validateArgs(args);
-            return new UserAction.Authorize(args.get(0), Integer.valueOf(args.get(1)));
+            return new Authorize(args.get(0), Integer.valueOf(args.get(1)));
         }
 
         @Override
@@ -68,8 +71,8 @@ public enum ConsoleCommand {
         return toEnum(commandName).isPresent();
     }
 
-    public static UserAction toUserAction(String commandName, List<String> args) {
-        return toEnum(commandName).orElseThrow(() -> new IllegalArgumentException("Unknown command: " + commandName)).toUserAction(args);
+    public static UserMessage toUserMessage(String commandName, List<String> args) {
+        return toEnum(commandName).orElseThrow(() -> new IllegalArgumentException("Unknown command: " + commandName)).toUserMessage(args);
     }
 
     private static Optional<ConsoleCommand> toEnum(String commandName) {
@@ -90,7 +93,7 @@ public enum ConsoleCommand {
                 "Number of required parameters does not match. Expected '%s', actual '%s'", expectedLength, args.size());
     }
 
-    public abstract UserAction toUserAction(List<String> args);
+    public abstract UserMessage toUserMessage(List<String> args);
 
     abstract void validateArgs(List<String> args);
 }

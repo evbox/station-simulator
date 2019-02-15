@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator;
 
+import com.evbox.everon.ocpp.simulator.cli.ConsoleReader;
 import com.evbox.everon.ocpp.simulator.cli.SimulatorCLI;
 import com.evbox.everon.ocpp.simulator.configuration.ConfigurationFileReader;
 import com.evbox.everon.ocpp.simulator.configuration.ConfigurationPrinter;
@@ -11,9 +12,9 @@ import picocli.CommandLine;
 
 import java.util.Optional;
 
-public class SimulatorApp {
+public class SimulatorLauncher {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimulatorApp.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimulatorLauncher.class);
 
     public static void main(String[] args) {
         RunConfiguration runConfiguration = CommandLine.call(new SimulatorCLI(), args);
@@ -29,8 +30,13 @@ public class SimulatorApp {
             ConfigurationPrinter.printConfiguration(runConfiguration, configuration);
         }
 
-        StationSimulator stationSimulator = new StationSimulator(runConfiguration.getUrl(), configuration);
-        stationSimulator.start();
+        StationSimulatorRunner stationSimulatorRunner = new StationSimulatorRunner(runConfiguration.getUrl(), configuration);
+        stationSimulatorRunner.run();
+
+        // read data from StdInput
+        ConsoleReader consoleReader = new ConsoleReader(stationSimulatorRunner.getStations());
+        consoleReader.startReading();
+
     }
 
 }

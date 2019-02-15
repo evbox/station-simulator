@@ -6,14 +6,18 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.message.ObjectMapperHolder;
-import com.evbox.everon.ocpp.simulator.station.StationInboxMessage;
-import com.evbox.everon.ocpp.simulator.user.interaction.UserAction;
+import com.evbox.everon.ocpp.simulator.station.StationMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.Authorize;
+import com.evbox.everon.ocpp.simulator.station.actions.Plug;
+import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
+import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.support.WebSocketServerMock;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.SneakyThrows;
 import org.awaitility.Awaitility;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -25,8 +29,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static com.evbox.everon.ocpp.simulator.SimulatorConfigCreator.createSimulatorConfiguration;
-import static com.evbox.everon.ocpp.simulator.SimulatorConfigCreator.createStationConfiguration;
+import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createSimulatorConfiguration;
+import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createStationConfiguration;
+import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,33 +39,31 @@ import static org.awaitility.Awaitility.await;
 
 public class StationSimulatorFunctionalTest {
 
-    private static final String TOKEN_ID = "045918E24B4D80";
-    private static final String STATION_ID = "EVB-P17390866";
-
     private WebSocketServerMock server = new WebSocketServerMock("/ocpp", 0);
 
-    private StationSimulator stationSimulator;
+    private StationSimulatorRunner stationSimulatorRunner;
 
     private String ocppServerUrl;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Awaitility.setDefaultTimeout(5, TimeUnit.SECONDS);
         server.start();
         ocppServerUrl = "ws://localhost:" + server.getPort() + "/ocpp";
 
-        SimulatorConfiguration.Station stationConfiguration = createStationConfiguration(STATION_ID, 1, 1);
+        SimulatorConfiguration.StationConfiguration stationConfiguration = createStationConfiguration(STATION_ID, 1, 1);
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(stationConfiguration);
 
-        stationSimulator = new StationSimulator(ocppServerUrl, simulatorConfiguration);
+        stationSimulatorRunner = new StationSimulatorRunner(ocppServerUrl, simulatorConfiguration);
+
         mockSuccessfulStatusNotificationAnswer();
     }
 
     @Test
-    public void shouldStartStation() {
+    void shouldStartStation() {
         //when
         mockSuccessfulBootNotificationAnswer();
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
         //then
         await().untilAsserted(() -> {
@@ -79,17 +82,17 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    public void shouldStartMultipleStations() {
+    void shouldStartMultipleStations() {
         //given
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(
                 createStationConfiguration(STATION_ID, 1, 1),
                 createStationConfiguration("EVB-P18090564", 1, 2));
-        stationSimulator = new StationSimulator(ocppServerUrl, simulatorConfiguration);
+        stationSimulatorRunner = new StationSimulatorRunner(ocppServerUrl, simulatorConfiguration);
 
         mockSuccessfulBootNotificationAnswer();
 
         //when
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
         //then
         await().untilAsserted(() -> {
@@ -126,7 +129,7 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    public void shouldSendHeartbeatsWithGivenInterval() {
+    void shouldSendHeartbeatsWithGivenInterval() {
         //given
         int intervalInSec = 1;
 
@@ -135,11 +138,11 @@ public class StationSimulatorFunctionalTest {
                 call -> "[3, \"" + call.getMessageId() + "\", {\"currentTime\":\"" + ZonedDateTime.now() + "\", \"interval\":" + intervalInSec + ", \"status\":\"Accepted\"}]");
 
         //when
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
         //then
         await().atMost(2000, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            long heartbeatCallsSent = stationSimulator.getStation(STATION_ID).getSentCalls().values()
+            long heartbeatCallsSent = stationSimulatorRunner.getStation(STATION_ID).getSentCalls().values()
                     .stream()
                     .filter(call -> call.getActionType() == ActionType.HEARTBEAT)
                     .count();
@@ -149,7 +152,7 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    public void shouldAdjustCurrentTimeBasedOnHeartbeatResponse() {
+    void shouldAdjustCurrentTimeBasedOnHeartbeatResponse() {
         //given
         ZonedDateTime serverTime = ZonedDateTime.of(2035, 1, 1, 1, 1, 1, 0, ZoneOffset.UTC);
 
@@ -160,23 +163,23 @@ public class StationSimulatorFunctionalTest {
                 call -> "[3, \"" + call.getMessageId() + "\", {\"currentTime\":\"" + serverTime + "\", \"status\":\"Accepted\"}]");
 
         //when
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
         //then
         await().untilAsserted(() -> {
-            Instant timeOfStation = stationSimulator.getStation(STATION_ID).getState().getCurrentTime();
+            Instant timeOfStation = stationSimulatorRunner.getStation(STATION_ID).getState().getCurrentTime();
             assertThat(timeOfStation).isAfterOrEqualTo(serverTime.toInstant());
         });
     }
 
     @Test
-    public void shouldSendConnectorStatusAndTransactionStartedWhenCablePluggedIn() {
+    void shouldSendConnectorStatusAndTransactionStartedWhenCablePluggedIn() {
         //given
         mockSuccessfulBootNotificationAnswer();
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
         //when
-        triggerUserAction(STATION_ID, new UserAction.Plug(1));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
 
         //then
         await().untilAsserted(() -> {
@@ -185,7 +188,7 @@ public class StationSimulatorFunctionalTest {
 
             Optional<Call> statusNotificationCallOptional = stationCalls.stream()
                     .filter(call -> call.getActionType() == ActionType.STATUS_NOTIFICATION)
-                    .filter(call -> ((StatusNotificationRequest)call.getPayload()).getConnectorStatus() == StatusNotificationRequest.ConnectorStatus.OCCUPIED)
+                    .filter(call -> ((StatusNotificationRequest) call.getPayload()).getConnectorStatus() == StatusNotificationRequest.ConnectorStatus.OCCUPIED)
                     .findAny();
 
             assertThat(statusNotificationCallOptional).isPresent();
@@ -201,27 +204,27 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionEventPayload.getSeqNo()).isEqualTo(0);
 
             assertThat(transactionEventPayload.getTransactionData().getId().toString()).isEqualTo("1");
-            assertThat(transactionEventPayload.getEvse().getId()).isEqualTo(1);
+            assertThat(transactionEventPayload.getEvse().getId()).isEqualTo(DEFAULT_EVSE_ID);
         });
     }
 
     @Test
-    public void shouldStartChargingWithPreAuthorization() {
+    void shouldStartChargingWithPreAuthorization() {
         //given
-        String tokenId = "045918E24B4D80";
+        String tokenId = DEFAULT_TOKEN_ID;
 
         mockSuccessfulBootNotificationAnswer();
         mockSuccessfulAuthorizationAnswer(tokenId);
         mockSuccessfulTransactionEventAnswer();
 
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
-        triggerUserAction(STATION_ID, new UserAction.Authorize(tokenId, 1));
+        triggerUserAction(STATION_ID, new Authorize(tokenId, DEFAULT_EVSE_ID));
 
-        await().untilAsserted(() -> stationSimulator.getStation(STATION_ID).getState().hasAuthorizedToken());
+        await().untilAsserted(() -> stationSimulatorRunner.getStation(STATION_ID).getState().hasAuthorizedToken());
 
         //when
-        triggerUserAction(STATION_ID, new UserAction.Plug(1));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
 
         //then
         await().untilAsserted(() -> {
@@ -237,7 +240,7 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED);
             assertThat(transactionStartedPayload.getSeqNo()).isEqualTo(0);
             assertThat(transactionStartedPayload.getTransactionData().getId().toString()).isEqualTo("1");
-            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(1);
+            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(DEFAULT_EVSE_ID);
             assertThat(transactionStartedPayload.getIdToken().getIdToken().toString()).isEqualTo(tokenId);
             assertThat(transactionStartedPayload.getTransactionData().getChargingState()).isNull();
         });
@@ -255,9 +258,9 @@ public class StationSimulatorFunctionalTest {
             TransactionEventRequest transactionStartedPayload = (TransactionEventRequest) transactionUpdatedEventOptional.get().getPayload();
             assertThat(transactionStartedPayload.getTriggerReason()).isEqualTo(TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN);
             assertThat(transactionStartedPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.UPDATED);
-            assertThat(transactionStartedPayload.getSeqNo()).isEqualTo(1);
+            assertThat(transactionStartedPayload.getSeqNo()).isEqualTo(DEFAULT_SEQ_NUMBER);
             assertThat(transactionStartedPayload.getTransactionData().getId().toString()).isEqualTo("1");
-            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(1);
+            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(DEFAULT_EVSE_ID);
         });
 
         await().untilAsserted(() -> {
@@ -275,25 +278,25 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedPayload.getTriggerReason()).isEqualTo(TransactionEventRequest.TriggerReason.CHARGING_STATE_CHANGED);
             assertThat(transactionStartedPayload.getSeqNo()).isEqualTo(2);
             assertThat(transactionStartedPayload.getTransactionData().getId().toString()).isEqualTo("1");
-            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(1);
+            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(DEFAULT_EVSE_ID);
         });
 
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isTrue());
     }
 
     @Test
-    public void shouldStartChargingWithPostAuthorization() {
+    void shouldStartChargingWithPostAuthorization() {
         //given
         mockSuccessfulBootNotificationAnswer();
-        mockSuccessfulAuthorizationAnswer("045918E24B4D80");
+        mockSuccessfulAuthorizationAnswer(DEFAULT_TOKEN_ID);
         mockSuccessfulTransactionEventAnswer();
 
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
-        triggerUserAction(STATION_ID, new UserAction.Plug(1));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
 
         //when
-        triggerUserAction(STATION_ID, new UserAction.Authorize("045918E24B4D80", 1));
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         //then
         await().untilAsserted(() -> {
@@ -309,7 +312,7 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED);
             assertThat(transactionStartedPayload.getSeqNo()).isEqualTo(0);
             assertThat(transactionStartedPayload.getTransactionData().getId().toString()).isEqualTo("1");
-            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(1);
+            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(DEFAULT_EVSE_ID);
             assertThat(transactionStartedPayload.getTransactionData().getChargingState()).isEqualTo(TransactionData.ChargingState.EV_DETECTED);
         });
 
@@ -324,26 +327,26 @@ public class StationSimulatorFunctionalTest {
 
             TransactionEventRequest transactionStartedPayload = (TransactionEventRequest) transactionStartedEventOptional.get().getPayload();
             assertThat(transactionStartedPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.UPDATED);
-            assertThat(transactionStartedPayload.getSeqNo()).isEqualTo(1);
+            assertThat(transactionStartedPayload.getSeqNo()).isEqualTo(DEFAULT_SEQ_NUMBER);
             assertThat(transactionStartedPayload.getTransactionData().getId().toString()).isEqualTo("1");
-            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(1);
+            assertThat(transactionStartedPayload.getEvse().getId()).isEqualTo(DEFAULT_EVSE_ID);
             assertThat(transactionStartedPayload.getTransactionData().getChargingState()).isEqualTo(TransactionData.ChargingState.CHARGING);
         });
 
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isTrue());
     }
 
 
     @Test
-    public void shouldStopChargingOnSecondAuth() {
+    void shouldStopChargingOnSecondAuth() {
         //given
         mockSuccessfulBootNotificationAnswer();
-        mockSuccessfulAuthorizationAnswer("045918E24B4D80");
+        mockSuccessfulAuthorizationAnswer(DEFAULT_TOKEN_ID);
         mockSuccessfulTransactionEventAnswer();
 
-        stationSimulator.start();
-        triggerUserAction(STATION_ID, new UserAction.Plug(1));
-        triggerUserAction(STATION_ID, new UserAction.Authorize("045918E24B4D80", 1));
+        stationSimulatorRunner.run();
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> {
             Optional<Call> transactionStartedEventOptional = server.getReceivedCalls(STATION_ID)
@@ -365,13 +368,13 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedEventOptional).isPresent();
         });
 
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isTrue());
 
         //when
-        triggerUserAction(STATION_ID, new UserAction.Authorize("045918E24B4D80", 1));
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         //then
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isFalse());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isFalse());
 
         await().untilAsserted(() -> {
             Optional<Call> transactionStartedEventOptional = server.getReceivedCalls(STATION_ID)
@@ -385,15 +388,15 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    public void shouldEndOngoingTransactionOnSecondAuth() {
+    void shouldEndOngoingTransactionOnSecondAuth() {
         //given
         mockSuccessfulBootNotificationAnswer();
-        mockSuccessfulAuthorizationAnswer("045918E24B4D80");
+        mockSuccessfulAuthorizationAnswer(DEFAULT_TOKEN_ID);
         mockSuccessfulTransactionEventAnswer();
 
-        stationSimulator.start();
-        triggerUserAction(STATION_ID, new UserAction.Plug(1));
-        triggerUserAction(STATION_ID, new UserAction.Authorize("045918E24B4D80", 1));
+        stationSimulatorRunner.run();
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> {
             Optional<Call> transactionStartedEventOptional = server.getReceivedCalls(STATION_ID)
@@ -415,13 +418,13 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedEventOptional).isPresent();
         });
 
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isTrue());
 
         //when
-        triggerUserAction(STATION_ID, new UserAction.Authorize("045918E24B4D80", 1));
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         //then
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isFalse());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isFalse());
 
         await().untilAsserted(() -> {
             Optional<Call> transactionStartedEventOptional = server.getReceivedCalls(STATION_ID)
@@ -433,7 +436,7 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedEventOptional).isPresent();
         });
 
-        triggerUserAction(STATION_ID, new UserAction.Unplug(1));
+        triggerUserAction(STATION_ID, new Unplug(DEFAULT_CONNECTOR_ID));
 
         await().untilAsserted(() -> {
             Optional<Call> transactionStartedEventOptional = server.getReceivedCalls(STATION_ID)
@@ -445,26 +448,26 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedEventOptional).isPresent();
         });
 
-        assertThat(stationSimulator.getStation(STATION_ID).getState().hasAuthorizedToken(1)).isFalse();
-        assertThat(stationSimulator.getStation(STATION_ID).getState().hasOngoingTransaction(1)).isFalse();
+        assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().hasAuthorizedToken(DEFAULT_EVSE_ID)).isFalse();
+        assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().hasOngoingTransaction(DEFAULT_EVSE_ID)).isFalse();
     }
 
     @Test
-    public void shouldPreserveTransactionIdPerEvseForWholeSession() {
+    void shouldPreserveTransactionIdPerEvseForWholeSession() {
         //given
         mockSuccessfulBootNotificationAnswer();
-        mockSuccessfulAuthorizationAnswer(TOKEN_ID);
+        mockSuccessfulAuthorizationAnswer(DEFAULT_TOKEN_ID);
         mockSuccessfulTransactionEventAnswer();
 
-        stationSimulator.start();
-        triggerUserAction(STATION_ID, new UserAction.Plug(1));
+        stationSimulatorRunner.run();
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
 
         //when
-        triggerUserAction(STATION_ID, new UserAction.Authorize(TOKEN_ID, 1));
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isTrue());
-        triggerUserAction(STATION_ID, new UserAction.Authorize(TOKEN_ID, 1));
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isFalse());
-        triggerUserAction(STATION_ID, new UserAction.Unplug(1));
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isTrue());
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isFalse());
+        triggerUserAction(STATION_ID, new Unplug(DEFAULT_CONNECTOR_ID));
 
         //then
         await().untilAsserted(() -> {
@@ -497,12 +500,13 @@ public class StationSimulatorFunctionalTest {
 
             assertThat(new HashSet<>(sequenceNumbers)).hasSize(2);
         });
-}
+    }
+
     @Test
-    public void shouldReplyToSetVariablesRequest() {
+    void shouldReplyToSetVariablesRequest() {
         //given
         mockSuccessfulBootNotificationAnswer();
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
         SetVariableDatum setVariableDatum = new SetVariableDatum()
                 .withVariable(new Variable().withName(new CiString.CiString50("ReserveConnectorZeroSupported")))
@@ -514,7 +518,7 @@ public class StationSimulatorFunctionalTest {
         Call call = new Call(UUID.randomUUID().toString(), ActionType.SET_VARIABLES, request);
 
         //when
-        stationSimulator.getStation(STATION_ID).getInbox().add(new StationInboxMessage(StationInboxMessage.Type.OCPP_MESSAGE, call.toJson()));
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, call.toJson()));
 
         //then
         await().untilAsserted(() -> {
@@ -526,25 +530,26 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    public void shouldImmediatelyRebootWithOngoingTransaction() {
+    void shouldImmediatelyRebootWithOngoingTransaction() {
         //given
         mockSuccessfulBootNotificationAnswer();
-        mockSuccessfulAuthorizationAnswer(TOKEN_ID);
+        mockSuccessfulAuthorizationAnswer(DEFAULT_TOKEN_ID);
         mockSuccessfulTransactionEventAnswer();
 
-        stationSimulator.start();
+        stationSimulatorRunner.run();
 
-        triggerUserAction(STATION_ID, new UserAction.Plug(1));
-        triggerUserAction(STATION_ID, new UserAction.Authorize(TOKEN_ID, 1));
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isTrue());
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isTrue());
 
         String immediateResetRequest = new Call(UUID.randomUUID().toString(), ActionType.RESET, new ResetRequest().withType(ResetRequest.Type.IMMEDIATE))
                 .toJson();
+
         //when
-        stationSimulator.getStation(STATION_ID).getInbox().add(new StationInboxMessage(StationInboxMessage.Type.OCPP_MESSAGE, immediateResetRequest));
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, immediateResetRequest));
 
         //then
-        await().untilAsserted(() -> assertThat(stationSimulator.getStation(STATION_ID).getState().isCharging(1)).isFalse());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isFalse());
         await().untilAsserted(() -> {
             Optional<Call> bootNotificationOptional = server.getReceivedCalls(STATION_ID)
                     .stream()
@@ -611,7 +616,7 @@ public class StationSimulatorFunctionalTest {
         return ObjectMapperHolder.getJsonObjectMapper().readValue(json, clz);
     }
 
-    private void triggerUserAction(String stationId, UserAction action) {
-        stationSimulator.getStation(stationId).getInbox().add(new StationInboxMessage(StationInboxMessage.Type.USER_ACTION, action));
+    private void triggerUserAction(String stationId, UserMessage action) {
+        stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
     }
 }

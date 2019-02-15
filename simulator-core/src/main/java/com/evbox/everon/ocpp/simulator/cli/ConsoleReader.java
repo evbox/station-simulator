@@ -1,9 +1,8 @@
 package com.evbox.everon.ocpp.simulator.cli;
 
-import com.evbox.everon.ocpp.simulator.StationSimulator;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationInboxMessage;
-import com.evbox.everon.ocpp.simulator.user.interaction.UserAction;
+import com.evbox.everon.ocpp.simulator.station.StationMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
@@ -25,13 +25,20 @@ public class ConsoleReader {
 
     private static final String SHOW_STATION_STATE_CMD = "stat";
 
-    private final StationSimulator simulator;
-
     private int selectedStation = 0;
 
-    public ConsoleReader(StationSimulator simulator) {
-        this.simulator = simulator;
-        Executors.newSingleThreadExecutor().submit(() -> {
+    private final List<Station> stations;
+    private final ExecutorService consoleReaderExecutorService = Executors.newSingleThreadExecutor();;
+
+    public ConsoleReader(List<Station> stations) {
+
+        this.stations = stations;
+
+    }
+
+    public void startReading() {
+
+        consoleReaderExecutorService.submit(() -> {
             Scanner in = new Scanner(System.in);
 
             showStationsList();
@@ -49,6 +56,7 @@ public class ConsoleReader {
                 showStationsList();
             }
         });
+
     }
 
     private void processCommand(List<String> commandArgs) {
@@ -60,31 +68,35 @@ public class ConsoleReader {
         if (selectStationCommand) {
             selectNewStation(Integer.valueOf(commandName));
         } else if (ConsoleCommand.contains(commandName)) {
-            UserAction userAction = ConsoleCommand.toUserAction(commandName, commandArgs.subList(1, commandArgs.size()));
-            simulator.getStations().get(selectedStation).getInbox().add(new StationInboxMessage(StationInboxMessage.Type.USER_ACTION, userAction));
+            UserMessage userMessage = ConsoleCommand.toUserMessage(commandName, commandArgs.subList(1, commandArgs.size()));
+
+            Station station = stations.get(selectedStation);
+
+            station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.USER_ACTION, userMessage));
+
         } else if (showStationStateCommand) {
             showStationState();
         }
     }
 
     private void showStationState() {
-        System.out.println(simulator.getStations().get(selectedStation).getState());
+        System.out.println(stations.get(selectedStation).getState());
     }
 
     private void selectNewStation(int newStationIndex) {
-        boolean inAvailableStationsRange = newStationIndex == 0 || newStationIndex < simulator.getStations().size();
+        boolean inAvailableStationsRange = newStationIndex == 0 || newStationIndex < stations.size();
         Preconditions.checkArgument(inAvailableStationsRange,
-                "Station index is not applicable. Select between 0 and %s", simulator.getStations().size() - 1);
+                "Station index is not applicable. Select between 0 and %s", stations.size() - 1);
         selectedStation = newStationIndex;
     }
 
     private void showStationsList() {
         System.out.println();
         System.out.println("List of stations:");
-        List<Station> stations = simulator.getStations();
+
         String stationsList = IntStream.range(0, stations.size()).mapToObj(i -> {
             Station station = stations.get(i);
-            String stationId = station.getConfiguration().getStationId();
+            String stationId = station.getConfiguration().getId();
             return (i == selectedStation ? "[SELECTED]: " : i + ": ") + stationId;
         }).collect(joining("\n"));
 
@@ -97,9 +109,10 @@ public class ConsoleReader {
         String commands = "Available commands:\n";
         commands += "\tplug {connectorId} - plug cable to given connector\n";
         commands += "\tunplug {connectorId} - unplug cable from given connector\n";
-        commands += "\tauth {tokenId} {evseId} - authorize token at given evse\n";
+        commands += "\tauth {tokenId} {evseId} - authorize token at given EVSE\n";
         commands += "\tstat - show state of selected station";
 
         System.out.println(commands);
     }
+
 }
