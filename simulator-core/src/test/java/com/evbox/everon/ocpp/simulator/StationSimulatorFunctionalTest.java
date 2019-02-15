@@ -11,6 +11,8 @@ import com.evbox.everon.ocpp.simulator.station.actions.Authorize;
 import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
 import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
+import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.support.WebSocketServerMock;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.*;
@@ -568,6 +570,33 @@ public class StationSimulatorFunctionalTest {
                     .findAny();
 
             assertThat(statusNotificationOptional).isPresent();
+        });
+    }
+
+    @Test
+    void shouldUpdateHeartbeatIntervalWithSetVariablesRequest() {
+        //given
+        int newHeartbeatInterval = 120;
+        mockSuccessfulBootNotificationAnswer();
+
+        //when
+        stationSimulatorRunner.run();
+
+        SetVariableDatum setVariableDatum = new SetVariableDatum()
+                .withComponent(new Component().withName(new CiString.CiString50(OCPPCommCtrlrComponent.NAME)))
+                .withVariable(new Variable().withName(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME)))
+                .withAttributeType(SetVariableDatum.AttributeType.ACTUAL)
+                .withAttributeValue(new CiString.CiString1000(String.valueOf(newHeartbeatInterval)));
+
+        String setHeartbeatIntervalVariable = new Call(UUID.randomUUID().toString(), ActionType.SET_VARIABLES, new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum)))
+                .toJson();
+
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, setHeartbeatIntervalVariable));
+
+        //then
+        await().untilAsserted(() -> {
+            int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval();
+            assertThat(heartbeatInterval).isEqualTo(newHeartbeatInterval);
         });
     }
 

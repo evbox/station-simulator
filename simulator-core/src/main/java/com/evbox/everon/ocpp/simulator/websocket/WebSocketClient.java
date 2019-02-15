@@ -95,7 +95,7 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
         if (connected) {
             String ocppMessage = (String) message.getData().orElseThrow(() -> new IllegalArgumentException("OCPP message is null"));
             mesageSender.send(ocppMessage);
-            LOGGER.info("SENT: {}", ocppMessage);
+            LOGGER.info("SENT:\n{}", ocppMessage);
         } else {
             inbox.put(message);
         }
@@ -126,7 +126,7 @@ public class WebSocketClient implements WebSocketClientAdapter.ChannelListener {
      */
     @Override
     public void onMessage(String message) {
-        LOGGER.info("RECEIVED: {}", message);
+        LOGGER.info("RECEIVED:\n{}", message);
         stationMessageInbox.offer(new StationMessage(stationId, StationMessage.Type.OCPP_MESSAGE, message));
     }
 
