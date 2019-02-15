@@ -1,8 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.component.variable;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
-import org.aeonbits.owner.util.Collections;
 
+import java.util.Collections;
 import java.util.Set;
 
 public abstract class VariableAccessor implements VariableGetter, VariableSetter {
@@ -20,7 +20,7 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
     public abstract String getVariableName();
 
     public Set<String> getSupportedAttributeTypes() {
-        return Collections.set(AttributeTypes.ACTUAL);
+        return Collections.singleton(AttributeTypes.ACTUAL);
     }
 
     public boolean isSupported(String attributeType) {
