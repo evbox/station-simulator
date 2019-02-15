@@ -2,8 +2,8 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.google.common.collect.ImmutableList;
-import joptsimple.internal.Strings;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.*;
 import java.util.List;
@@ -78,7 +78,7 @@ public class StationState {
                 connectorListBuilder.add(new Evse.Connector(++connectorId, Evse.ConnectorState.AVAILABLE));
             }
 
-            evseListBuilder.add(new Evse(i, connectorListBuilder.build(), Strings.EMPTY, false, 0L, null));
+            evseListBuilder.add(new Evse(i, connectorListBuilder.build(), StringUtils.EMPTY, false, 0L, null));
         }
 
         return evseListBuilder.build();

@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -141,7 +141,7 @@ public class Evse {
     }
 
     void resetToken() {
-        authorizedToken = Strings.EMPTY;
+        authorizedToken = StringUtils.EMPTY;
     }
 
     boolean hasOngoingTransaction() {
