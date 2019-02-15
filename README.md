@@ -112,7 +112,8 @@ java -jar simulator-core-shadow/lib/simulator-core.jar ws://${ocpp_endpoint_url}
 There is a console tool which supports user interaction with running stations: plug cable, unplug cable, authorize token
 It starts as part of station simulator.
 
-**List of available commands**
+**List of available actions**
+
 Press `Enter` to see list of available stations.
 To switch between stations enter station's number (e.g. 1, 2, 3) and press `Enter`.
 
