@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
 import com.evbox.everon.ocpp.simulator.support.ReflectionUtils;
@@ -187,7 +188,7 @@ public class StationMessageSenderTest {
     void verifyStatusNotification() throws InterruptedException {
 
         when(stationStateMock.getCurrentTime()).thenReturn(new Date().toInstant());
-        when(stationStateMock.getConnectorState(anyInt())).thenReturn(Evse.ConnectorState.AVAILABLE);
+        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorState.UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 
