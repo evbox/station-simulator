@@ -1,7 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
 import java.math.BigDecimal;
@@ -35,6 +37,23 @@ public class PayloadFactory {
         payload.setTimestamp(ZonedDateTime.now());
 
         if (connectorState == ConnectorState.UNPLUGGED) {
+            payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
+        } else {
+            payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.OCCUPIED);
+        }
+
+        payload.setTimestamp(currentTime.atZone(ZoneOffset.UTC));
+
+        return payload;
+    }
+
+    StatusNotificationRequest createStatusNotification(Evse evse, Connector connector, Instant currentTime) {
+        StatusNotificationRequest payload = new StatusNotificationRequest();
+        payload.setEvseId(evse.getId());
+        payload.setConnectorId(connector.getId());
+        payload.setTimestamp(ZonedDateTime.now());
+
+        if (connector.getState() == ConnectorState.UNPLUGGED) {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
         } else {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.OCCUPIED);

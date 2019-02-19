@@ -156,6 +156,19 @@ public class StationState {
         return findEvse(evseId).hasOngoingTransaction();
     }
 
+    /**
+     * Find an instance of {@link Evse} by evseId. If not found then throw {@link IllegalArgumentException}.
+     *
+     * @param evseId evse identity
+     * @return an instance of {@link Evse}
+     */
+    public Evse findEvse(int evseId) {
+        return evses.stream()
+                .filter(evse -> evse.getId() == evseId)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
+    }
+
     @Override
     public String toString() {
         return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses + '}';
@@ -189,13 +202,6 @@ public class StationState {
         return evses.stream()
                 .filter(evse -> evse.getConnectors().stream().anyMatch(connector -> connector.getId().equals(connectorId)))
                 .findAny().orElseThrow(() -> new IllegalArgumentException(String.format("Connector %s is not present", connectorId)));
-    }
-
-    private Evse findEvse(int evseId) {
-        return evses.stream()
-                .filter(evse -> evse.getId() == evseId)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
 }

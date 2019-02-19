@@ -29,14 +29,28 @@ public class Evse {
     private long seqNo;
     private Integer transactionId;
 
+    private EvseState evseState;
+
     /**
-     * Create Evse instance.
+     * Create Evse instance. By default evse is in the state AVAILABLE.
      *
      * @param id         evse identity
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, List<Connector> connectors) {
+        this(id, EvseState.AVAILABLE, connectors);
+    }
+
+    /**
+     * Create Evse instance.
+     *
+     * @param id         evse identity
+     * @param evseState  evse state
+     * @param connectors list of connectors for this evse
+     */
+    public Evse(int id, EvseState evseState, List<Connector> connectors) {
         this.id = id;
+        this.evseState = evseState;
         this.connectors = connectors;
     }
 
@@ -151,6 +165,25 @@ public class Evse {
     }
 
     /**
+     * Setter for evse state.
+     *
+     * @param evseState
+     */
+    public void setEvseState(EvseState evseState) {
+        this.evseState = evseState;
+    }
+
+    /**
+     * Check whether the given state matches the existing or not.
+     *
+     * @param requestedEvseState given evse state
+     * @return `true` if states do match otherwise `false`
+     */
+    public boolean hasRequestedState(EvseState requestedEvseState) {
+        return this.evseState == requestedEvseState;
+    }
+
+    /**
      * Check whether transaction is ongoing or not.
      *
      * @return `true` in case if ongoing `false` otherwise
@@ -177,4 +210,5 @@ public class Evse {
     public String toString() {
         return "Evse{" + "id=" + id + ", connectors=" + connectors + ", tokenId='" + tokenId + '\'' + ", charging=" + charging + ", seqNo=" + seqNo + ", transactionId=" + transactionId + '}';
     }
+
 }
