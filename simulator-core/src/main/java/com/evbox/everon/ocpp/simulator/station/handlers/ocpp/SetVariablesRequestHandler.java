@@ -43,13 +43,7 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
     public void handle(String callId, SetVariablesRequest request) {
         List<SetVariableDatum> setVariableData = request.getSetVariableData();
 
-        List<SetVariableValidationResult> results = setVariableData.stream().map(data -> {
-            String componentName = data.getComponent().getName().toString();
-            Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
-
-            return optionalComponent.map(component -> component.validate(data))
-                    .orElse(new SetVariableValidationResult(data, SetVariableResult.AttributeStatus.UNKNOWN_COMPONENT));
-        }).collect(toList());
+        List<SetVariableValidationResult> results = validate(setVariableData);
 
         List<SetVariableResult> setVariableResults = results.stream().map(validationResult -> {
             SetVariableDatum datum = validationResult.getSetVariableDatum();
@@ -61,11 +55,25 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
 
         sendResponse(callId, new SetVariablesResponse().withSetVariableResult(setVariableResults));
 
-        results.stream().filter(SetVariableValidationResult::isAccepted).map(SetVariableValidationResult::getSetVariableDatum).forEach(data -> {
+        results.stream()
+                .filter(SetVariableValidationResult::isAccepted)
+                .map(SetVariableValidationResult::getSetVariableDatum)
+                .forEach(data -> {
+                    String componentName = data.getComponent().getName().toString();
+                    Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
+                    StationComponent component = optionalComponent.orElseThrow(() -> new UnknownComponentException(componentName));
+                    component.handle(data);
+                });
+    }
+
+    private List<SetVariableValidationResult> validate(List<SetVariableDatum> setVariableData) {
+        return setVariableData.stream().map(data -> {
             String componentName = data.getComponent().getName().toString();
             Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
-            optionalComponent.orElseThrow(() -> new UnknownComponentException(componentName)).handle(data);
-        });
+
+            return optionalComponent.map(component -> component.validate(data))
+                    .orElse(new SetVariableValidationResult(data, SetVariableResult.AttributeStatus.UNKNOWN_COMPONENT));
+        }).collect(toList());
     }
 
     private void sendResponse(String callId, Object payload) {

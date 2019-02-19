@@ -1,9 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.component.variable;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-
-import java.util.Collections;
-import java.util.Set;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 
 public abstract class VariableAccessor implements VariableGetter, VariableSetter {
 
@@ -19,11 +19,6 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
 
     public abstract String getVariableName();
 
-    public Set<String> getSupportedAttributeTypes() {
-        return Collections.singleton(AttributeTypes.ACTUAL);
-    }
+    public abstract SetVariableResult.AttributeStatus validate(SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue);
 
-    public boolean isSupported(String attributeType) {
-        return getSupportedAttributeTypes().contains(attributeType);
-    }
 }

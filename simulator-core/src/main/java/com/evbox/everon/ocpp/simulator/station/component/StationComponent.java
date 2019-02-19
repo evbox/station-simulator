@@ -35,25 +35,21 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
 
     public void handle(SetVariableDatum setVariableDatum) {
         Component component = setVariableDatum.getComponent();
-        String componentName = component.getName().toString();
         Evse evse = component.getEvse();
         Variable variable = setVariableDatum.getVariable();
+        String variableName = variable.getName().toString();
 
-        VariableAccessor accessor = variableAccessors.get(componentName);
+        VariableAccessor accessor = variableAccessors.get(variableName);
 
         accessor.set(component, evse, variable, setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue());
     }
 
     public SetVariableValidationResult validate(SetVariableDatum setVariableDatum) {
-        Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getComponent().getName().toString()));
+        Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getVariable().getName().toString()));
 
-        SetVariableResult.AttributeStatus status = optionalVariableAccessor.map(accessor -> {
-            if (accessor.isSupported(setVariableDatum.getAttributeType().value())) {
-                return SetVariableResult.AttributeStatus.ACCEPTED;
-            } else {
-                return SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE;
-            }
-        }).orElse(SetVariableResult.AttributeStatus.UNKNOWN_VARIABLE);
+        SetVariableResult.AttributeStatus status = optionalVariableAccessor
+                .map(accessor -> accessor.validate(setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue()))
+                .orElse(SetVariableResult.AttributeStatus.UNKNOWN_VARIABLE);
 
         return new SetVariableValidationResult(setVariableDatum, status);
     }

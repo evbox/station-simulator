@@ -18,10 +18,11 @@ import static com.evbox.everon.ocpp.simulator.support.OcppMessageFactory.createS
 import static com.evbox.everon.ocpp.simulator.support.OcppMessageFactory.createSetVariablesResponse;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class SetVariablesRequestHandlerTest {
+class SetVariablesRequestHandlerTest {
 
     @Mock
     StationMessageSender stationMessageSender;
@@ -29,7 +30,7 @@ public class SetVariablesRequestHandlerTest {
     SetVariablesRequestHandler setVariablesRequestHandler;
 
     @Test
-    void verifyCallResult() throws JsonProcessingException {
+    void shouldCheckIfComponentExists() throws JsonProcessingException {
         SetVariablesRequest setVariablesRequest = createSetVariablesRequest()
                 .withComponent(DEFAULT_COMPONENT_NAME)
                 .withVariable(DEFAULT_VARIABLE_NAME)
@@ -53,6 +54,20 @@ public class SetVariablesRequestHandlerTest {
                 .toJson();
 
         assertThat(messageCaptor.getValue().getData().get()).isEqualTo(expectedCallResultJson);
+    }
 
+    @Test
+    void shouldPassVariableForValidation() {
+        fail();
+    }
+
+    @Test
+    void shouldSendResponseWithValidationStatus() {
+        fail();
+    }
+
+    @Test
+    void shouldApplyAcceptedVariables() {
+        fail();
     }
 }

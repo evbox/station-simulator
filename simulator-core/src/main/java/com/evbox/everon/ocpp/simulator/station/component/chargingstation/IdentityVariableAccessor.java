@@ -24,6 +24,12 @@ public class IdentityVariableAccessor extends VariableAccessor {
     }
 
     @Override
+    public SetVariableResult.AttributeStatus validate(SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
+        return null;
+    }
+
+    @Override
     public void set(Component component, Evse evse, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
+
     }
 }

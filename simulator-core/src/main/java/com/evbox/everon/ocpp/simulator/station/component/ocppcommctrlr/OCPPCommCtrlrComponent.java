@@ -10,8 +10,7 @@ public class OCPPCommCtrlrComponent extends StationComponent {
 
     public OCPPCommCtrlrComponent(Station station) {
         super(ImmutableList.of(
-                new HeartbeatIntervalVariableAccessor(station),
-                new WebSocketPingIntervalVariableAccessor(station)
+                new HeartbeatIntervalVariableAccessor(station)
         ));
     }
 

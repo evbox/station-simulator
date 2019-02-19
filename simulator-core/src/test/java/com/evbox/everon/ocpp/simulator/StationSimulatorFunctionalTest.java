@@ -49,7 +49,7 @@ public class StationSimulatorFunctionalTest {
 
     @BeforeEach
     void setUp() {
-        Awaitility.setDefaultTimeout(5, TimeUnit.SECONDS);
+        Awaitility.setDefaultTimeout(60, TimeUnit.SECONDS);
         server.start();
         ocppServerUrl = "ws://localhost:" + server.getPort() + "/ocpp";
 
@@ -590,6 +590,11 @@ public class StationSimulatorFunctionalTest {
 
         String setHeartbeatIntervalVariable = new Call(UUID.randomUUID().toString(), ActionType.SET_VARIABLES, new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum)))
                 .toJson();
+
+        await().untilAsserted(() -> {
+            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
+            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION);
+        });
 
         stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, setHeartbeatIntervalVariable));
 
