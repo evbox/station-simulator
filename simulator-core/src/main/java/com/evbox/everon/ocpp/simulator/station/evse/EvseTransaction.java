@@ -14,6 +14,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public class EvseTransaction {
 
+    /**
+     * Transaction contains only state.
+     */
+    public static final EvseTransaction NONE = new EvseTransaction(EvseTransactionState.NONE);
+
     private int transactionId;
     private EvseTransactionState state;
 
@@ -35,7 +40,7 @@ public class EvseTransaction {
      *
      * @param state transaction state
      */
-    public EvseTransaction(EvseTransactionState state) {
+    private EvseTransaction(EvseTransactionState state) {
         Objects.requireNonNull(state);
 
         this.state = state;

@@ -46,14 +46,14 @@ public class Evse {
     }
 
     /**
-     * Create Evse instance.
+     * Create Evse instance without transaction.
      *
      * @param id         evse identity
      * @param evseState  evse state
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, EvseState evseState, List<Connector> connectors) {
-       this(id, evseState, new EvseTransaction(NONE), connectors);
+       this(id, evseState, EvseTransaction.NONE, connectors);
     }
 
     /**

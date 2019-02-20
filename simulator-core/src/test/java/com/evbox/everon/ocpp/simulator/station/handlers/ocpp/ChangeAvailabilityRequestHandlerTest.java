@@ -14,6 +14,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionState.IN_PROGRESS;
 import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
@@ -47,7 +48,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withState(EvseState.AVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
-                .withTransaction(new EvseTransaction(EvseTransactionState.NONE))
+                .withTransaction(EvseTransaction.NONE)
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
@@ -71,7 +72,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withState(EvseState.UNAVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
-                .withTransaction(new EvseTransaction(EvseTransactionState.NONE))
+                .withTransaction(EvseTransaction.NONE)
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
@@ -100,7 +101,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withState(EvseState.AVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
-                .withTransaction(new EvseTransaction(EvseTransactionState.IN_PROGRESS))
+                .withTransaction(new EvseTransaction(DEFAULT_INT_TRANSACTION_ID, IN_PROGRESS))
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
@@ -142,7 +143,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withState(EvseState.AVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
-                .withTransaction(new EvseTransaction(EvseTransactionState.NONE))
+                .withTransaction(EvseTransaction.NONE)
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
