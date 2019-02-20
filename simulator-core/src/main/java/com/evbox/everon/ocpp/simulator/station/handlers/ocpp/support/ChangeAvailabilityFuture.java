@@ -2,15 +2,33 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support;
 
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseState;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@AllArgsConstructor
 public class ChangeAvailabilityFuture {
+
+    private final ExecutorService threadPool;
+
+    /**
+     * Create an instance with the threadPool sized to what {@code Runtime.getRuntime().availableProcessors()} return
+     */
+    public ChangeAvailabilityFuture() {
+        this.threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    }
+
+    /**
+     * Create an instance with the given threadPool.
+     *
+     * @param threadPool
+     */
+    public ChangeAvailabilityFuture(ExecutorService threadPool) {
+        this.threadPool = threadPool;
+    }
 
     /**
      * Tries to set a new state withing a given time frame. It sets the new state if evse has no ongoing transaction.
@@ -36,7 +54,7 @@ public class ChangeAvailabilityFuture {
             }
 
             log.warn("Could not change state of the EVSE with id {}. All attempts were used.", evse.getId());
-        });
+        }, threadPool);
 
     }
 

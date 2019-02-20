@@ -6,9 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseState.AVAILABLE;
@@ -21,6 +19,7 @@ import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_T
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.ONE_SECOND;
+import static org.awaitility.Duration.TWO_SECONDS;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ChangeAvailabilityFutureTest {
@@ -28,7 +27,9 @@ public class ChangeAvailabilityFutureTest {
     private static final int ATTEMPTS = 5;
     private static final int DELAY_BETWEEN_ATTEMPTS = 100;
 
-    ChangeAvailabilityFuture changeAvailabilityFuture = new ChangeAvailabilityFuture();
+    ThreadPoolExecutor executorService = newSingleThreadExecutor();
+
+    ChangeAvailabilityFuture changeAvailabilityFuture = new ChangeAvailabilityFuture(executorService);
 
     @Test
     void shouldChangeStateImmediately() {
@@ -60,10 +61,10 @@ public class ChangeAvailabilityFutureTest {
 
         parkAndRun(millis, evse::stopTransaction);
 
-        await().atMost(ONE_SECOND).untilAsserted(() -> {
+        await().atMost(TWO_SECONDS).untilAsserted(() -> {
 
             assertAll(
-                    () -> assertThat(ForkJoinPool.commonPool().getActiveThreadCount()).isEqualTo(0),
+                    () -> assertThat(executorService.getActiveCount()).isEqualTo(0),
                     () -> assertThat(evse.getEvseState()).isEqualTo(AVAILABLE)
             );
 
@@ -88,7 +89,7 @@ public class ChangeAvailabilityFutureTest {
         await().pollDelay(ONE_SECOND).untilAsserted(() -> {
 
             assertAll(
-                    () -> assertThat(ForkJoinPool.commonPool().getActiveThreadCount()).isEqualTo(1),
+                    () -> assertThat(executorService.getActiveCount()).isEqualTo(1),
                     () -> assertThat(evse.getEvseState()).isEqualTo(UNAVAILABLE)
             );
 
@@ -106,4 +107,10 @@ public class ChangeAvailabilityFutureTest {
         });
 
     }
+
+    ThreadPoolExecutor newSingleThreadExecutor() {
+        return new ThreadPoolExecutor(1, 1,
+                0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+    }
+
 }
