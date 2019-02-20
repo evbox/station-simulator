@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -90,6 +89,31 @@ public class ChangeAvailabilityRequestHandlerTest {
         Connector connector = evse.getConnectors().get(0);
 
         verify(stationMessageSenderMock).sendStatusNotification(eq(evse), eq(connector));
+
+    }
+
+
+    @Test
+    @DisplayName("Response should be send with SCHEDULED status when requested EVSE has transaction in progress")
+    void shouldSendScheduledStatus() {
+        Evse evse = createEvse()
+                .withId(DEFAULT_EVSE_ID)
+                .withState(EvseState.AVAILABLE)
+                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
+                .withTransaction(new EvseTransaction(EvseTransactionState.IN_PROGRESS))
+                .build();
+
+        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+
+        changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
+
+        verify(stationMessageSenderMock).sendCallResult(eq(DEFAULT_MESSAGE_ID), changeAvailabilityResponseCaptor.capture());
+
+        ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
+
+        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.SCHEDULED);
 
     }
 
