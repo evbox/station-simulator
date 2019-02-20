@@ -41,5 +41,6 @@ public class StationConstants {
     public static final String RESET_ACTION = "Reset";
     public static final String TRANSACTION_EVENT_ACTION = "TransactionEvent";
     public static final String HEART_BEAT_ACTION = "Heartbeat";
+    public static final String CHANGE_AVAILABILITY_ACTION = "ChangeAvailability";
 
 }
