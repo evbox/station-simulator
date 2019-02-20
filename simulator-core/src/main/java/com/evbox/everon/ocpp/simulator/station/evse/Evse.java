@@ -5,7 +5,10 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionState.*;
 
 /**
  * An EVSE is considered as an independently operated and managed part of the ChargingStation that can deliver energy to one EV at a time.
@@ -27,9 +30,10 @@ public class Evse {
     private String tokenId;
     private boolean charging;
     private long seqNo;
-    private Integer transactionId;
 
-    private EvseState evseState;
+    // multi-threaded access
+    private volatile EvseState evseState;
+    private volatile EvseTransaction evseTransaction;
 
     /**
      * Create Evse instance. By default evse is in the state AVAILABLE.
@@ -49,18 +53,32 @@ public class Evse {
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, EvseState evseState, List<Connector> connectors) {
+       this(id, evseState, new EvseTransaction(NONE), connectors);
+    }
+
+    /**
+     * Create Evse instance.
+     *
+     * @param id              evse identity
+     * @param evseState       evse state
+     * @param evseTransaction evse transaction
+     * @param connectors      list of connectors for this evse
+     */
+    public Evse(int id, EvseState evseState, EvseTransaction evseTransaction, List<Connector> connectors) {
         this.id = id;
         this.evseState = evseState;
+        this.evseTransaction = evseTransaction;
         this.connectors = connectors;
     }
 
-    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, Integer transactionId) {
+    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction evseTransaction, EvseState evseState) {
         this.id = id;
         this.connectors = connectors;
         this.tokenId = tokenId;
         this.charging = charging;
         this.seqNo = seqNo;
-        this.transactionId = transactionId;
+        this.evseTransaction = evseTransaction;
+        this.evseState = evseState;
     }
 
     /**
@@ -71,7 +89,7 @@ public class Evse {
      */
     public static Evse copyOf(Evse evse) {
         List<Connector> connectorsCopy = evse.connectors.stream().map(Connector::copyOf).collect(Collectors.toList());
-        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.transactionId);
+        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.evseTransaction, evse.evseState);
     }
 
     /**
@@ -156,12 +174,14 @@ public class Evse {
     }
 
     /**
-     * Setter for transactionId.
+     * Setter for evse transaction.
      *
-     * @param transactionId
+     * @param evseTransaction
      */
-    public void setTransactionId(Integer transactionId) {
-        this.transactionId = transactionId;
+    public void setEvseTransaction(EvseTransaction evseTransaction) {
+        Objects.requireNonNull(evseTransaction);
+
+        this.evseTransaction = evseTransaction;
     }
 
     /**
@@ -179,7 +199,7 @@ public class Evse {
      * @param requestedEvseState given evse state
      * @return `true` if states do match otherwise `false`
      */
-    public boolean hasRequestedState(EvseState requestedEvseState) {
+    public boolean hasState(EvseState requestedEvseState) {
         return this.evseState == requestedEvseState;
     }
 
@@ -189,14 +209,14 @@ public class Evse {
      * @return `true` in case if ongoing `false` otherwise
      */
     public boolean hasOngoingTransaction() {
-        return transactionId != null;
+        return evseTransaction.getState() == IN_PROGRESS;
     }
 
     /**
-     * Clear transactionId.
+     * Stop transaction.
      */
-    public void clearTransactionId() {
-        this.transactionId = null;
+    public void stopTransaction() {
+        setEvseTransaction(new EvseTransaction(evseTransaction.getTransactionId(), STOPPED));
     }
 
     /**
@@ -208,7 +228,14 @@ public class Evse {
 
     @Override
     public String toString() {
-        return "Evse{" + "id=" + id + ", connectors=" + connectors + ", tokenId='" + tokenId + '\'' + ", charging=" + charging + ", seqNo=" + seqNo + ", transactionId=" + transactionId + '}';
+        return "Evse{" +
+                "id=" + id +
+                ", connectors=" + connectors +
+                ", tokenId='" + tokenId + '\'' +
+                ", charging=" + charging +
+                ", seqNo=" + seqNo +
+                ", evseTransaction=" + evseTransaction +
+                ", evseState=" + evseState +
+                '}';
     }
-
 }

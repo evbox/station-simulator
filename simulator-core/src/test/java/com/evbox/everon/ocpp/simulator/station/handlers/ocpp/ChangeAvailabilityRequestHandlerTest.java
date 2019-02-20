@@ -2,12 +2,10 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseState;
+import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,11 +31,15 @@ public class ChangeAvailabilityRequestHandlerTest {
     @Mock
     StationMessageSender stationMessageSenderMock;
 
-    @InjectMocks
     ChangeAvailabilityRequestHandler changeAvailabilityRequestHandler;
 
     @Captor
     ArgumentCaptor<ChangeAvailabilityResponse> changeAvailabilityResponseCaptor;
+
+    @BeforeEach
+    void setUp() {
+        changeAvailabilityRequestHandler = new ChangeAvailabilityRequestHandler(stationStateMock, stationMessageSenderMock);
+    }
 
     @Test
     @DisplayName("Response should be send with ACCEPT status when requested EVSE state is the same as the current one")
@@ -46,6 +48,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withState(EvseState.AVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
+                .withTransaction(new EvseTransaction(EvseTransactionState.NONE))
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
@@ -69,6 +72,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withState(EvseState.UNAVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
+                .withTransaction(new EvseTransaction(EvseTransactionState.NONE))
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
@@ -92,17 +96,12 @@ public class ChangeAvailabilityRequestHandlerTest {
     @Test
     @DisplayName("Response should be send with REJECTED status when exception occurs")
     void shouldSendRejectStatus() {
-        Evse evse = createEvse()
-                .withId(DEFAULT_EVSE_ID)
-                .withState(EvseState.AVAILABLE)
-                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
-                .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenThrow(new IllegalStateException("some runtime exception"));
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
 
-        changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
+        assertThrows(IllegalStateException.class, () -> changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request));
 
         verify(stationMessageSenderMock).sendCallResult(eq(DEFAULT_MESSAGE_ID), changeAvailabilityResponseCaptor.capture());
 
@@ -119,6 +118,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withState(EvseState.AVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
+                .withTransaction(new EvseTransaction(EvseTransactionState.NONE))
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);

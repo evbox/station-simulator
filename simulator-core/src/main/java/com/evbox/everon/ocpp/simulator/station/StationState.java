@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 
@@ -133,19 +134,19 @@ public class StationState {
     }
 
     public String getTransactionId(Integer evseId) {
-        return findEvse(evseId).getTransactionId().toString();
+        return findEvse(evseId).getEvseTransaction().getTransactionId() + "";
     }
 
     public void setTransactionId(Integer evseId, Integer transactionId) {
-        findEvse(evseId).setTransactionId(transactionId);
+        findEvse(evseId).setEvseTransaction(new EvseTransaction(transactionId));
     }
 
     public void clearTransactionId(Integer evseId) {
-        findEvse(evseId).clearTransactionId();
+        findEvse(evseId).stopTransaction();
     }
 
     public void clearTransactions() {
-        evses.forEach(Evse::clearTransactionId);
+        evses.forEach(Evse::stopTransaction);
     }
 
     public List<Integer> getEvses() {
