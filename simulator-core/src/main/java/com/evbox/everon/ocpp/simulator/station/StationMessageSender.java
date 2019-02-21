@@ -2,6 +2,9 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.simulator.message.CallResult;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
@@ -17,9 +20,8 @@ import java.util.Map;
 
 /**
  * Send station messages to the OCPP server.
- *
+ * <p>
  * The API of this class might be changed in the future.
- *
  */
 @Slf4j
 public class StationMessageSender {
@@ -46,8 +48,8 @@ public class StationMessageSender {
     /**
      * Send TransactionEventStart event.
      *
-     * @param evseId evse identity
-     * @param reason reason why it was triggered
+     * @param evseId  evse identity
+     * @param reason  reason why it was triggered
      * @param tokenId token identity
      */
     public void sendTransactionEventStart(Integer evseId, TransactionEventRequest.TriggerReason reason, String tokenId) {
@@ -57,9 +59,9 @@ public class StationMessageSender {
     /**
      * Send TransactionEventStart event.
      *
-     * @param evseId evse identity
-     * @param connectorId connector identity
-     * @param reason reason why it was triggered
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
      * @param chargingState charging state of the station
      */
     public void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.ChargingState chargingState) {
@@ -69,12 +71,12 @@ public class StationMessageSender {
     /**
      * Send TransactionEventUpdate event and subscribe on response.
      *
-     * @param evseId evse identity
-     * @param connectorId connector identity
-     * @param reason reason why it was triggered
-     * @param tokenId token identity
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
+     * @param tokenId       token identity
      * @param chargingState charging state of the station
-     * @param subscriber callback that will be executed after receiving a response from OCPP server
+     * @param subscriber    callback that will be executed after receiving a response from OCPP server
      */
     public void sendTransactionEventUpdateAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState,
                                                        Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
@@ -89,12 +91,11 @@ public class StationMessageSender {
     }
 
     /**
-     *
      * Send TransactionEventUpdate event.
      *
-     * @param evseId evse identity
-     * @param connectorId connector identity
-     * @param reason reason why it was triggered
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
      * @param chargingState charging state of the station
      */
     public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.ChargingState chargingState) {
@@ -104,10 +105,10 @@ public class StationMessageSender {
     /**
      * Send TransactionEventUpdate event.
      *
-     * @param evseId evse identity
-     * @param connectorId connector identity
-     * @param reason reason why it was triggered
-     * @param tokenId token identity
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
+     * @param tokenId       token identity
      * @param chargingState charging state of the station
      */
     public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
@@ -124,11 +125,11 @@ public class StationMessageSender {
     /**
      * Send TransactionEventEnded event and subscribe on response.
      *
-     * @param evseId evse identity
-     * @param connectorId connector identity
-     * @param reason reason why it was triggered
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
      * @param stoppedReason reason why transaction was stopped
-     * @param subscriber callback that will be executed after receiving a response from OCPP server
+     * @param subscriber    callback that will be executed after receiving a response from OCPP server
      */
     public void sendTransactionEventEndedAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason,
                                                       Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
@@ -144,9 +145,9 @@ public class StationMessageSender {
     /**
      * Send TransactionEventEnded event.
      *
-     * @param evseId evse identity
-     * @param connectorId connector identity
-     * @param reason reason why it was triggered
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
      * @param stoppedReason reason why transaction was stopped
      */
     public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason) {
@@ -161,8 +162,8 @@ public class StationMessageSender {
     /**
      * Send Authorize event and subscribe on response.
      *
-     * @param tokenId token identity
-     * @param evseIds evse identity
+     * @param tokenId    token identity
+     * @param evseIds    evse identity
      * @param subscriber callback that will be executed after receiving a response from OCPP server
      */
     public void sendAuthorizeAndSubscribe(String tokenId, List<Integer> evseIds, Subscriber<AuthorizeRequest, AuthorizeResponse> subscriber) {
@@ -177,7 +178,7 @@ public class StationMessageSender {
     /**
      * Send BootNotification event and subscribe on response.
      *
-     * @param reason reason why it was triggered
+     * @param reason     reason why it was triggered
      * @param subscriber callback that will be executed after receiving a response from OCPP server
      */
     public void sendBootNotificationAndSubscribe(BootNotificationRequest.Reason reason, Subscriber<BootNotificationRequest, BootNotificationResponse> subscriber) {
@@ -205,9 +206,9 @@ public class StationMessageSender {
     /**
      * Send StatusNotification event and subscribe on response.
      *
-     * @param evseId evse identity
+     * @param evseId      evse identity
      * @param connectorId connector identity
-     * @param subscriber callback that will be executed after receiving a response from OCPP server
+     * @param subscriber  callback that will be executed after receiving a response from OCPP server
      */
     public void sendStatusNotificationAndSubscribe(int evseId, int connectorId, Subscriber<StatusNotificationRequest, StatusNotificationResponse> subscriber) {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, stationState.getConnectorState(connectorId), stationState.getCurrentTime());
@@ -222,7 +223,7 @@ public class StationMessageSender {
     /**
      * Send StatusNotification event.
      *
-     * @param evseId evse identity
+     * @param evseId      evse identity
      * @param connectorId connector identity
      */
     public void sendStatusNotification(int evseId, int connectorId) {
@@ -235,10 +236,24 @@ public class StationMessageSender {
     }
 
     /**
+     * Send StatusNotification event.
+     *
+     * @param evse      {@link Evse}
+     * @param connector {@link Connector}
+     */
+    public void sendStatusNotification(Evse evse, Connector connector) {
+        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evse, connector, stationState.getCurrentTime());
+
+        Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
+
+        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+    }
+
+    /**
      * Send HeartBeat event and subscribe on response.
      *
      * @param heartbeatRequest heart-beat request
-     * @param subscriber callback that will be executed after receiving a response from OCPP server
+     * @param subscriber       callback that will be executed after receiving a response from OCPP server
      */
     public void sendHeartBeatAndSubscribe(HeartbeatRequest heartbeatRequest, Subscriber<HeartbeatRequest, HeartbeatResponse> subscriber) {
         Call call = createAndRegisterCall(ActionType.HEARTBEAT, heartbeatRequest);
@@ -259,6 +274,18 @@ public class StationMessageSender {
             log.error("Exception on adding message to WebSocketInbox", e);
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * Send {@link CallResult} to ocpp server.
+     *
+     * @param callId  identity of the message
+     * @param payload body of the message
+     */
+    public void sendCallResult(String callId, Object payload) {
+        CallResult callResult = new CallResult(callId, payload);
+        String callStr = callResult.toJson();
+        sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
     }
 
     /**

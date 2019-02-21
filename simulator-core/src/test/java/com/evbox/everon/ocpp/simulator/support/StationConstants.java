@@ -20,6 +20,7 @@ public class StationConstants {
     public static final String DEFAULT_MESSAGE_ID = "1";
 
     public static final String DEFAULT_TRANSACTION_ID = "12345";
+    public static final int DEFAULT_INT_TRANSACTION_ID = 12345;
 
     public static final int DEFAULT_SEQ_NUMBER = 1;
 
@@ -41,5 +42,6 @@ public class StationConstants {
     public static final String RESET_ACTION = "Reset";
     public static final String TRANSACTION_EVENT_ACTION = "TransactionEvent";
     public static final String HEART_BEAT_ACTION = "Heartbeat";
+    public static final String CHANGE_AVAILABILITY_ACTION = "ChangeAvailability";
 
 }

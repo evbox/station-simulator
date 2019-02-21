@@ -2,8 +2,9 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 
@@ -85,8 +86,8 @@ public class StationState {
         return !isCharging(evseId) && findEvse(evseId).getConnectors().stream().anyMatch(Connector::isPlugged);
     }
 
-    public ConnectorState getConnectorState(int connectorId) {
-        return findConnector(connectorId).getState();
+    public ConnectorStatus getConnectorState(int connectorId) {
+        return findConnector(connectorId).getStatus();
     }
 
     public Long getSeqNo(int evseId) {
@@ -133,19 +134,19 @@ public class StationState {
     }
 
     public String getTransactionId(Integer evseId) {
-        return findEvse(evseId).getTransactionId().toString();
+        return findEvse(evseId).getEvseTransaction().getTransactionId() + "";
     }
 
     public void setTransactionId(Integer evseId, Integer transactionId) {
-        findEvse(evseId).setTransactionId(transactionId);
+        findEvse(evseId).setEvseTransaction(new EvseTransaction(transactionId));
     }
 
     public void clearTransactionId(Integer evseId) {
-        findEvse(evseId).clearTransactionId();
+        findEvse(evseId).stopTransaction();
     }
 
     public void clearTransactions() {
-        evses.forEach(Evse::clearTransactionId);
+        evses.forEach(Evse::stopTransaction);
     }
 
     public List<Integer> getEvses() {
@@ -154,6 +155,19 @@ public class StationState {
 
     public boolean hasOngoingTransaction(Integer evseId) {
         return findEvse(evseId).hasOngoingTransaction();
+    }
+
+    /**
+     * Find an instance of {@link Evse} by evseId. If not found then throw {@link IllegalArgumentException}.
+     *
+     * @param evseId evse identity
+     * @return an instance of {@link Evse}
+     */
+    public Evse findEvse(int evseId) {
+        return evses.stream()
+                .filter(evse -> evse.getId() == evseId)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
     @Override
@@ -168,7 +182,7 @@ public class StationState {
         for (int evseId = 1; evseId <= evseCount; evseId++) {
             ImmutableList.Builder<Connector> connectorListBuilder = ImmutableList.builder();
             for (int connectorId = 1; connectorId <= connectorsPerEvseCount; connectorId++) {
-                connectorListBuilder.add(new Connector(connectorId, ConnectorState.UNPLUGGED));
+                connectorListBuilder.add(new Connector(connectorId, ConnectorStatus.UNPLUGGED));
             }
 
             evseListBuilder.add(new Evse(evseId, connectorListBuilder.build()));
@@ -189,13 +203,6 @@ public class StationState {
         return evses.stream()
                 .filter(evse -> evse.getConnectors().stream().anyMatch(connector -> connector.getId().equals(connectorId)))
                 .findAny().orElseThrow(() -> new IllegalArgumentException(String.format("Connector %s is not present", connectorId)));
-    }
-
-    private Evse findEvse(int evseId) {
-        return evses.stream()
-                .filter(evse -> evse.getId() == evseId)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
 }

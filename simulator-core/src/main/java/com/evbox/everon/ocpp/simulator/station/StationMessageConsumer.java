@@ -51,10 +51,10 @@ public class StationMessageConsumer implements Runnable {
                 log.debug("RECEIVED MESSAGE:\n{}", message);
                 stationMessageRouter.route(message);
             } catch (InterruptedException e) {
-                log.error("Exception on processing message from StationInbox", e);
+                log.error("Received interrupt signal to terminate execution", e);
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                log.error("Exception on processing message from StationInbox", e);
+                log.error("Could not handle station message", e);
             }
 
         }

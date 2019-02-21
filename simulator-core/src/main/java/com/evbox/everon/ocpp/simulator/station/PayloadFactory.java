@@ -1,7 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.common.CiString;
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
 import java.math.BigDecimal;
@@ -28,13 +30,28 @@ public class PayloadFactory {
         return payload;
     }
 
-    StatusNotificationRequest createStatusNotification(int evseId, int connectorId, ConnectorState connectorState, Instant currentTime) {
+    StatusNotificationRequest createStatusNotification(int evseId, int connectorId, ConnectorStatus connectorStatus, Instant currentTime) {
         StatusNotificationRequest payload = new StatusNotificationRequest();
         payload.setEvseId(evseId);
         payload.setConnectorId(connectorId);
-        payload.setTimestamp(ZonedDateTime.now());
 
-        if (connectorState == ConnectorState.UNPLUGGED) {
+        if (connectorStatus == ConnectorStatus.UNPLUGGED) {
+            payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
+        } else {
+            payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.OCCUPIED);
+        }
+
+        payload.setTimestamp(currentTime.atZone(ZoneOffset.UTC));
+
+        return payload;
+    }
+
+    StatusNotificationRequest createStatusNotification(Evse evse, Connector connector, Instant currentTime) {
+        StatusNotificationRequest payload = new StatusNotificationRequest();
+        payload.setEvseId(evse.getId());
+        payload.setConnectorId(connector.getId());
+
+        if (connector.getStatus() == ConnectorStatus.UNPLUGGED) {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
         } else {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.OCCUPIED);
