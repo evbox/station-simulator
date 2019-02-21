@@ -129,10 +129,6 @@ public class StationState {
         evses.forEach(Evse::clearToken);
     }
 
-    public void clearTransactionId(Integer evseId) {
-        findEvse(evseId).stopTransaction();
-    }
-
     public void clearTransactions() {
         evses.forEach(Evse::stopTransaction);
     }
