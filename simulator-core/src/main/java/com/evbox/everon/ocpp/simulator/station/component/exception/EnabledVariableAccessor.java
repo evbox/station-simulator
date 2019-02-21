@@ -1,12 +1,12 @@
 package com.evbox.everon.ocpp.simulator.station.component.exception;
 
 import com.evbox.everon.ocpp.common.CiString;
-import com.evbox.everon.ocpp.simulator.station.Evse;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
