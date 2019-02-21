@@ -47,11 +47,11 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
     /**
      * Handle {@link ChangeAvailabilityRequest} request.
      * It has 3 scenarios:
-     * 1. Send response with ACCEPTED status when EVSE state is the same as requested.
-     * 2. Change EVSE state to the requested state when they do not match.
+     * 1. Send response with ACCEPTED status when EVSE status is the same as requested.
+     * 2. Change EVSE status to the requested status when they do not match.
      * In addition send response with ACCEPTED status and StatusNotification request for every EVSE Connector.
      * 3. When a transaction is in progress.
-     * Send response with SCHEDULED status and save scheduled state for further processing.
+     * Send response with SCHEDULED status and save scheduled status for further processing.
      *
      * @param callId  identity of the message
      * @param request incoming request from the server

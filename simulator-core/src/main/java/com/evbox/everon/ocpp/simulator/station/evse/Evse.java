@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionState.*;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
 import static java.util.Objects.nonNull;
 
 /**
@@ -222,7 +222,7 @@ public class Evse {
      * @return `true` in case if ongoing `false` otherwise
      */
     public boolean hasOngoingTransaction() {
-        return evseTransaction.getState() == IN_PROGRESS;
+        return evseTransaction.getStatus() == IN_PROGRESS;
     }
 
     /**
@@ -231,7 +231,7 @@ public class Evse {
     public void stopTransaction() {
         changeEvseStateIfScheduled();
 
-        evseTransaction.setState(STOPPED);
+        evseTransaction.setStatus(STOPPED);
     }
 
     /**

@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.UNAVAILABLE;
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionState.IN_PROGRESS;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
 import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
