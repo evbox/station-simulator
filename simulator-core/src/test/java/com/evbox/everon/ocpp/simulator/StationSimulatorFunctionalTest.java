@@ -574,7 +574,7 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    void shouldUpdateHeartbeatIntervalWithSetVariablesRequest() {
+    void shouldSetHeartbeatIntervalWithSetVariablesRequest() {
         //given
         int newHeartbeatInterval = 120;
         mockSuccessfulBootNotificationAnswer();
@@ -602,6 +602,37 @@ public class StationSimulatorFunctionalTest {
         await().untilAsserted(() -> {
             int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval();
             assertThat(heartbeatInterval).isEqualTo(newHeartbeatInterval);
+        });
+    }
+
+    @Test
+    void shouldGetHeartbeatIntervalWithGetVariablesRequest() {
+        //given
+        int expectedHeartbeatInterval = 42;
+        mockSuccessfulBootNotificationAnswer(ZonedDateTime.now(), expectedHeartbeatInterval);
+
+        //when
+        stationSimulatorRunner.run();
+
+        GetVariableDatum getVariableDatum = new GetVariableDatum()
+                .withComponent(new Component().withName(new CiString.CiString50(OCPPCommCtrlrComponent.NAME)))
+                .withVariable(new Variable().withName(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME)))
+                .withAttributeType(GetVariableDatum.AttributeType.ACTUAL);
+
+        String getHeartbeatIntervalVariable = new Call(UUID.randomUUID().toString(), ActionType.GET_VARIABLES, new GetVariablesRequest().withGetVariableData(singletonList(getVariableDatum)))
+                .toJson();
+
+        await().untilAsserted(() -> {
+            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
+            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION);
+        });
+
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, getHeartbeatIntervalVariable));
+
+        //then
+        await().untilAsserted(() -> {
+            int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval();
+            assertThat(heartbeatInterval).isEqualTo(expectedHeartbeatInterval);
         });
     }
 
