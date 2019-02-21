@@ -73,7 +73,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
             sendResponseWithStatus(callId, ACCEPTED);
 
-            if (!evse.hasState(requestedEvseStatus)) {
+            if (!evse.hasStatus(requestedEvseStatus)) {
 
                 evse.setEvseStatus(requestedEvseStatus);
 

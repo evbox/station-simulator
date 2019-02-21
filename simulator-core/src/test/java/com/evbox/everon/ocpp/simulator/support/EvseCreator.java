@@ -15,7 +15,7 @@ public class EvseCreator {
         private int id;
         private EvseStatus evseStatus;
         private int connectorId;
-        private ConnectorState connectorState;
+        private ConnectorStatus connectorStatus;
         private EvseTransaction evseTransaction;
 
         public EvseBuilder withId(int id) {
@@ -28,9 +28,9 @@ public class EvseCreator {
             return this;
         }
 
-        public EvseBuilder withConnectorIdAndState(int connectorId, ConnectorState connectorState) {
+        public EvseBuilder withConnectorIdAndState(int connectorId, ConnectorStatus connectorStatus) {
             this.connectorId = connectorId;
-            this.connectorState = connectorState;
+            this.connectorStatus = connectorStatus;
             return this;
         }
 
@@ -40,7 +40,7 @@ public class EvseCreator {
         }
 
         public Evse build() {
-            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, connectorState)));
+            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, connectorStatus)));
         }
 
     }

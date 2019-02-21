@@ -1,7 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions;
 
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
@@ -41,7 +40,7 @@ public class UnplugTest {
     @Test
     void shouldThrowExceptionWhenStateIsLocked() {
 
-        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorState.LOCKED);
+        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorStatus.LOCKED);
 
         assertThrows(IllegalStateException.class, () -> unplug.perform(stationStateMock, stationMessageSenderMock));
 

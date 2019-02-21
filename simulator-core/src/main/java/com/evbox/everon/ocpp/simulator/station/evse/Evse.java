@@ -97,7 +97,7 @@ public class Evse {
     }
 
     /**
-     * Find any PLUGGED connector and switch to LOCKED state.
+     * Find any PLUGGED connector and switch to LOCKED status.
      *
      * @return identity of the connector.
      */
@@ -113,7 +113,7 @@ public class Evse {
     }
 
     /**
-     * Find any LOCKED connector and switch to PLUGGED state.
+     * Find any LOCKED connector and switch to PLUGGED status.
      *
      * @return identity of the connector.
      */
@@ -129,7 +129,7 @@ public class Evse {
     }
 
     /**
-     * Find any LOCKED connector and switch to charging state.
+     * Find any LOCKED connector and switch to charging status.
      *
      * @return identity of the connector
      */
@@ -137,7 +137,7 @@ public class Evse {
         Connector lockedConnector = connectors.stream()
                 .filter(Connector::isLocked)
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("Connectors must be in locked state before charging session could be started"));
+                .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
 
         charging = true;
         return lockedConnector.getId();
@@ -212,7 +212,7 @@ public class Evse {
      * @param requestedEvseStatus given evse status
      * @return `true` if status do match otherwise `false`
      */
-    public boolean hasState(EvseStatus requestedEvseStatus) {
+    public boolean hasStatus(EvseStatus requestedEvseStatus) {
         return this.evseStatus == requestedEvseStatus;
     }
 
@@ -229,7 +229,7 @@ public class Evse {
      * Change evse status if scheduled and stop transaction.
      */
     public void stopTransaction() {
-        changeEvseStateIfScheduled();
+        changeEvseStatusIfScheduled();
 
         evseTransaction.setStatus(STOPPED);
     }
@@ -254,7 +254,7 @@ public class Evse {
                 '}';
     }
 
-    private void changeEvseStateIfScheduled() {
+    private void changeEvseStatusIfScheduled() {
         if (nonNull(scheduledNewEvseStatus)) {
             evseStatus = scheduledNewEvseStatus;
             // clean

@@ -51,7 +51,7 @@ public class ChangeAvailabilityRequestHandlerTest {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
                 .withStatus(EvseStatus.AVAILABLE)
-                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
+                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorStatus.UNPLUGGED)
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
@@ -75,7 +75,7 @@ public class ChangeAvailabilityRequestHandlerTest {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
                 .withStatus(UNAVAILABLE)
-                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
+                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorStatus.UNPLUGGED)
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
@@ -104,7 +104,7 @@ public class ChangeAvailabilityRequestHandlerTest {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
                 .withStatus(EvseStatus.AVAILABLE)
-                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
+                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorStatus.UNPLUGGED)
                 .withTransaction(new EvseTransaction(DEFAULT_INT_TRANSACTION_ID, IN_PROGRESS))
                 .build();
 
