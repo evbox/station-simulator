@@ -65,7 +65,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
         if (evse.hasOngoingTransaction()) {
 
-            evse.setScheduleNewEvseState(requestedEvseState);
+            evse.setScheduledNewEvseState(requestedEvseState);
 
             sendResponseWithStatus(callId, SCHEDULED);
 

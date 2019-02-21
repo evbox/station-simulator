@@ -37,7 +37,7 @@ public class Evse {
     /**
      * If nonNull should be applied when transaction stops
      */
-    private EvseState scheduleNewEvseState;
+    private EvseState scheduledNewEvseState;
 
     /**
      * Create Evse instance. By default evse is in the state AVAILABLE.
@@ -200,10 +200,10 @@ public class Evse {
     /**
      * Setter for scheduled evse state.
      *
-     * @param scheduleNewEvseState
+     * @param scheduledNewEvseState
      */
-    public void setScheduleNewEvseState(EvseState scheduleNewEvseState) {
-        this.scheduleNewEvseState = scheduleNewEvseState;
+    public void setScheduledNewEvseState(EvseState scheduledNewEvseState) {
+        this.scheduledNewEvseState = scheduledNewEvseState;
     }
 
     /**
@@ -255,10 +255,10 @@ public class Evse {
     }
 
     private void changeEvseStateIfScheduled() {
-        if (nonNull(scheduleNewEvseState)) {
-            evseState = scheduleNewEvseState;
+        if (nonNull(scheduledNewEvseState)) {
+            evseState = scheduledNewEvseState;
             // clean
-            scheduleNewEvseState = null;
+            scheduledNewEvseState = null;
         }
     }
 }

@@ -121,7 +121,7 @@ public class ChangeAvailabilityRequestHandlerTest {
 
         assertAll(
                 () -> assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.SCHEDULED),
-                () -> assertThat(evse.getScheduleNewEvseState()).isEqualTo(UNAVAILABLE)
+                () -> assertThat(evse.getScheduledNewEvseState()).isEqualTo(UNAVAILABLE)
         );
 
     }
