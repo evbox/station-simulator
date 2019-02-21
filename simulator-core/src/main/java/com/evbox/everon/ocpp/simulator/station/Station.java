@@ -28,12 +28,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Station {
 
-    private static final OkHttpClient.Builder DEFAULT_HTTP_CLIENT_BUILDER = new OkHttpClient.Builder()
+    private static final OkHttpClient DEFAULT_HTTP_CLIENT = new OkHttpClient.Builder()
             .addInterceptor(new LoggingInterceptor())
             .addNetworkInterceptor(new LoggingInterceptor())
-            .pingInterval(10, TimeUnit.SECONDS);
-
-    private static final OkHttpClient DEFAULT_HTTP_CLIENT = DEFAULT_HTTP_CLIENT_BUILDER.build();
+            .pingInterval(10, TimeUnit.SECONDS)
+            .build();
 
     private final SimulatorConfiguration.StationConfiguration configuration;
     private final int defaultHeartBeatInterval;
