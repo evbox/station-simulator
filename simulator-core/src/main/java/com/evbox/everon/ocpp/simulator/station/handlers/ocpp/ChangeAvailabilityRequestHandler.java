@@ -4,7 +4,7 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseState;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityStateMapper;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
@@ -61,11 +61,11 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
         Evse evse = stationState.findEvse(request.getEvseId());
 
-        EvseState requestedEvseState = availabilityStateMapper.mapFrom(request.getOperationalStatus());
+        EvseStatus requestedEvseStatus = availabilityStateMapper.mapFrom(request.getOperationalStatus());
 
         if (evse.hasOngoingTransaction()) {
 
-            evse.setScheduledNewEvseState(requestedEvseState);
+            evse.setScheduledNewEvseStatus(requestedEvseStatus);
 
             sendResponseWithStatus(callId, SCHEDULED);
 
@@ -73,9 +73,9 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
             sendResponseWithStatus(callId, ACCEPTED);
 
-            if (!evse.hasState(requestedEvseState)) {
+            if (!evse.hasState(requestedEvseStatus)) {
 
-                evse.setEvseState(requestedEvseState);
+                evse.setEvseStatus(requestedEvseStatus);
 
                 // for every connector send StatusNotification request
                 for (Connector connector : evse.getConnectors()) {

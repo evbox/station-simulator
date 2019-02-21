@@ -13,7 +13,7 @@ public class EvseCreator {
     public static class EvseBuilder {
 
         private int id;
-        private EvseState evseState;
+        private EvseStatus evseStatus;
         private int connectorId;
         private ConnectorState connectorState;
         private EvseTransaction evseTransaction;
@@ -23,8 +23,8 @@ public class EvseCreator {
             return this;
         }
 
-        public EvseBuilder withState(EvseState evseState) {
-            this.evseState = evseState;
+        public EvseBuilder withStatus(EvseStatus evseStatus) {
+            this.evseStatus = evseStatus;
             return this;
         }
 
@@ -40,7 +40,7 @@ public class EvseCreator {
         }
 
         public Evse build() {
-            return new Evse(id, evseState, evseTransaction, Collections.singletonList(new Connector(connectorId, connectorState)));
+            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, connectorState)));
         }
 
     }

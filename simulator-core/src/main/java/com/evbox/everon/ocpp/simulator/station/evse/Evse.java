@@ -32,57 +32,57 @@ public class Evse {
     private boolean charging;
     private long seqNo;
 
-    private EvseState evseState;
+    private EvseStatus evseStatus;
     private EvseTransaction evseTransaction;
     /**
      * If nonNull should be applied when transaction stops
      */
-    private EvseState scheduledNewEvseState;
+    private EvseStatus scheduledNewEvseStatus;
 
     /**
-     * Create Evse instance. By default evse is in the state AVAILABLE.
+     * Create Evse instance. By default evse is in the status AVAILABLE.
      *
      * @param id         evse identity
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, List<Connector> connectors) {
-        this(id, EvseState.AVAILABLE, connectors);
+        this(id, EvseStatus.AVAILABLE, connectors);
     }
 
     /**
      * Create Evse instance without transaction.
      *
      * @param id         evse identity
-     * @param evseState  evse state
+     * @param evseStatus evse status
      * @param connectors list of connectors for this evse
      */
-    public Evse(int id, EvseState evseState, List<Connector> connectors) {
-        this(id, evseState, EvseTransaction.NONE, connectors);
+    public Evse(int id, EvseStatus evseStatus, List<Connector> connectors) {
+        this(id, evseStatus, EvseTransaction.NONE, connectors);
     }
 
     /**
      * Create Evse instance.
      *
      * @param id              evse identity
-     * @param evseState       evse state
+     * @param evseStatus      evse status
      * @param evseTransaction evse transaction
      * @param connectors      list of connectors for this evse
      */
-    public Evse(int id, EvseState evseState, EvseTransaction evseTransaction, List<Connector> connectors) {
+    public Evse(int id, EvseStatus evseStatus, EvseTransaction evseTransaction, List<Connector> connectors) {
         this.id = id;
-        this.evseState = evseState;
+        this.evseStatus = evseStatus;
         this.evseTransaction = evseTransaction;
         this.connectors = connectors;
     }
 
-    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction evseTransaction, EvseState evseState) {
+    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction evseTransaction, EvseStatus evseStatus) {
         this.id = id;
         this.connectors = connectors;
         this.tokenId = tokenId;
         this.charging = charging;
         this.seqNo = seqNo;
         this.evseTransaction = evseTransaction;
-        this.evseState = evseState;
+        this.evseStatus = evseStatus;
     }
 
     /**
@@ -93,7 +93,7 @@ public class Evse {
      */
     public static Evse copyOf(Evse evse) {
         List<Connector> connectorsCopy = evse.connectors.stream().map(Connector::copyOf).collect(Collectors.toList());
-        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.evseTransaction, evse.evseState);
+        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.evseTransaction, evse.evseStatus);
     }
 
     /**
@@ -189,31 +189,31 @@ public class Evse {
     }
 
     /**
-     * Setter for evse state.
+     * Setter for evse status.
      *
-     * @param evseState
+     * @param evseStatus
      */
-    public void setEvseState(EvseState evseState) {
-        this.evseState = evseState;
+    public void setEvseStatus(EvseStatus evseStatus) {
+        this.evseStatus = evseStatus;
     }
 
     /**
-     * Setter for scheduled evse state.
+     * Setter for scheduled evse status.
      *
-     * @param scheduledNewEvseState
+     * @param scheduledNewEvseStatus
      */
-    public void setScheduledNewEvseState(EvseState scheduledNewEvseState) {
-        this.scheduledNewEvseState = scheduledNewEvseState;
+    public void setScheduledNewEvseStatus(EvseStatus scheduledNewEvseStatus) {
+        this.scheduledNewEvseStatus = scheduledNewEvseStatus;
     }
 
     /**
-     * Check whether the given state matches the existing or not.
+     * Check whether the given status matches the existing or not.
      *
-     * @param requestedEvseState given evse state
-     * @return `true` if states do match otherwise `false`
+     * @param requestedEvseStatus given evse status
+     * @return `true` if status do match otherwise `false`
      */
-    public boolean hasState(EvseState requestedEvseState) {
-        return this.evseState == requestedEvseState;
+    public boolean hasState(EvseStatus requestedEvseStatus) {
+        return this.evseStatus == requestedEvseStatus;
     }
 
     /**
@@ -226,7 +226,7 @@ public class Evse {
     }
 
     /**
-     * Change evse state if scheduled and stop transaction.
+     * Change evse status if scheduled and stop transaction.
      */
     public void stopTransaction() {
         changeEvseStateIfScheduled();
@@ -250,15 +250,15 @@ public class Evse {
                 ", charging=" + charging +
                 ", seqNo=" + seqNo +
                 ", evseTransaction=" + evseTransaction +
-                ", evseState=" + evseState +
+                ", evseStatus=" + evseStatus +
                 '}';
     }
 
     private void changeEvseStateIfScheduled() {
-        if (nonNull(scheduledNewEvseState)) {
-            evseState = scheduledNewEvseState;
+        if (nonNull(scheduledNewEvseStatus)) {
+            evseStatus = scheduledNewEvseStatus;
             // clean
-            scheduledNewEvseState = null;
+            scheduledNewEvseStatus = null;
         }
     }
 }
