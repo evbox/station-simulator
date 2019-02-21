@@ -1,8 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.CallResult;
-import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
+import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.component.exception.UnknownComponentException;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
@@ -24,9 +24,9 @@ public class GetVariablesRequestHandler implements OcppRequestHandler<GetVariabl
     private final StationMessageSender stationMessageSender;
     private final StationComponentsHolder stationComponentsHolder;
 
-    public GetVariablesRequestHandler(Station station, StationMessageSender stationMessageSender) {
+    public GetVariablesRequestHandler(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender) {
         this.stationMessageSender = stationMessageSender;
-        this.stationComponentsHolder = new StationComponentsHolder(station);
+        this.stationComponentsHolder = stationComponentsHolder;
     }
 
     /**
@@ -39,7 +39,10 @@ public class GetVariablesRequestHandler implements OcppRequestHandler<GetVariabl
     public void handle(String callId, GetVariablesRequest request) {
         List<GetVariableResult> results = request.getGetVariableData().stream().map(data -> {
             String componentName = data.getComponent().getName().toString();
-            return stationComponentsHolder.getComponent(componentName).orElseThrow(() -> new UnknownComponentException(componentName)).handle(data);
+            StationComponent stationComponent = stationComponentsHolder.getComponent(componentName)
+                    .orElseThrow(() -> new UnknownComponentException(componentName));
+
+            return stationComponent.handle(data);
         }).collect(toList());
 
         sendResponse(callId, new GetVariablesResponse().withGetVariableResult(results));

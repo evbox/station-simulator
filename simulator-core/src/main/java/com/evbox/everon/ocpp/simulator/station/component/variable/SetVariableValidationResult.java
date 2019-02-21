@@ -8,9 +8,9 @@ import lombok.Value;
 public class SetVariableValidationResult {
 
     private SetVariableDatum setVariableDatum;
-    private SetVariableResult.AttributeStatus status;
+    private SetVariableResult result;
 
     public boolean isAccepted() {
-        return status == SetVariableResult.AttributeStatus.ACCEPTED;
+        return result.getAttributeStatus() == SetVariableResult.AttributeStatus.ACCEPTED;
     }
 }

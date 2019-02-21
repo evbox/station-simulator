@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.simulator.message.*;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.GetVariablesRequestHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.OcppRequestHandler;
@@ -41,12 +42,14 @@ public class ServerMessageHandler implements MessageHandler<String> {
      * @param subscriptionRegistry station message type registry
      */
     public ServerMessageHandler(Station station, StationState stationState, StationMessageSender stationMessageSender, String stationId, SubscriptionRegistry subscriptionRegistry) {
+
+        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station);
         this.stationId = stationId;
         this.subscriptionRegistry = subscriptionRegistry;
         this.stationMessageSender = stationMessageSender;
         this.requestHandlers = ImmutableMap.<Class, OcppRequestHandler>builder()
-                .put(GetVariablesRequest.class, new GetVariablesRequestHandler(station, stationMessageSender))
-                .put(SetVariablesRequest.class, new SetVariablesRequestHandler(station, stationMessageSender))
+                .put(GetVariablesRequest.class, new GetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ResetRequest.class, new ResetRequestHandler(stationState, stationMessageSender))
                 .build();
     }

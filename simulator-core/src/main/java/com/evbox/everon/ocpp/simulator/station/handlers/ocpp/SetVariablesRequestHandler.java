@@ -1,7 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.CallResult;
-import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
@@ -28,9 +27,9 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
     private final StationMessageSender stationMessageSender;
     private final StationComponentsHolder stationComponentsHolder;
 
-    public SetVariablesRequestHandler(Station station, StationMessageSender stationMessageSender) {
+    public SetVariablesRequestHandler(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender) {
         this.stationMessageSender = stationMessageSender;
-        this.stationComponentsHolder = new StationComponentsHolder(station);
+        this.stationComponentsHolder = stationComponentsHolder;
     }
 
     /**
@@ -45,13 +44,9 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
 
         List<SetVariableValidationResult> results = validate(setVariableData);
 
-        List<SetVariableResult> setVariableResults = results.stream().map(validationResult -> {
-            SetVariableDatum datum = validationResult.getSetVariableDatum();
-            return new SetVariableResult().withAttributeStatus(validationResult.getStatus())
-                    .withAttributeType(SetVariableResult.AttributeType.fromValue(datum.getAttributeType().value()))
-                    .withVariable(datum.getVariable())
-                    .withComponent(datum.getComponent());
-        }).collect(toList());
+        List<SetVariableResult> setVariableResults = results.stream()
+                .map(SetVariableValidationResult::getResult)
+                .collect(toList());
 
         sendResponse(callId, new SetVariablesResponse().withSetVariableResult(setVariableResults));
 
@@ -72,7 +67,12 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
             Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
 
             return optionalComponent.map(component -> component.validate(data))
-                    .orElse(new SetVariableValidationResult(data, SetVariableResult.AttributeStatus.UNKNOWN_COMPONENT));
+                    .orElse(new SetVariableValidationResult(data, new SetVariableResult()
+                            .withComponent(data.getComponent())
+                            .withVariable(data.getVariable())
+                            .withAttributeType(SetVariableResult.AttributeType.fromValue(data.getAttributeType().value()))
+                            .withAttributeStatus(SetVariableResult.AttributeStatus.UNKNOWN_COMPONENT)
+                    ));
         }).collect(toList());
     }
 

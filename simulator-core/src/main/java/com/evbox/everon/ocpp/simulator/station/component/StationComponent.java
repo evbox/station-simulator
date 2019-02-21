@@ -24,34 +24,37 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
 
     public GetVariableResult handle(GetVariableDatum getVariableDatum) {
         Component component = getVariableDatum.getComponent();
-        Evse evse = component.getEvse();
         GetVariableDatum.AttributeType attributeType = getVariableDatum.getAttributeType();
         Variable variable = getVariableDatum.getVariable();
 
-        VariableAccessor accessor = variableAccessors.get(component.getName().toString());
+        VariableAccessor accessor = variableAccessors.get(variable.getName().toString());
 
-        return accessor.get(component, evse, variable, attributeType);
+        return accessor.get(component, variable, attributeType);
     }
 
     public void handle(SetVariableDatum setVariableDatum) {
         Component component = setVariableDatum.getComponent();
-        Evse evse = component.getEvse();
         Variable variable = setVariableDatum.getVariable();
         String variableName = variable.getName().toString();
 
         VariableAccessor accessor = variableAccessors.get(variableName);
 
-        accessor.set(component, evse, variable, setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue());
+        accessor.set(component, variable, setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue());
     }
 
     public SetVariableValidationResult validate(SetVariableDatum setVariableDatum) {
         Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getVariable().getName().toString()));
 
-        SetVariableResult.AttributeStatus status = optionalVariableAccessor
-                .map(accessor -> accessor.validate(setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue()))
-                .orElse(SetVariableResult.AttributeStatus.UNKNOWN_VARIABLE);
+        SetVariableResult validationResult = optionalVariableAccessor
+                .map(accessor -> accessor.validate(setVariableDatum.getComponent(), setVariableDatum.getVariable(), setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue()))
+                .orElse(new SetVariableResult()
+                        .withComponent(setVariableDatum.getComponent())
+                        .withVariable(setVariableDatum.getVariable())
+                        .withAttributeType(SetVariableResult.AttributeType.fromValue(setVariableDatum.getAttributeType().value()))
+                        .withAttributeStatus(SetVariableResult.AttributeStatus.UNKNOWN_VARIABLE)
+                );
 
-        return new SetVariableValidationResult(setVariableDatum, status);
+        return new SetVariableValidationResult(setVariableDatum, validationResult);
     }
 
 }

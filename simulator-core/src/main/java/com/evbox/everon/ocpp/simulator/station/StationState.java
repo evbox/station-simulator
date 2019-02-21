@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.*;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -171,6 +172,12 @@ public class StationState {
         return findEvse(evseId).hasOngoingTransaction();
     }
 
+    public Optional<Evse> tryFindEvse(int evseId) {
+        return evses.stream()
+                .filter(evse -> evse.getId().equals(evseId))
+                .findAny();
+    }
+
     private Evse.Connector findConnector(int connectorId) {
         return evses.stream()
             .flatMap(evse -> evse.getConnectors().stream())
@@ -186,10 +193,7 @@ public class StationState {
     }
 
     private Evse findEvse(int evseId) {
-        return evses.stream()
-                .filter(evse -> evse.getId().equals(evseId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
+        return tryFindEvse(evseId).orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
     @Override

@@ -10,7 +10,11 @@ public class ChargingStationComponent extends StationComponent {
 
     public ChargingStationComponent(Station station) {
         super(ImmutableList.of(
-                new IdentityVariableAccessor(station)
+                new IdentityVariableAccessor(station),
+                new ManufacturerVariableAccessor(station),
+                new ModelVariableAccessor(station),
+                new SerialNumberVariableAccessor(station),
+                new ChargeProtocolVariableAccessor(station)
         ));
     }
 

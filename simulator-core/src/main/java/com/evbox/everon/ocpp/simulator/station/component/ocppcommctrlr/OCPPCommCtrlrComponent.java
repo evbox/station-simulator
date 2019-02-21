@@ -8,14 +8,14 @@ public class OCPPCommCtrlrComponent extends StationComponent {
 
     public static final String NAME = "OCPPCommCtrlr";
 
+    @Override
+    public String getComponentName() {
+        return NAME;
+    }
+
     public OCPPCommCtrlrComponent(Station station) {
         super(ImmutableList.of(
                 new HeartbeatIntervalVariableAccessor(station)
         ));
-    }
-
-    @Override
-    public String getComponentName() {
-        return NAME;
     }
 }

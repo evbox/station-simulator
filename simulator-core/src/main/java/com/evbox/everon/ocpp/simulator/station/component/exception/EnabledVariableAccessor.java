@@ -1,6 +1,7 @@
-package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
+package com.evbox.everon.ocpp.simulator.station.component.exception;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.station.Evse;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
@@ -11,12 +12,13 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
-public class IdentityVariableAccessor extends VariableAccessor {
+public class EnabledVariableAccessor extends VariableAccessor {
 
-    private static final String NAME = "Identity";
+    public static final String NAME = "Enabled";
 
-    private final ImmutableMap<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
+    private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
             .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
             .build();
 
@@ -24,7 +26,7 @@ public class IdentityVariableAccessor extends VariableAccessor {
             .put(SetVariableDatum.AttributeType.ACTUAL, this::validateActualValue)
             .build();
 
-    public IdentityVariableAccessor(Station station) {
+    public EnabledVariableAccessor(Station station) {
         super(station);
     }
 
@@ -48,20 +50,29 @@ public class IdentityVariableAccessor extends VariableAccessor {
         return variableValidators;
     }
 
-    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
-        return new GetVariableResult()
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
-                .withAttributeValue(new CiString.CiString1000(getStation().getConfiguration().getId()))
-                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
-    }
-
-    private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
+    private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 ciString1000) {
         return new SetVariableResult()
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
                 .withAttributeStatus(SetVariableResult.AttributeStatus.REJECTED);
+    }
+
+    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
+        Integer evseId = component.getEvse().getId();
+        Optional<Evse> optionalEvse = getStation().getState().tryFindEvse(evseId);
+
+        GetVariableResult getVariableResult = new GetVariableResult()
+                .withComponent(component)
+                .withVariable(variable)
+                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()));
+
+        if (optionalEvse.isPresent()) {
+            return getVariableResult
+                    .withAttributeValue(new CiString.CiString1000(Boolean.TRUE.toString()))
+                    .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
+        } else {
+            return getVariableResult.withAttributeStatus(GetVariableResult.AttributeStatus.REJECTED);
+        }
     }
 }

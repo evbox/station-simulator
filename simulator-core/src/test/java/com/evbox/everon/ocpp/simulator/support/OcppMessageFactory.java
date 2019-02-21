@@ -58,11 +58,25 @@ public class OcppMessageFactory {
 
     public static class SetVariablesRequestBuilder extends SkeletonBuilder<SetVariablesRequestBuilder> {
 
+        private CiString.CiString1000 attributeValue;
+        private SetVariableDatum.AttributeType attributeType = SetVariableDatum.AttributeType.ACTUAL;
+
+        public SetVariablesRequestBuilder withAttributeValue(String attributeValue) {
+            this.attributeValue = new CiString.CiString1000(attributeValue);
+            return this;
+        }
+
+        public SetVariablesRequestBuilder withAttributeType(SetVariableDatum.AttributeType attributeType) {
+            this.attributeType = attributeType;
+            return this;
+        }
 
         public SetVariablesRequest build() {
             SetVariableDatum setVariableDatum = new SetVariableDatum();
             setVariableDatum.setComponent(component);
             setVariableDatum.setVariable(variable);
+            setVariableDatum.setAttributeValue(attributeValue);
+            setVariableDatum.setAttributeType(attributeType);
             SetVariablesRequest setVariablesRequest = new SetVariablesRequest();
             setVariablesRequest.setSetVariableData(singletonList(setVariableDatum));
 
@@ -89,9 +103,15 @@ public class OcppMessageFactory {
     public static class GetVariablesResponseBuilder extends SkeletonBuilder<GetVariablesResponseBuilder> {
 
         private GetVariableResult.AttributeStatus attributeStatus;
+        private CiString.CiString1000 attributeValue;
 
         public GetVariablesResponseBuilder withAttributeStatus(GetVariableResult.AttributeStatus attributeStatus) {
             this.attributeStatus = attributeStatus;
+            return this;
+        }
+
+        public GetVariablesResponseBuilder withAttributeValue(String attributeValue) {
+            this.attributeValue = new CiString.CiString1000(attributeValue);
             return this;
         }
 
@@ -101,7 +121,9 @@ public class OcppMessageFactory {
                     singletonList(new GetVariableResult()
                             .withComponent(component)
                             .withVariable(variable)
-                            .withAttributeStatus(attributeStatus))
+                            .withAttributeStatus(attributeStatus)
+                            .withAttributeValue(attributeValue)
+                    )
             );
 
         }

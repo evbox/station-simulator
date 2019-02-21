@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 @Getter
 @EqualsAndHashCode(of = "id")
 public class Evse {
+
+    public static final String CHARGE_CONTROL_PROTOCOL = "CHAdeMO";
+
     private static final long MAX_SEQ_NO = Integer.toUnsignedLong(1 + (Integer.MAX_VALUE * 2));
 
     final Integer id;

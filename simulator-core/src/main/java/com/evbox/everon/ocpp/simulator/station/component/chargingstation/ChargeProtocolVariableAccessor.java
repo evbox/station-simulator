@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -12,11 +13,11 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.Map;
 
-public class IdentityVariableAccessor extends VariableAccessor {
+public class ChargeProtocolVariableAccessor extends VariableAccessor {
 
-    private static final String NAME = "Identity";
+    public static final String NAME = "ChargeProtocol";
 
-    private final ImmutableMap<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
+    private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
             .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
             .build();
 
@@ -24,7 +25,7 @@ public class IdentityVariableAccessor extends VariableAccessor {
             .put(SetVariableDatum.AttributeType.ACTUAL, this::validateActualValue)
             .build();
 
-    public IdentityVariableAccessor(Station station) {
+    public ChargeProtocolVariableAccessor(Station station) {
         super(station);
     }
 
@@ -48,20 +49,19 @@ public class IdentityVariableAccessor extends VariableAccessor {
         return variableValidators;
     }
 
-    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
-        return new GetVariableResult()
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
-                .withAttributeValue(new CiString.CiString1000(getStation().getConfiguration().getId()))
-                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
-    }
-
     private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
         return new SetVariableResult()
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
                 .withAttributeStatus(SetVariableResult.AttributeStatus.REJECTED);
+    }
+
+    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
+        return new GetVariableResult()
+                .withComponent(component)
+                .withVariable(variable)
+                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
+                .withAttributeValue(new CiString.CiString1000(StationHardwareData.PROTOCOL_VERSION));
     }
 }
