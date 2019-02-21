@@ -2,6 +2,8 @@ package com.evbox.everon.ocpp.simulator.station.actions;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.AuthorizeRequest;
 import com.evbox.everon.ocpp.v20.message.station.AuthorizeResponse;
@@ -25,6 +27,8 @@ public class AuthorizeTest {
     StationState stationStateMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
+    @Mock
+    Evse evseMock;
 
     Authorize authorize;
 
@@ -35,6 +39,8 @@ public class AuthorizeTest {
 
     @Test
     void shouldStoreToken() {
+
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
 
         authorize.perform(stationStateMock, stationMessageSenderMock);
 
@@ -65,10 +71,11 @@ public class AuthorizeTest {
 
         when(stationStateMock.getDefaultEvseId()).thenReturn(DEFAULT_EVSE_ID);
         when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(false);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
 
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 
-        verify(stationStateMock).setTransactionId(anyInt(), anyInt());
+        verify(evseMock).setEvseTransaction(any(EvseTransaction.class));
 
     }
 
@@ -86,6 +93,7 @@ public class AuthorizeTest {
         when(stationStateMock.getDefaultEvseId()).thenReturn(DEFAULT_EVSE_ID);
         when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(false);
         when(stationStateMock.isPlugged(anyInt())).thenReturn(true);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
 
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 
@@ -108,6 +116,7 @@ public class AuthorizeTest {
         when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(false);
         when(stationStateMock.isPlugged(anyInt())).thenReturn(false);
         when(stationStateMock.isCharging(anyInt())).thenReturn(true);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
 
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 
@@ -152,6 +161,7 @@ public class AuthorizeTest {
         when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(false);
         when(stationStateMock.isPlugged(anyInt())).thenReturn(false);
         when(stationStateMock.isCharging(anyInt())).thenReturn(false);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
 
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 

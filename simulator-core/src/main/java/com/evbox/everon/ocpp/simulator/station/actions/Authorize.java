@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.actions;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
@@ -46,7 +47,7 @@ public class Authorize implements UserMessage {
 
                 if (!haveOngoingTransaction) {
                     Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                    authorizedEvseIds.forEach(evseId -> stationState.setTransactionId(evseId, transactionId));
+                    authorizedEvseIds.forEach(evseId -> stationState.findEvse(evseId).setEvseTransaction(new EvseTransaction(transactionId)));
                 }
 
                 boolean allCharging = authorizedEvseIds.stream().allMatch(stationState::isCharging);
