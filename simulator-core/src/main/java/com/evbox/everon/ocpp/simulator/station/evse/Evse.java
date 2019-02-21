@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionState.*;
+import static java.util.Objects.nonNull;
 
 /**
  * An EVSE is considered as an independently operated and managed part of the ChargingStation that can deliver energy to one EV at a time.
@@ -31,9 +32,12 @@ public class Evse {
     private boolean charging;
     private long seqNo;
 
-    // multi-threaded access
-    private volatile EvseState evseState;
-    private volatile EvseTransaction evseTransaction;
+    private EvseState evseState;
+    private EvseTransaction evseTransaction;
+    /**
+     * If nonNull should be applied when transaction stops
+     */
+    private EvseState scheduleNewEvseState;
 
     /**
      * Create Evse instance. By default evse is in the state AVAILABLE.
@@ -53,7 +57,7 @@ public class Evse {
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, EvseState evseState, List<Connector> connectors) {
-       this(id, evseState, EvseTransaction.NONE, connectors);
+        this(id, evseState, EvseTransaction.NONE, connectors);
     }
 
     /**
@@ -194,6 +198,15 @@ public class Evse {
     }
 
     /**
+     * Setter for scheduled evse state.
+     *
+     * @param scheduleNewEvseState
+     */
+    public void setScheduleNewEvseState(EvseState scheduleNewEvseState) {
+        this.scheduleNewEvseState = scheduleNewEvseState;
+    }
+
+    /**
      * Check whether the given state matches the existing or not.
      *
      * @param requestedEvseState given evse state
@@ -213,10 +226,12 @@ public class Evse {
     }
 
     /**
-     * Stop transaction.
+     * Change evse state if scheduled and stop transaction.
      */
     public void stopTransaction() {
-        setEvseTransaction(new EvseTransaction(evseTransaction.getTransactionId(), STOPPED));
+        changeEvseStateIfScheduled();
+
+        evseTransaction.setState(STOPPED);
     }
 
     /**
@@ -237,5 +252,13 @@ public class Evse {
                 ", evseTransaction=" + evseTransaction +
                 ", evseState=" + evseState +
                 '}';
+    }
+
+    private void changeEvseStateIfScheduled() {
+        if (nonNull(scheduleNewEvseState)) {
+            evseState = scheduleNewEvseState;
+            // clean
+            scheduleNewEvseState = null;
+        }
     }
 }

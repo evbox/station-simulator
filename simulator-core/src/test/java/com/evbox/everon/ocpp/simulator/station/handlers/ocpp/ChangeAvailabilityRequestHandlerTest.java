@@ -14,11 +14,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseState.UNAVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionState.IN_PROGRESS;
 import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -70,7 +73,7 @@ public class ChangeAvailabilityRequestHandlerTest {
     void shouldSendAcceptStatusAndStatusNotification() {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
-                .withState(EvseState.UNAVAILABLE)
+                .withState(UNAVAILABLE)
                 .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
                 .withTransaction(EvseTransaction.NONE)
                 .build();
@@ -106,7 +109,7 @@ public class ChangeAvailabilityRequestHandlerTest {
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(INOPERATIVE);
 
         changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
@@ -114,7 +117,10 @@ public class ChangeAvailabilityRequestHandlerTest {
 
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
-        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.SCHEDULED);
+        assertAll(
+                () -> assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.SCHEDULED),
+                () -> assertThat(evse.getScheduleNewEvseState()).isEqualTo(UNAVAILABLE)
+        );
 
     }
 

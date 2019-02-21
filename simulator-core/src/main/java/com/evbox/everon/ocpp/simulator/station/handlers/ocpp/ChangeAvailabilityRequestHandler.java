@@ -6,7 +6,6 @@ import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseState;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityStateMapper;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.ChangeAvailabilityFuture;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,15 +18,8 @@ import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRespon
 @Slf4j
 public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<ChangeAvailabilityRequest> {
 
-    private static final int DEFAULT_NUMBER_OF_ATTEMPTS = 30;
-    private static final int DELAY_BETWEEN_ATTEMPTS = 1_000;
-
     private final StationState stationState;
     private final StationMessageSender stationMessageSender;
-    private final int attemptsInMillis;
-    private final int delayBetweenAttemptsInMillis;
-
-    private final ChangeAvailabilityFuture changeAvailabilityFuture = new ChangeAvailabilityFuture();
 
     /**
      * Create an instance.
@@ -36,23 +28,8 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
      * @param stationMessageSender {@link StationMessageSender}
      */
     public ChangeAvailabilityRequestHandler(StationState stationState, StationMessageSender stationMessageSender) {
-        this(stationState, stationMessageSender, DEFAULT_NUMBER_OF_ATTEMPTS, DELAY_BETWEEN_ATTEMPTS);
-    }
-
-    /**
-     * Create an instance.
-     *
-     * @param stationState                 {@link StationState}
-     * @param stationMessageSender         {@link StationMessageSender}
-     * @param attemptsInMillis             number of attempts to try to change the state before giving up
-     * @param delayBetweenAttemptsInMillis delay between attempts
-     */
-    public ChangeAvailabilityRequestHandler(StationState stationState, StationMessageSender stationMessageSender,
-                                            int attemptsInMillis, int delayBetweenAttemptsInMillis) {
         this.stationState = stationState;
         this.stationMessageSender = stationMessageSender;
-        this.attemptsInMillis = attemptsInMillis;
-        this.delayBetweenAttemptsInMillis = delayBetweenAttemptsInMillis;
     }
 
     /**
@@ -62,7 +39,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
      * 2. Change EVSE state to the requested state when they do not match.
      * In addition send response with ACCEPTED status and StatusNotification request for every EVSE Connector.
      * 3. When a transaction is in progress.
-     * Send response with SCHEDULED status and schedule a task to change the EVSE state when transaction is finished.
+     * Send response with SCHEDULED status and save scheduled state for further processing.
      * 4. Send response with REJECTED status if exception occurs.
      *
      * @param callId  identity of the message
@@ -77,7 +54,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
             if (evse.hasOngoingTransaction()) {
 
-                changeAvailabilityFuture.runAsync(evse, requestedEvseState, attemptsInMillis, delayBetweenAttemptsInMillis);
+                evse.setScheduleNewEvseState(requestedEvseState);
 
                 sendResponseWithStatus(callId, SCHEDULED);
 
