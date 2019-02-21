@@ -10,6 +10,7 @@ import static com.evbox.everon.ocpp.simulator.station.evse.EvseState.AVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseState.UNAVAILABLE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
+import static java.util.Objects.nonNull;
 
 /**
  * Mapper from request status to EVSE state.
@@ -27,7 +28,13 @@ public class AvailabilityStateMapper {
      * @param operationalStatus {@link OperationalStatus}
      * @return {@link EvseState}
      */
-    public static EvseState mapFrom(OperationalStatus operationalStatus) {
-        return MAPPER.get(operationalStatus);
+    public EvseState mapFrom(OperationalStatus operationalStatus) {
+        EvseState evseState = MAPPER.get(operationalStatus);
+
+        if (nonNull(evseState)) {
+            return evseState;
+        }
+
+        throw new IllegalArgumentException(String.format("Could not find appropriate evse state for status %s", operationalStatus));
     }
 }

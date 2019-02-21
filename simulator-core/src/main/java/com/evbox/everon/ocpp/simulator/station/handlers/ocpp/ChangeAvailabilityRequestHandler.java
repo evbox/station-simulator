@@ -20,6 +20,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
     private final StationState stationState;
     private final StationMessageSender stationMessageSender;
+    private final AvailabilityStateMapper availabilityStateMapper;
 
     /**
      * Create an instance.
@@ -28,8 +29,19 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
      * @param stationMessageSender {@link StationMessageSender}
      */
     public ChangeAvailabilityRequestHandler(StationState stationState, StationMessageSender stationMessageSender) {
+        this(stationState, stationMessageSender, new AvailabilityStateMapper());
+    }
+
+    /**
+     * Create an instance.
+     *
+     * @param stationState         {@link StationState}
+     * @param stationMessageSender {@link StationMessageSender}
+     */
+    public ChangeAvailabilityRequestHandler(StationState stationState, StationMessageSender stationMessageSender, AvailabilityStateMapper availabilityStateMapper) {
         this.stationState = stationState;
         this.stationMessageSender = stationMessageSender;
+        this.availabilityStateMapper = availabilityStateMapper;
     }
 
     /**
@@ -40,45 +52,40 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
      * In addition send response with ACCEPTED status and StatusNotification request for every EVSE Connector.
      * 3. When a transaction is in progress.
      * Send response with SCHEDULED status and save scheduled state for further processing.
-     * 4. Send response with REJECTED status if exception occurs.
      *
      * @param callId  identity of the message
      * @param request incoming request from the server
      */
     @Override
     public void handle(String callId, ChangeAvailabilityRequest request) {
-        try {
-            Evse evse = stationState.findEvse(request.getEvseId());
 
-            EvseState requestedEvseState = AvailabilityStateMapper.mapFrom(request.getOperationalStatus());
+        Evse evse = stationState.findEvse(request.getEvseId());
 
-            if (evse.hasOngoingTransaction()) {
+        EvseState requestedEvseState = availabilityStateMapper.mapFrom(request.getOperationalStatus());
 
-                evse.setScheduleNewEvseState(requestedEvseState);
+        if (evse.hasOngoingTransaction()) {
 
-                sendResponseWithStatus(callId, SCHEDULED);
+            evse.setScheduleNewEvseState(requestedEvseState);
 
-            } else {
+            sendResponseWithStatus(callId, SCHEDULED);
 
-                sendResponseWithStatus(callId, ACCEPTED);
+        } else {
 
-                if (!evse.hasState(requestedEvseState)) {
+            sendResponseWithStatus(callId, ACCEPTED);
 
-                    evse.setEvseState(requestedEvseState);
+            if (!evse.hasState(requestedEvseState)) {
 
-                    // for every connector send StatusNotification request
-                    for (Connector connector : evse.getConnectors()) {
-                        stationMessageSender.sendStatusNotification(evse, connector);
-                    }
+                evse.setEvseState(requestedEvseState);
 
+                // for every connector send StatusNotification request
+                for (Connector connector : evse.getConnectors()) {
+                    stationMessageSender.sendStatusNotification(evse, connector);
                 }
 
             }
 
-        } catch (Exception e) {
-            sendResponseWithStatus(callId, REJECTED);
-            throw e;
         }
+
 
     }
 

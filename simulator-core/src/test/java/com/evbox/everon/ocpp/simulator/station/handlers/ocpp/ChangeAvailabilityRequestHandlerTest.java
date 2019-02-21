@@ -3,14 +3,16 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.evse.*;
+import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityStateMapper;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
+import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,8 +25,10 @@ import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityReques
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ChangeAvailabilityRequestHandlerTest {
@@ -33,16 +37,13 @@ public class ChangeAvailabilityRequestHandlerTest {
     StationState stationStateMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
-
+    @Mock
+    AvailabilityStateMapper availabilityStateMapperMock;
+    @InjectMocks
     ChangeAvailabilityRequestHandler changeAvailabilityRequestHandler;
 
     @Captor
     ArgumentCaptor<ChangeAvailabilityResponse> changeAvailabilityResponseCaptor;
-
-    @BeforeEach
-    void setUp() {
-        changeAvailabilityRequestHandler = new ChangeAvailabilityRequestHandler(stationStateMock, stationMessageSenderMock);
-    }
 
     @Test
     @DisplayName("Response should be send with ACCEPT status when requested EVSE state is the same as the current one")
@@ -108,6 +109,7 @@ public class ChangeAvailabilityRequestHandlerTest {
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(availabilityStateMapperMock.mapFrom(any(OperationalStatus.class))).thenReturn(UNAVAILABLE);
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(INOPERATIVE);
 
@@ -125,43 +127,26 @@ public class ChangeAvailabilityRequestHandlerTest {
     }
 
     @Test
-    @DisplayName("Response should be send with REJECTED status when exception occurs")
-    void shouldSendRejectStatus() {
+    @DisplayName("Throw exception on invalid evseId")
+    void shouldThrowExceptionOnInvalidEvseId() {
 
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenThrow(new IllegalStateException("some runtime exception"));
+        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenThrow(new IllegalArgumentException("some runtime exception"));
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
 
-        assertThrows(IllegalStateException.class, () -> changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request));
-
-        verify(stationMessageSenderMock).sendCallResult(eq(DEFAULT_MESSAGE_ID), changeAvailabilityResponseCaptor.capture());
-
-        ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
-
-        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.REJECTED);
+        assertThrows(IllegalArgumentException.class, () -> changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request));
 
     }
 
     @Test
-    @DisplayName("Should throw an exception if sending can not be done")
-    void shouldThrowException() {
-        Evse evse = createEvse()
-                .withId(DEFAULT_EVSE_ID)
-                .withState(EvseState.AVAILABLE)
-                .withConnectorIdAndState(DEFAULT_CONNECTOR_ID, ConnectorState.UNPLUGGED)
-                .withTransaction(EvseTransaction.NONE)
-                .build();
+    @DisplayName("Should throw an exception on invalid operational status")
+    void shouldThrowExceptionOnInvalidOperationalStatus() {
 
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
-
-        doThrow(new IllegalStateException("some runtime exception"))
-                .when(stationMessageSenderMock).sendCallResult(anyString(), any(ChangeAvailabilityResponse.class));
+        when(availabilityStateMapperMock.mapFrom(any(OperationalStatus.class))).thenThrow(new IllegalArgumentException("some runtime exception"));
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
 
-        assertThrows(IllegalStateException.class, () -> changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request));
-
-        verify(stationMessageSenderMock, times(2)).sendCallResult(eq(DEFAULT_MESSAGE_ID), changeAvailabilityResponseCaptor.capture());
+        assertThrows(IllegalArgumentException.class, () -> changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request));
 
     }
 }
