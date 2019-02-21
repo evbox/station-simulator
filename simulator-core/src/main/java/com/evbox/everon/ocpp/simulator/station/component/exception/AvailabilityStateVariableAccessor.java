@@ -35,7 +35,6 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
     @Override
     public Map<GetVariableDatum.AttributeType, VariableGetter> getVariableGetters() {
-
         return variableGetters;
     }
 
