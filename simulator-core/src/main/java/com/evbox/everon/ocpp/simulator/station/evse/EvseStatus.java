@@ -1,12 +1,12 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
 /**
- * Represents a state of station EVSE.
+ * Status of station EVSE.
  *
  * AVAILABLE corresponds to Operative
  * UNAVAILABLE corresponds to Inoperative
  */
-public enum EvseState {
+public enum EvseStatus {
     AVAILABLE,
     UNAVAILABLE
 }

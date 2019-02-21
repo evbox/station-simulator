@@ -1,8 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
 /**
- * State of the EVSE connector.
+ * Status of the EVSE connector.
  */
-public enum ConnectorState {
+public enum ConnectorStatus {
     UNPLUGGED, PLUGGED, LOCKED
 }

@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.Objects;
 
 /**
- * Represents EVSE transaction. It consists of transactionId and state.
+ * Represents EVSE transaction. It consists of transactionId and status.
  */
 @Getter
 @Setter
@@ -15,16 +15,16 @@ import java.util.Objects;
 public class EvseTransaction {
 
     /**
-     * Transaction contains only state.
+     * Transaction contains only status.
      */
-    public static final EvseTransaction NONE = new EvseTransaction(EvseTransactionState.NONE);
+    public static final EvseTransaction NONE = new EvseTransaction(EvseTransactionStatus.NONE);
 
     private int transactionId;
-    private EvseTransactionState state;
+    private EvseTransactionStatus status;
 
     /**
      * Create transaction with the given identity.
-     * By default set the state to IN_PROGRESS.
+     * By default set the status to IN_PROGRESS.
      *
      * @param transactionId transaction identity
      */
@@ -32,17 +32,17 @@ public class EvseTransaction {
         Objects.requireNonNull(transactionId);
 
         this.transactionId = transactionId;
-        this.state = EvseTransactionState.IN_PROGRESS;
+        this.status = EvseTransactionStatus.IN_PROGRESS;
     }
 
     /**
-     * Create transaction with the given state.
+     * Create transaction with the given status.
      *
-     * @param state transaction state
+     * @param status transaction status
      */
-    private EvseTransaction(EvseTransactionState state) {
-        Objects.requireNonNull(state);
+    private EvseTransaction(EvseTransactionStatus status) {
+        Objects.requireNonNull(status);
 
-        this.state = state;
+        this.status = status;
     }
 }

@@ -1,9 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
 /**
- * State of the EVSE transaction
+ * Status of the EVSE transaction
  */
-public enum EvseTransactionState {
+public enum EvseTransactionStatus {
     /**
      * No transaction has started yet.
      */

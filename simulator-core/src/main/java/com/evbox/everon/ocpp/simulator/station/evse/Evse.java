@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionState.*;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
+import static java.util.Objects.nonNull;
 
 /**
  * An EVSE is considered as an independently operated and managed part of the ChargingStation that can deliver energy to one EV at a time.
@@ -31,54 +32,57 @@ public class Evse {
     private boolean charging;
     private long seqNo;
 
-    // multi-threaded access
-    private volatile EvseState evseState;
-    private volatile EvseTransaction evseTransaction;
+    private EvseStatus evseStatus;
+    private EvseTransaction evseTransaction;
+    /**
+     * If nonNull should be applied when transaction stops
+     */
+    private EvseStatus scheduledNewEvseStatus;
 
     /**
-     * Create Evse instance. By default evse is in the state AVAILABLE.
+     * Create Evse instance. By default evse is in the status AVAILABLE.
      *
      * @param id         evse identity
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, List<Connector> connectors) {
-        this(id, EvseState.AVAILABLE, connectors);
+        this(id, EvseStatus.AVAILABLE, connectors);
     }
 
     /**
      * Create Evse instance without transaction.
      *
      * @param id         evse identity
-     * @param evseState  evse state
+     * @param evseStatus evse status
      * @param connectors list of connectors for this evse
      */
-    public Evse(int id, EvseState evseState, List<Connector> connectors) {
-       this(id, evseState, EvseTransaction.NONE, connectors);
+    public Evse(int id, EvseStatus evseStatus, List<Connector> connectors) {
+        this(id, evseStatus, EvseTransaction.NONE, connectors);
     }
 
     /**
      * Create Evse instance.
      *
      * @param id              evse identity
-     * @param evseState       evse state
+     * @param evseStatus      evse status
      * @param evseTransaction evse transaction
      * @param connectors      list of connectors for this evse
      */
-    public Evse(int id, EvseState evseState, EvseTransaction evseTransaction, List<Connector> connectors) {
+    public Evse(int id, EvseStatus evseStatus, EvseTransaction evseTransaction, List<Connector> connectors) {
         this.id = id;
-        this.evseState = evseState;
+        this.evseStatus = evseStatus;
         this.evseTransaction = evseTransaction;
         this.connectors = connectors;
     }
 
-    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction evseTransaction, EvseState evseState) {
+    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction evseTransaction, EvseStatus evseStatus) {
         this.id = id;
         this.connectors = connectors;
         this.tokenId = tokenId;
         this.charging = charging;
         this.seqNo = seqNo;
         this.evseTransaction = evseTransaction;
-        this.evseState = evseState;
+        this.evseStatus = evseStatus;
     }
 
     /**
@@ -89,11 +93,11 @@ public class Evse {
      */
     public static Evse copyOf(Evse evse) {
         List<Connector> connectorsCopy = evse.connectors.stream().map(Connector::copyOf).collect(Collectors.toList());
-        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.evseTransaction, evse.evseState);
+        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.evseTransaction, evse.evseStatus);
     }
 
     /**
-     * Find any PLUGGED connector and switch to LOCKED state.
+     * Find any PLUGGED connector and switch to LOCKED status.
      *
      * @return identity of the connector.
      */
@@ -109,7 +113,7 @@ public class Evse {
     }
 
     /**
-     * Find any LOCKED connector and switch to PLUGGED state.
+     * Find any LOCKED connector and switch to PLUGGED status.
      *
      * @return identity of the connector.
      */
@@ -125,7 +129,7 @@ public class Evse {
     }
 
     /**
-     * Find any LOCKED connector and switch to charging state.
+     * Find any LOCKED connector and switch to charging status.
      *
      * @return identity of the connector
      */
@@ -133,7 +137,7 @@ public class Evse {
         Connector lockedConnector = connectors.stream()
                 .filter(Connector::isLocked)
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("Connectors must be in locked state before charging session could be started"));
+                .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
 
         charging = true;
         return lockedConnector.getId();
@@ -185,22 +189,31 @@ public class Evse {
     }
 
     /**
-     * Setter for evse state.
+     * Setter for evse status.
      *
-     * @param evseState
+     * @param evseStatus
      */
-    public void setEvseState(EvseState evseState) {
-        this.evseState = evseState;
+    public void setEvseStatus(EvseStatus evseStatus) {
+        this.evseStatus = evseStatus;
     }
 
     /**
-     * Check whether the given state matches the existing or not.
+     * Setter for scheduled evse status.
      *
-     * @param requestedEvseState given evse state
-     * @return `true` if states do match otherwise `false`
+     * @param scheduledNewEvseStatus
      */
-    public boolean hasState(EvseState requestedEvseState) {
-        return this.evseState == requestedEvseState;
+    public void setScheduledNewEvseStatus(EvseStatus scheduledNewEvseStatus) {
+        this.scheduledNewEvseStatus = scheduledNewEvseStatus;
+    }
+
+    /**
+     * Check whether the given status matches the existing or not.
+     *
+     * @param requestedEvseStatus given evse status
+     * @return `true` if status do match otherwise `false`
+     */
+    public boolean hasStatus(EvseStatus requestedEvseStatus) {
+        return this.evseStatus == requestedEvseStatus;
     }
 
     /**
@@ -209,14 +222,16 @@ public class Evse {
      * @return `true` in case if ongoing `false` otherwise
      */
     public boolean hasOngoingTransaction() {
-        return evseTransaction.getState() == IN_PROGRESS;
+        return evseTransaction.getStatus() == IN_PROGRESS;
     }
 
     /**
-     * Stop transaction.
+     * Change evse status if scheduled and stop transaction.
      */
     public void stopTransaction() {
-        setEvseTransaction(new EvseTransaction(evseTransaction.getTransactionId(), STOPPED));
+        changeEvseStatusIfScheduled();
+
+        evseTransaction.setStatus(STOPPED);
     }
 
     /**
@@ -235,7 +250,15 @@ public class Evse {
                 ", charging=" + charging +
                 ", seqNo=" + seqNo +
                 ", evseTransaction=" + evseTransaction +
-                ", evseState=" + evseState +
+                ", evseStatus=" + evseStatus +
                 '}';
+    }
+
+    private void changeEvseStatusIfScheduled() {
+        if (nonNull(scheduledNewEvseStatus)) {
+            evseStatus = scheduledNewEvseStatus;
+            // clean
+            scheduledNewEvseStatus = null;
+        }
     }
 }
