@@ -34,7 +34,6 @@ public class PayloadFactory {
         StatusNotificationRequest payload = new StatusNotificationRequest();
         payload.setEvseId(evseId);
         payload.setConnectorId(connectorId);
-        payload.setTimestamp(ZonedDateTime.now());
 
         if (connectorState == ConnectorState.UNPLUGGED) {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
@@ -51,7 +50,6 @@ public class PayloadFactory {
         StatusNotificationRequest payload = new StatusNotificationRequest();
         payload.setEvseId(evse.getId());
         payload.setConnectorId(connector.getId());
-        payload.setTimestamp(ZonedDateTime.now());
 
         if (connector.getState() == ConnectorState.UNPLUGGED) {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
