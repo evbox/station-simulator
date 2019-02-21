@@ -6,6 +6,13 @@ import java.util.Collections;
 
 public class EvseCreator {
 
+    public static final Evse DEFAULT_EVSE_INSTANCE = createEvse()
+            .withId(StationConstants.DEFAULT_EVSE_ID)
+            .withStatus(EvseStatus.AVAILABLE)
+            .withConnectorIdAndState(StationConstants.DEFAULT_CONNECTOR_ID, ConnectorStatus.UNPLUGGED)
+            .withTransaction(new EvseTransaction(StationConstants.DEFAULT_INT_TRANSACTION_ID))
+            .build();
+
     public static EvseBuilder createEvse() {
         return new EvseBuilder();
     }

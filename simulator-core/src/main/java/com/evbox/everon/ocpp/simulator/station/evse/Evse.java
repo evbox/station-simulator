@@ -33,7 +33,7 @@ public class Evse {
     private long seqNo;
 
     private EvseStatus evseStatus;
-    private EvseTransaction evseTransaction;
+    private EvseTransaction transaction;
     /**
      * If nonNull should be applied when transaction stops
      */
@@ -65,23 +65,23 @@ public class Evse {
      *
      * @param id              evse identity
      * @param evseStatus      evse status
-     * @param evseTransaction evse transaction
+     * @param transaction evse transaction
      * @param connectors      list of connectors for this evse
      */
-    public Evse(int id, EvseStatus evseStatus, EvseTransaction evseTransaction, List<Connector> connectors) {
+    public Evse(int id, EvseStatus evseStatus, EvseTransaction transaction, List<Connector> connectors) {
         this.id = id;
         this.evseStatus = evseStatus;
-        this.evseTransaction = evseTransaction;
+        this.transaction = transaction;
         this.connectors = connectors;
     }
 
-    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction evseTransaction, EvseStatus evseStatus) {
+    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction transaction, EvseStatus evseStatus) {
         this.id = id;
         this.connectors = connectors;
         this.tokenId = tokenId;
         this.charging = charging;
         this.seqNo = seqNo;
-        this.evseTransaction = evseTransaction;
+        this.transaction = transaction;
         this.evseStatus = evseStatus;
     }
 
@@ -93,7 +93,7 @@ public class Evse {
      */
     public static Evse copyOf(Evse evse) {
         List<Connector> connectorsCopy = evse.connectors.stream().map(Connector::copyOf).collect(Collectors.toList());
-        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.evseTransaction, evse.evseStatus);
+        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.transaction, evse.evseStatus);
     }
 
     /**
@@ -180,12 +180,12 @@ public class Evse {
     /**
      * Setter for evse transaction.
      *
-     * @param evseTransaction
+     * @param transaction
      */
-    public void setEvseTransaction(EvseTransaction evseTransaction) {
-        Objects.requireNonNull(evseTransaction);
+    public void setTransaction(EvseTransaction transaction) {
+        Objects.requireNonNull(transaction);
 
-        this.evseTransaction = evseTransaction;
+        this.transaction = transaction;
     }
 
     /**
@@ -222,7 +222,7 @@ public class Evse {
      * @return `true` in case if ongoing `false` otherwise
      */
     public boolean hasOngoingTransaction() {
-        return evseTransaction.getStatus() == IN_PROGRESS;
+        return transaction.getStatus() == IN_PROGRESS;
     }
 
     /**
@@ -231,7 +231,16 @@ public class Evse {
     public void stopTransaction() {
         changeEvseStatusIfScheduled();
 
-        evseTransaction.setStatus(STOPPED);
+        transaction.setStatus(STOPPED);
+    }
+
+    /**
+     * Create a new transaction with the given id.
+     *
+     * @param transactionId transaction identity
+     */
+    public void createTransaction(int transactionId) {
+        transaction = new EvseTransaction(transactionId);
     }
 
     /**
@@ -249,7 +258,7 @@ public class Evse {
                 ", tokenId='" + tokenId + '\'' +
                 ", charging=" + charging +
                 ", seqNo=" + seqNo +
-                ", evseTransaction=" + evseTransaction +
+                ", transaction=" + transaction +
                 ", evseStatus=" + evseStatus +
                 '}';
     }

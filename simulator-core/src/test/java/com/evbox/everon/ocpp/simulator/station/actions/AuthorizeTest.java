@@ -75,7 +75,7 @@ public class AuthorizeTest {
 
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 
-        verify(evseMock).setEvseTransaction(any(EvseTransaction.class));
+        verify(evseMock).createTransaction(anyInt());
 
     }
 

@@ -84,7 +84,7 @@ public class PayloadFactory {
             TransactionData.ChargingState chargingState, Instant currentDateTime) {
 
         TransactionData transactionData = new TransactionData()
-                .withId(new CiString.CiString36(evse.getEvseTransaction().toString()))
+                .withId(new CiString.CiString36(evse.getTransaction().toString()))
                 .withChargingState(chargingState);
         TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, STARTED, currentDateTime, evse.getSeqNoAndIncrement());
 
@@ -99,7 +99,7 @@ public class PayloadFactory {
             TransactionData.ChargingState chargingState, Instant currentDateTime) {
 
         TransactionData transactionData = new TransactionData()
-                .withId(new CiString.CiString36(Integer.toString(evse.getEvseTransaction().getTransactionId())))
+                .withId(new CiString.CiString36(Integer.toString(evse.getTransaction().getTransactionId())))
                 .withChargingState(chargingState);
 
         TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.UPDATED, currentDateTime, evse.getSeqNoAndIncrement());
@@ -114,7 +114,7 @@ public class PayloadFactory {
     TransactionEventRequest createTransactionEventEnded(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
                                                         TransactionData.StoppedReason stoppedReason, Instant currentDateTime) {
 
-        TransactionData transactionData = new TransactionData().withId(new CiString.CiString36(evse.getEvseTransaction().toString()))
+        TransactionData transactionData = new TransactionData().withId(new CiString.CiString36(evse.getTransaction().toString()))
                 .withChargingState(TransactionData.ChargingState.SUSPENDED_EVSE)
                 .withStoppedReason(stoppedReason);
 

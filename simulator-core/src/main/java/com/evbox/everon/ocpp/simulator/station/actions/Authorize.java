@@ -47,7 +47,7 @@ public class Authorize implements UserMessage {
 
                 if (!haveOngoingTransaction) {
                     Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                    authorizedEvseIds.forEach(evseId -> stationState.findEvse(evseId).setEvseTransaction(new EvseTransaction(transactionId)));
+                    authorizedEvseIds.forEach(evseId -> stationState.findEvse(evseId).createTransaction(transactionId));
                 }
 
                 boolean allCharging = authorizedEvseIds.stream().allMatch(stationState::isCharging);
