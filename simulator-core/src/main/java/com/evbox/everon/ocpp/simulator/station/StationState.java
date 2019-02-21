@@ -1,9 +1,11 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.*;
 import java.util.List;
@@ -59,30 +61,13 @@ public class StationState {
     }
 
     public void plug(Integer connectorId) {
-        Evse.Connector connector = findConnector(connectorId);
+        Connector connector = findConnector(connectorId);
         connector.plug();
     }
 
     public void unplug(Integer connectorId) {
-        Evse.Connector connector = findConnector(connectorId);
+        Connector connector = findConnector(connectorId);
         connector.unplug();
-    }
-
-    private List<Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
-        int connectorId = 0;
-
-        ImmutableList.Builder<Evse> evseListBuilder = ImmutableList.builder();
-
-        for (int i = 1; i <= evseCount; i++) {
-            ImmutableList.Builder<Evse.Connector> connectorListBuilder = ImmutableList.builder();
-            for (int j = 0; j < connectorsPerEvseCount; j++) {
-                connectorListBuilder.add(new Evse.Connector(++connectorId, Evse.ConnectorState.AVAILABLE));
-            }
-
-            evseListBuilder.add(new Evse(i, connectorListBuilder.build(), StringUtils.EMPTY, false, 0L, null));
-        }
-
-        return evseListBuilder.build();
     }
 
     public Integer startCharging(Integer evseId) {
@@ -98,15 +83,15 @@ public class StationState {
     }
 
     public boolean isPlugged(Integer evseId) {
-        return !isCharging(evseId) && findEvse(evseId).getConnectors().stream().anyMatch(Evse.Connector::isPlugged);
+        return !isCharging(evseId) && findEvse(evseId).getConnectors().stream().anyMatch(Connector::isPlugged);
     }
 
-    public Evse.ConnectorState getConnectorState(int connectorId) {
+    public ConnectorState getConnectorState(int connectorId) {
         return findConnector(connectorId).getState();
     }
 
     public Long getSeqNo(int evseId) {
-        return findEvse(evseId).getSeqNo();
+        return findEvse(evseId).getSeqNoAndIncrement();
     }
 
     public Integer findEvseId(int connectorId) {
@@ -114,7 +99,7 @@ public class StationState {
     }
 
     public void storeToken(Integer evseId, String tokenId) {
-        findEvse(evseId).storeToken(tokenId);
+        findEvse(evseId).setToken(tokenId);
     }
 
     public Integer getDefaultEvseId() {
@@ -141,11 +126,11 @@ public class StationState {
     }
 
     public void clearToken(Integer evseId) {
-        findEvse(evseId).resetToken();
+        findEvse(evseId).clearToken();
     }
 
     public void clearTokens() {
-        evses.forEach(Evse::resetToken);
+        evses.forEach(Evse::clearToken);
     }
 
     public String getTransactionId(Integer evseId) {
@@ -172,13 +157,34 @@ public class StationState {
         return findEvse(evseId).hasOngoingTransaction();
     }
 
+    @Override
+    public String toString() {
+        return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses + '}';
+    }
+
+    private List<Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
+
+        ImmutableList.Builder<Evse> evseListBuilder = ImmutableList.builder();
+
+        for (int evseId = 1; evseId <= evseCount; evseId++) {
+            ImmutableList.Builder<Connector> connectorListBuilder = ImmutableList.builder();
+            for (int connectorId = 1; connectorId <= connectorsPerEvseCount; connectorId++) {
+                connectorListBuilder.add(new Connector(connectorId, ConnectorState.UNPLUGGED));
+            }
+
+            evseListBuilder.add(new Evse(evseId, connectorListBuilder.build()));
+        }
+
+        return evseListBuilder.build();
+    }
+
     public Optional<Evse> tryFindEvse(int evseId) {
         return evses.stream()
-                .filter(evse -> evse.getId().equals(evseId))
+                .filter(evse -> evse.getId() == evseId)
                 .findAny();
     }
 
-    private Evse.Connector findConnector(int connectorId) {
+    private Connector findConnector(int connectorId) {
         return evses.stream()
             .flatMap(evse -> evse.getConnectors().stream())
             .filter(connector -> connector.getId().equals(connectorId))
@@ -196,8 +202,4 @@ public class StationState {
         return tryFindEvse(evseId).orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
-    @Override
-    public String toString() {
-        return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses + '}';
-    }
 }

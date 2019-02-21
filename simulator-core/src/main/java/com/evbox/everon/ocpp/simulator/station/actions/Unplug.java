@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.actions;
 
-import com.evbox.everon.ocpp.simulator.station.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
@@ -29,7 +30,7 @@ public class Unplug implements UserMessage {
     @Override
     public void perform(StationState stationState, StationMessageSender stationMessageSender) {
 
-        if (stationState.getConnectorState(connectorId) == Evse.ConnectorState.LOCKED) {
+        if (stationState.getConnectorState(connectorId) == ConnectorState.LOCKED) {
             throw new IllegalStateException("Unable to unplug locked connector: " + connectorId);
         }
 
