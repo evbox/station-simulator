@@ -15,11 +15,14 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * Represents Component entity from OCPP 2.0.
+ * Represents Component entity from OCPP 2.0 (Appendix 3. Standardized Components).
  * Supports validation, update and retrieval logic for component variables.
  */
 public abstract class StationComponent implements GetVariableHandler, SetVariableHandler {
 
+    /**
+     * Map of variable names and accessors for each of them.
+     */
     private final Map<String, VariableAccessor> variableAccessors;
 
     public StationComponent(List<VariableAccessor> variableAccessors) {
@@ -49,11 +52,11 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
     }
 
     /**
-     * Validates {@link SetVariableDatum} for proper variable path (variable name, instance, attributeType, evseId, connectorId) and access for modification.
+     * Validates {@link SetVariableDatum} for proper variable path (variable name, instance, attributeType, evseId, connectorId) and modification access.
      * Since station has to reply to SetVariablesRequest immediately, validation logic should happen before update's execution.
      * This is why validate stands as a separate operation.
-     * @param setVariableDatum
-     * @return
+     * @param setVariableDatum contains path to variable and new value
+     * @return result which contains status of variable modification
      */
     public SetVariableValidationResult validate(SetVariableDatum setVariableDatum) {
         Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getVariable().getName().toString()));
