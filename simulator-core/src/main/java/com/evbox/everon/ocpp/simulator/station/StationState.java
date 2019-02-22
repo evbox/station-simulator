@@ -184,6 +184,13 @@ public class StationState {
                 .findAny();
     }
 
+    public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
+        return tryFindEvse(evseId)
+                .flatMap(evse -> evse.getConnectors().stream()
+                        .filter(connector -> connector.getId().equals(connectorId))
+                        .findAny());
+    }
+
     private Connector findConnector(int connectorId) {
         return evses.stream()
             .flatMap(evse -> evse.getConnectors().stream())

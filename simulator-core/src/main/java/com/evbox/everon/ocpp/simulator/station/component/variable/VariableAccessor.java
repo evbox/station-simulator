@@ -25,6 +25,13 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
                     .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
                     .withAttributeStatus(SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
 
+    protected static final SetVariableValidator READ_ONLY_VALIDATOR = (component, variable, attributeType, attributeValue) ->
+            new SetVariableResult()
+                    .withComponent(component)
+                    .withVariable(variable)
+                    .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
+                    .withAttributeStatus(SetVariableResult.AttributeStatus.REJECTED);
+
     private final Station station;
 
     public VariableAccessor(Station station) {

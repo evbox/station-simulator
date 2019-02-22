@@ -50,11 +50,8 @@ public class ChargeProtocolVariableAccessor extends VariableAccessor {
     }
 
     private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
-        return new SetVariableResult()
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
-                .withAttributeStatus(SetVariableResult.AttributeStatus.REJECTED);
+        return READ_ONLY_VALIDATOR.validate(component, variable, attributeType, attributeValue);
+
     }
 
     private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
