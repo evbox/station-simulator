@@ -49,20 +49,20 @@ public class SerialNumberVariableAccessor extends VariableAccessor {
         return variableValidators;
     }
 
-    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
-        return new GetVariableResult()
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
-                .withAttributeValue(new CiString.CiString1000(StationHardwareData.SERIAL_NUMBER));
-    }
-
     private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
         return new SetVariableResult()
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
                 .withAttributeStatus(SetVariableResult.AttributeStatus.REJECTED);
+    }
+
+    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
+        return new GetVariableResult()
+                .withComponent(component)
+                .withVariable(variable)
+                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
+                .withAttributeValue(new CiString.CiString1000(StationHardwareData.SERIAL_NUMBER));
     }
 
 }
