@@ -55,6 +55,7 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
      * Validates {@link SetVariableDatum} for proper variable path (variable name, instance, attributeType, evseId, connectorId) and modification access.
      * Since station has to reply to SetVariablesRequest immediately, validation logic should happen before update's execution.
      * This is why validate stands as a separate operation.
+     *
      * @param setVariableDatum contains path to variable and new value
      * @return result which contains status of variable modification
      */
