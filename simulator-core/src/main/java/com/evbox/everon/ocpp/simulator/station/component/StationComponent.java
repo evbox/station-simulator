@@ -1,5 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
+import com.evbox.everon.ocpp.simulator.station.component.variable.GetVariableHandler;
+import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableHandler;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
@@ -12,6 +14,10 @@ import java.util.Optional;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Represents Component entity from OCPP 2.0.
+ * Supports validation, update and retrieval logic for component variables.
+ */
 public abstract class StationComponent implements GetVariableHandler, SetVariableHandler {
 
     private final Map<String, VariableAccessor> variableAccessors;
@@ -42,6 +48,13 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
         accessor.set(component, variable, setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue());
     }
 
+    /**
+     * Validates {@link SetVariableDatum} for proper variable path (variable name, instance, attributeType, evseId, connectorId) and access for modification.
+     * Since station has to reply to SetVariablesRequest immediately, validation logic should happen before update's execution.
+     * This is why validate stands as a separate operation.
+     * @param setVariableDatum
+     * @return
+     */
     public SetVariableValidationResult validate(SetVariableDatum setVariableDatum) {
         Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getVariable().getName().toString()));
 

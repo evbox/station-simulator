@@ -4,6 +4,9 @@ import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Representation of ChargingStation component according to OCPP 2.0 (3.2.12. ChargingStation)
+ */
 public class ChargingStationComponent extends StationComponent {
 
     public static final String NAME = "ChargingStation";

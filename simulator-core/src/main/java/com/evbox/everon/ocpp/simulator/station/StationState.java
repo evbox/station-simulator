@@ -158,6 +158,12 @@ public class StationState {
         return findEvse(evseId).hasOngoingTransaction();
     }
 
+    /**
+     * Try to find EVSE by given EVSE ID or return empty result.
+     *
+     * @param evseId EVSE identity
+     * @return optional with instance of {@link Evse} or Optional.empty()
+     */
     public Optional<Evse> tryFindEvse(int evseId) {
         return evses.stream()
                 .filter(evse -> evse.getId() == evseId)
@@ -167,11 +173,12 @@ public class StationState {
     /**
      * Find an instance of {@link Evse} by evseId. If not found then throw {@link IllegalArgumentException}.
      *
-     * @param evseId evse identity
+     * @param evseId EVSE identity
      * @return an instance of {@link Evse}
      */
     public Evse findEvse(int evseId) {
-        return tryFindEvse(evseId).orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
+        return tryFindEvse(evseId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
     @Override
