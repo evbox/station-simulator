@@ -35,7 +35,7 @@ public class Station {
             .build();
 
     private final SimulatorConfiguration.StationConfiguration configuration;
-    private final int defaultHeartBeatInterval;
+    private final int defaultHeartBeatIntervalSec;
 
     private final StationState state;
 
@@ -49,28 +49,28 @@ public class Station {
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
 
     /**
-     * Create a station using {@link SimulatorConfiguration.StationConfiguration} and defaultHeartBeatInterval.
+     * Create a station using {@link SimulatorConfiguration.StationConfiguration} and defaultHeartBeatIntervalSec.
      *
      * @param configuration station configuration
-     * @param defaultHeartBeatInterval heartbeat interval
+     * @param defaultHeartBeatIntervalSec heartbeat interval in seconds
      */
-    public Station(SimulatorConfiguration.StationConfiguration configuration, int defaultHeartBeatInterval) {
-        this(configuration, defaultHeartBeatInterval, DEFAULT_HTTP_CLIENT);
+    public Station(SimulatorConfiguration.StationConfiguration configuration, int defaultHeartBeatIntervalSec) {
+        this(configuration, defaultHeartBeatIntervalSec, DEFAULT_HTTP_CLIENT);
     }
 
     /**
-     * Create a station using {@link SimulatorConfiguration.StationConfiguration}, defaultHeartBeatInterval and {@link OkHttpClient}.
+     * Create a station using {@link SimulatorConfiguration.StationConfiguration}, defaultHeartBeatIntervalSec and {@link OkHttpClient}.
      *
      * {@link OkHttpClient} is used for connecting and communicating with OCPP server.
      *
      * @param configuration station configuration
-     * @param defaultHeartBeatInterval heart beat interval
+     * @param defaultHeartBeatIntervalSec heart beat interval in seconds
      * @param okHttpClient http client
      */
-    public Station(SimulatorConfiguration.StationConfiguration configuration, int defaultHeartBeatInterval, OkHttpClient okHttpClient) {
+    public Station(SimulatorConfiguration.StationConfiguration configuration, int defaultHeartBeatIntervalSec, OkHttpClient okHttpClient) {
 
         this.configuration = configuration;
-        this.defaultHeartBeatInterval = defaultHeartBeatInterval;
+        this.defaultHeartBeatIntervalSec = defaultHeartBeatIntervalSec;
         this.state = new StationState(configuration);
 
         this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(okHttpClient));
@@ -170,7 +170,7 @@ public class Station {
      * @param newHeartbeatInterval heartbeat interval in seconds
      */
     public void updateHeartbeat(int newHeartbeatInterval) {
-        int interval = newHeartbeatInterval == 0 ? defaultHeartBeatInterval : newHeartbeatInterval;
+        int interval = newHeartbeatInterval == 0 ? defaultHeartBeatIntervalSec : newHeartbeatInterval;
 
         heartbeatScheduler.scheduleHeartbeat(interval);
         state.setHeartbeatInterval(interval);
