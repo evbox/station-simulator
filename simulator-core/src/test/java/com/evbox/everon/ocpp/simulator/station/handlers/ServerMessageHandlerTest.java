@@ -7,15 +7,13 @@ import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.GetVariablesRequestHandler;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.OcppRequestHandler;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.ResetRequestHandler;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.SetVariablesRequestHandler;
+import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.station.BootNotificationResponse;
+import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +30,7 @@ import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.*;
 import static com.evbox.everon.ocpp.simulator.support.OcppMessageFactory.*;
 import static com.evbox.everon.ocpp.simulator.support.ReflectionUtils.injectMock;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,6 +53,8 @@ public class ServerMessageHandlerTest {
     @Mock
     ResetRequestHandler resetRequestHandlerMock;
     @Mock
+    ChangeAvailabilityRequestHandler changeAvailabilityRequestHandlerMock;
+    @Mock
     Station stationMock;
 
     ServerMessageHandler serverMessageHandler;
@@ -66,6 +67,7 @@ public class ServerMessageHandlerTest {
                 .put(GetVariablesRequest.class, getVariablesRequestHandlerMock)
                 .put(SetVariablesRequest.class, setVariablesRequestHandlerMock)
                 .put(ResetRequest.class, resetRequestHandlerMock)
+                .put(ChangeAvailabilityRequest.class, changeAvailabilityRequestHandlerMock)
                 .build();
 
         injectMock(serverMessageHandler, "requestHandlers", requestHandlers);
@@ -165,6 +167,31 @@ public class ServerMessageHandlerTest {
                 () -> assertThat(messageIdCaptor.getValue()).isEqualTo(DEFAULT_MESSAGE_ID),
                 () -> assertThat(requestCaptor.getValue()).isInstanceOf(ResetRequest.class),
                 () -> assertThat(requestCaptor.getValue().getType()).isEqualTo(ResetRequest.Type.IMMEDIATE)
+        );
+
+    }
+
+    @Test
+    void verifyCallMessageWithChangeAvailabilityPayload() throws JsonProcessingException {
+
+        ChangeAvailabilityRequest payload = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+
+        String callJson = createCall()
+                .withMessageId(DEFAULT_MESSAGE_ID)
+                .withAction(CHANGE_AVAILABILITY_ACTION)
+                .withPayload(payload)
+                .toJson();
+
+        serverMessageHandler.handle(callJson);
+
+        ArgumentCaptor<String> messageIdCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<ChangeAvailabilityRequest> requestCaptor = ArgumentCaptor.forClass(ChangeAvailabilityRequest.class);
+
+        verify(changeAvailabilityRequestHandlerMock).handle(messageIdCaptor.capture(), requestCaptor.capture());
+
+        assertAll(
+                () -> assertThat(messageIdCaptor.getValue()).isEqualTo(DEFAULT_MESSAGE_ID),
+                () -> assertThat(requestCaptor.getValue()).isInstanceOf(ChangeAvailabilityRequest.class)
         );
 
     }

@@ -14,7 +14,8 @@ public enum ActionType {
     TRANSACTION_EVENT("TransactionEvent", TransactionEventRequest.class, TransactionEventResponse.class),
     STATUS_NOTIFICATION("StatusNotification", StatusNotificationRequest.class, StatusNotificationResponse.class),
     GET_VARIABLES("GetVariables", GetVariablesRequest.class, GetVariablesResponse.class),
-    SET_VARIABLES("SetVariables", SetVariablesRequest.class, SetVariablesResponse.class);
+    SET_VARIABLES("SetVariables", SetVariablesRequest.class, SetVariablesResponse.class),
+    CHANGE_AVAILABILITY("ChangeAvailability", ChangeAvailabilityRequest.class, ChangeAvailabilityResponse.class);
 
     private final String actionType;
     private final Class requestClazz;
