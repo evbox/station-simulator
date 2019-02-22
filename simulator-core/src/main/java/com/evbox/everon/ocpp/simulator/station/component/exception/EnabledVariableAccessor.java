@@ -17,6 +17,7 @@ import java.util.Optional;
 public class EnabledVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "Enabled";
+    public static final String EVSE_ENABLED_STATUS = Boolean.TRUE.toString();
 
     private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
             .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
@@ -69,7 +70,7 @@ public class EnabledVariableAccessor extends VariableAccessor {
 
         if (optionalEvse.isPresent()) {
             return getVariableResult
-                    .withAttributeValue(new CiString.CiString1000(Boolean.TRUE.toString()))
+                    .withAttributeValue(new CiString.CiString1000(EVSE_ENABLED_STATUS))
                     .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
         } else {
             return getVariableResult.withAttributeStatus(GetVariableResult.AttributeStatus.REJECTED);

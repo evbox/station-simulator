@@ -62,6 +62,7 @@ public class ManufacturerVariableAccessor extends VariableAccessor {
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
-                .withAttributeValue(new CiString.CiString1000(StationHardwareData.VENDOR_NAME));
+                .withAttributeValue(new CiString.CiString1000(StationHardwareData.VENDOR_NAME))
+                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
     }
 }

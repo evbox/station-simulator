@@ -6,15 +6,18 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "AvailabilityState";
+    public static final String EVSE_AVAILABILITY = "Available";
 
     private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
             .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
@@ -49,12 +52,21 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
     }
 
     private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
-        return new GetVariableResult()
+        Integer evseId = component.getEvse().getId();
+        Optional<Evse> optionalEvse = getStation().getState().tryFindEvse(evseId);
+
+        GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(component)
                 .withVariable(variable)
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
-                .withAttributeValue(new CiString.CiString1000("AVAILABLE"))
-                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
+                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()));
+
+        if (optionalEvse.isPresent()) {
+            return getVariableResult
+                    .withAttributeValue(new CiString.CiString1000(EVSE_AVAILABILITY))
+                    .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
+        } else {
+            return getVariableResult.withAttributeStatus(GetVariableResult.AttributeStatus.REJECTED);
+        }
     }
 
     private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 ciString1000) {

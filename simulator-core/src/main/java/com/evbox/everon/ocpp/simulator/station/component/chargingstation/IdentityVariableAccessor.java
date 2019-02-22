@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class IdentityVariableAccessor extends VariableAccessor {
 
-    private static final String NAME = "Identity";
+    public static final String NAME = "Identity";
 
     private final ImmutableMap<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
             .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)

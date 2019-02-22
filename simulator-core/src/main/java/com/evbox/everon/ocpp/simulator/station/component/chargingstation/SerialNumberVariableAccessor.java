@@ -54,6 +54,7 @@ public class SerialNumberVariableAccessor extends VariableAccessor {
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
+                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED)
                 .withAttributeValue(new CiString.CiString1000(StationHardwareData.SERIAL_NUMBER));
     }
 

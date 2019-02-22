@@ -62,6 +62,7 @@ public class ChargeProtocolVariableAccessor extends VariableAccessor {
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
-                .withAttributeValue(new CiString.CiString1000(StationHardwareData.PROTOCOL_VERSION));
+                .withAttributeValue(new CiString.CiString1000(StationHardwareData.PROTOCOL_VERSION))
+                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
     }
 }
