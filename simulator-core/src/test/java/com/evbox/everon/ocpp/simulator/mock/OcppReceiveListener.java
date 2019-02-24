@@ -27,7 +27,7 @@ public class OcppReceiveListener extends AbstractReceiveListener {
         final String incomingRequest = message.getData();
         log.debug("Incoming request: {}", incomingRequest);
 
-        if (RawCall.fromJson(incomingRequest).getMessageType() == MessageType.CALL) {
+        if (hasTypeCall(incomingRequest)) {
             Call incomingCall = Call.fromJson(incomingRequest);
 
             Optional<Function<Call, String>> expectedResponse = requestExpectationManager.findExpectedResponse(incomingCall);
@@ -41,5 +41,9 @@ public class OcppReceiveListener extends AbstractReceiveListener {
             log.debug("Incoming request is not of type Call");
         }
 
+    }
+
+    private boolean hasTypeCall(String incomingRequest) {
+        return RawCall.fromJson(incomingRequest).getMessageType() == MessageType.CALL;
     }
 }
