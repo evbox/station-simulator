@@ -61,6 +61,12 @@ public class OcppMockServer {
     }
 
     /**
+     * Stops ocpp mock server.
+     */
+    public void stop() {
+        server.stop();
+    }
+    /**
      * Accepts a predicate that is responsible for incoming request expectation.
      * By default: expected count is 1.
      *

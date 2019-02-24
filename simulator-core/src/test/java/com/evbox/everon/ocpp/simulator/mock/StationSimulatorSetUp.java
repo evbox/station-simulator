@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createStationConfiguration;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.STATION_ID;
 
 public class StationSimulatorSetUp {
 
