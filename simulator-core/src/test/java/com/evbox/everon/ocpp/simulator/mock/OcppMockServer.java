@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.mock;
 
+import com.evbox.everon.ocpp.simulator.message.Call;
 import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,7 +74,7 @@ public class OcppMockServer {
      * @param requestExpectation a request expectation predicate
      * @return {@link OcppServerResponse} instance
      */
-    public OcppServerResponse when(Predicate<String> requestExpectation) {
+    public OcppServerResponse when(Predicate<Call> requestExpectation) {
         return when(requestExpectation, once());
     }
 
@@ -84,7 +85,7 @@ public class OcppMockServer {
      * @param expectedCount expected count
      * @return {@link OcppServerResponse} instance
      */
-    public OcppServerResponse when(Predicate<String> requestExpectation, ExpectedCount expectedCount) {
+    public OcppServerResponse when(Predicate<Call> requestExpectation, ExpectedCount expectedCount) {
         return new OcppServerResponse(requestExpectation, expectedCount, requestExpectationManager);
     }
 

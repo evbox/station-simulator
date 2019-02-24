@@ -39,9 +39,11 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
             Station station = stationSimulatorRunner.getStation(STATION_ID);
 
             assertThat(station.getState().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.UNAVAILABLE);
+
         });
 
         ocppMockServer.verify();
+
 
     }
 

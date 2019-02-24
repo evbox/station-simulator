@@ -1,9 +1,11 @@
 package com.evbox.everon.ocpp.simulator.mock;
 
+import com.evbox.everon.ocpp.simulator.message.Call;
+
 import java.time.ZonedDateTime;
+import java.util.function.Function;
 
 import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCallResult;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_MESSAGE_ID;
 
 /**
  * A simple class with factory methods.
@@ -15,9 +17,9 @@ public class ExpectedResponses {
      *
      * @return BootNotificationResponse in json.
      */
-    public static String bootNotificationResponse() {
-        return createCallResult()
-                .withMessageId(DEFAULT_MESSAGE_ID)
+    public static Function<Call, String> bootNotificationResponse() {
+        return incomingRequest -> createCallResult()
+                .withMessageId(incomingRequest.getMessageId())
                 .withCurrentTime(ZonedDateTime.now().toString())
                 .withIntervalInSeconds(100)
                 .withStatus("Accepted")
@@ -29,9 +31,9 @@ public class ExpectedResponses {
      *
      * @return StatusNotificationResponse in json.
      */
-    public static String statusNotificationResponse() {
-        return createCallResult()
-                .withMessageId(DEFAULT_MESSAGE_ID)
+    public static Function<Call, String> statusNotificationResponse() {
+        return incomingRequest -> createCallResult()
+                .withMessageId(incomingRequest.getMessageId())
                 .withPayload("")
                 .toJson();
     }

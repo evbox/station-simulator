@@ -1,7 +1,10 @@
 package com.evbox.everon.ocpp.simulator.mock;
 
+import com.evbox.everon.ocpp.simulator.message.Call;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -29,7 +32,7 @@ public class RequestExpectationManager {
      * @param incomingRequest incoming request.
      * @return optional of expected response.
      */
-    public Optional<String> findExpectedResponse(String incomingRequest) {
+    public Optional<Function<Call, String>> findExpectedResponse(Call incomingRequest) {
 
         for (RequestExpectationMatcher requestExpectationMatcher : expectations) {
             if (requestExpectationMatcher.match(incomingRequest)) {

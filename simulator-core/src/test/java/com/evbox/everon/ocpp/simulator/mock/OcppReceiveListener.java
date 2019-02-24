@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.mock;
 
+import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.MessageType;
 import com.evbox.everon.ocpp.simulator.message.RawCall;
 import io.undertow.websockets.core.AbstractReceiveListener;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * A receive listener that handles an incoming text message.
@@ -26,10 +28,12 @@ public class OcppReceiveListener extends AbstractReceiveListener {
         log.debug("Incoming request: {}", incomingRequest);
 
         if (RawCall.fromJson(incomingRequest).getMessageType() == MessageType.CALL) {
-            Optional<String> expectedResponse = requestExpectationManager.findExpectedResponse(incomingRequest);
+            Call incomingCall = Call.fromJson(incomingRequest);
+
+            Optional<Function<Call, String>> expectedResponse = requestExpectationManager.findExpectedResponse(incomingCall);
             if (expectedResponse.isPresent()) {
                 log.debug("Expectation is found.");
-                WebSockets.sendText(expectedResponse.get(), channel, null);
+                WebSockets.sendText(expectedResponse.get().apply(incomingCall), channel, null);
             } else {
                 requestExpectationManager.addUnexpectedRequest(incomingRequest);
             }

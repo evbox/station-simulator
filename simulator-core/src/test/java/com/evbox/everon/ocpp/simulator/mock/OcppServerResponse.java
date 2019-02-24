@@ -1,7 +1,9 @@
 package com.evbox.everon.ocpp.simulator.mock;
 
+import com.evbox.everon.ocpp.simulator.message.Call;
 import lombok.AllArgsConstructor;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -10,7 +12,7 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class OcppServerResponse {
 
-    private final Predicate<String> requestExpectation;
+    private final Predicate<Call> requestExpectation;
     private final ExpectedCount expectedCount;
     private final RequestExpectationManager requestExpectationManager;
 
@@ -19,7 +21,7 @@ public class OcppServerResponse {
      *
      * @param expectedResponse expected response.
      */
-    public void thenReturn(String expectedResponse) {
+    public void thenReturn(Function<Call, String> expectedResponse) {
         requestExpectationManager.add(new RequestExpectationMatcher(requestExpectation, expectedCount, expectedResponse));
     }
 

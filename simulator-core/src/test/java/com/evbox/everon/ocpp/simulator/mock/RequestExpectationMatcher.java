@@ -1,8 +1,10 @@
 package com.evbox.everon.ocpp.simulator.mock;
 
+import com.evbox.everon.ocpp.simulator.message.Call;
 import lombok.Data;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -13,10 +15,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Data
 public class RequestExpectationMatcher {
 
-    private final Predicate<String> expectedRequest;
+    private final Predicate<Call> expectedRequest;
     private final ExpectedCount expectedCount;
 
-    private final String expectedResponse;
+    private final Function<Call, String> expectedResponse;
 
     private final AtomicInteger actualCount = new AtomicInteger(0);
 
@@ -26,7 +28,7 @@ public class RequestExpectationMatcher {
      * @param incomingRequest incoming request
      * @return true if matches otherwise false
      */
-    public boolean match(String incomingRequest) {
+    public boolean match(Call incomingRequest) {
         boolean matchResult = expectedRequest.test(incomingRequest);
 
         if (matchResult) {
@@ -41,7 +43,7 @@ public class RequestExpectationMatcher {
      *
      * @return expected response.
      */
-    public String getExpectedResponse() {
+    public Function<Call, String> getExpectedResponse() {
         return expectedResponse;
     }
 
