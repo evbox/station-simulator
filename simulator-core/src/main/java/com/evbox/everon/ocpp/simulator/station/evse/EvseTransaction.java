@@ -45,4 +45,9 @@ public class EvseTransaction {
 
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(transactionId);
+    }
 }

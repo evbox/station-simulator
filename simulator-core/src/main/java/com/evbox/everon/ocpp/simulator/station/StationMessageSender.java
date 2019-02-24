@@ -81,8 +81,8 @@ public class StationMessageSender {
     public void sendTransactionEventUpdateAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState,
                                                        Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
 
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventUpdate(evseId, connectorId, reason, tokenId, chargingState, stationState.getTransactionId(evseId),
-                stationState.getSeqNo(evseId), stationState.getCurrentTime());
+        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventUpdate(stationState.findEvse(evseId),
+                connectorId, reason, tokenId, chargingState, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
         callRegistry.addSubscription(call.getMessageId(), transactionEvent, subscriber);
@@ -113,8 +113,8 @@ public class StationMessageSender {
      */
     public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
 
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventUpdate(evseId, connectorId, reason, tokenId, chargingState, stationState.getTransactionId(evseId),
-                stationState.getSeqNo(evseId), stationState.getCurrentTime());
+        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventUpdate(stationState.findEvse(evseId),
+                connectorId, reason, tokenId, chargingState, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 
@@ -133,8 +133,8 @@ public class StationMessageSender {
      */
     public void sendTransactionEventEndedAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason,
                                                       Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
-        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(evseId, connectorId, reason, stoppedReason, stationState.getTransactionId(evseId), stationState.getSeqNo(evseId),
-                stationState.getCurrentTime());
+        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationState.findEvse(evseId),
+                connectorId, reason, stoppedReason, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
@@ -151,8 +151,8 @@ public class StationMessageSender {
      * @param stoppedReason reason why transaction was stopped
      */
     public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason) {
-        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(evseId, connectorId, reason, stoppedReason, stationState.getTransactionId(evseId), stationState.getSeqNo(evseId),
-                stationState.getCurrentTime());
+        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationState.findEvse(evseId),
+                connectorId, reason, stoppedReason, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
 
@@ -298,8 +298,8 @@ public class StationMessageSender {
     }
 
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(evseId, connectorId, reason, tokenId, chargingState, stationState.getTransactionId(evseId),
-                stationState.getSeqNo(evseId), stationState.getCurrentTime());
+        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationState.findEvse(evseId),
+                connectorId, reason, tokenId, chargingState, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 

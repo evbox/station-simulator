@@ -90,10 +90,6 @@ public class StationState {
         return findConnector(connectorId).getStatus();
     }
 
-    public Long getSeqNo(int evseId) {
-        return findEvse(evseId).getSeqNoAndIncrement();
-    }
-
     public Integer findEvseId(int connectorId) {
         return findEvseByConnectorId(connectorId).getId();
     }
@@ -131,18 +127,6 @@ public class StationState {
 
     public void clearTokens() {
         evses.forEach(Evse::clearToken);
-    }
-
-    public String getTransactionId(Integer evseId) {
-        return findEvse(evseId).getEvseTransaction().getTransactionId() + "";
-    }
-
-    public void setTransactionId(Integer evseId, Integer transactionId) {
-        findEvse(evseId).setEvseTransaction(new EvseTransaction(transactionId));
-    }
-
-    public void clearTransactionId(Integer evseId) {
-        findEvse(evseId).stopTransaction();
     }
 
     public void clearTransactions() {
