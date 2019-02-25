@@ -2,7 +2,10 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
 import com.evbox.everon.ocpp.simulator.support.ReflectionUtils;
@@ -27,12 +30,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCall;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -188,7 +193,7 @@ public class StationMessageSenderTest {
     void verifyStatusNotification() throws InterruptedException {
 
         when(stationStateMock.getCurrentTime()).thenReturn(new Date().toInstant());
-        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorState.UNPLUGGED);
+        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorStatus.UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 
@@ -225,8 +230,12 @@ public class StationMessageSenderTest {
     }
 
     private void mockStationState() {
-        when(stationStateMock.getTransactionId(anyInt())).thenReturn(DEFAULT_TRANSACTION_ID);
-        when(stationStateMock.getSeqNo(anyInt())).thenReturn(Long.valueOf(DEFAULT_SEQ_NUMBER));
+        Evse evse = createEvse()
+                .withTransaction(new EvseTransaction(DEFAULT_INT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS))
+                .withId(DEFAULT_EVSE_ID)
+                .build();
+        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+
         when(stationStateMock.getCurrentTime()).thenReturn(new Date().toInstant());
     }
 

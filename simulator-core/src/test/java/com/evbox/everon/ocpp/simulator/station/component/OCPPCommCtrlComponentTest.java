@@ -188,5 +188,4 @@ class OCPPCommCtrlComponentTest {
                         .withAttributeValue(attributeValue));
     }
 
-
 }

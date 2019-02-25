@@ -1,8 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.actions;
 
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorState;
+import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
@@ -29,7 +30,7 @@ public class Plug implements UserMessage {
     @Override
     public void perform(StationState stationState, StationMessageSender stationMessageSender) {
 
-        if (stationState.getConnectorState(connectorId) != ConnectorState.UNPLUGGED) {
+        if (stationState.getConnectorState(connectorId) != ConnectorStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %s", connectorId));
         }
 
@@ -37,7 +38,7 @@ public class Plug implements UserMessage {
 
         if (!stationState.hasOngoingTransaction(evseId)) {
             Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-            stationState.setTransactionId(evseId, transactionId);
+            stationState.findEvse(evseId).createTransaction(transactionId);
         }
 
         stationState.plug(connectorId);

@@ -13,8 +13,14 @@ import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
 
+/**
+ * Contains station components (OCPP 2.0 Appendix 3. Standardized Components) that are supported at the moment
+ */
 public class StationComponentsHolder {
 
+    /**
+     * Maps component name to its implementation where each of them has variables
+     */
     private Map<String, StationComponent> components;
 
     public StationComponentsHolder(Station station) {

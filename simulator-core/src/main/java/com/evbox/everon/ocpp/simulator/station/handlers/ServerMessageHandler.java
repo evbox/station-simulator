@@ -6,14 +6,12 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.GetVariablesRequestHandler;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.OcppRequestHandler;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.ResetRequestHandler;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.SetVariablesRequestHandler;
+import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
+import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,6 +49,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(GetVariablesRequest.class, new GetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ResetRequest.class, new ResetRequestHandler(stationState, stationMessageSender))
+                .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(stationState, stationMessageSender))
                 .build();
     }
 
