@@ -48,6 +48,10 @@ public class IdentityVariableAccessor extends VariableAccessor {
         return variableValidators;
     }
 
+    private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
+        return READ_ONLY_VALIDATOR.validate(component, variable, attributeType, attributeValue);
+    }
+
     private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
         return new GetVariableResult()
                 .withComponent(component)
@@ -55,9 +59,5 @@ public class IdentityVariableAccessor extends VariableAccessor {
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
                 .withAttributeValue(new CiString.CiString1000(getStation().getConfiguration().getId()))
                 .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
-    }
-
-    private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
-        return READ_ONLY_VALIDATOR.validate(component, variable, attributeType, attributeValue);
     }
 }

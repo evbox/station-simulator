@@ -7,6 +7,10 @@ import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Contains logic for variable read, write and validation of these operations.
+ * Since station has to reply to SetVariablesRequest immediately, validation logic should happen before update's execution. This is why validate stands as a separate operation.
+ */
 public abstract class VariableAccessor implements VariableGetter, VariableSetter, SetVariableValidator {
 
     private static final String NULL_STR = "null";
