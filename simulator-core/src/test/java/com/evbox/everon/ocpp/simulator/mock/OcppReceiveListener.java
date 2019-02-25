@@ -32,8 +32,9 @@ public class OcppReceiveListener extends AbstractReceiveListener {
 
             Optional<Function<Call, String>> expectedResponse = requestExpectationManager.findExpectedResponse(incomingCall);
             if (expectedResponse.isPresent()) {
-                log.debug("Expectation is found.");
-                WebSockets.sendText(expectedResponse.get().apply(incomingCall), channel, null);
+                String responseToBeSend = expectedResponse.get().apply(incomingCall);
+                log.debug("Expectation is found. Sending response: {}", responseToBeSend);
+                WebSockets.sendText(responseToBeSend, channel, null);
             } else {
                 requestExpectationManager.addUnexpectedRequest(incomingRequest);
             }
