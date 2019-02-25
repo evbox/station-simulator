@@ -21,6 +21,7 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
     @Test
     void shouldChangeEvseStatusToUnavailable() {
 
+        // given
         ocppMockServer
                 .when(bootNotificationRequest())
                 .thenReturn(bootNotificationResponse());
@@ -29,12 +30,14 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
                 .when(statusNotificationRequest(), twice())
                 .thenReturn(statusNotificationResponse());
 
+        // when
         stationSimulatorRunner.run();
 
         ocppMockServer.waitUntilConnected();
 
         ocppServerClient.findSender(STATION_ID).sendMessage(createChangeAvailabilityRequest());
 
+        // then
         await().untilAsserted(() -> {
             Station station = stationSimulatorRunner.getStation(STATION_ID);
 
