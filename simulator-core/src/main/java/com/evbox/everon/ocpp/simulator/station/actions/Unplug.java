@@ -39,7 +39,7 @@ public class Unplug implements UserMessage {
         stationMessageSender.sendStatusNotificationAndSubscribe(evseId, connectorId, (Subscriber<StatusNotificationRequest, StatusNotificationResponse>) (request, response) -> {
             stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.EV_DISCONNECTED);
             stationState.clearToken(evseId);
-            stationState.clearTransactionId(evseId);
+            stationState.findEvse(evseId).stopTransaction();
         });
     }
 }
