@@ -1,9 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
-import com.evbox.everon.ocpp.simulator.station.component.variable.GetVariableHandler;
-import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableHandler;
-import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
-import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
+import com.evbox.everon.ocpp.simulator.station.component.variable.*;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
@@ -31,7 +28,14 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
 
     public abstract String getComponentName();
 
-    public GetVariableResult handle(GetVariableDatum getVariableDatum) {
+    /**
+     * Validates {@link GetVariableDatum} for proper variable path (variable name, instance, attributeType, evseId, connectorId) and read access.
+     * Retrieves variable from station.
+     *
+     * @param getVariableDatum contains necessary data to get variable from station
+     * @return result of getting variable
+     */
+    public GetVariableResult getVariable(GetVariableDatum getVariableDatum) {
         Component component = getVariableDatum.getComponent();
         GetVariableDatum.AttributeType attributeType = getVariableDatum.getAttributeType();
         Variable variable = getVariableDatum.getVariable();
@@ -41,7 +45,13 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
         return accessor.get(component, variable, attributeType);
     }
 
-    public void handle(SetVariableDatum setVariableDatum) {
+    /**
+     * Updates variable.
+     *
+     * @param setVariableDatum contains path to variable and new value for it
+     * @throws SetVariableNotSupportedException if variable specified in {@link SetVariableDatum} is not supported by component
+     */
+    public void setVariable(SetVariableDatum setVariableDatum) {
         Component component = setVariableDatum.getComponent();
         Variable variable = setVariableDatum.getVariable();
         String variableName = variable.getName().toString();

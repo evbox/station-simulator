@@ -11,6 +11,6 @@ public interface SetVariableHandler {
      * @param setVariableDatum contains path to variable and new value for it
      * @throws SetVariableNotSupportedException if variable specified in {@link SetVariableDatum} is not supported by component
      */
-    void handle(SetVariableDatum setVariableDatum);
+    void setVariable(SetVariableDatum setVariableDatum);
 
 }

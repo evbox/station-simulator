@@ -13,6 +13,6 @@ public interface GetVariableHandler {
      * @param getVariableDatum contains necessary data to get variable from station
      * @return result of getting variable
      */
-    GetVariableResult handle(GetVariableDatum getVariableDatum);
+    GetVariableResult getVariable(GetVariableDatum getVariableDatum);
 
 }
