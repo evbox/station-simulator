@@ -76,7 +76,7 @@ class GetVariablesRequestHandlerTest {
 
     private void initOCPPCommCtrlComponentMock(String variableName, String variableValue) {
         given(componentsHolderMock.getComponent(OCPPCommCtrlrComponent.NAME)).willReturn(Optional.of(commCtrlrComponentMock));
-        given(commCtrlrComponentMock.handle(any(GetVariableDatum.class))).willAnswer(invocation -> new GetVariableResult()
+        given(commCtrlrComponentMock.getVariable(any(GetVariableDatum.class))).willAnswer(invocation -> new GetVariableResult()
                 .withComponent(new Component().withName(new CiString.CiString50(OCPPCommCtrlrComponent.NAME)))
                 .withVariable(new Variable().withName(new CiString.CiString50(variableName)))
                 .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED)

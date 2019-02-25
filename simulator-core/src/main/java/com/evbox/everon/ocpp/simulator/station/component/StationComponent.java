@@ -37,7 +37,7 @@ public abstract class StationComponent {
      * @param getVariableDatum contains necessary data to get variable from station
      * @return result of getting variable
      */
-    public GetVariableResult handle(GetVariableDatum getVariableDatum) {
+    public GetVariableResult getVariable(GetVariableDatum getVariableDatum) {
         Component component = getVariableDatum.getComponent();
         GetVariableDatum.AttributeType attributeType = getVariableDatum.getAttributeType();
         Variable variable = getVariableDatum.getVariable();
@@ -53,7 +53,7 @@ public abstract class StationComponent {
      * @param setVariableDatum contains path to variable and new value for it
      * @throws SetVariableNotSupportedException if variable specified in {@link SetVariableDatum} is not supported by component
      */
-    public void handle(SetVariableDatum setVariableDatum) {
+    public void setVariable(SetVariableDatum setVariableDatum) {
         Component component = setVariableDatum.getComponent();
         Variable variable = setVariableDatum.getVariable();
         String variableName = variable.getName().toString();

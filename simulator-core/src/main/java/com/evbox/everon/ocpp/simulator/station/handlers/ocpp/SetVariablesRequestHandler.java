@@ -57,7 +57,7 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
                     String componentName = data.getComponent().getName().toString();
                     Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
                     StationComponent component = optionalComponent.orElseThrow(() -> new UnknownComponentException(componentName));
-                    component.handle(data);
+                    component.setVariable(data);
                 });
     }
 
