@@ -30,5 +30,4 @@ public class ExpectedRequests {
         return incomingRequest -> incomingRequest.getActionType() == ActionType.STATUS_NOTIFICATION;
     }
 
-
 }

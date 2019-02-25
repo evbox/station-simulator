@@ -67,6 +67,7 @@ public class OcppMockServer {
     public void stop() {
         server.stop();
     }
+
     /**
      * Accepts a predicate that is responsible for incoming request expectation.
      * By default: expected count is 1.
@@ -79,10 +80,10 @@ public class OcppMockServer {
     }
 
     /**
-     *  Accepts a predicate that is responsible for incoming request expectation.
+     * Accepts a predicate that is responsible for incoming request expectation.
      *
      * @param requestExpectation a request expectation predicate
-     * @param expectedCount expected count
+     * @param expectedCount      expected count
      * @return {@link OcppServerResponse} instance
      */
     public OcppServerResponse when(Predicate<Call> requestExpectation, ExpectedCount expectedCount) {
