@@ -42,7 +42,7 @@ public class GetVariablesRequestHandler implements OcppRequestHandler<GetVariabl
             StationComponent stationComponent = stationComponentsHolder.getComponent(componentName)
                     .orElseThrow(() -> new UnknownComponentException(componentName));
 
-            return stationComponent.handle(data);
+            return stationComponent.getVariable(data);
         }).collect(toList());
 
         sendResponse(callId, new GetVariablesResponse().withGetVariableResult(results));

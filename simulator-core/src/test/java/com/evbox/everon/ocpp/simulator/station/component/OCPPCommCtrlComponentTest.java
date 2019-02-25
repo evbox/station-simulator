@@ -73,7 +73,7 @@ class OCPPCommCtrlComponentTest {
         initGetHeartbeatVariableMock(componentName, variableName, attributeType, String.valueOf(variableValue));
 
         //when
-        GetVariableResult result = ocppCommCtrlrComponent.handle(getVariableDatum);
+        GetVariableResult result = ocppCommCtrlrComponent.getVariable(getVariableDatum);
 
         //then
         assertCiString(result.getComponent().getName()).isEqualTo(componentName);
@@ -100,7 +100,7 @@ class OCPPCommCtrlComponentTest {
                 .withAttributeValue(new CiString.CiString1000(String.valueOf(variableValue)));
 
         //when
-        ocppCommCtrlrComponent.handle(setVariableDatum);
+        ocppCommCtrlrComponent.setVariable(setVariableDatum);
 
         verify(heartbeatIntervalVariableAccessorMock).set(componentCaptor.capture(), variableCaptor.capture(), attributeTypeCaptor.capture(), ciStringCaptor.capture());
 
