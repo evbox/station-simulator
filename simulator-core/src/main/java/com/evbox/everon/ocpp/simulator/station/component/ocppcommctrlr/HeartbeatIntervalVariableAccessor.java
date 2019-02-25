@@ -59,12 +59,10 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
                 .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()));
 
         if (!isNumeric(attributeValue.toString())) {
-            setVariableResult = setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
+            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
         } else {
-            setVariableResult = setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED);
+            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED);
         }
-
-        return setVariableResult;
     }
 
     public void setActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
