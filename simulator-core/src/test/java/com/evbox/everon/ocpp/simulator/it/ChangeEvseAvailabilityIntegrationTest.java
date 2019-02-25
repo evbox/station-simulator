@@ -44,7 +44,6 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
 
         ocppMockServer.verify();
 
-
     }
 
     String createChangeAvailabilityRequest() {
