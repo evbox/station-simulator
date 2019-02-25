@@ -1,6 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
-import com.evbox.everon.ocpp.simulator.station.component.variable.*;
+import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableNotSupportedException;
+import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
+import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
@@ -15,7 +17,7 @@ import static java.util.stream.Collectors.toMap;
  * Represents Component entity from OCPP 2.0 (Appendix 3. Standardized Components).
  * Supports validation, update and retrieval logic for component variables.
  */
-public abstract class StationComponent implements GetVariableHandler, SetVariableHandler {
+public abstract class StationComponent {
 
     /**
      * Map of variable names and accessors for each of them.
