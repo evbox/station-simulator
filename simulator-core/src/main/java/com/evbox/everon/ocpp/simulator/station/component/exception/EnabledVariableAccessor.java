@@ -17,7 +17,7 @@ import java.util.Optional;
 public class EnabledVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "Enabled";
-    public static final String EVSE_ENABLED_STATUS = Boolean.TRUE.toString();
+    public static final String EVSE_ENABLED_STATUS = "true";
 
     private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
             .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
