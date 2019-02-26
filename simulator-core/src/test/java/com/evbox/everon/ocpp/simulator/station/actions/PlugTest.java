@@ -3,6 +3,8 @@ package com.evbox.everon.ocpp.simulator.station.actions;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationResponse;
@@ -28,6 +30,10 @@ public class PlugTest {
     StationState stationStateMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
+    @Mock
+    Evse evseMock;
+    @Mock
+    Connector connectorMock;
 
     Plug plug;
 
@@ -48,17 +54,20 @@ public class PlugTest {
     @Test
     void verifyTransactionEventUpdate() {
 
+        // given
         when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
+        when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(evseMock);
+        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
+        when(evseMock.hasOngoingTransaction()).thenReturn(true);
+        when(evseMock.hasTokenId()).thenReturn(true);
 
-        when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(true);
-
+        // when
         plug.perform(stationStateMock, stationMessageSenderMock);
 
+        // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(anyInt(), anyInt(), subscriberCaptor.capture());
-
-        when(stationStateMock.hasAuthorizedToken(anyInt())).thenReturn(true);
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -70,17 +79,20 @@ public class PlugTest {
     @Test
     void verifyTransactionEventStart() {
 
+        // given
         when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
+        when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(evseMock);
+        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
+        when(evseMock.hasOngoingTransaction()).thenReturn(true);
+        when(evseMock.hasTokenId()).thenReturn(false);
 
-        when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(true);
-
+        // when
         plug.perform(stationStateMock, stationMessageSenderMock);
 
+        // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(anyInt(), anyInt(), subscriberCaptor.capture());
-
-        when(stationStateMock.hasAuthorizedToken(anyInt())).thenReturn(false);
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 

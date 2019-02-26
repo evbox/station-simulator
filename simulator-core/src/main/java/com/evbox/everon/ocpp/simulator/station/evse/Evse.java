@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * An EVSE is considered as an independently operated and managed part of the ChargingStation that can deliver energy to one EV at a time.
@@ -129,6 +130,19 @@ public class Evse {
     }
 
     /**
+     * Find an instance of {@link Connector} by connector_id.
+     *
+     * @param connectorId connector identity
+     * @return {@link Connector} instance
+     */
+    public Connector findConnector(int connectorId) {
+        return connectors.stream()
+                .filter(connector -> connector.getId().equals(connectorId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
+    }
+
+    /**
      * Find any LOCKED connector and switch to charging status.
      *
      * @return identity of the connector
@@ -223,6 +237,15 @@ public class Evse {
      */
     public boolean hasOngoingTransaction() {
         return transaction.getStatus() == IN_PROGRESS;
+    }
+
+    /**
+     * Checks whether EVSE has a token or not.
+     *
+     * @return true if token does exist otherwise false
+     */
+    public boolean hasTokenId() {
+        return isNotBlank(tokenId);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
+import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,7 +14,8 @@ import lombok.Getter;
 public class Connector {
 
     private final Integer id;
-    private CableStatus status;
+    private CableStatus cableStatus;
+    private StatusNotificationRequest.ConnectorStatus connectorStatus;
 
     /**
      * Create a new connector from the specified.
@@ -22,7 +24,7 @@ public class Connector {
      * @return a new instance of {@link Connector}
      */
     static Connector copyOf(Connector connector) {
-        return new Connector(connector.id, connector.status);
+        return new Connector(connector.id, connector.cableStatus, connector.connectorStatus);
     }
 
     /**
@@ -32,10 +34,10 @@ public class Connector {
      * @return identity of the connector
      */
     public Integer plug() {
-        if (status != CableStatus.UNPLUGGED) {
-            throw new IllegalStateException(String.format("Connector is not available: %s=%s", id, status));
+        if (cableStatus != CableStatus.UNPLUGGED) {
+            throw new IllegalStateException(String.format("Connector is not available: %s=%s", id, cableStatus));
         }
-        status = CableStatus.PLUGGED;
+        cableStatus = CableStatus.PLUGGED;
         return id;
     }
 
@@ -45,10 +47,10 @@ public class Connector {
      * @return identity of the connector
      */
     public Integer unplug() {
-        if (status == CableStatus.LOCKED) {
+        if (cableStatus == CableStatus.LOCKED) {
             throw new IllegalStateException(String.format("Connector is locked: %s", id));
         }
-        status = CableStatus.UNPLUGGED;
+        cableStatus = CableStatus.UNPLUGGED;
         return id;
     }
 
@@ -58,10 +60,10 @@ public class Connector {
      * @return identity of the connector
      */
     public Integer lock() {
-        if (status != CableStatus.PLUGGED) {
-            throw new IllegalStateException(String.format("Connector cannot be locked: %s=%s", id, status));
+        if (cableStatus != CableStatus.PLUGGED) {
+            throw new IllegalStateException(String.format("Connector cannot be locked: %s=%s", id, cableStatus));
         }
-        status = CableStatus.LOCKED;
+        cableStatus = CableStatus.LOCKED;
         return id;
     }
 
@@ -71,7 +73,7 @@ public class Connector {
      * @return identity of the connector
      */
     public Integer unlock() {
-        status = CableStatus.PLUGGED;
+        cableStatus = CableStatus.PLUGGED;
         return id;
     }
 
@@ -81,7 +83,7 @@ public class Connector {
      * @return `true` if PLUGGED otherwise `false`
      */
     public boolean isCablePlugged() {
-        return status == CableStatus.PLUGGED;
+        return cableStatus == CableStatus.PLUGGED;
     }
 
     /**
@@ -90,11 +92,11 @@ public class Connector {
      * @return `true` if LOCKED otherwise `false`
      */
     public boolean isCableLocked() {
-        return status == CableStatus.LOCKED;
+        return cableStatus == CableStatus.LOCKED;
     }
 
     @Override
     public String toString() {
-        return "Connector{" + "id=" + id + ", status=" + status + '}';
+        return "Connector{" + "id=" + id + ", cableStatus=" + cableStatus + '}';
     }
 }

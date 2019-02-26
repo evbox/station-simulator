@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.support;
 
 import com.evbox.everon.ocpp.simulator.station.evse.*;
+import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 
 import java.util.Collections;
 
@@ -24,6 +25,7 @@ public class EvseCreator {
         private int connectorId;
         private CableStatus cableStatus;
         private EvseTransaction evseTransaction;
+        private StatusNotificationRequest.ConnectorStatus connectorStatus;
 
         public EvseBuilder withId(int id) {
             this.id = id;
@@ -46,8 +48,13 @@ public class EvseCreator {
             return this;
         }
 
+        public EvseBuilder withConnectorStatus(StatusNotificationRequest.ConnectorStatus connectorStatus) {
+            this.connectorStatus = connectorStatus;
+            return this;
+        }
+
         public Evse build() {
-            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, cableStatus)));
+            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, cableStatus, connectorStatus)));
         }
 
     }

@@ -51,7 +51,7 @@ public class PayloadFactory {
         payload.setEvseId(evse.getId());
         payload.setConnectorId(connector.getId());
 
-        if (connector.getStatus() == CableStatus.UNPLUGGED) {
+        if (connector.getCableStatus() == CableStatus.UNPLUGGED) {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
         } else {
             payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.OCCUPIED);
