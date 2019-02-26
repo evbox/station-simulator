@@ -24,7 +24,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
             .build();
 
     private final Map<SetVariableDatum.AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<SetVariableDatum.AttributeType, SetVariableValidator>builder()
-            .put(SetVariableDatum.AttributeType.ACTUAL, this::validateActualValue)
+            .put(SetVariableDatum.AttributeType.ACTUAL, this::rejectVariable)
             .build();
 
     public AvailabilityStateVariableAccessor(Station station) {
@@ -69,7 +69,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
         }
     }
 
-    private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 ciString1000) {
+    private SetVariableResult rejectVariable(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 ciString1000) {
         return new SetVariableResult()
                 .withComponent(component)
                 .withVariable(variable)
