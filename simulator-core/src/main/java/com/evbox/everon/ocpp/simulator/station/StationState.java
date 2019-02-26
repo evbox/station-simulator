@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.*;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -142,15 +143,25 @@ public class StationState {
     }
 
     /**
+     * Try to find EVSE by given EVSE ID or return empty result.
+     *
+     * @param evseId EVSE identity
+     * @return optional with instance of {@link Evse} or Optional.empty()
+     */
+    public Optional<Evse> tryFindEvse(int evseId) {
+        return evses.stream()
+                .filter(evse -> evse.getId() == evseId)
+                .findAny();
+    }
+
+    /**
      * Find an instance of {@link Evse} by evseId. If not found then throw {@link IllegalArgumentException}.
      *
-     * @param evseId evse identity
+     * @param evseId EVSE identity
      * @return an instance of {@link Evse}
      */
     public Evse findEvse(int evseId) {
-        return evses.stream()
-                .filter(evse -> evse.getId() == evseId)
-                .findAny()
+        return tryFindEvse(evseId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
