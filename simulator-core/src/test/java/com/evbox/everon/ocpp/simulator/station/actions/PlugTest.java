@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions;
 
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
@@ -39,7 +39,7 @@ public class PlugTest {
     @Test
     void shouldThrowExceptionOnIllegalState() {
 
-        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorStatus.LOCKED);
+        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.LOCKED);
 
         assertThrows(IllegalStateException.class, () -> plug.perform(stationStateMock, stationMessageSenderMock));
 
@@ -48,7 +48,7 @@ public class PlugTest {
     @Test
     void verifyTransactionEventUpdate() {
 
-        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorStatus.UNPLUGGED);
+        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
 
         when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(true);
 
@@ -70,7 +70,7 @@ public class PlugTest {
     @Test
     void verifyTransactionEventStart() {
 
-        when(stationStateMock.getConnectorState(anyInt())).thenReturn(ConnectorStatus.UNPLUGGED);
+        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
 
         when(stationStateMock.hasOngoingTransaction(anyInt())).thenReturn(true);
 

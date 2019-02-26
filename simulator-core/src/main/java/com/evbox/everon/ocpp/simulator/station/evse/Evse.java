@@ -103,7 +103,7 @@ public class Evse {
      */
     public Integer lockPluggedConnector() {
         Connector pluggedConnector = connectors.stream()
-                .filter(Connector::isPlugged)
+                .filter(Connector::isCablePlugged)
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException(String.format("Unable to lock connector (nothing is plugged in): evseId=%s", id)));
 
@@ -119,7 +119,7 @@ public class Evse {
      */
     public Integer unlockConnector() {
         Connector lockedConnector = connectors.stream()
-                .filter(Connector::isLocked)
+                .filter(Connector::isCableLocked)
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException(String.format("Unable to unlock (no locked connectors): evseId=%s", id)));
 
@@ -135,7 +135,7 @@ public class Evse {
      */
     public Integer startCharging() {
         Connector lockedConnector = connectors.stream()
-                .filter(Connector::isLocked)
+                .filter(Connector::isCableLocked)
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
 

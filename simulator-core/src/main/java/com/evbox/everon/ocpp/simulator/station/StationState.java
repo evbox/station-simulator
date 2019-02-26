@@ -1,10 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 
@@ -84,10 +83,10 @@ public class StationState {
     }
 
     public boolean isPlugged(Integer evseId) {
-        return !isCharging(evseId) && findEvse(evseId).getConnectors().stream().anyMatch(Connector::isPlugged);
+        return !isCharging(evseId) && findEvse(evseId).getConnectors().stream().anyMatch(Connector::isCablePlugged);
     }
 
-    public ConnectorStatus getConnectorState(int connectorId) {
+    public CableStatus getCableStatus(int connectorId) {
         return findConnector(connectorId).getStatus();
     }
 
@@ -177,7 +176,7 @@ public class StationState {
         for (int evseId = 1; evseId <= evseCount; evseId++) {
             ImmutableList.Builder<Connector> connectorListBuilder = ImmutableList.builder();
             for (int connectorId = 1; connectorId <= connectorsPerEvseCount; connectorId++) {
-                connectorListBuilder.add(new Connector(connectorId, ConnectorStatus.UNPLUGGED));
+                connectorListBuilder.add(new Connector(connectorId, CableStatus.UNPLUGGED));
             }
 
             evseListBuilder.add(new Evse(evseId, connectorListBuilder.build()));

@@ -13,7 +13,7 @@ import lombok.Getter;
 public class Connector {
 
     private final Integer id;
-    private ConnectorStatus status;
+    private CableStatus status;
 
     /**
      * Create a new connector from the specified.
@@ -26,71 +26,71 @@ public class Connector {
     }
 
     /**
-     * Change the connector status to {@code ConnectorStatus.PLUGGED}. If status is not {@code ConnectorStatus.UNPLUGGED}
+     * Change the cable status to {@code CableStatus.PLUGGED}. If status is not {@code CableStatus.UNPLUGGED}
      * then throw {@link IllegalStateException}
      *
      * @return identity of the connector
      */
     public Integer plug() {
-        if (status != ConnectorStatus.UNPLUGGED) {
+        if (status != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %s=%s", id, status));
         }
-        status = ConnectorStatus.PLUGGED;
+        status = CableStatus.PLUGGED;
         return id;
     }
 
     /**
-     * Change the connector status to {@code ConnectorStatus.UNPLUGGED}.
+     * Change the cable status to {@code CableStatus.UNPLUGGED}.
      *
      * @return identity of the connector
      */
     public Integer unplug() {
-        if (status == ConnectorStatus.LOCKED) {
+        if (status == CableStatus.LOCKED) {
             throw new IllegalStateException(String.format("Connector is locked: %s", id));
         }
-        status = ConnectorStatus.UNPLUGGED;
+        status = CableStatus.UNPLUGGED;
         return id;
     }
 
     /**
-     * Change the connector status to {@code ConnectorStatus.LOCKED}.
+     * Change the cable status to {@code CableStatus.LOCKED}.
      *
      * @return identity of the connector
      */
     public Integer lock() {
-        if (status != ConnectorStatus.PLUGGED) {
+        if (status != CableStatus.PLUGGED) {
             throw new IllegalStateException(String.format("Connector cannot be locked: %s=%s", id, status));
         }
-        status = ConnectorStatus.LOCKED;
+        status = CableStatus.LOCKED;
         return id;
     }
 
     /**
-     * Change the connector status to {@code ConnectorStatus.PLUGGED}.
+     * Change the cable status to {@code CableStatus.PLUGGED}.
      *
      * @return identity of the connector
      */
     public Integer unlock() {
-        status = ConnectorStatus.PLUGGED;
+        status = CableStatus.PLUGGED;
         return id;
     }
 
     /**
-     * Check whether status is PLUGGED or not.
+     * Check whether cable status is PLUGGED or not.
      *
      * @return `true` if PLUGGED otherwise `false`
      */
-    public boolean isPlugged() {
-        return status == ConnectorStatus.PLUGGED;
+    public boolean isCablePlugged() {
+        return status == CableStatus.PLUGGED;
     }
 
     /**
-     * Check whether status is LOCKED or not.
+     * Check whether cable status is LOCKED or not.
      *
      * @return `true` if LOCKED otherwise `false`
      */
-    public boolean isLocked() {
-        return status == ConnectorStatus.LOCKED;
+    public boolean isCableLocked() {
+        return status == CableStatus.LOCKED;
     }
 
     @Override

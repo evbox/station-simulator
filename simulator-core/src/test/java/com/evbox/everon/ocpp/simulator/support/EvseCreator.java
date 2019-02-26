@@ -9,7 +9,7 @@ public class EvseCreator {
     public static final Evse DEFAULT_EVSE_INSTANCE = createEvse()
             .withId(StationConstants.DEFAULT_EVSE_ID)
             .withStatus(EvseStatus.AVAILABLE)
-            .withConnectorIdAndState(StationConstants.DEFAULT_CONNECTOR_ID, ConnectorStatus.UNPLUGGED)
+            .withConnectorIdAndCableStatus(StationConstants.DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED)
             .withTransaction(new EvseTransaction(StationConstants.DEFAULT_INT_TRANSACTION_ID))
             .build();
 
@@ -22,7 +22,7 @@ public class EvseCreator {
         private int id;
         private EvseStatus evseStatus;
         private int connectorId;
-        private ConnectorStatus connectorStatus;
+        private CableStatus cableStatus;
         private EvseTransaction evseTransaction;
 
         public EvseBuilder withId(int id) {
@@ -35,9 +35,9 @@ public class EvseCreator {
             return this;
         }
 
-        public EvseBuilder withConnectorIdAndState(int connectorId, ConnectorStatus connectorStatus) {
+        public EvseBuilder withConnectorIdAndCableStatus(int connectorId, CableStatus cableStatus) {
             this.connectorId = connectorId;
-            this.connectorStatus = connectorStatus;
+            this.cableStatus = cableStatus;
             return this;
         }
 
@@ -47,7 +47,7 @@ public class EvseCreator {
         }
 
         public Evse build() {
-            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, connectorStatus)));
+            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, cableStatus)));
         }
 
     }
