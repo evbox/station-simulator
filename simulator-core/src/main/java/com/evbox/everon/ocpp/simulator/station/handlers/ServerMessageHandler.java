@@ -1,8 +1,10 @@
 package com.evbox.everon.ocpp.simulator.station.handlers;
 
 import com.evbox.everon.ocpp.simulator.message.*;
+import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
@@ -31,18 +33,21 @@ public class ServerMessageHandler implements MessageHandler<String> {
     /**
      * Create an instance.
      *
+     * @param station reference to station which accepts the requests
      * @param stationState state of the station
      * @param stationMessageSender event sender of the station
      * @param stationId station identity
      * @param subscriptionRegistry station message type registry
      */
-    public ServerMessageHandler(StationState stationState, StationMessageSender stationMessageSender, String stationId, SubscriptionRegistry subscriptionRegistry) {
+    public ServerMessageHandler(Station station, StationState stationState, StationMessageSender stationMessageSender, String stationId, SubscriptionRegistry subscriptionRegistry) {
+
+        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station);
         this.stationId = stationId;
         this.subscriptionRegistry = subscriptionRegistry;
         this.stationMessageSender = stationMessageSender;
         this.requestHandlers = ImmutableMap.<Class, OcppRequestHandler>builder()
-                .put(GetVariablesRequest.class, new GetVariablesRequestHandler(stationMessageSender))
-                .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationMessageSender))
+                .put(GetVariablesRequest.class, new GetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ResetRequest.class, new ResetRequestHandler(stationState, stationMessageSender))
                 .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(stationState, stationMessageSender))
                 .build();

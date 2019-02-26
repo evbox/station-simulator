@@ -35,7 +35,7 @@ public class Station {
             .build();
 
     private final SimulatorConfiguration.StationConfiguration configuration;
-    private final int heartBeatInterval;
+    private final int defaultHeartBeatIntervalSec;
 
     private final StationState state;
 
@@ -48,30 +48,29 @@ public class Station {
 
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
 
-
     /**
-     * Create a station using {@link SimulatorConfiguration.StationConfiguration} and heartBeatInterval.
+     * Create a station using {@link SimulatorConfiguration.StationConfiguration} and defaultHeartBeatIntervalSec.
      *
      * @param configuration station configuration
-     * @param heartBeatInterval heart beat interval
+     * @param defaultHeartBeatIntervalSec heartbeat interval in seconds
      */
-    public Station(SimulatorConfiguration.StationConfiguration configuration, int heartBeatInterval) {
-        this(configuration, heartBeatInterval, DEFAULT_HTTP_CLIENT);
+    public Station(SimulatorConfiguration.StationConfiguration configuration, int defaultHeartBeatIntervalSec) {
+        this(configuration, defaultHeartBeatIntervalSec, DEFAULT_HTTP_CLIENT);
     }
 
     /**
-     * Create a station using {@link SimulatorConfiguration.StationConfiguration}, heartBeatInterval and {@link OkHttpClient}.
+     * Create a station using {@link SimulatorConfiguration.StationConfiguration}, defaultHeartBeatIntervalSec and {@link OkHttpClient}.
      *
      * {@link OkHttpClient} is used for connecting and communicating with OCPP server.
      *
      * @param configuration station configuration
-     * @param heartBeatInterval heart beat interval
+     * @param defaultHeartBeatIntervalSec heart beat interval in seconds
      * @param okHttpClient http client
      */
-    public Station(SimulatorConfiguration.StationConfiguration configuration, int heartBeatInterval, OkHttpClient okHttpClient) {
+    public Station(SimulatorConfiguration.StationConfiguration configuration, int defaultHeartBeatIntervalSec, OkHttpClient okHttpClient) {
 
         this.configuration = configuration;
-        this.heartBeatInterval = heartBeatInterval;
+        this.defaultHeartBeatIntervalSec = defaultHeartBeatIntervalSec;
         this.state = new StationState(configuration);
 
         this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(okHttpClient));
@@ -109,10 +108,8 @@ public class Station {
         stationMessageSender.sendBootNotificationAndSubscribe(BootNotificationRequest.Reason.POWER_UP, (request, response) -> {
             if (response.getStatus() == BootNotificationResponse.Status.ACCEPTED) {
                 state.setCurrentTime(response.getCurrentTime());
-                int interval = response.getInterval() == 0 ? heartBeatInterval : response.getInterval();
 
-                heartbeatScheduler.scheduleHeartbeat(interval);
-                state.setHeartbeatInterval(interval);
+                updateHeartbeat(response.getInterval());
 
                 for (int i = 1; i <= configuration.getEvse().getCount(); i++) {
                     for (int j = 1; j <= configuration.getEvse().getConnectors(); j++) {
@@ -123,7 +120,7 @@ public class Station {
         });
 
         UserMessageHandler userMessageHandler = new UserMessageHandler(state, stationMessageSender);
-        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(state, stationMessageSender, configuration.getId(), callRegistry);
+        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, state, stationMessageSender, configuration.getId(), callRegistry);
 
         StationMessageRouter stationMessageRouter = new StationMessageRouter(serverMessageHandler, userMessageHandler);
 
@@ -168,5 +165,14 @@ public class Station {
         return stationMessageSender.getSentCalls();
     }
 
+    /**
+     * Updates station heartbeat interval
+     * @param newHeartbeatInterval heartbeat interval in seconds
+     */
+    public void updateHeartbeat(int newHeartbeatInterval) {
+        int interval = newHeartbeatInterval == 0 ? defaultHeartBeatIntervalSec : newHeartbeatInterval;
 
+        heartbeatScheduler.scheduleHeartbeat(interval);
+        state.setHeartbeatInterval(interval);
+    }
 }

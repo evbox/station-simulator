@@ -12,7 +12,7 @@ public class SimulatorConfiguration {
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
     /**
-     * Default heartbeatInterval for all stations
+     * Default heartbeatInterval (in seconds) for all stations
      */
     private Integer heartbeatInterval;
     private List<StationConfiguration> stations;
