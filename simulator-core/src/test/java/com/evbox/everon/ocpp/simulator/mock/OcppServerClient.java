@@ -41,7 +41,7 @@ public class OcppServerClient {
      * @param stationId station identity
      * @return {@link WebSocketSender} instance.
      */
-    public WebSocketSender findSender(String stationId) {
+    public WebSocketSender findStationSender(String stationId) {
         return webSocketChannelMap.get(stationId);
     }
 }

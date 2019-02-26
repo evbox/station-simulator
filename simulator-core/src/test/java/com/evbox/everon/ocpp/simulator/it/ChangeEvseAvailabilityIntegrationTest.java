@@ -35,7 +35,7 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
 
         ocppMockServer.waitUntilConnected();
 
-        ocppServerClient.findSender(STATION_ID).sendMessage(createChangeAvailabilityRequest());
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(createChangeAvailabilityRequest());
 
         // then
         await().untilAsserted(() -> {
