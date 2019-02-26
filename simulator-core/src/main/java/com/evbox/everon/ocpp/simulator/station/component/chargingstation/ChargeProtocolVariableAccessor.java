@@ -22,7 +22,7 @@ public class ChargeProtocolVariableAccessor extends VariableAccessor {
             .build();
 
     private final Map<SetVariableDatum.AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<SetVariableDatum.AttributeType, SetVariableValidator>builder()
-            .put(SetVariableDatum.AttributeType.ACTUAL, this::validateActualValue)
+            .put(SetVariableDatum.AttributeType.ACTUAL, this::rejectVariable)
             .build();
 
     public ChargeProtocolVariableAccessor(Station station) {
@@ -49,9 +49,8 @@ public class ChargeProtocolVariableAccessor extends VariableAccessor {
         return variableValidators;
     }
 
-    private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
+    private SetVariableResult rejectVariable(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
         return READ_ONLY_VALIDATOR.validate(component, variable, attributeType, attributeValue);
-
     }
 
     private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
