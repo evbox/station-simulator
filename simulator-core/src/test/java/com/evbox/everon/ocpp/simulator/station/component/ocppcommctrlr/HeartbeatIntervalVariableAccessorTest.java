@@ -71,9 +71,7 @@ class HeartbeatIntervalVariableAccessorTest {
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(String componentName, String variableName, GetVariableDatum.AttributeType attributeType, GetVariableResult.AttributeStatus expectedAttributeStatus, Integer expectedValue) {
         //given
-        if (expectedValue != null) {
-            initStationMockHeartbeat(expectedValue);
-        }
+        initStationMockHeartbeat(expectedValue);
 
         //when
         GetVariableResult result = variableAccessor.get(
@@ -105,8 +103,12 @@ class HeartbeatIntervalVariableAccessorTest {
     }
 
     private void initStationMockHeartbeat(Integer expectedValue) {
-        given(stationMock.getState()).willReturn(stationStateMock);
-        given(stationStateMock.getHeartbeatInterval()).willReturn(expectedValue);
+
+        if (expectedValue != null) {
+            given(stationMock.getState()).willReturn(stationStateMock);
+            given(stationStateMock.getHeartbeatInterval()).willReturn(expectedValue);
+        }
+
     }
 
 }

@@ -67,9 +67,7 @@ class IdentityVariableAccessorTest {
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(String componentName, String variableName, GetVariableDatum.AttributeType attributeType, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
         //given
-        if (expectedValue != null) {
-            initStationMockIdentityCode(expectedValue);
-        }
+        initStationMockIdentityCode(expectedValue);
 
         //when
         GetVariableResult result = variableAccessor.get(
@@ -86,7 +84,11 @@ class IdentityVariableAccessorTest {
     }
 
     private void initStationMockIdentityCode(String expectedValue) {
-        given(stationMock.getConfiguration()).willReturn(stationConfigurationMock);
-        given(stationConfigurationMock.getId()).willReturn(expectedValue);
+
+        if (expectedValue != null) {
+            given(stationMock.getConfiguration()).willReturn(stationConfigurationMock);
+            given(stationConfigurationMock.getId()).willReturn(expectedValue);
+        }
+
     }
 }
