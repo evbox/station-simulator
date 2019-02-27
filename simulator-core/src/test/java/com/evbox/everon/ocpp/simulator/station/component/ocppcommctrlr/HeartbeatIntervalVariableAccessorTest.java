@@ -36,9 +36,9 @@ class HeartbeatIntervalVariableAccessorTest {
     private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.MIN_SET).build();
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.TARGET).build();
 
-    @Mock
+    @Mock(lenient = true)
     Station stationMock;
-    @Mock
+    @Mock(lenient = true)
     StationState stationStateMock;
 
     @InjectMocks
@@ -80,9 +80,7 @@ class HeartbeatIntervalVariableAccessorTest {
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(AttributePath attributePath, GetVariableResult.AttributeStatus expectedAttributeStatus, Integer expectedValue) {
         //given
-        if (expectedValue != null) {
-            initStationMockHeartbeat(expectedValue);
-        }
+        initStationMockHeartbeat(expectedValue);
 
         //when
         GetVariableResult result = variableAccessor.get(attributePath);
@@ -92,7 +90,7 @@ class HeartbeatIntervalVariableAccessorTest {
         assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
         assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
-        assertCiString(result.getAttributeValue()).isEqualTo(expectedValue == null ? null : String.valueOf(expectedValue));
+        assertCiString(result.getAttributeValue()).isEqualTo(String.valueOf(expectedValue));
     }
 
     @Test

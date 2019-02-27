@@ -11,16 +11,16 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.Attr
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 public class EnabledVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "Enabled";
-    public static final String EVSE_ENABLED_STATUS = Boolean.TRUE.toString();
+    public static final String EVSE_ENABLED_STATUS = "true";
 
     private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
             .put(AttributeType.ACTUAL, this::getActualValue)
@@ -64,14 +64,15 @@ public class EnabledVariableAccessor extends VariableAccessor {
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
         Integer evseId = attributePath.getComponent().getEvse().getId();
-        Optional<Evse> optionalEvse = getStation().getState().tryFindEvse(evseId);
 
         GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
-        if (optionalEvse.isPresent()) {
+        boolean evseExists = getStation().getState().hasEvse(evseId);
+
+        if (evseExists) {
             return getVariableResult
                     .withAttributeValue(new CiString.CiString1000(EVSE_ENABLED_STATUS))
                     .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);

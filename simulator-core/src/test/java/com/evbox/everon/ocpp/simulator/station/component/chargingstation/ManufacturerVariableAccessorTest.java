@@ -37,10 +37,10 @@ class ManufacturerVariableAccessorTest {
 
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
-                arguments(ACTUAL_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.REJECTED),
-                arguments(MAX_SET_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
-                arguments(MIN_SET_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
-                arguments(TARGET_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE)
+                arguments(ACTUAL_ATTRIBUTE, ManufacturerVariableAccessor.NAME, SetVariableResult.AttributeStatus.REJECTED),
+                arguments(MAX_SET_ATTRIBUTE, ManufacturerVariableAccessor.NAME, SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
+                arguments(MIN_SET_ATTRIBUTE, ManufacturerVariableAccessor.NAME, SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
+                arguments(TARGET_ATTRIBUTE, ManufacturerVariableAccessor.NAME, SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE)
         );
     }
 

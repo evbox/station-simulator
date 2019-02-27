@@ -9,6 +9,8 @@ import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.simulator.support.StationConstants;
+import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,9 +39,9 @@ class IdentityVariableAccessorTest {
     private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.MIN_SET).build();
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.TARGET).build();
 
-    @Mock
+    @Mock(lenient = true)
     Station stationMock;
-    @Mock
+    @Mock(lenient = true)
     SimulatorConfiguration.StationConfiguration stationConfigurationMock;
 
     @InjectMocks
@@ -80,9 +82,7 @@ class IdentityVariableAccessorTest {
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(AttributePath attributePath, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
         //given
-        if (expectedValue != null) {
-            initStationMockIdentityCode(expectedValue);
-        }
+        initStationMockIdentityCode(expectedValue);
 
         //when
         GetVariableResult result = variableAccessor.get(attributePath);

@@ -6,6 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.support.StationConstants;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
@@ -18,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.simulator.assertion.CiStringAssert.assertCiString;
@@ -30,7 +30,7 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class EnabledVariableAccessorTest {
 
-    private static final int EVSE_ID = 1;
+    private static final int EVSE_ID = StationConstants.DEFAULT_EVSE_ID;
     private static final int UNKNOWN_EVSE_ID = 5;
 
     private static final String COMPONENT_NAME = EVSEComponent.NAME;
@@ -113,8 +113,8 @@ class EnabledVariableAccessorTest {
 
     private void initEvseMock() {
         given(stationMock.getState()).willReturn(stationStateMock);
-        given(stationStateMock.tryFindEvse(eq(EVSE_ID))).willReturn(Optional.of(evseMock));
-        given(stationStateMock.tryFindEvse(eq(UNKNOWN_EVSE_ID))).willReturn(Optional.empty());
+        given(stationStateMock.hasEvse(eq(EVSE_ID))).willReturn(true);
+        given(stationStateMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
     }
 
     static AttributePath.AttributePathBuilder attributePathBuilder(int evseId) {
