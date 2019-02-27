@@ -2,8 +2,9 @@ package com.evbox.everon.ocpp.simulator.station.actions;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
+import com.evbox.everon.ocpp.v20.message.station.AuthorizeResponse;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.AUTHORIZED;
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.STOP_AUTHORIZED;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Represents Authorize message.
@@ -30,7 +32,7 @@ public class Authorize implements UserMessage {
     /**
      * Perform authorisation logic.
      *
-     * @param stationState state of the station
+     * @param stationState         state of the station
      * @param stationMessageSender event sender of the station
      */
     @Override
@@ -40,28 +42,29 @@ public class Authorize implements UserMessage {
 
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, evseIds, (request, response) -> {
             if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
-                List<Integer> authorizedEvseIds = response.getEvseId() == null || response.getEvseId().isEmpty() ? singletonList(stationState.getDefaultEvseId()) : response.getEvseId();
-                authorizedEvseIds.forEach(evseId -> stationState.storeToken(evseId, tokenId));
+                List<Evse> authorizedEvses = hasEvses(response) ? getEvseList(response, stationState) : singletonList(stationState.getDefaultEvse());
 
-                boolean haveOngoingTransaction = authorizedEvseIds.stream().allMatch(stationState::hasOngoingTransaction);
+                authorizedEvses.forEach(evse -> evse.setToken(tokenId));
+
+                boolean haveOngoingTransaction = authorizedEvses.stream().allMatch(Evse::hasOngoingTransaction);
 
                 if (!haveOngoingTransaction) {
                     Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                    authorizedEvseIds.forEach(evseId -> stationState.findEvse(evseId).createTransaction(transactionId));
+                    authorizedEvses.forEach(evse -> evse.createTransaction(transactionId));
                 }
 
-                boolean allCharging = authorizedEvseIds.stream().allMatch(stationState::isCharging);
-                boolean allPlugged = authorizedEvseIds.stream().allMatch(stationState::isPlugged);
+                boolean allCharging = authorizedEvses.stream().allMatch(Evse::isCharging);
+                boolean allPlugged = authorizedEvses.stream().allMatch(Evse::isCablePlugged);
 
-                if (allPlugged) {
-                    startCharging(stationState, stationMessageSender, authorizedEvseIds);
+                if (allPlugged && !allCharging) {
+                    startCharging(stationMessageSender, authorizedEvses);
                 } else if (allCharging) {
-                    stopCharging(stationState, stationMessageSender, authorizedEvseIds);
+                    stopCharging(stationMessageSender, authorizedEvses);
                 } else {
                     if (haveOngoingTransaction) {
-                        startCharging(stationState, stationMessageSender, authorizedEvseIds);
+                        startCharging(stationMessageSender, authorizedEvses);
                     } else {
-                        authorizedEvseIds.forEach(evseId -> stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId));
+                        authorizedEvses.forEach(evse -> stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId));
                     }
                 }
             }
@@ -69,20 +72,30 @@ public class Authorize implements UserMessage {
     }
 
 
-    private void startCharging(StationState state, StationMessageSender stationMessageSender, List<Integer> authorizedEvseIds) {
-        authorizedEvseIds.forEach(evseId -> {
-            Integer connectorId = state.lockConnector(evseId);
-            state.startCharging(evseId);
-            stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, AUTHORIZED, TransactionData.ChargingState.CHARGING);
+    private void startCharging(StationMessageSender stationMessageSender, List<Evse> authorizedEvses) {
+        authorizedEvses.forEach(evse -> {
+            Integer connectorId = evse.lockPluggedConnector();
+            evse.startCharging();
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, TransactionData.ChargingState.CHARGING);
         });
     }
 
-    private void stopCharging(StationState state, StationMessageSender stationMessageSender, List<Integer> authorizedEvseIds) {
-        authorizedEvseIds.forEach(evseId -> {
-            state.stopCharging(evseId);
-            Integer connectorId = state.unlockConnector(evseId);
-            stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, STOP_AUTHORIZED, TransactionData.ChargingState.EV_DETECTED);
+    private void stopCharging(StationMessageSender stationMessageSender, List<Evse> authorizedEvses) {
+        authorizedEvses.forEach(evse -> {
+            evse.stopCharging();
+            Integer connectorId = evse.unlockConnector();
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, TransactionData.ChargingState.EV_DETECTED);
         });
     }
+
+
+    private List<Evse> getEvseList(AuthorizeResponse response, StationState stationState) {
+        return response.getEvseId().stream().map(stationState::findEvse).collect(toList());
+    }
+
+    private boolean hasEvses(AuthorizeResponse response) {
+        return response.getEvseId() != null && !response.getEvseId().isEmpty();
+    }
+
 }
 

@@ -50,7 +50,7 @@ public class UnplugTest {
     @Test
     void verifyTransactionStatusNotification() {
 
-        when(stationStateMock.findEvse(anyInt())).thenReturn(EvseCreator.DEFAULT_EVSE_INSTANCE);
+        when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(EvseCreator.DEFAULT_EVSE_INSTANCE);
 
         unplug.perform(stationStateMock, stationMessageSenderMock);
 

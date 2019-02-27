@@ -8,5 +8,14 @@ package com.evbox.everon.ocpp.simulator.station.evse;
  */
 public enum EvseStatus {
     AVAILABLE,
-    UNAVAILABLE
+    UNAVAILABLE;
+
+
+    public boolean isAvailable() {
+        return this == AVAILABLE;
+    }
+
+    public boolean isUnAvailable() {
+        return this == UNAVAILABLE;
+    }
 }

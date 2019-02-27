@@ -1,9 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.actions;
 
-import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
@@ -32,8 +31,6 @@ public class PlugTest {
     StationMessageSender stationMessageSenderMock;
     @Mock
     Evse evseMock;
-    @Mock
-    Connector connectorMock;
 
     Plug plug;
 
@@ -57,7 +54,6 @@ public class PlugTest {
         // given
         when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
         when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(evseMock);
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
         when(evseMock.hasTokenId()).thenReturn(true);
 
@@ -82,7 +78,6 @@ public class PlugTest {
         // given
         when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
         when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(evseMock);
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
         when(evseMock.hasTokenId()).thenReturn(false);
 

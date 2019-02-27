@@ -42,8 +42,7 @@ public class Plug implements UserMessage {
             evse.createTransaction(transactionId);
         }
 
-        Connector connector = evse.findConnector(connectorId);
-        connector.plug();
+        evse.tryPlug(connectorId);
 
         stationMessageSender.sendStatusNotificationAndSubscribe(evse.getId(), connectorId, (statusNotificationRequest, statusNotificationResponse) -> {
             if (evse.hasTokenId()) {

@@ -61,16 +61,6 @@ public class StationState {
         return findEvse(evseId).unlockConnector();
     }
 
-    public void plug(Integer connectorId) {
-        Connector connector = findConnector(connectorId);
-        connector.plug();
-    }
-
-    public void unplug(Integer connectorId) {
-        Connector connector = findConnector(connectorId);
-        connector.unplug();
-    }
-
     public Integer startCharging(Integer evseId) {
         return findEvse(evseId).startCharging();
     }
@@ -91,27 +81,23 @@ public class StationState {
         return findConnector(connectorId).getCableStatus();
     }
 
-    public Integer findEvseId(int connectorId) {
-        return findEvseByConnectorId(connectorId).getId();
-    }
-
     public void storeToken(Integer evseId, String tokenId) {
         findEvse(evseId).setToken(tokenId);
     }
 
-    public Integer getDefaultEvseId() {
-        return evses.get(0).getId();
+    public Evse getDefaultEvse() {
+        return evses.get(0);
     }
 
     public boolean hasAuthorizedToken() {
         if (evses.size() > 1) {
             throw new IllegalStateException("One or more EVSE IDs have to be specified");
         }
-        return hasAuthorizedToken(getDefaultEvseId());
+        return hasAuthorizedToken(getDefaultEvse());
     }
 
-    public boolean hasAuthorizedToken(Integer evseId) {
-        return isNotBlank(findEvse(evseId).getTokenId());
+    public boolean hasAuthorizedToken(Evse evse) {
+        return isNotBlank(evse.getTokenId());
     }
 
     public String getToken(Integer evseId) {
@@ -120,10 +106,6 @@ public class StationState {
             throw new IllegalStateException(String.format("Token is not authorized yet: %s", token));
         }
         return token;
-    }
-
-    public void clearToken(Integer evseId) {
-        findEvse(evseId).clearToken();
     }
 
     public void clearTokens() {

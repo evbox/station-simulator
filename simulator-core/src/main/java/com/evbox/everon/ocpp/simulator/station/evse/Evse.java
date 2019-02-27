@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -64,10 +65,10 @@ public class Evse {
     /**
      * Create Evse instance.
      *
-     * @param id              evse identity
-     * @param evseStatus      evse status
+     * @param id          evse identity
+     * @param evseStatus  evse status
      * @param transaction evse transaction
-     * @param connectors      list of connectors for this evse
+     * @param connectors  list of connectors for this evse
      */
     public Evse(int id, EvseStatus evseStatus, EvseTransaction transaction, List<Connector> connectors) {
         this.id = id;
@@ -127,19 +128,6 @@ public class Evse {
         lockedConnector.unlock();
 
         return lockedConnector.getId();
-    }
-
-    /**
-     * Find an instance of {@link Connector} by connector_id.
-     *
-     * @param connectorId connector identity
-     * @return {@link Connector} instance
-     */
-    public Connector findConnector(int connectorId) {
-        return connectors.stream()
-                .filter(connector -> connector.getId().equals(connectorId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
     }
 
     /**
@@ -273,6 +261,52 @@ public class Evse {
         tokenId = StringUtils.EMPTY;
     }
 
+
+    /**
+     * Try to plug connector. If EVSE is unavailable it returns false.
+     *
+     * @param connectorId connector identity
+     * @return true if succeeded otherwise false
+     */
+    public boolean tryPlug(Integer connectorId) {
+
+        if (evseStatus.isUnAvailable()) {
+            return false;
+        }
+
+        Connector connector = findConnector(connectorId);
+        connector.plug();
+
+        return true;
+    }
+
+    /**
+     * Try to unplug connector. if EVSE is unavailable method returns false.
+     *
+     * @param connectorId connector identity
+     * @return true if succeeded otherwise false
+     */
+    public boolean tryUnPlug(Integer connectorId) {
+
+        if (evseStatus.isUnAvailable()) {
+            return false;
+        }
+
+        Connector connector = findConnector(connectorId);
+        connector.unplug();
+
+        return true;
+    }
+
+    /**
+     * Check whether cable is plugged to any of EVSE connectors or not.
+     *
+     * @return true if cable plugged otherwise false
+     */
+    public boolean isCablePlugged() {
+        return getConnectors().stream().anyMatch(Connector::isCablePlugged);
+    }
+
     @Override
     public String toString() {
         return "Evse{" +
@@ -292,5 +326,18 @@ public class Evse {
             // clean
             scheduledNewEvseStatus = null;
         }
+    }
+
+    /**
+     * Find an instance of {@link Connector} by connector_id.
+     *
+     * @param connectorId connector identity
+     * @return {@link Connector} instance
+     */
+    private Connector findConnector(int connectorId) {
+        return connectors.stream()
+                .filter(connector -> connector.getId().equals(connectorId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
     }
 }
