@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.support.StationConstants;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,8 +23,6 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class IdentityVariableAccessorTest {
 
-    private static final String STATION_IDENTITY_CODE = "EVB-12345678";
-
     @Mock
     Station stationMock;
     @Mock
@@ -34,13 +33,13 @@ class IdentityVariableAccessorTest {
 
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
-                arguments(ChargingStationComponent.NAME, IdentityVariableAccessor.NAME, SetVariableDatum.AttributeType.ACTUAL, STATION_IDENTITY_CODE, SetVariableResult.AttributeStatus.REJECTED)
+                arguments(ChargingStationComponent.NAME, IdentityVariableAccessor.NAME, SetVariableDatum.AttributeType.ACTUAL, StationConstants.STATION_ID, SetVariableResult.AttributeStatus.REJECTED)
         );
     }
 
     static Stream<Arguments> getVariableDatumProvider() {
         return Stream.of(
-                arguments(ChargingStationComponent.NAME, IdentityVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.ACCEPTED, STATION_IDENTITY_CODE),
+                arguments(ChargingStationComponent.NAME, IdentityVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.ACCEPTED, StationConstants.STATION_ID),
                 arguments(ChargingStationComponent.NAME, IdentityVariableAccessor.NAME, GetVariableDatum.AttributeType.MAX_SET, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null)
         );
     }

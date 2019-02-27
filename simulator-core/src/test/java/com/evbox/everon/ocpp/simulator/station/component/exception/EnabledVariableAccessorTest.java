@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.support.StationConstants;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,7 +26,7 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class EnabledVariableAccessorTest {
 
-    private static final int EVSE_ID = 1;
+    private static final int EVSE_ID = StationConstants.DEFAULT_EVSE_ID;
     private static final int UNKNOWN_EVSE_ID = 5;
 
     @Mock(lenient = true)
