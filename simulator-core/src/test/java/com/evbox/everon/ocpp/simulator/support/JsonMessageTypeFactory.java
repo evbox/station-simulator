@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,10 +54,15 @@ public class JsonMessageTypeFactory {
             return this;
         }
 
-        public String toJson() throws JsonProcessingException {
-            String payloadJson = JSON_OBJECT_MAPPER.writeValueAsString(payload);
+        public String toJson() {
 
-            return "[2,\"" + messageId + "\",\"" + action + "\"," + payloadJson + "]";
+            try {
+                String payloadJson = JSON_OBJECT_MAPPER.writeValueAsString(payload);
+                return String.format("[2,\"%s\",\"%s\",%s]", messageId, action, payloadJson);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
         }
 
     }
@@ -94,15 +100,23 @@ public class JsonMessageTypeFactory {
             return this;
         }
 
-        public String toJson() throws JsonProcessingException {
+        public String toJson() {
 
             if (nonNull(payload)) {
-                String payloadJson = JSON_OBJECT_MAPPER.writeValueAsString(payload);
 
-                return "[3,\"" + messageId + "\"," + payloadJson + "]";
+                if (StringUtils.isEmpty(payload.toString())) {
+                    return String.format("[3,\"%s\",{}]", messageId);
+                }
+
+                try {
+                    String payloadJson = JSON_OBJECT_MAPPER.writeValueAsString(payload);
+                    return String.format("[3,\"%s\",%s]", messageId, payloadJson);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-
-            return "[3, \"" + messageId + "\", {\"currentTime\":\"" + currentTime + "\", \"interval\":" + intervalInSeconds + ", \"status\":\"" + status + "\"}]";
+            return String.format("[3, \"%s\", {\"currentTime\":\"%s\", \"interval\":%s, \"status\":\"%s\"}]", messageId, currentTime, intervalInSeconds, status);
         }
 
     }
@@ -129,7 +143,7 @@ public class JsonMessageTypeFactory {
         }
 
         public String toJson() {
-            return "[4, \"" + messageId + "\", \"" + errorCode + "\", \":" + errorDescription + "\", {}]";
+            return String.format("[4, \"%s\", \"%s\", \"%s\", {}]", messageId, errorCode, errorDescription);
         }
     }
 

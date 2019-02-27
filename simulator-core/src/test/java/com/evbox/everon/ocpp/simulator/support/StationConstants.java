@@ -4,6 +4,11 @@ import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 
 public class StationConstants {
 
+    public static final String HOST = "localhost";
+    public static final int PORT = 8085;
+    public static final String PATH = "/ocpp";
+    public static final String OCPP_SERVER_URL = "ws://" + HOST + ":" + PORT + PATH;
+
     public static final String STATION_ID = "EVB-P18090564";
 
     public static final int DEFAULT_EVSE_COUNT = 1;
@@ -29,7 +34,8 @@ public class StationConstants {
     public static final String DEFAULT_COMPONENT_NAME = "OCPPCommCtrlr";
     public static final String DEFAULT_VARIABLE_NAME = "RetryBackOffRandomRange";
 
-    public static final Subscriber DEFAULT_SUBSCRIBER = (req, res) -> {};
+    public static final Subscriber DEFAULT_SUBSCRIBER = (req, res) -> {
+    };
 
     public static final String DEFAULT_SERIAL_NUMBER = "00000000000F";
     public static final String DEFAULT_MODEL = "G5";
@@ -43,5 +49,7 @@ public class StationConstants {
     public static final String TRANSACTION_EVENT_ACTION = "TransactionEvent";
     public static final String HEART_BEAT_ACTION = "Heartbeat";
     public static final String CHANGE_AVAILABILITY_ACTION = "ChangeAvailability";
+    public static final String BOOT_NOTIFICATION_ACTION = "BootNotification";
+    public static final String STATUS_NOTIFICATION_ACTION = "StatusNotification";
 
 }
