@@ -120,9 +120,9 @@ class OCPPCommCtrlComponentTest {
 
         given(heartbeatIntervalVariableAccessorMock.validate(any(AttributePath.class), eq(new CiString.CiString1000(String.valueOf(variableValue)))))
                 .willAnswer(invocation -> new SetVariableResult()
-                        .withComponent(invocation.getArgument(0))
-                        .withVariable(invocation.getArgument(1))
-                        .withAttributeType(SetVariableResult.AttributeType.fromValue(((SetVariableDatum.AttributeType)invocation.getArgument(2)).value()))
+                        .withComponent(((AttributePath)invocation.getArgument(0)).getComponent())
+                        .withVariable(((AttributePath)invocation.getArgument(0)).getVariable())
+                        .withAttributeType(SetVariableResult.AttributeType.fromValue(((AttributePath)invocation.getArgument(0)).getAttributeType().getName()))
                         .withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED));
 
         Component component = new Component().withName(new CiString.CiString50(componentName));
