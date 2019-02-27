@@ -6,13 +6,11 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
@@ -53,14 +51,15 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
     private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
         Integer evseId = component.getEvse().getId();
-        Optional<Evse> optionalEvse = getStation().getState().tryFindEvse(evseId);
 
         GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()));
 
-        if (optionalEvse.isPresent()) {
+        boolean evseExists = getStation().getState().hasEvse(evseId);
+
+        if (evseExists) {
             return getVariableResult
                     .withAttributeValue(new CiString.CiString1000(EVSE_AVAILABILITY))
                     .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
