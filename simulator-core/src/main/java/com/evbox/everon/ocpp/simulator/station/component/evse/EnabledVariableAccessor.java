@@ -6,8 +6,11 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
@@ -19,12 +22,12 @@ public class EnabledVariableAccessor extends VariableAccessor {
     public static final String NAME = "Enabled";
     public static final String EVSE_ENABLED_STATUS = Boolean.TRUE.toString();
 
-    private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
-            .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
+    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
+            .put(AttributeType.ACTUAL, this::getActualValue)
             .build();
 
-    private final Map<SetVariableDatum.AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<SetVariableDatum.AttributeType, SetVariableValidator>builder()
-            .put(SetVariableDatum.AttributeType.ACTUAL, this::rejectVariable)
+    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
+            .put(AttributeType.ACTUAL, this::rejectVariable)
             .build();
 
     public EnabledVariableAccessor(Station station) {
@@ -37,36 +40,36 @@ public class EnabledVariableAccessor extends VariableAccessor {
     }
 
     @Override
-    public Map<GetVariableDatum.AttributeType, VariableGetter> getVariableGetters() {
+    public Map<AttributeType, VariableGetter> getVariableGetters() {
         return variableGetters;
     }
 
     @Override
-    public Map<SetVariableDatum.AttributeType, VariableSetter> getVariableSetters() {
+    public Map<AttributeType, VariableSetter> getVariableSetters() {
         return Collections.emptyMap();
     }
 
     @Override
-    public Map<SetVariableDatum.AttributeType, SetVariableValidator> getVariableValidators() {
+    public Map<AttributeType, SetVariableValidator> getVariableValidators() {
         return variableValidators;
     }
 
-    private SetVariableResult rejectVariable(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 ciString1000) {
+    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 ciString1000) {
         return new SetVariableResult()
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
+                .withComponent(attributePath.getComponent())
+                .withVariable(attributePath.getVariable())
+                .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
                 .withAttributeStatus(SetVariableResult.AttributeStatus.REJECTED);
     }
 
-    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
-        Integer evseId = component.getEvse().getId();
+    private GetVariableResult getActualValue(AttributePath attributePath) {
+        Integer evseId = attributePath.getComponent().getEvse().getId();
         Optional<Evse> optionalEvse = getStation().getState().tryFindEvse(evseId);
 
         GetVariableResult getVariableResult = new GetVariableResult()
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()));
+                .withComponent(attributePath.getComponent())
+                .withVariable(attributePath.getVariable())
+                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
         if (optionalEvse.isPresent()) {
             return getVariableResult

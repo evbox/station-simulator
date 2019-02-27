@@ -3,6 +3,8 @@ package com.evbox.everon.ocpp.simulator.station.component.connector;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,11 +28,26 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class ConnectorTypeVariableAccessorTest {
 
+    private static final String COMPONENT_NAME = ConnectorComponent.NAME;
+    private static final String VARIABLE_NAME = ConnectorTypeVariableAccessor.NAME;
+
     private static final int EVSE_ID = 1;
     private static final int UNKNOWN_EVSE_ID = 5;
 
     private static final int CONNECTOR_ID = 1;
     private static final int UNKNOWN_CONNECTOR_ID = 2;
+
+    private static final AttributePath ACTUAL_ATTRIBUTE = attributePathBuilder(EVSE_ID, CONNECTOR_ID)
+            .attributeType(AttributeType.ACTUAL).build();
+
+    private static final AttributePath MAX_SET_ATTRIBUTE = attributePathBuilder(EVSE_ID, CONNECTOR_ID)
+            .attributeType(AttributeType.MAX_SET).build();
+
+    private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder(EVSE_ID, CONNECTOR_ID)
+            .attributeType(AttributeType.MIN_SET).build();
+
+    private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder(EVSE_ID, CONNECTOR_ID)
+            .attributeType(AttributeType.TARGET).build();
 
     @Mock(lenient = true)
     Station stationMock;
@@ -44,59 +61,63 @@ class ConnectorTypeVariableAccessorTest {
 
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
-                arguments(ConnectorComponent.NAME, ConnectorTypeVariableAccessor.NAME, SetVariableDatum.AttributeType.ACTUAL, ConnectorTypeVariableAccessor.CONNECTOR_TYPE, SetVariableResult.AttributeStatus.REJECTED)
+                arguments(ACTUAL_ATTRIBUTE, ConnectorTypeVariableAccessor.CONNECTOR_TYPE, SetVariableResult.AttributeStatus.REJECTED),
+                arguments(MAX_SET_ATTRIBUTE, ConnectorTypeVariableAccessor.CONNECTOR_TYPE, SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
+                arguments(MIN_SET_ATTRIBUTE, ConnectorTypeVariableAccessor.CONNECTOR_TYPE, SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
+                arguments(TARGET_ATTRIBUTE, ConnectorTypeVariableAccessor.CONNECTOR_TYPE, SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE)
         );
     }
 
     static Stream<Arguments> getVariableDatumProvider() {
+        AttributePath actualWithUnknownEvse = attributePathBuilder(UNKNOWN_EVSE_ID, CONNECTOR_ID)
+                .attributeType(AttributeType.ACTUAL)
+                .build();
+
+        AttributePath actualWithUnknownConnector = attributePathBuilder(EVSE_ID, UNKNOWN_CONNECTOR_ID)
+                .attributeType(AttributeType.ACTUAL)
+                .build();
+
+        AttributePath actualWithUnknownEvseAndConnector = attributePathBuilder(UNKNOWN_EVSE_ID, UNKNOWN_CONNECTOR_ID)
+                .attributeType(AttributeType.ACTUAL)
+                .build();
+
         return Stream.of(
-                arguments(ConnectorComponent.NAME, ConnectorTypeVariableAccessor.NAME, EVSE_ID, CONNECTOR_ID, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.ACCEPTED, ConnectorTypeVariableAccessor.CONNECTOR_TYPE),
-                arguments(ConnectorComponent.NAME, ConnectorTypeVariableAccessor.NAME, EVSE_ID, CONNECTOR_ID, GetVariableDatum.AttributeType.MAX_SET, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
-                arguments(ConnectorComponent.NAME, ConnectorTypeVariableAccessor.NAME, UNKNOWN_EVSE_ID, CONNECTOR_ID, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.REJECTED, null),
-                arguments(ConnectorComponent.NAME, ConnectorTypeVariableAccessor.NAME, EVSE_ID, UNKNOWN_CONNECTOR_ID, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.REJECTED, null),
-                arguments(ConnectorComponent.NAME, ConnectorTypeVariableAccessor.NAME, UNKNOWN_EVSE_ID, UNKNOWN_CONNECTOR_ID, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.REJECTED, null)
+                arguments(ACTUAL_ATTRIBUTE, GetVariableResult.AttributeStatus.ACCEPTED, ConnectorTypeVariableAccessor.CONNECTOR_TYPE),
+                arguments(MAX_SET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
+                arguments(MIN_SET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
+                arguments(TARGET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
+                arguments(actualWithUnknownEvse, GetVariableResult.AttributeStatus.REJECTED, null),
+                arguments(actualWithUnknownConnector, GetVariableResult.AttributeStatus.REJECTED, null),
+                arguments(actualWithUnknownEvseAndConnector, GetVariableResult.AttributeStatus.REJECTED, null)
         );
     }
 
     @ParameterizedTest
     @MethodSource("setVariableDatumProvider")
-    void shouldValidateSetVariableDatum(String componentName, String variableName, SetVariableDatum.AttributeType attributeType, String value, SetVariableResult.AttributeStatus expectedAttributeStatus) {
+    void shouldValidateSetVariableDatum(AttributePath attributePath, String value, SetVariableResult.AttributeStatus expectedAttributeStatus) {
         //when
-        SetVariableResult result = variableAccessor.validate(
-                new Component().withName(new CiString.CiString50(componentName)),
-                new Variable().withName(new CiString.CiString50(variableName)),
-                attributeType,
-                new CiString.CiString1000(value)
-        );
+        SetVariableResult result = variableAccessor.validate(attributePath, new CiString.CiString1000(value));
 
         //then
-        assertCiString(result.getComponent().getName()).isEqualTo(componentName);
-        assertCiString(result.getVariable().getName()).isEqualTo(variableName);
-        assertThat(result.getAttributeType()).isEqualTo(SetVariableResult.AttributeType.fromValue(attributeType.value()));
+        assertCiString(result.getComponent().getName()).isEqualTo(attributePath.getComponent().getName());
+        assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
+        assertThat(result.getAttributeType()).isEqualTo(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
     }
 
     @ParameterizedTest
     @MethodSource("getVariableDatumProvider")
-    void shouldGetVariableDatum(String componentName, String variableName, Integer evseId, Integer connectorId, GetVariableDatum.AttributeType attributeType, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
+    void shouldGetVariableDatum(AttributePath attributePath, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
         //given
         initConnectorMock(EVSE_ID, CONNECTOR_ID);
 
         //when
-        Evse evse = new Evse()
-                .withId(evseId)
-                .withConnectorId(connectorId);
-
-        GetVariableResult result = variableAccessor.get(
-                new Component().withName(new CiString.CiString50(componentName))
-                        .withEvse(evse),
-                new Variable().withName(new CiString.CiString50(variableName)),
-                attributeType);
+        GetVariableResult result = variableAccessor.get(attributePath);
 
         //then
-        assertCiString(result.getComponent().getName()).isEqualTo(componentName);
-        assertCiString(result.getVariable().getName()).isEqualTo(variableName);
-        assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributeType.value()));
+        assertCiString(result.getComponent().getName()).isEqualTo(attributePath.getComponent().getName());
+        assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
+        assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
         assertCiString(result.getAttributeValue()).isEqualTo(expectedValue);
     }
@@ -107,5 +128,14 @@ class ConnectorTypeVariableAccessorTest {
                 .willAnswer(invocation -> equal(invocation.getArgument(0), evseId) && equal(invocation.getArgument(1), connectorId) ?
                         Optional.of(connectorMock) :
                         Optional.empty());
+    }
+
+    static AttributePath.AttributePathBuilder attributePathBuilder(int evseId, int connectorId) {
+        Evse evse = new Evse().withId(evseId).withConnectorId(connectorId);
+        return AttributePath.builder()
+                .component(new Component().withName(new CiString.CiString50(COMPONENT_NAME))
+                        .withEvse(evse)
+                )
+                .variable(new Variable().withName(new CiString.CiString50(VARIABLE_NAME)));
     }
 }

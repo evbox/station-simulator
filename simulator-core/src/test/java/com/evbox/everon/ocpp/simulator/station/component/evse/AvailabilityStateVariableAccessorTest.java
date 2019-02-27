@@ -3,8 +3,12 @@ package com.evbox.everon.ocpp.simulator.station.component.evse;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableDatum;
+import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,39 +58,31 @@ class AvailabilityStateVariableAccessorTest {
 
     @ParameterizedTest
     @MethodSource("setVariableDatumProvider")
-    void shouldValidateSetVariableDatum(String componentName, String variableName, SetVariableDatum.AttributeType attributeType, String value, SetVariableResult.AttributeStatus expectedAttributeStatus) {
+    void shouldValidateSetVariableDatum(AttributePath attributePath, String value, SetVariableResult.AttributeStatus expectedAttributeStatus) {
         //when
-        SetVariableResult result = variableAccessor.validate(
-                new Component().withName(new CiString.CiString50(componentName)),
-                new Variable().withName(new CiString.CiString50(variableName)),
-                attributeType,
-                new CiString.CiString1000(value)
+        SetVariableResult result = variableAccessor.validate(attributePath, new CiString.CiString1000(value)
         );
 
         //then
-        assertCiString(result.getComponent().getName()).isEqualTo(componentName);
-        assertCiString(result.getVariable().getName()).isEqualTo(variableName);
-        assertThat(result.getAttributeType()).isEqualTo(SetVariableResult.AttributeType.fromValue(attributeType.value()));
+        assertCiString(result.getComponent().getName()).isEqualTo(attributePath.getComponent().getName());
+        assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
+        assertThat(result.getAttributeType()).isEqualTo(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
     }
 
     @ParameterizedTest
     @MethodSource("getVariableDatumProvider")
-    void shouldGetVariableDatum(String componentName, String variableName, Integer evseId, GetVariableDatum.AttributeType attributeType, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
+    void shouldGetVariableDatum(AttributePath attributePath, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
         //given
         initEvseMock();
 
         //when
-        GetVariableResult result = variableAccessor.get(
-                new Component().withName(new CiString.CiString50(componentName))
-                        .withEvse(new com.evbox.everon.ocpp.v20.message.centralserver.Evse().withId(evseId)),
-                new Variable().withName(new CiString.CiString50(variableName)),
-                attributeType);
+        GetVariableResult result = variableAccessor.get(attributePath);
 
         //then
-        assertCiString(result.getComponent().getName()).isEqualTo(componentName);
-        assertCiString(result.getVariable().getName()).isEqualTo(variableName);
-        assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributeType.value()));
+        assertCiString(result.getComponent().getName()).isEqualTo(attributePath.getComponent().getName());
+        assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
+        assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
         assertCiString(result.getAttributeValue()).isEqualTo(expectedValue);
     }
