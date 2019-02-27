@@ -24,32 +24,7 @@ public class ExpectedRequests {
     }
 
     /**
-     * StatusNotificationRequest with default configuration.
-     *
-     * @return checks whether an incoming request is StatusNotification or not.
-     */
-    public static Predicate<Call> statusNotificationRequest() {
-
-        return incomingRequest -> incomingRequest.getActionType() == ActionType.STATUS_NOTIFICATION;
-    }
-
-    /**
-     * StatusNotificationRequest that has UNAVAILABLE status.
-     *
-     * @return checks whether an incoming request is StatusNotification or not.
-     */
-    public static Predicate<Call> unAvailableStatusNotificationRequest() {
-
-        return incomingRequest -> {
-            if (incomingRequest.getActionType() == ActionType.STATUS_NOTIFICATION) {
-                return StatusNotificationRequest.class.cast(incomingRequest.getPayload()).getConnectorStatus() == UNAVAILABLE;
-            }
-            return false;
-        };
-    }
-
-    /**
-     * StatusNotificationRequest that has given status.
+     * StatusNotificationRequest that should have expected status.
      *
      * @return checks whether an incoming request is StatusNotification or not.
      */
