@@ -56,7 +56,7 @@ class HeartbeatIntervalVariableAccessorTest {
 
     static Stream<Arguments> getVariableDatumProvider() {
         return Stream.of(
-                arguments(ACTUAL_ATTRIBUTE, GetVariableResult.AttributeStatus.ACCEPTED, DEFAULT_HEARTBEAT_INTERVAL),
+                arguments(ACTUAL_ATTRIBUTE, GetVariableResult.AttributeStatus.ACCEPTED, String.valueOf(DEFAULT_HEARTBEAT_INTERVAL)),
                 arguments(MAX_SET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
                 arguments(MIN_SET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
                 arguments(TARGET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null)
@@ -78,9 +78,9 @@ class HeartbeatIntervalVariableAccessorTest {
 
     @ParameterizedTest
     @MethodSource("getVariableDatumProvider")
-    void shouldGetVariableDatum(AttributePath attributePath, GetVariableResult.AttributeStatus expectedAttributeStatus, Integer expectedValue) {
+    void shouldGetVariableDatum(AttributePath attributePath, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
         //given
-        initStationMockHeartbeat(expectedValue);
+        initStationMockHeartbeat();
 
         //when
         GetVariableResult result = variableAccessor.get(attributePath);
@@ -90,7 +90,7 @@ class HeartbeatIntervalVariableAccessorTest {
         assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
         assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
-        assertCiString(result.getAttributeValue()).isEqualTo(String.valueOf(expectedValue));
+        assertCiString(result.getAttributeValue()).isEqualTo(expectedValue);
     }
 
     @Test
@@ -108,9 +108,9 @@ class HeartbeatIntervalVariableAccessorTest {
         verify(stationMock).updateHeartbeat(eq(heartbeatInterval));
     }
 
-    private void initStationMockHeartbeat(Integer expectedValue) {
+    private void initStationMockHeartbeat() {
         given(stationMock.getState()).willReturn(stationStateMock);
-        given(stationStateMock.getHeartbeatInterval()).willReturn(expectedValue);
+        given(stationStateMock.getHeartbeatInterval()).willReturn(DEFAULT_HEARTBEAT_INTERVAL);
     }
 
     static AttributePath.AttributePathBuilder attributePathBuilder() {
