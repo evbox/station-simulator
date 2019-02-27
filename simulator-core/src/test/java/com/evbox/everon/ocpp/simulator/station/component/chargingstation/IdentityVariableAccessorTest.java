@@ -23,9 +23,9 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class IdentityVariableAccessorTest {
 
-    @Mock
+    @Mock(lenient = true)
     Station stationMock;
-    @Mock
+    @Mock(lenient = true)
     SimulatorConfiguration.StationConfiguration stationConfigurationMock;
 
     @InjectMocks
@@ -83,11 +83,7 @@ class IdentityVariableAccessorTest {
     }
 
     private void initStationMockIdentityCode(String expectedValue) {
-
-        if (expectedValue != null) {
-            given(stationMock.getConfiguration()).willReturn(stationConfigurationMock);
-            given(stationConfigurationMock.getId()).willReturn(expectedValue);
-        }
-
+        given(stationMock.getConfiguration()).willReturn(stationConfigurationMock);
+        given(stationConfigurationMock.getId()).willReturn(expectedValue);
     }
 }

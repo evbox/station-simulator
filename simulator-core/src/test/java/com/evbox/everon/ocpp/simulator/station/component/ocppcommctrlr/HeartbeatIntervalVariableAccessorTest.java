@@ -26,9 +26,9 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class HeartbeatIntervalVariableAccessorTest {
 
-    @Mock
+    @Mock(lenient = true)
     Station stationMock;
-    @Mock
+    @Mock(lenient = true)
     StationState stationStateMock;
 
     @InjectMocks
@@ -44,8 +44,7 @@ class HeartbeatIntervalVariableAccessorTest {
 
     static Stream<Arguments> getVariableDatumProvider() {
         return Stream.of(
-                arguments(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.ACCEPTED, DEFAULT_HEARTBEAT_INTERVAL),
-                arguments(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.MAX_SET, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null)
+                arguments(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.ACCEPTED, DEFAULT_HEARTBEAT_INTERVAL)
         );
     }
 
@@ -103,12 +102,7 @@ class HeartbeatIntervalVariableAccessorTest {
     }
 
     private void initStationMockHeartbeat(Integer expectedValue) {
-
-        if (expectedValue != null) {
-            given(stationMock.getState()).willReturn(stationStateMock);
-            given(stationStateMock.getHeartbeatInterval()).willReturn(expectedValue);
-        }
-
+        given(stationMock.getState()).willReturn(stationStateMock);
+        given(stationStateMock.getHeartbeatInterval()).willReturn(expectedValue);
     }
-
 }

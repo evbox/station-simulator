@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.simulator.assertion.CiStringAssert.assertCiString;
@@ -94,8 +93,8 @@ class EnabledVariableAccessorTest {
 
     private void initEvseMock() {
         given(stationMock.getState()).willReturn(stationStateMock);
-        given(stationStateMock.tryFindEvse(eq(EVSE_ID))).willReturn(Optional.of(evseMock));
-        given(stationStateMock.tryFindEvse(eq(UNKNOWN_EVSE_ID))).willReturn(Optional.empty());
+        given(stationStateMock.hasEvse(eq(EVSE_ID))).willReturn(true);
+        given(stationStateMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
     }
 
 }
