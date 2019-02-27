@@ -99,38 +99,6 @@ public class Evse {
     }
 
     /**
-     * Find any PLUGGED connector and switch to LOCKED status.
-     *
-     * @return identity of the connector.
-     */
-    public Integer lockPluggedConnector() {
-        Connector pluggedConnector = connectors.stream()
-                .filter(Connector::isCablePlugged)
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException(String.format("Unable to lock connector (nothing is plugged in): evseId=%s", id)));
-
-        pluggedConnector.lock();
-
-        return pluggedConnector.getId();
-    }
-
-    /**
-     * Find any LOCKED connector and switch to PLUGGED status.
-     *
-     * @return identity of the connector.
-     */
-    public Integer unlockConnector() {
-        Connector lockedConnector = connectors.stream()
-                .filter(Connector::isCableLocked)
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException(String.format("Unable to unlock (no locked connectors): evseId=%s", id)));
-
-        lockedConnector.unlock();
-
-        return lockedConnector.getId();
-    }
-
-    /**
      * Find any LOCKED connector and switch to charging status.
      *
      * @return identity of the connector
@@ -296,6 +264,49 @@ public class Evse {
         connector.unplug();
 
         return true;
+    }
+
+
+    /**
+     * Find any PLUGGED connector and switch to LOCKED status.
+     *
+     * @return identity of the connector.
+     */
+    public Integer lockPluggedConnector() {
+
+        if (evseStatus.isUnAvailable()) {
+            throw new IllegalStateException("Can not lock connector when EVSE status is UnAvailable");
+        }
+
+        Connector pluggedConnector = connectors.stream()
+                .filter(Connector::isCablePlugged)
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException(String.format("Unable to lock connector (nothing is plugged in): evseId=%s", id)));
+
+        pluggedConnector.lock();
+
+        return pluggedConnector.getId();
+    }
+
+    /**
+     * Find any LOCKED connector and switch to PLUGGED status.
+     *
+     * @return identity of the connector.
+     */
+    public Integer unlockConnector() {
+
+        if (evseStatus.isUnAvailable()) {
+            throw new IllegalStateException("Can not unlock connector when EVSE status is UnAvailable");
+        }
+
+        Connector lockedConnector = connectors.stream()
+                .filter(Connector::isCableLocked)
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException(String.format("Unable to unlock (no locked connectors): evseId=%s", id)));
+
+        lockedConnector.unlock();
+
+        return lockedConnector.getId();
     }
 
     /**

@@ -53,16 +53,8 @@ public class StationState {
         this.heartbeatInterval = heartbeatInterval;
     }
 
-    public Integer lockConnector(int evseId) {
-        return findEvse(evseId).lockPluggedConnector();
-    }
-
     public Integer unlockConnector(int evseId) {
         return findEvse(evseId).unlockConnector();
-    }
-
-    public Integer startCharging(Integer evseId) {
-        return findEvse(evseId).startCharging();
     }
 
     public void stopCharging(Integer evseId) {
@@ -73,16 +65,8 @@ public class StationState {
         return findEvse(evseId).isCharging();
     }
 
-    public boolean isPlugged(Integer evseId) {
-        return !isCharging(evseId) && findEvse(evseId).getConnectors().stream().anyMatch(Connector::isCablePlugged);
-    }
-
     public CableStatus getCableStatus(int connectorId) {
         return findConnector(connectorId).getCableStatus();
-    }
-
-    public void storeToken(Integer evseId, String tokenId) {
-        findEvse(evseId).setToken(tokenId);
     }
 
     public Evse getDefaultEvse() {
@@ -98,14 +82,6 @@ public class StationState {
 
     public boolean hasAuthorizedToken(Evse evse) {
         return isNotBlank(evse.getTokenId());
-    }
-
-    public String getToken(Integer evseId) {
-        String token = findEvse(evseId).getTokenId();
-        if (isBlank(token)) {
-            throw new IllegalStateException(String.format("Token is not authorized yet: %s", token));
-        }
-        return token;
     }
 
     public void clearTokens() {
