@@ -4,7 +4,6 @@ import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 
@@ -140,6 +139,16 @@ public class StationState {
 
     public boolean hasOngoingTransaction(Integer evseId) {
         return findEvse(evseId).hasOngoingTransaction();
+    }
+
+    /**
+     * Check if EVSE with given EVSE ID is present on the station.
+     *
+     * @param evseId EVSE identity
+     * @return TRUE if station has EVSE with given identity, FALSE if it does not exist
+     */
+    public boolean hasEvse(int evseId) {
+        return tryFindEvse(evseId).isPresent();
     }
 
     /**
