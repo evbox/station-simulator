@@ -56,15 +56,17 @@ public class Authorize implements UserMessage {
                 boolean allCharging = authorizedEvses.stream().allMatch(Evse::isCharging);
                 boolean allPlugged = authorizedEvses.stream().allMatch(Evse::isCablePlugged);
 
-                if (allPlugged && !allCharging) {
-                    startCharging(stationMessageSender, authorizedEvses);
-                } else if (allCharging) {
+                if (allCharging) {
                     stopCharging(stationMessageSender, authorizedEvses);
                 } else {
-                    if (haveOngoingTransaction) {
+                    if (allPlugged) {
                         startCharging(stationMessageSender, authorizedEvses);
-                    } else {
-                        authorizedEvses.forEach(evse -> stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId));
+                    } else { // !allPlugged && !allCharging
+                        if (haveOngoingTransaction) {
+                            startCharging(stationMessageSender, authorizedEvses);
+                        } else { // !allPlugged && !allCharging && !haveOngoingTransaction
+                            authorizedEvses.forEach(evse -> stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId));
+                        }
                     }
                 }
             }
