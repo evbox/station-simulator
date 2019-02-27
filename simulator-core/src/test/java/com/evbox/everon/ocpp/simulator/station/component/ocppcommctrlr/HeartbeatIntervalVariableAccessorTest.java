@@ -83,7 +83,7 @@ class HeartbeatIntervalVariableAccessorTest {
         assertCiString(result.getVariable().getName()).isEqualTo(variableName);
         assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributeType.value()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
-        assertCiString(result.getAttributeValue()).isEqualTo(expectedValue == null ? null : String.valueOf(expectedValue));
+        assertCiString(result.getAttributeValue()).isEqualTo(String.valueOf(expectedValue));
     }
 
     @Test
