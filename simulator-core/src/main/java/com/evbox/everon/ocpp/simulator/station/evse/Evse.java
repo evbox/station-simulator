@@ -159,12 +159,15 @@ public class Evse {
     }
 
     /**
-     * Setter for evse status.
+     * Setter for EVSE status. Also changes status of connectors depending on EVSE status.
      *
      * @param evseStatus
      */
     public void setEvseStatus(EvseStatus evseStatus) {
         this.evseStatus = evseStatus;
+
+        evseStatus.changeConnectorStatus(connectors);
+
     }
 
     /**
@@ -254,7 +257,7 @@ public class Evse {
      * @param connectorId connector identity
      * @return true if succeeded otherwise false
      */
-    public boolean tryUnPlug(Integer connectorId) {
+    public boolean tryUnplug(Integer connectorId) {
 
         if (evseStatus.isUnAvailable()) {
             return false;

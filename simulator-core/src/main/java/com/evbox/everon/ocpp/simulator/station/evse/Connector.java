@@ -1,9 +1,12 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus;
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.OCCUPIED;
 
 /**
  * Represents a Connector of the EVSE.
@@ -15,7 +18,7 @@ public class Connector {
 
     private final Integer id;
     private CableStatus cableStatus;
-    private StatusNotificationRequest.ConnectorStatus connectorStatus;
+    private ConnectorStatus connectorStatus;
 
     /**
      * Create a new connector from the specified.
@@ -38,6 +41,8 @@ public class Connector {
             throw new IllegalStateException(String.format("Connector is not available: %s=%s", id, cableStatus));
         }
         cableStatus = CableStatus.PLUGGED;
+
+        connectorStatus = OCCUPIED;
         return id;
     }
 
@@ -51,6 +56,8 @@ public class Connector {
             throw new IllegalStateException(String.format("Connector is locked: %s", id));
         }
         cableStatus = CableStatus.UNPLUGGED;
+
+        connectorStatus = AVAILABLE;
         return id;
     }
 
@@ -75,6 +82,15 @@ public class Connector {
     public Integer unlock() {
         cableStatus = CableStatus.PLUGGED;
         return id;
+    }
+
+    /**
+     * Setter for connector status.
+     *
+     * @param connectorStatus {@link ConnectorStatus}
+     */
+    public void setConnectorStatus(ConnectorStatus connectorStatus) {
+        this.connectorStatus = connectorStatus;
     }
 
     /**

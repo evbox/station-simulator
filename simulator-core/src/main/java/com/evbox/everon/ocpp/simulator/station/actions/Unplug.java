@@ -32,7 +32,7 @@ public class Unplug implements UserMessage {
         }
 
         Evse evse = stationState.findEvseByConnectorId(connectorId);
-        evse.tryUnPlug(connectorId);
+        evse.tryUnplug(connectorId);
 
         stationMessageSender.sendStatusNotificationAndSubscribe(evse.getId(), connectorId, (request, response) -> {
             stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.EV_DISCONNECTED);

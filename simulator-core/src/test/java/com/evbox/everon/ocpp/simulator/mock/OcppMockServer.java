@@ -98,6 +98,13 @@ public class OcppMockServer {
     }
 
     /**
+     * Reset all expectations.
+     */
+    public void reset() {
+        requestExpectationManager.reset();
+    }
+
+    /**
      * Block thread until ocpp server establishes websocket connection.
      */
     public void waitUntilConnected() {
