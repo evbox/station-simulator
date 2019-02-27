@@ -26,9 +26,9 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class HeartbeatIntervalVariableAccessorTest {
 
-    @Mock
+    @Mock(lenient = true)
     Station stationMock;
-    @Mock
+    @Mock(lenient = true)
     StationState stationStateMock;
 
     @InjectMocks
@@ -44,8 +44,7 @@ class HeartbeatIntervalVariableAccessorTest {
 
     static Stream<Arguments> getVariableDatumProvider() {
         return Stream.of(
-                arguments(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.ACCEPTED, DEFAULT_HEARTBEAT_INTERVAL),
-                arguments(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.MAX_SET, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null)
+                arguments(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL, GetVariableResult.AttributeStatus.ACCEPTED, DEFAULT_HEARTBEAT_INTERVAL)
         );
     }
 
@@ -71,9 +70,7 @@ class HeartbeatIntervalVariableAccessorTest {
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(String componentName, String variableName, GetVariableDatum.AttributeType attributeType, GetVariableResult.AttributeStatus expectedAttributeStatus, Integer expectedValue) {
         //given
-        if (expectedValue != null) {
-            initStationMockHeartbeat(expectedValue);
-        }
+        initStationMockHeartbeat(expectedValue);
 
         //when
         GetVariableResult result = variableAccessor.get(
@@ -86,7 +83,7 @@ class HeartbeatIntervalVariableAccessorTest {
         assertCiString(result.getVariable().getName()).isEqualTo(variableName);
         assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributeType.value()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
-        assertCiString(result.getAttributeValue()).isEqualTo(expectedValue == null ? null : String.valueOf(expectedValue));
+        assertCiString(result.getAttributeValue()).isEqualTo(String.valueOf(expectedValue));
     }
 
     @Test
@@ -108,5 +105,4 @@ class HeartbeatIntervalVariableAccessorTest {
         given(stationMock.getState()).willReturn(stationStateMock);
         given(stationStateMock.getHeartbeatInterval()).willReturn(expectedValue);
     }
-
 }

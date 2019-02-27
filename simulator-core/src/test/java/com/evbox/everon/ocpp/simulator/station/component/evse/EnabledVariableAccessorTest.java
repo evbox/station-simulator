@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.support.StationConstants;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.simulator.assertion.CiStringAssert.assertCiString;
@@ -25,7 +25,7 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class EnabledVariableAccessorTest {
 
-    private static final int EVSE_ID = 1;
+    private static final int EVSE_ID = StationConstants.DEFAULT_EVSE_ID;
     private static final int UNKNOWN_EVSE_ID = 5;
 
     @Mock(lenient = true)
@@ -93,8 +93,8 @@ class EnabledVariableAccessorTest {
 
     private void initEvseMock() {
         given(stationMock.getState()).willReturn(stationStateMock);
-        given(stationStateMock.tryFindEvse(eq(EVSE_ID))).willReturn(Optional.of(evseMock));
-        given(stationStateMock.tryFindEvse(eq(UNKNOWN_EVSE_ID))).willReturn(Optional.empty());
+        given(stationStateMock.hasEvse(eq(EVSE_ID))).willReturn(true);
+        given(stationStateMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
     }
 
 }

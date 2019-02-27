@@ -56,8 +56,6 @@ class ModelVariableAccessorTest {
     @ParameterizedTest
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(String componentName, String variableName, GetVariableDatum.AttributeType attributeType, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
-        //given
-
         //when
         GetVariableResult result = variableAccessor.get(
                 new Component().withName(new CiString.CiString50(componentName)),

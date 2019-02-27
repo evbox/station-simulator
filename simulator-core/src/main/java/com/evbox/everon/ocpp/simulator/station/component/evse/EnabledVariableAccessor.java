@@ -6,18 +6,16 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 public class EnabledVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "Enabled";
-    public static final String EVSE_ENABLED_STATUS = Boolean.TRUE.toString();
+    public static final String EVSE_ENABLED_STATUS = "true";
 
     private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
             .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
@@ -61,14 +59,15 @@ public class EnabledVariableAccessor extends VariableAccessor {
 
     private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
         Integer evseId = component.getEvse().getId();
-        Optional<Evse> optionalEvse = getStation().getState().tryFindEvse(evseId);
 
         GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()));
 
-        if (optionalEvse.isPresent()) {
+        boolean evseExists = getStation().getState().hasEvse(evseId);
+
+        if (evseExists) {
             return getVariableResult
                     .withAttributeValue(new CiString.CiString1000(EVSE_ENABLED_STATUS))
                     .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
