@@ -265,6 +265,10 @@ public class Evse {
      */
     public Integer lockPluggedConnector() {
 
+        if (evseStatus.isUnavailable()) {
+            throw new IllegalStateException("Could not lock plugged connector as EVSE is unavailable");
+        }
+
         Connector pluggedConnector = connectors.stream()
                 .filter(Connector::isCablePlugged)
                 .findAny()
