@@ -6,6 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.support.StationConstants;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,10 +32,10 @@ class ConnectorTypeVariableAccessorTest {
     private static final String COMPONENT_NAME = ConnectorComponent.NAME;
     private static final String VARIABLE_NAME = ConnectorTypeVariableAccessor.NAME;
 
-    private static final int EVSE_ID = 1;
+    private static final int EVSE_ID = StationConstants.DEFAULT_EVSE_ID;
     private static final int UNKNOWN_EVSE_ID = 5;
 
-    private static final int CONNECTOR_ID = 1;
+    private static final int CONNECTOR_ID = StationConstants.DEFAULT_CONNECTOR_ID;
     private static final int UNKNOWN_CONNECTOR_ID = 2;
 
     private static final AttributePath ACTUAL_ATTRIBUTE = attributePathBuilder(EVSE_ID, CONNECTOR_ID)
