@@ -159,11 +159,11 @@ public class Evse {
     }
 
     /**
-     * Setter for EVSE status. Also changes status of connectors depending on EVSE status.
+     * Change EVSE status and status of connectors.
      *
      * @param evseStatus
      */
-    public void setEvseStatus(EvseStatus evseStatus) {
+    public void changeStatus(EvseStatus evseStatus) {
         this.evseStatus = evseStatus;
 
         evseStatus.changeConnectorStatus(connectors);

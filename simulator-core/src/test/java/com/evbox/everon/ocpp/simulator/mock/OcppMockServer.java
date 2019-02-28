@@ -51,10 +51,11 @@ public class OcppMockServer {
                 .setHandler(
                         path().addPrefixPath(path, websocket((exchange, channel) -> {
                             String stationId = channel.getUrl().replace(targetUrl, "");
+                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, ocppServerClient));
+                            channel.resumeReceives();
+
                             ocppServerClient.putIfAbsent(stationId, channel);
 
-                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager));
-                            channel.resumeReceives();
                         })))
                 .build();
 

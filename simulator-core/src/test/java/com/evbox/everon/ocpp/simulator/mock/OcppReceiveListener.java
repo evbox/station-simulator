@@ -21,6 +21,7 @@ import java.util.function.Function;
 public class OcppReceiveListener extends AbstractReceiveListener {
 
     private final RequestExpectationManager requestExpectationManager;
+    private final OcppServerClient ocppServerClient;
 
     @Override
     protected void onFullTextMessage(WebSocketChannel channel, BufferedTextMessage message) {
@@ -35,6 +36,8 @@ public class OcppReceiveListener extends AbstractReceiveListener {
                 String responseToBeSend = expectedResponse.get().apply(incomingCall);
                 log.debug("Expectation is found. Sending response: {}", responseToBeSend);
                 WebSockets.sendText(responseToBeSend, channel, null);
+                // the first request should BootNotification
+                ocppServerClient.setConnected(true);
             } else {
                 requestExpectationManager.addUnexpectedRequest(incomingRequest);
             }

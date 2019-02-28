@@ -92,8 +92,12 @@ public class StationState {
         evses.forEach(Evse::stopTransaction);
     }
 
-    public List<Integer> getEvses() {
+    public List<Integer> getEvseIds() {
         return evses.stream().map(Evse::getId).collect(toList());
+    }
+
+    public List<Evse> getEvses() {
+        return evses;
     }
 
     public boolean hasOngoingTransaction(Integer evseId) {

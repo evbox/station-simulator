@@ -10,7 +10,8 @@ import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.*;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.ACCEPTED;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.SCHEDULED;
 
 /**
  * Handler for {@link ChangeAvailabilityRequest} request.
@@ -46,12 +47,19 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
     /**
      * Handle {@link ChangeAvailabilityRequest} request.
-     * It has 3 scenarios:
+     *
+     * It has 2 scenarios:
+     *
+     * -- when evseId == 0 then:
+     * Iterate over all evses that station has and do the following:
+     *
      * 1. Send response with ACCEPTED status when EVSE status is the same as requested.
      * 2. Change EVSE status to the requested status when they do not match.
      * In addition send response with ACCEPTED status and StatusNotification request for every EVSE Connector.
      * 3. When a transaction is in progress.
      * Send response with SCHEDULED status and save scheduled status for further processing.
+     *
+     * -- when evseId != 0 then do the same as written above but only for one evse
      *
      * @param callId  identity of the message
      * @param request incoming request from the server
@@ -59,34 +67,63 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
     @Override
     public void handle(String callId, ChangeAvailabilityRequest request) {
 
-        Evse evse = stationState.findEvse(request.getEvseId());
-
         EvseStatus requestedEvseStatus = availabilityStateMapper.mapFrom(request.getOperationalStatus());
+
+        ChangeAvailabilityResponse.Status statusToSend = null;
+
+        if (changeEvseAvailability(request)) {
+
+            Evse evse = stationState.findEvse(request.getEvseId());
+
+            statusToSend = handleEvseStatus(requestedEvseStatus, evse);
+
+        } else {
+
+            for (Evse evse : stationState.getEvses()) {
+
+                ChangeAvailabilityResponse.Status evseStatus = handleEvseStatus(requestedEvseStatus, evse);
+
+                if (changeStatusIsNeeded(statusToSend)) {
+                    statusToSend = evseStatus;
+                }
+            }
+
+        }
+
+        sendResponseWithStatus(callId, statusToSend);
+
+    }
+
+    private ChangeAvailabilityResponse.Status handleEvseStatus(EvseStatus requestedEvseStatus, Evse evse) {
 
         if (evse.hasOngoingTransaction()) {
 
             evse.setScheduledNewEvseStatus(requestedEvseStatus);
 
-            sendResponseWithStatus(callId, SCHEDULED);
+            return SCHEDULED;
 
-        } else {
+        }
 
-            sendResponseWithStatus(callId, ACCEPTED);
+        if (!evse.hasStatus(requestedEvseStatus)) {
 
-            if (!evse.hasStatus(requestedEvseStatus)) {
+            evse.changeStatus(requestedEvseStatus);
 
-                evse.setEvseStatus(requestedEvseStatus);
-
-                // for every connector send StatusNotification request
-                for (Connector connector : evse.getConnectors()) {
-                    stationMessageSender.sendStatusNotification(evse, connector);
-                }
-
+            // for every connector send StatusNotification request
+            for (Connector connector : evse.getConnectors()) {
+                stationMessageSender.sendStatusNotification(evse, connector);
             }
 
         }
 
+        return ACCEPTED;
+    }
 
+    private boolean changeStatusIsNeeded(ChangeAvailabilityResponse.Status statusToSend) {
+        return statusToSend != SCHEDULED;
+    }
+
+    private boolean changeEvseAvailability(ChangeAvailabilityRequest request) {
+        return request.getEvseId() != 0;
     }
 
     private void sendResponseWithStatus(String callId, ChangeAvailabilityResponse.Status status) {
