@@ -10,8 +10,7 @@ import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.ACCEPTED;
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.SCHEDULED;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.*;
 
 /**
  * Handler for {@link ChangeAvailabilityRequest} request.
@@ -47,18 +46,18 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
     /**
      * Handle {@link ChangeAvailabilityRequest} request.
-     *
+     * <p>
      * It has 2 scenarios:
-     *
+     * <p>
      * -- when evseId == 0 then:
      * Iterate over all evses that station has and do the following:
-     *
+     * <p>
      * 1. Send response with ACCEPTED status when EVSE status is the same as requested.
      * 2. Change EVSE status to the requested status when they do not match.
      * In addition send response with ACCEPTED status and StatusNotification request for every EVSE Connector.
      * 3. When a transaction is in progress.
      * Send response with SCHEDULED status and save scheduled status for further processing.
-     *
+     * <p>
      * -- when evseId != 0 then do the same as written above but only for one evse
      *
      * @param callId  identity of the message
@@ -73,9 +72,9 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
         if (changeEvseAvailability(request)) {
 
-            Evse evse = stationState.findEvse(request.getEvseId());
-
-            statusToSend = handleEvseStatus(requestedEvseStatus, evse);
+            statusToSend = stationState.tryFindEvse(request.getEvseId())
+                    .map(evse -> handleEvseStatus(requestedEvseStatus, evse))
+                    .orElse(REJECTED);
 
         } else {
 
@@ -96,26 +95,34 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
     private ChangeAvailabilityResponse.Status handleEvseStatus(EvseStatus requestedEvseStatus, Evse evse) {
 
-        if (evse.hasOngoingTransaction()) {
-
-            evse.setScheduledNewEvseStatus(requestedEvseStatus);
-
-            return SCHEDULED;
-
-        }
-
         if (!evse.hasStatus(requestedEvseStatus)) {
 
-            evse.changeStatus(requestedEvseStatus);
+            if (evse.hasOngoingTransaction()) {
 
-            // for every connector send StatusNotification request
-            for (Connector connector : evse.getConnectors()) {
-                stationMessageSender.sendStatusNotification(evse, connector);
+                evse.setScheduledNewEvseStatus(requestedEvseStatus);
+
+                sendNotificationRequest(evse);
+
+                return SCHEDULED;
+
             }
+
+            evse.changeStatus(requestedEvseStatus);
+            sendNotificationRequest(evse);
 
         }
 
         return ACCEPTED;
+
+    }
+
+    private void sendNotificationRequest(Evse evse) {
+
+        // for every connector send StatusNotification request
+        for (Connector connector : evse.getConnectors()) {
+            stationMessageSender.sendStatusNotification(evse, connector);
+        }
+
     }
 
     private boolean changeStatusIsNeeded(ChangeAvailabilityResponse.Status statusToSend) {

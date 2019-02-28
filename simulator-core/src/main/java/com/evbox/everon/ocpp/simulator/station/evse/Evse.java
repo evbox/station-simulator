@@ -320,7 +320,7 @@ public class Evse {
 
     private void changeEvseStatusIfScheduled() {
         if (nonNull(scheduledNewEvseStatus)) {
-            evseStatus = scheduledNewEvseStatus;
+            changeStatus(scheduledNewEvseStatus);
             // clean
             scheduledNewEvseStatus = null;
         }
