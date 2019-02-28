@@ -1,10 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 
@@ -12,6 +11,7 @@ import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -53,26 +53,8 @@ public class StationState {
         this.heartbeatInterval = heartbeatInterval;
     }
 
-    public Integer lockConnector(int evseId) {
-        return findEvse(evseId).lockPluggedConnector();
-    }
-
     public Integer unlockConnector(int evseId) {
         return findEvse(evseId).unlockConnector();
-    }
-
-    public void plug(Integer connectorId) {
-        Connector connector = findConnector(connectorId);
-        connector.plug();
-    }
-
-    public void unplug(Integer connectorId) {
-        Connector connector = findConnector(connectorId);
-        connector.unplug();
-    }
-
-    public Integer startCharging(Integer evseId) {
-        return findEvse(evseId).startCharging();
     }
 
     public void stopCharging(Integer evseId) {
@@ -83,47 +65,23 @@ public class StationState {
         return findEvse(evseId).isCharging();
     }
 
-    public boolean isPlugged(Integer evseId) {
-        return !isCharging(evseId) && findEvse(evseId).getConnectors().stream().anyMatch(Connector::isPlugged);
+    public CableStatus getCableStatus(int connectorId) {
+        return findConnector(connectorId).getCableStatus();
     }
 
-    public ConnectorStatus getConnectorState(int connectorId) {
-        return findConnector(connectorId).getStatus();
-    }
-
-    public Integer findEvseId(int connectorId) {
-        return findEvseByConnectorId(connectorId).getId();
-    }
-
-    public void storeToken(Integer evseId, String tokenId) {
-        findEvse(evseId).setToken(tokenId);
-    }
-
-    public Integer getDefaultEvseId() {
-        return evses.get(0).getId();
+    public Evse getDefaultEvse() {
+        return evses.get(0);
     }
 
     public boolean hasAuthorizedToken() {
         if (evses.size() > 1) {
             throw new IllegalStateException("One or more EVSE IDs have to be specified");
         }
-        return hasAuthorizedToken(getDefaultEvseId());
+        return hasAuthorizedToken(getDefaultEvse());
     }
 
-    public boolean hasAuthorizedToken(Integer evseId) {
-        return isNotBlank(findEvse(evseId).getTokenId());
-    }
-
-    public String getToken(Integer evseId) {
-        String token = findEvse(evseId).getTokenId();
-        if (isBlank(token)) {
-            throw new IllegalStateException(String.format("Token is not authorized yet: %s", token));
-        }
-        return token;
-    }
-
-    public void clearToken(Integer evseId) {
-        findEvse(evseId).clearToken();
+    public boolean hasAuthorizedToken(Evse evse) {
+        return isNotBlank(evse.getTokenId());
     }
 
     public void clearTokens() {
@@ -165,6 +123,20 @@ public class StationState {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
+    /**
+     * Find an instance of {@link Evse} by connectorId. If not found then throw {@link IllegalArgumentException}.
+     *
+     * @param connectorId connector identity
+     * @return {@link Evse} instance
+     */
+    public Evse findEvseByConnectorId(int connectorId) {
+        return evses.stream()
+                .filter(evse -> evse.getConnectors().stream().anyMatch(connector -> connector.getId().equals(connectorId)))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Connector %s is not present", connectorId)));
+    }
+
+
     @Override
     public String toString() {
         return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses + '}';
@@ -177,7 +149,7 @@ public class StationState {
         for (int evseId = 1; evseId <= evseCount; evseId++) {
             ImmutableList.Builder<Connector> connectorListBuilder = ImmutableList.builder();
             for (int connectorId = 1; connectorId <= connectorsPerEvseCount; connectorId++) {
-                connectorListBuilder.add(new Connector(connectorId, ConnectorStatus.UNPLUGGED));
+                connectorListBuilder.add(new Connector(connectorId, CableStatus.UNPLUGGED, AVAILABLE));
             }
 
             evseListBuilder.add(new Evse(evseId, connectorListBuilder.build()));
@@ -188,16 +160,10 @@ public class StationState {
 
     private Connector findConnector(int connectorId) {
         return evses.stream()
-            .flatMap(evse -> evse.getConnectors().stream())
-            .filter(connector -> connector.getId().equals(connectorId))
-            .findAny()
-            .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
-    }
-
-    private Evse findEvseByConnectorId(int connectorId) {
-        return evses.stream()
-                .filter(evse -> evse.getConnectors().stream().anyMatch(connector -> connector.getId().equals(connectorId)))
-                .findAny().orElseThrow(() -> new IllegalArgumentException(String.format("Connector %s is not present", connectorId)));
+                .flatMap(evse -> evse.getConnectors().stream())
+                .filter(connector -> connector.getId().equals(connectorId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
     }
 
 }
