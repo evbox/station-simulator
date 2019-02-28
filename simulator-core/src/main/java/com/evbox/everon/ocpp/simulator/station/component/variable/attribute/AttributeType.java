@@ -24,11 +24,11 @@ public enum AttributeType {
     }
 
     public static AttributeType from(SetVariableDatum.AttributeType attributeType) {
-        return from(attributeType.value()).orElseThrow(() -> new IllegalAttributeTypeException(attributeType.value()));
+        return from(attributeType.value()).orElseThrow(() -> new IllegalAttributeTypeException("Unknown attribute type: " + attributeType.value()));
     }
 
     public static AttributeType from(GetVariableDatum.AttributeType attributeType) {
-        return from(attributeType.value()).orElseThrow(() -> new IllegalAttributeTypeException(attributeType.value()));
+        return from(attributeType.value()).orElseThrow(() -> new IllegalAttributeTypeException("Unknown attribute type: " + attributeType.value()));
     }
 
     public static Optional<AttributeType> from(String type) {
