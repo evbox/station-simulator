@@ -29,7 +29,7 @@ public enum EvseStatus {
         return this == AVAILABLE;
     }
 
-    public boolean isUnAvailable() {
+    public boolean isUnavailable() {
         return this == UNAVAILABLE;
     }
 
