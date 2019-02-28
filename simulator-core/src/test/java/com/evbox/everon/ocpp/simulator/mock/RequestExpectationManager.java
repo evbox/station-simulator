@@ -15,7 +15,7 @@ public class RequestExpectationManager {
 
     private final List<String> unexpectedRequests = Collections.synchronizedList(new ArrayList<>());
 
-    private final Set<RequestExpectationMatcher> expectations = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<RequestExpectationMatcher> expectations = Collections.synchronizedSet(new LinkedHashSet<>());
 
     /**
      * Add new {@link RequestExpectationMatcher} instance.
@@ -61,6 +61,14 @@ public class RequestExpectationManager {
 
         verifyUnexpectedRequests();
 
+    }
+
+    /**
+     * Clear all expectations.
+     */
+    public void reset() {
+        expectations.clear();
+        unexpectedRequests.clear();
     }
 
     private void verifyUnexpectedRequests() {
