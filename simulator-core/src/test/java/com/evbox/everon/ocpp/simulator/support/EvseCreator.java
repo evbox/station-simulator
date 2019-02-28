@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.support;
 
 import com.evbox.everon.ocpp.simulator.station.evse.*;
+import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 
 import java.util.Collections;
 
@@ -9,7 +10,9 @@ public class EvseCreator {
     public static final Evse DEFAULT_EVSE_INSTANCE = createEvse()
             .withId(StationConstants.DEFAULT_EVSE_ID)
             .withStatus(EvseStatus.AVAILABLE)
-            .withConnectorIdAndState(StationConstants.DEFAULT_CONNECTOR_ID, ConnectorStatus.UNPLUGGED)
+            .withConnectorId(StationConstants.DEFAULT_CONNECTOR_ID)
+            .withCableStatus(CableStatus.UNPLUGGED)
+            .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
             .withTransaction(new EvseTransaction(StationConstants.DEFAULT_INT_TRANSACTION_ID))
             .build();
 
@@ -22,8 +25,9 @@ public class EvseCreator {
         private int id;
         private EvseStatus evseStatus;
         private int connectorId;
-        private ConnectorStatus connectorStatus;
+        private CableStatus cableStatus;
         private EvseTransaction evseTransaction;
+        private StatusNotificationRequest.ConnectorStatus connectorStatus;
 
         public EvseBuilder withId(int id) {
             this.id = id;
@@ -35,8 +39,17 @@ public class EvseCreator {
             return this;
         }
 
-        public EvseBuilder withConnectorIdAndState(int connectorId, ConnectorStatus connectorStatus) {
+        public EvseBuilder withConnectorId(int connectorId) {
             this.connectorId = connectorId;
+            return this;
+        }
+
+        public EvseBuilder withCableStatus(CableStatus cableStatus) {
+            this.cableStatus = cableStatus;
+            return this;
+        }
+
+        public EvseBuilder withConnectorStatus(StatusNotificationRequest.ConnectorStatus connectorStatus) {
             this.connectorStatus = connectorStatus;
             return this;
         }
@@ -47,7 +60,7 @@ public class EvseCreator {
         }
 
         public Evse build() {
-            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, connectorStatus)));
+            return new Evse(id, evseStatus, evseTransaction, Collections.singletonList(new Connector(connectorId, cableStatus, connectorStatus)));
         }
 
     }

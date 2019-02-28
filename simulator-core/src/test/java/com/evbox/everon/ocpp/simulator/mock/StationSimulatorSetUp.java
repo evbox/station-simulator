@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.mock;
 
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createSimulatorConfiguration;
@@ -29,5 +30,11 @@ public class StationSimulatorSetUp {
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(stationConfiguration);
 
         stationSimulatorRunner = new StationSimulatorRunner(OCPP_SERVER_URL, simulatorConfiguration);
+    }
+
+    @AfterEach
+    void tearDown() {
+        ocppMockServer.stop();
+        ocppMockServer.reset();
     }
 }
