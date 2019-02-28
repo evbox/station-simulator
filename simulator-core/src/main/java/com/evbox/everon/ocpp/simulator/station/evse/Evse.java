@@ -234,39 +234,27 @@ public class Evse {
 
 
     /**
-     * Try to plug connector. If EVSE is unavailable it returns false.
+     * Plug connector.
      *
      * @param connectorId connector identity
      * @return true if succeeded otherwise false
      */
-    public boolean tryPlug(Integer connectorId) {
-
-        if (evseStatus.isUnAvailable()) {
-            return false;
-        }
+    public void plug(Integer connectorId) {
 
         Connector connector = findConnector(connectorId);
         connector.plug();
-
-        return true;
     }
 
     /**
-     * Try to unplug connector. if EVSE is unavailable method returns false.
+     * Unplug connector.
      *
      * @param connectorId connector identity
      * @return true if succeeded otherwise false
      */
-    public boolean tryUnplug(Integer connectorId) {
-
-        if (evseStatus.isUnAvailable()) {
-            return false;
-        }
+    public void unplug(Integer connectorId) {
 
         Connector connector = findConnector(connectorId);
         connector.unplug();
-
-        return true;
     }
 
 
@@ -276,10 +264,6 @@ public class Evse {
      * @return identity of the connector.
      */
     public Integer lockPluggedConnector() {
-
-        if (evseStatus.isUnAvailable()) {
-            throw new IllegalStateException("Can not lock connector when EVSE status is UnAvailable");
-        }
 
         Connector pluggedConnector = connectors.stream()
                 .filter(Connector::isCablePlugged)
@@ -297,10 +281,6 @@ public class Evse {
      * @return identity of the connector.
      */
     public Integer unlockConnector() {
-
-        if (evseStatus.isUnAvailable()) {
-            throw new IllegalStateException("Can not unlock connector when EVSE status is UnAvailable");
-        }
 
         Connector lockedConnector = connectors.stream()
                 .filter(Connector::isCableLocked)

@@ -3,7 +3,6 @@ package com.evbox.everon.ocpp.simulator.station.actions;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
@@ -42,7 +41,7 @@ public class Plug implements UserMessage {
             evse.createTransaction(transactionId);
         }
 
-        evse.tryPlug(connectorId);
+        evse.plug(connectorId);
 
         stationMessageSender.sendStatusNotificationAndSubscribe(evse.getId(), connectorId, (statusNotificationRequest, statusNotificationResponse) -> {
             if (evse.hasTokenId()) {
