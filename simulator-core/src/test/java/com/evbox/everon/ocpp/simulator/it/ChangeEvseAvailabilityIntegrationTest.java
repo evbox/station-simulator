@@ -8,11 +8,15 @@ import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.simulator.mock.ExpectedCount.twice;
 import static com.evbox.everon.ocpp.simulator.mock.ExpectedRequests.bootNotificationRequest;
-import static com.evbox.everon.ocpp.simulator.mock.ExpectedRequests.statusNotificationRequest;
+import static com.evbox.everon.ocpp.simulator.mock.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.simulator.mock.ExpectedResponses.bootNotificationResponse;
 import static com.evbox.everon.ocpp.simulator.mock.ExpectedResponses.statusNotificationResponse;
 import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCall;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -27,7 +31,11 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
                 .thenReturn(bootNotificationResponse());
 
         ocppMockServer
-                .when(statusNotificationRequest(), twice())
+                .when(statusNotificationRequestWithStatus(AVAILABLE))
+                .thenReturn(statusNotificationResponse());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(UNAVAILABLE))
                 .thenReturn(statusNotificationResponse());
 
         // when
@@ -35,7 +43,7 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
 
         ocppMockServer.waitUntilConnected();
 
-        ocppServerClient.findStationSender(STATION_ID).sendMessage(createChangeAvailabilityRequest());
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(changeAvailabilityRequestWithStatus(INOPERATIVE));
 
         // then
         await().untilAsserted(() -> {
@@ -46,14 +54,47 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
             ocppMockServer.verify();
         });
 
+    }
 
+    @Test
+    void shouldChangeEvseStatusToAvailable() {
+
+        // given
+        ocppMockServer
+                .when(bootNotificationRequest())
+                .thenReturn(bootNotificationResponse());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(AVAILABLE), twice())
+                .thenReturn(statusNotificationResponse());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(UNAVAILABLE))
+                .thenReturn(statusNotificationResponse());
+
+        // when
+        stationSimulatorRunner.run();
+
+        ocppMockServer.waitUntilConnected();
+
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(changeAvailabilityRequestWithStatus(INOPERATIVE));
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(changeAvailabilityRequestWithStatus(OPERATIVE));
+
+        // then
+        await().untilAsserted(() -> {
+            Station station = stationSimulatorRunner.getStation(STATION_ID);
+
+            assertThat(station.getState().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.AVAILABLE);
+
+            ocppMockServer.verify();
+        });
 
     }
 
-    String createChangeAvailabilityRequest() {
+    String changeAvailabilityRequestWithStatus(ChangeAvailabilityRequest.OperationalStatus operationalStatus) {
         ChangeAvailabilityRequest changeAvailabilityRequest = new ChangeAvailabilityRequest()
                 .withEvseId(DEFAULT_EVSE_ID)
-                .withOperationalStatus(ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE);
+                .withOperationalStatus(operationalStatus);
 
         return createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)

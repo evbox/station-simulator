@@ -450,7 +450,7 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedEventOptional).isPresent();
         });
 
-        assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().hasAuthorizedToken(DEFAULT_EVSE_ID)).isFalse();
+        assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().findEvse(DEFAULT_EVSE_ID).hasTokenId()).isFalse();
         assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().hasOngoingTransaction(DEFAULT_EVSE_ID)).isFalse();
     }
 

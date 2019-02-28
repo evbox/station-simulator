@@ -1,7 +1,7 @@
 OCPP Station Simulator
 ======================
 The simulator tool is dedicated for simulation of charging station. It implements [OCPP protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol) and talks to Charging Station Management 
-System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 is supported.
+System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [here](https://www.openchargealliance.org/protocols/ocpp-20/)) is supported.
 
 [![CircleCI](https://circleci.com/gh/evbox/station-simulator.svg?style=svg)](https://circleci.com/gh/evbox/station-simulator)
 

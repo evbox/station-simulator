@@ -1,9 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.actions;
 
-import com.evbox.everon.ocpp.simulator.station.evse.ConnectorStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
@@ -30,34 +30,34 @@ public class Plug implements UserMessage {
     @Override
     public void perform(StationState stationState, StationMessageSender stationMessageSender) {
 
-        if (stationState.getConnectorState(connectorId) != ConnectorStatus.UNPLUGGED) {
+        if (stationState.getCableStatus(connectorId) != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %s", connectorId));
         }
 
-        Integer evseId = stationState.findEvseId(connectorId);
+        Evse evse = stationState.findEvseByConnectorId(connectorId);
 
-        if (!stationState.hasOngoingTransaction(evseId)) {
+        if (!evse.hasOngoingTransaction()) {
             Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-            stationState.findEvse(evseId).createTransaction(transactionId);
+            evse.createTransaction(transactionId);
         }
 
-        stationState.plug(connectorId);
+        evse.plug(connectorId);
 
-        stationMessageSender.sendStatusNotificationAndSubscribe(evseId, connectorId, (statusNotificationRequest, statusNotificationResponse) -> {
-            if (stationState.hasAuthorizedToken(evseId)) {
-                String tokenId = stationState.getToken(evseId);
+        stationMessageSender.sendStatusNotificationAndSubscribe(evse.getId(), connectorId, (statusNotificationRequest, statusNotificationResponse) -> {
+            if (evse.hasTokenId()) {
+                String tokenId = evse.getTokenId();
                 log.info("Station has authorised token {}", tokenId);
 
-                stationMessageSender.sendTransactionEventUpdateAndSubscribe(evseId, connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, tokenId, TransactionData.ChargingState.EV_DETECTED,
+                stationMessageSender.sendTransactionEventUpdateAndSubscribe(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, tokenId, TransactionData.ChargingState.EV_DETECTED,
                         (transactionEventRequest, transactionEventResponse) -> {
-                            stationState.lockConnector(evseId);
-                            stationState.startCharging(evseId);
+                            evse.lockPluggedConnector();
+                            evse.startCharging();
 
-                            stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, TransactionEventRequest.TriggerReason.CHARGING_STATE_CHANGED, tokenId,
+                            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CHARGING_STATE_CHANGED, tokenId,
                                     TransactionData.ChargingState.CHARGING);
                         });
             } else {
-                stationMessageSender.sendTransactionEventStart(evseId, connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+                stationMessageSender.sendTransactionEventStart(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
             }
         });
     }

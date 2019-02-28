@@ -211,7 +211,7 @@ public class StationMessageSender {
      * @param subscriber  callback that will be executed after receiving a response from OCPP server
      */
     public void sendStatusNotificationAndSubscribe(int evseId, int connectorId, Subscriber<StatusNotificationRequest, StatusNotificationResponse> subscriber) {
-        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, stationState.getConnectorState(connectorId), stationState.getCurrentTime());
+        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, stationState.getCableStatus(connectorId), stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
@@ -227,7 +227,7 @@ public class StationMessageSender {
      * @param connectorId connector identity
      */
     public void sendStatusNotification(int evseId, int connectorId) {
-        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, stationState.getConnectorState(connectorId), stationState.getCurrentTime());
+        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, stationState.getCableStatus(connectorId), stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
