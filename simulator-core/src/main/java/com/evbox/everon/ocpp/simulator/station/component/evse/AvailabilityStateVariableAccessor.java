@@ -8,10 +8,8 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
@@ -74,6 +72,6 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
     }
 
     private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
-        return READ_ONLY_VALIDATOR.validate(attributePath, attributeValue);
+        return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableResult.AttributeStatus.REJECTED);
     }
 }

@@ -34,12 +34,12 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
                     .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
                     .withAttributeStatus(SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
 
-    protected static final SetVariableValidator READ_ONLY_VALIDATOR = (attributePath, attributeValue) ->
+    protected static final SetVariableResultCreator RESULT_CREATOR = (attributePath, attributeValue, attributeStatus) ->
             new SetVariableResult()
                     .withComponent(attributePath.getComponent())
                     .withVariable(attributePath.getVariable())
                     .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                    .withAttributeStatus(SetVariableResult.AttributeStatus.REJECTED);
+                    .withAttributeStatus(attributeStatus);
 
     private final Station station;
 

@@ -52,7 +52,7 @@ public class ModelVariableAccessor extends VariableAccessor {
     }
 
     private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
-        return READ_ONLY_VALIDATOR.validate(attributePath, attributeValue);
+        return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableResult.AttributeStatus.REJECTED);
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
