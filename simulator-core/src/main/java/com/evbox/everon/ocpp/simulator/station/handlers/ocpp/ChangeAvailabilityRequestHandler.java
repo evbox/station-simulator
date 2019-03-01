@@ -10,6 +10,8 @@ import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.*;
 
 /**
@@ -69,32 +71,51 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
         EvseStatus requestedEvseStatus = availabilityStateMapper.mapFrom(request.getOperationalStatus());
 
-        ChangeAvailabilityResponse.Status statusToSend = null;
-
         if (changeEvseAvailability(request)) {
 
-            statusToSend = stationState.tryFindEvse(request.getEvseId())
-                    .map(evse -> handleEvseStatus(requestedEvseStatus, evse))
-                    .orElse(REJECTED);
+            Optional<Evse> evse = stationState.tryFindEvse(request.getEvseId());
+
+            if (evse.isPresent()) {
+
+                sendResponseWithStatus(callId, defineStatusToSend(requestedEvseStatus, evse.get()));
+
+                sendNotificationRequest(evse.get());
+
+            } else {
+
+                sendResponseWithStatus(callId, REJECTED);
+
+            }
 
         } else {
 
+            sendResponseWithStatus(callId, defineStatusToSend(requestedEvseStatus));
+
             for (Evse evse : stationState.getEvses()) {
-
-                ChangeAvailabilityResponse.Status evseStatus = handleEvseStatus(requestedEvseStatus, evse);
-
-                if (changeStatusIsNeeded(statusToSend)) {
-                    statusToSend = evseStatus;
-                }
+                sendNotificationRequest(evse);
             }
-
         }
 
-        sendResponseWithStatus(callId, statusToSend);
 
     }
 
-    private ChangeAvailabilityResponse.Status handleEvseStatus(EvseStatus requestedEvseStatus, Evse evse) {
+    private ChangeAvailabilityResponse.Status defineStatusToSend(EvseStatus requestedEvseStatus) {
+
+        ChangeAvailabilityResponse.Status statusToSend = null;
+
+        for (Evse evse : stationState.getEvses()) {
+
+            ChangeAvailabilityResponse.Status evseStatus = defineStatusToSend(requestedEvseStatus, evse);
+
+            if (changeStatusIsNeeded(statusToSend)) {
+                statusToSend = evseStatus;
+            }
+        }
+
+        return statusToSend;
+    }
+
+    private ChangeAvailabilityResponse.Status defineStatusToSend(EvseStatus requestedEvseStatus, Evse evse) {
 
         if (!evse.hasStatus(requestedEvseStatus)) {
 
@@ -104,15 +125,11 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
                 evse.setScheduledNewEvseStatus(requestedEvseStatus);
 
-                sendNotificationRequest(evse);
-
                 return SCHEDULED;
 
             }
 
             evse.changeStatus(requestedEvseStatus);
-            sendNotificationRequest(evse);
-
         }
 
         return ACCEPTED;
