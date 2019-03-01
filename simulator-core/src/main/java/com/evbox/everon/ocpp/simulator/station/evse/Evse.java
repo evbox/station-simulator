@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * An EVSE is considered as an independently operated and managed part of the ChargingStation that can deliver energy to one EV at a time.
  */
+@Slf4j
 @Getter
 @EqualsAndHashCode(of = "id")
 public class Evse {
@@ -159,13 +161,13 @@ public class Evse {
     }
 
     /**
-     * Setter for EVSE status. Also changes status of connectors depending on EVSE status.
+     * Change EVSE status and status of connectors.
      *
      * @param evseStatus
      */
-    public void setEvseStatus(EvseStatus evseStatus) {
+    public void changeStatus(EvseStatus evseStatus) {
         this.evseStatus = evseStatus;
-
+        log.info("Changing status to {} for evse {}", evseStatus, id);
         evseStatus.changeConnectorStatus(connectors);
 
     }
@@ -305,6 +307,19 @@ public class Evse {
         return getConnectors().stream().anyMatch(Connector::isCablePlugged);
     }
 
+    /**
+     * Find an instance of {@link Connector} by connector_id.
+     *
+     * @param connectorId connector identity
+     * @return {@link Connector} instance
+     */
+    public Connector findConnector(int connectorId) {
+        return connectors.stream()
+                .filter(connector -> connector.getId().equals(connectorId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
+    }
+
     @Override
     public String toString() {
         return "Evse{" +
@@ -320,22 +335,10 @@ public class Evse {
 
     private void changeEvseStatusIfScheduled() {
         if (nonNull(scheduledNewEvseStatus)) {
-            evseStatus = scheduledNewEvseStatus;
+            changeStatus(scheduledNewEvseStatus);
             // clean
             scheduledNewEvseStatus = null;
         }
     }
 
-    /**
-     * Find an instance of {@link Connector} by connector_id.
-     *
-     * @param connectorId connector identity
-     * @return {@link Connector} instance
-     */
-    private Connector findConnector(int connectorId) {
-        return connectors.stream()
-                .filter(connector -> connector.getId().equals(connectorId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
-    }
 }

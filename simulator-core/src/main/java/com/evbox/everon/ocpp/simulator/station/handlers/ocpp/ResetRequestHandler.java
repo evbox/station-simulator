@@ -48,7 +48,7 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
     }
 
     void resetStation() {
-        List<Integer> evseIds = state.getEvses();
+        List<Integer> evseIds = state.getEvseIds();
         evseIds.forEach(evseId -> {
             if (state.hasOngoingTransaction(evseId)) {
                 state.stopCharging(evseId);

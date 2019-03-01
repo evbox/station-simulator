@@ -14,6 +14,7 @@ public class OcppServerClient {
 
     // maps station_id -> websocket sender
     private final Map<String, WebSocketSender> webSocketChannelMap = new ConcurrentHashMap<>();
+    private volatile boolean connected;
 
     /**
      * Puts a new entry to the map. If exists then return the associated websocket sender.
@@ -32,7 +33,11 @@ public class OcppServerClient {
      * @return true if connected otherwise false
      */
     public boolean isConnected() {
-        return webSocketChannelMap.size() > 0;
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 
     /**
