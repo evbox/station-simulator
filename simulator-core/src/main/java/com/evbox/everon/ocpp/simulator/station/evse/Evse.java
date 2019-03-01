@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * An EVSE is considered as an independently operated and managed part of the ChargingStation that can deliver energy to one EV at a time.
  */
+@Slf4j
 @Getter
 @EqualsAndHashCode(of = "id")
 public class Evse {
@@ -165,7 +167,7 @@ public class Evse {
      */
     public void changeStatus(EvseStatus evseStatus) {
         this.evseStatus = evseStatus;
-
+        log.info("Changing status to {} for evse {}", evseStatus, id);
         evseStatus.changeConnectorStatus(connectors);
 
     }
