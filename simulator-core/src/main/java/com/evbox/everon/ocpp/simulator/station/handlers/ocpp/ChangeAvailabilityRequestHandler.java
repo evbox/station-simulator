@@ -57,6 +57,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
      * In addition send response with ACCEPTED status and StatusNotification request for every EVSE Connector.
      * 3. When a transaction is in progress.
      * Send response with SCHEDULED status and save scheduled status for further processing.
+     * 4. If provided evse_id does not exists reply with REJECTED status.
      * <p>
      * -- when evseId != 0 then do the same as written above but only for one evse
      *
