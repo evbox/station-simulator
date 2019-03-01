@@ -3,6 +3,8 @@ package com.evbox.everon.ocpp.simulator.station.actions;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.simulator.support.EvseCreator;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
@@ -56,7 +58,7 @@ public class UnplugTest {
 
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(anyInt(), anyInt(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(Evse.class), any(Connector.class), subscriberCaptor.capture());
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
