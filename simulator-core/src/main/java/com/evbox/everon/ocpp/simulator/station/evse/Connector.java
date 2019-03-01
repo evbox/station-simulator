@@ -111,8 +111,13 @@ public class Connector {
         return cableStatus == CableStatus.LOCKED;
     }
 
+
     @Override
     public String toString() {
-        return "Connector{" + "id=" + id + ", cableStatus=" + cableStatus + '}';
+        return "Connector{" +
+                "id=" + id +
+                ", cableStatus=" + cableStatus +
+                ", connectorStatus=" + connectorStatus +
+                '}';
     }
 }

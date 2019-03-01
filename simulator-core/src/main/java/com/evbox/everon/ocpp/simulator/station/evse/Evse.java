@@ -307,6 +307,19 @@ public class Evse {
         return getConnectors().stream().anyMatch(Connector::isCablePlugged);
     }
 
+    /**
+     * Find an instance of {@link Connector} by connector_id.
+     *
+     * @param connectorId connector identity
+     * @return {@link Connector} instance
+     */
+    public Connector findConnector(int connectorId) {
+        return connectors.stream()
+                .filter(connector -> connector.getId().equals(connectorId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
+    }
+
     @Override
     public String toString() {
         return "Evse{" +
@@ -328,16 +341,4 @@ public class Evse {
         }
     }
 
-    /**
-     * Find an instance of {@link Connector} by connector_id.
-     *
-     * @param connectorId connector identity
-     * @return {@link Connector} instance
-     */
-    private Connector findConnector(int connectorId) {
-        return connectors.stream()
-                .filter(connector -> connector.getId().equals(connectorId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
-    }
 }
