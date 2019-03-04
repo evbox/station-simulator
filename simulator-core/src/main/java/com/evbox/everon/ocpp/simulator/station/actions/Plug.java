@@ -31,11 +31,10 @@ public class Plug implements UserMessage {
     @Override
     public void perform(StationState stationState, StationMessageSender stationMessageSender) {
 
-        if (stationState.getCableStatus(evseId, connectorId) != CableStatus.UNPLUGGED) {
-            throw new IllegalStateException(String.format("Connector is not available: %s", connectorId));
-        }
-
         Evse evse = stationState.findEvse(evseId);
+        if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
+            throw new IllegalStateException(String.format("Connector is not available: %d %d", evseId, connectorId));
+        }
 
         if (!evse.hasOngoingTransaction()) {
             Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();

@@ -23,8 +23,7 @@ import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_E
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UnplugTest {
@@ -34,7 +33,7 @@ public class UnplugTest {
     @Mock
     StationMessageSender stationMessageSenderMock;
 
-    private Unplug unplug;
+    Unplug unplug;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +43,9 @@ public class UnplugTest {
     @Test
     void shouldThrowExceptionWhenStateIsLocked() {
 
-        when(stationStateMock.getCableStatus(anyInt(), anyInt())).thenReturn(CableStatus.LOCKED);
+        Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evse);
+        when(evse.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.LOCKED);
 
         assertThrows(IllegalStateException.class, () -> unplug.perform(stationStateMock, stationMessageSenderMock));
 

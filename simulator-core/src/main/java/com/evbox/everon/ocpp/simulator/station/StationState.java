@@ -65,10 +65,6 @@ public class StationState {
         return findEvse(evseId).isCharging();
     }
 
-    public CableStatus getCableStatus(int evseId, int connectorId) {
-        return findEvse(evseId).findConnector(connectorId).getCableStatus();
-    }
-
     public Evse getDefaultEvse() {
         return evses.get(0);
     }

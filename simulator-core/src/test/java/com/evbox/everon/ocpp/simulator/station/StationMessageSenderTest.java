@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StationMessageSenderTest {
@@ -193,7 +193,9 @@ public class StationMessageSenderTest {
     void verifyStatusNotification() throws InterruptedException {
 
         when(stationStateMock.getCurrentTime()).thenReturn(new Date().toInstant());
-        when(stationStateMock.getCableStatus(anyInt(), anyInt())).thenReturn(CableStatus.UNPLUGGED);
+        Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evse);
+        when(evse.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 

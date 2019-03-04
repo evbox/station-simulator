@@ -28,11 +28,12 @@ public class Unplug implements UserMessage {
     @Override
     public void perform(StationState stationState, StationMessageSender stationMessageSender) {
 
-        if (stationState.getCableStatus(evseId, connectorId) == CableStatus.LOCKED) {
-            throw new IllegalStateException("Unable to unplug locked connector: " + connectorId);
+        Evse evse = stationState.findEvse(evseId);
+        if (evse.findConnector(connectorId).getCableStatus() == CableStatus.LOCKED) {
+            throw new IllegalStateException(String.format("Unable to unplug locked connector: %d %d", evseId, connectorId));
         }
 
-        Evse evse = stationState.findEvse(evseId);
+
         evse.unplug(connectorId);
 
         evse.clearToken();

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -57,6 +58,7 @@ public enum ConsoleCommand {
     AUTH {
         private static final int RFID_INDEX = 0;
         private static final int EVSE_ID_INDEX = 1;
+        private final Pattern identifierStringPattern = Pattern.compile("([a-z]|[A-Z]|[0-9]|\\*|-|_|=|:|\\+|\\||@|\\.){0,36}");
 
         @Override
         public UserMessage toUserMessage(List<String> args) {
@@ -73,7 +75,8 @@ public enum ConsoleCommand {
         }
 
         private void validateIdentifierString(int index, String arg) {
-            boolean validTokenId = !arg.isEmpty() && arg.matches("([a-z]|[A-Z]|[0-9]|\\*|-|_|=|:|\\+|\\||@|\\.){0,36}");
+
+            boolean validTokenId = !arg.isEmpty() && identifierStringPattern.matcher(arg).matches();
             checkArgument(validTokenId, "Expected valid 'identifierString' at [%s], but was '%s'", index, arg);
         }
     };
