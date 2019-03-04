@@ -66,7 +66,7 @@ public class ResetRequestHandlerTest {
                 .withType(ResetRequest.Type.IMMEDIATE)
                 .build();
 
-        when(stationState.getEvses()).thenReturn(Collections.singletonList(1));
+        when(stationState.getEvseIds()).thenReturn(Collections.singletonList(1));
         when(stationState.hasOngoingTransaction(anyInt())).thenReturn(true);
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
@@ -83,7 +83,7 @@ public class ResetRequestHandlerTest {
                 .withType(ResetRequest.Type.IMMEDIATE)
                 .build();
 
-        when(stationState.getEvses()).thenReturn(Collections.singletonList(1));
+        when(stationState.getEvseIds()).thenReturn(Collections.singletonList(1));
         when(stationState.hasOngoingTransaction(anyInt())).thenReturn(false);
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);

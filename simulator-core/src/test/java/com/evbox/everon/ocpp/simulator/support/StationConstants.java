@@ -15,9 +15,14 @@ public class StationConstants {
 
     public static final int DEFAULT_EVSE_CONNECTORS = 1;
 
+    public static final int EVSE_COUNT_TWO = 2;
+
+    public static final int EVSE_CONNECTORS_TWO = 2;
+
     public static final String SERVER_BASE_URL = "ws://ocpp.server.io:8083/ocpp";
 
     public static final int DEFAULT_EVSE_ID = 1;
+    public static final int EVSE_ID_ZERO = 0;
     public static final int DEFAULT_CONNECTOR_ID = 1;
 
     public static final String DEFAULT_TOKEN_ID = "04E8960A1A3180";

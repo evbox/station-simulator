@@ -43,7 +43,7 @@ public class Plug implements UserMessage {
 
         evse.plug(connectorId);
 
-        stationMessageSender.sendStatusNotificationAndSubscribe(evse.getId(), connectorId, (statusNotificationRequest, statusNotificationResponse) -> {
+        stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
             if (evse.hasTokenId()) {
                 String tokenId = evse.getTokenId();
                 log.info("Station has authorised token {}", tokenId);
