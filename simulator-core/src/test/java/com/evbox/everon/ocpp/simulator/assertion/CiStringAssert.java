@@ -16,6 +16,10 @@ public class CiStringAssert extends AbstractAssert<CiStringAssert, CiString> {
     }
 
     public CiStringAssert isEqualTo(String expectedStr) {
+        if (Objects.isNull(expectedStr) && Objects.isNull(actual)) {
+            return this;
+        }
+
         isNotNull();
 
         String actualString = actual.toString();

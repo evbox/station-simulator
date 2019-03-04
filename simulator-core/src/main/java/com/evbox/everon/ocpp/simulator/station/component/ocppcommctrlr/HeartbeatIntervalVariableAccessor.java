@@ -6,7 +6,10 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
@@ -16,16 +19,16 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "HeartbeatInterval";
-    private final Map<GetVariableDatum.AttributeType, VariableGetter> variableGetters = ImmutableMap.<GetVariableDatum.AttributeType, VariableGetter>builder()
-            .put(GetVariableDatum.AttributeType.ACTUAL, this::getActualValue)
+    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
+            .put(AttributeType.ACTUAL, this::getActualValue)
             .build();
 
-    private final Map<SetVariableDatum.AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<SetVariableDatum.AttributeType, SetVariableValidator>builder()
-            .put(SetVariableDatum.AttributeType.ACTUAL, this::validateActualValue)
+    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
+            .put(AttributeType.ACTUAL, this::validateActualValue)
             .build();
 
-    private final Map<SetVariableDatum.AttributeType, VariableSetter> variableSetters = ImmutableMap.<SetVariableDatum.AttributeType, VariableSetter>builder()
-            .put(SetVariableDatum.AttributeType.ACTUAL, this::setActualValue)
+    private final Map<AttributeType, VariableSetter> variableSetters = ImmutableMap.<AttributeType, VariableSetter>builder()
+            .put(AttributeType.ACTUAL, this::setActualValue)
             .build();
 
     public HeartbeatIntervalVariableAccessor(Station station) {
@@ -38,25 +41,25 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
     }
 
     @Override
-    public Map<GetVariableDatum.AttributeType, VariableGetter> getVariableGetters() {
+    public Map<AttributeType, VariableGetter> getVariableGetters() {
         return variableGetters;
     }
 
     @Override
-    public Map<SetVariableDatum.AttributeType, VariableSetter> getVariableSetters() {
+    public Map<AttributeType, VariableSetter> getVariableSetters() {
         return variableSetters;
     }
 
     @Override
-    public Map<SetVariableDatum.AttributeType, SetVariableValidator> getVariableValidators() {
+    public Map<AttributeType, SetVariableValidator> getVariableValidators() {
         return variableValidators;
     }
 
-    private SetVariableResult validateActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
+    private SetVariableResult validateActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         SetVariableResult setVariableResult = new SetVariableResult()
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()));
+                .withComponent(attributePath.getComponent())
+                .withVariable(attributePath.getVariable())
+                .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
         if (!isNumeric(attributeValue.toString())) {
             return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
@@ -65,20 +68,20 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
         }
     }
 
-    public void setActualValue(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
+    public void setActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         Station station = getStation();
         station.updateHeartbeat(Integer.parseInt(attributeValue.toString()));
     }
 
-    private GetVariableResult getActualValue(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
+    private GetVariableResult getActualValue(AttributePath attributePath) {
         Station station = getStation();
         int heartbeatInterval = station.getState().getHeartbeatInterval();
 
         return new GetVariableResult()
                 .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED)
-                .withComponent(component)
-                .withVariable(variable)
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
+                .withComponent(attributePath.getComponent())
+                .withVariable(attributePath.getVariable())
+                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
                 .withAttributeValue(new CiString.CiString1000(String.valueOf(heartbeatInterval)));
     }
 }

@@ -1,8 +1,7 @@
-package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
+package com.evbox.everon.ocpp.simulator.station.component.evse;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -16,9 +15,11 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.Map;
 
-public class ModelVariableAccessor extends VariableAccessor {
+public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
-    public static final String NAME = "Model";
+    public static final String NAME = "AvailabilityState";
+    public static final String EVSE_AVAILABILITY = "Available";
+
     private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
             .put(AttributeType.ACTUAL, this::getActualValue)
             .build();
@@ -27,7 +28,7 @@ public class ModelVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::rejectVariable)
             .build();
 
-    public ModelVariableAccessor(Station station) {
+    public AvailabilityStateVariableAccessor(Station station) {
         super(station);
     }
 
@@ -51,16 +52,26 @@ public class ModelVariableAccessor extends VariableAccessor {
         return variableValidators;
     }
 
-    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
-        return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableResult.AttributeStatus.REJECTED);
-    }
-
     private GetVariableResult getActualValue(AttributePath attributePath) {
-        return new GetVariableResult()
+        Integer evseId = attributePath.getComponent().getEvse().getId();
+
+        GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeValue(new CiString.CiString1000(StationHardwareData.MODEL))
-                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
+                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
+
+        boolean evseExists = getStation().getState().hasEvse(evseId);
+
+        if (evseExists) {
+            return getVariableResult
+                    .withAttributeValue(new CiString.CiString1000(EVSE_AVAILABILITY))
+                    .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
+        } else {
+            return getVariableResult.withAttributeStatus(GetVariableResult.AttributeStatus.REJECTED);
+        }
+    }
+
+    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+        return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableResult.AttributeStatus.REJECTED);
     }
 }

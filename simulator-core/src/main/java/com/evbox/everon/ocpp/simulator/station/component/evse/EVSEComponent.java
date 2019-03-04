@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.simulator.station.component.exception;
+package com.evbox.everon.ocpp.simulator.station.component.evse;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
