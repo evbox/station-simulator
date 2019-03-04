@@ -49,9 +49,8 @@ public enum ConsoleCommand {
         @Override
         void validateArgs(List<String> args) {
             validateLength(args, 2);
-            final int evseIdArgIndex = 0;
-            final int connectorIdArgIndex = 1;
-            validateEvseAndConnector(args, evseIdArgIndex, connectorIdArgIndex);
+
+            validateEvseAndConnector(args, EVSE_ID_INDEX, CONNECTOR_ID_INDEX);
         }
     },
 
@@ -69,8 +68,7 @@ public enum ConsoleCommand {
         void validateArgs(List<String> args) {
             validateLength(args, 2);
 
-            int authKeyArgIndex = 0;
-            validateIdentifierString(authKeyArgIndex, args.get(authKeyArgIndex));
+            validateIdentifierString(RFID_INDEX, args.get(RFID_INDEX));
             validateNumeric(EVSE_ID_INDEX, args.get(EVSE_ID_INDEX));
         }
 
