@@ -27,6 +27,8 @@ public class ConsoleCommandTest {
     private static final Integer CONNECTOR_ID = 1;
     private static final Integer EVSE_ID = 1;
 
+    private final Random randomizer = new Random();
+
     @Test
     void shouldConvertPlugCommandToUserAction() {
         //given
@@ -146,7 +148,6 @@ public class ConsoleCommandTest {
     @Test
     void shouldValidateAuthKeyLengthForAuthCommand() {
         //given
-        Random randomizer = new Random();
         String tooLongAuthKey = Stream.generate(() -> TOKEN_ID.charAt(randomizer.nextInt(TOKEN_ID.length()))).map(Objects::toString).limit(37).collect(Collectors.joining());
         List<String> commandArgs = asList(tooLongAuthKey, EVSE_ID.toString());
 
