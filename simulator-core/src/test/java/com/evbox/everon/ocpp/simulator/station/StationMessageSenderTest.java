@@ -51,9 +51,9 @@ public class StationMessageSenderTest {
     @Mock
     WebSocketClient webSocketClientMock;
 
-    private StationMessageSender stationMessageSender;
+    StationMessageSender stationMessageSender;
 
-    private BlockingQueue<WebSocketClientInboxMessage> queue;
+    BlockingQueue<WebSocketClientInboxMessage> queue;
 
     @BeforeEach
     void setUp() {
