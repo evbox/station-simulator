@@ -5,15 +5,14 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.Attr
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 
 @FunctionalInterface
-public interface SetVariableValidator {
+public interface SetVariableResultCreator {
 
     /**
-     * Since station has to reply to SetVariablesRequest immediately, validation logic should happen before update's execution. This is why validate stands as a separate operation.
+     * Factory method to create SetVariableResult
      *
      * @param attributePath  object which includes component, variable, attribute type
      * @param attributeValue contains value that needs to be set to attribute
      * @return object which includes component, variable, attribute type and attributeStatus which indicates success of an operation
      */
-    SetVariableResult validate(AttributePath attributePath, CiString.CiString1000 attributeValue);
-
+    SetVariableResult createResult(AttributePath attributePath, CiString.CiString1000 attributeValue, SetVariableResult.AttributeStatus attributeStatus);
 }

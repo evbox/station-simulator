@@ -2,7 +2,12 @@ package com.evbox.everon.ocpp.simulator.station.component.variable;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.v20.message.centralserver.Component;
+import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
 
 import java.util.Map;
 import java.util.Optional;
@@ -15,19 +20,26 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
 
     private static final String NULL_STR = "null";
 
-    private static final VariableGetter NOT_SUPPORTED_ATTRIBUTE_TYPE_GETTER = (component, variable, attributeType) ->
+    private static final VariableGetter NOT_SUPPORTED_ATTRIBUTE_TYPE_GETTER = (attributePath) ->
             new GetVariableResult()
-                    .withComponent(component)
-                    .withVariable(variable)
-                    .withAttributeType(GetVariableResult.AttributeType.fromValue(attributeType.value()))
+                    .withComponent(attributePath.getComponent())
+                    .withVariable(attributePath.getVariable())
+                    .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
                     .withAttributeStatus(GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
 
-    private static final SetVariableValidator NOT_SUPPORTED_ATTRIBUTE_TYPE_VALIDATOR = (component, variable, attributeType, attributeValue) ->
+    private static final SetVariableValidator NOT_SUPPORTED_ATTRIBUTE_TYPE_VALIDATOR = (attributePath, attributeValue) ->
             new SetVariableResult()
-                    .withComponent(component)
-                    .withVariable(variable)
-                    .withAttributeType(SetVariableResult.AttributeType.fromValue(attributeType.value()))
+                    .withComponent(attributePath.getComponent())
+                    .withVariable(attributePath.getVariable())
+                    .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
                     .withAttributeStatus(SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
+
+    protected static final SetVariableResultCreator RESULT_CREATOR = (attributePath, attributeValue, attributeStatus) ->
+            new SetVariableResult()
+                    .withComponent(attributePath.getComponent())
+                    .withVariable(attributePath.getVariable())
+                    .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
+                    .withAttributeStatus(attributeStatus);
 
     private final Station station;
 
@@ -41,31 +53,31 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
 
     public abstract String getVariableName();
 
-    public abstract Map<GetVariableDatum.AttributeType, VariableGetter> getVariableGetters();
+    public abstract Map<AttributeType, VariableGetter> getVariableGetters();
 
-    public abstract Map<SetVariableDatum.AttributeType, VariableSetter> getVariableSetters();
+    public abstract Map<AttributeType, VariableSetter> getVariableSetters();
 
-    public abstract Map<SetVariableDatum.AttributeType, SetVariableValidator> getVariableValidators();
-
-    @Override
-    public GetVariableResult get(Component component, Variable variable, GetVariableDatum.AttributeType attributeType) {
-        return getVariableGetters().getOrDefault(attributeType, NOT_SUPPORTED_ATTRIBUTE_TYPE_GETTER)
-                .get(component, variable, attributeType);
-    }
-
-    public SetVariableResult validate(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
-        return getVariableValidators().getOrDefault(attributeType, NOT_SUPPORTED_ATTRIBUTE_TYPE_VALIDATOR)
-                .validate(component, variable, attributeType, attributeValue);
-    }
+    public abstract Map<AttributeType, SetVariableValidator> getVariableValidators();
 
     @Override
-    public void set(Component component, Variable variable, SetVariableDatum.AttributeType attributeType, CiString.CiString1000 attributeValue) {
-        String componentName = Optional.ofNullable(component).map(Component::getName).map(CiString::toString).orElse(NULL_STR);
-        String variableName = Optional.ofNullable(variable).map(Variable::getName).map(CiString::toString).orElse(NULL_STR);
-        String attributeTypeName = Optional.ofNullable(attributeType).map(SetVariableDatum.AttributeType::toString).orElse(NULL_STR);
+    public GetVariableResult get(AttributePath attributePath) {
+        return getVariableGetters().getOrDefault(attributePath.getAttributeType(), NOT_SUPPORTED_ATTRIBUTE_TYPE_GETTER)
+                .get(attributePath);
+    }
 
-        Optional.ofNullable(getVariableSetters().get(attributeType))
+    public SetVariableResult validate(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+        return getVariableValidators().getOrDefault(attributePath.getAttributeType(), NOT_SUPPORTED_ATTRIBUTE_TYPE_VALIDATOR)
+                .validate(attributePath, attributeValue);
+    }
+
+    @Override
+    public void set(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+        String componentName = Optional.ofNullable(attributePath.getComponent()).map(Component::getName).map(CiString::toString).orElse(NULL_STR);
+        String variableName = Optional.ofNullable(attributePath.getVariable()).map(Variable::getName).map(CiString::toString).orElse(NULL_STR);
+        String attributeTypeName = Optional.ofNullable(attributePath.getAttributeType()).map(AttributeType::getName).orElse(NULL_STR);
+
+        Optional.ofNullable(getVariableSetters().get(attributePath.getAttributeType()))
                 .orElseThrow(() -> new SetVariableNotSupportedException(componentName, variableName, attributeTypeName))
-                .set(component, variable, attributeType, attributeValue);
+                .set(attributePath, attributeValue);
     }
 }

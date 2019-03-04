@@ -101,6 +101,16 @@ public class StationState {
     }
 
     /**
+     * Check if EVSE with given EVSE ID is present on the station.
+     *
+     * @param evseId EVSE identity
+     * @return TRUE if station has EVSE with given identity, FALSE if it does not exist
+     */
+    public boolean hasEvse(int evseId) {
+        return tryFindEvse(evseId).isPresent();
+    }
+
+    /**
      * Try to find EVSE by given EVSE ID or return empty result.
      *
      * @param evseId EVSE identity
@@ -156,5 +166,12 @@ public class StationState {
         }
 
         return evseListBuilder.build();
+    }
+
+    public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
+        return tryFindEvse(evseId)
+                .flatMap(evse -> evse.getConnectors().stream()
+                        .filter(connector -> connector.getId().equals(connectorId))
+                        .findAny());
     }
 }

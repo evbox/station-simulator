@@ -1,6 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
-import com.evbox.everon.ocpp.simulator.station.component.variable.*;
+import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableNotSupportedException;
+import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
+import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 
@@ -15,7 +18,7 @@ import static java.util.stream.Collectors.toMap;
  * Represents Component entity from OCPP 2.0 (Appendix 3. Standardized Components).
  * Supports validation, update and retrieval logic for component variables.
  */
-public abstract class StationComponent implements GetVariableHandler, SetVariableHandler {
+public abstract class StationComponent {
 
     /**
      * Map of variable names and accessors for each of them.
@@ -42,7 +45,7 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
 
         VariableAccessor accessor = variableAccessors.get(variable.getName().toString());
 
-        return accessor.get(component, variable, attributeType);
+        return accessor.get(new AttributePath(component, variable, attributeType));
     }
 
     /**
@@ -58,7 +61,7 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
 
         VariableAccessor accessor = variableAccessors.get(variableName);
 
-        accessor.set(component, variable, setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue());
+        accessor.set(new AttributePath(component, variable, setVariableDatum.getAttributeType()), setVariableDatum.getAttributeValue());
     }
 
     /**
@@ -73,7 +76,7 @@ public abstract class StationComponent implements GetVariableHandler, SetVariabl
         Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getVariable().getName().toString()));
 
         SetVariableResult validationResult = optionalVariableAccessor
-                .map(accessor -> accessor.validate(setVariableDatum.getComponent(), setVariableDatum.getVariable(), setVariableDatum.getAttributeType(), setVariableDatum.getAttributeValue()))
+                .map(accessor -> accessor.validate(new AttributePath(setVariableDatum.getComponent(), setVariableDatum.getVariable(), setVariableDatum.getAttributeType()), setVariableDatum.getAttributeValue()))
                 .orElse(new SetVariableResult()
                         .withComponent(setVariableDatum.getComponent())
                         .withVariable(setVariableDatum.getVariable())
