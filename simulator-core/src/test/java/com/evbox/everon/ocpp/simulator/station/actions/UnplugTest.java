@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_CONNECTOR_ID;
+import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_EVSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -33,17 +34,17 @@ public class UnplugTest {
     @Mock
     StationMessageSender stationMessageSenderMock;
 
-    Unplug unplug;
+    private Unplug unplug;
 
     @BeforeEach
     void setUp() {
-        this.unplug = new Unplug(DEFAULT_CONNECTOR_ID);
+        this.unplug = new Unplug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
     }
 
     @Test
     void shouldThrowExceptionWhenStateIsLocked() {
 
-        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.LOCKED);
+        when(stationStateMock.getCableStatus(anyInt(), anyInt())).thenReturn(CableStatus.LOCKED);
 
         assertThrows(IllegalStateException.class, () -> unplug.perform(stationStateMock, stationMessageSenderMock));
 
@@ -52,7 +53,7 @@ public class UnplugTest {
     @Test
     void verifyTransactionStatusNotification() {
 
-        when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(EvseCreator.DEFAULT_EVSE_INSTANCE);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(EvseCreator.DEFAULT_EVSE_INSTANCE);
 
         unplug.perform(stationStateMock, stationMessageSenderMock);
 

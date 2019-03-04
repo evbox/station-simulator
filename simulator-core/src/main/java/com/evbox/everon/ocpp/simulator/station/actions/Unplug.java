@@ -16,6 +16,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Unplug implements UserMessage {
 
+    private final Integer evseId;
     private final Integer connectorId;
 
     /**
@@ -27,19 +28,17 @@ public class Unplug implements UserMessage {
     @Override
     public void perform(StationState stationState, StationMessageSender stationMessageSender) {
 
-        if (stationState.getCableStatus(connectorId) == CableStatus.LOCKED) {
+        if (stationState.getCableStatus(evseId, connectorId) == CableStatus.LOCKED) {
             throw new IllegalStateException("Unable to unplug locked connector: " + connectorId);
         }
 
-        Evse evse = stationState.findEvseByConnectorId(connectorId);
+        Evse evse = stationState.findEvse(evseId);
         evse.unplug(connectorId);
 
         evse.clearToken();
         evse.stopTransaction();
 
-        stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (request, response) -> {
-            stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.EV_DISCONNECTED);
-
-        });
+        stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (request, response) ->
+                stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.EV_DISCONNECTED));
     }
 }

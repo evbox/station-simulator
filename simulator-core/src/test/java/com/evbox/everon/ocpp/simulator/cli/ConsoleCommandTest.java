@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -31,25 +30,27 @@ public class ConsoleCommandTest {
     @Test
     void shouldConvertPlugCommandToUserAction() {
         //given
-        List<String> commandArgs = singletonList(CONNECTOR_ID.toString());
+        List<String> commandArgs = asList(EVSE_ID.toString(), CONNECTOR_ID.toString());
 
         //when
         UserMessage userMessage = ConsoleCommand.toUserMessage(PLUG_CMD, commandArgs);
 
         //then
-        assertThat(((Plug) userMessage).getConnectorId()).isEqualTo(1);
+        assertThat(((Plug) userMessage).getConnectorId()).isEqualTo(CONNECTOR_ID);
+        assertThat(((Plug) userMessage).getEvseId()).isEqualTo(EVSE_ID);
     }
 
     @Test
     void shouldConvertUnplugCommandToUserAction() {
         //given
-        List<String> commandArgs = singletonList(CONNECTOR_ID.toString());
+        List<String> commandArgs = asList(EVSE_ID.toString(), CONNECTOR_ID.toString());
 
         //when
         UserMessage userMessage = ConsoleCommand.toUserMessage(UNPLUG_CMD, commandArgs);
 
         //then
-        assertThat(((Unplug) userMessage).getConnectorId()).isEqualTo(1);
+        assertThat(((Unplug) userMessage).getConnectorId()).isEqualTo(CONNECTOR_ID);
+        assertThat(((Unplug) userMessage).getEvseId()).isEqualTo(EVSE_ID);
     }
 
     @Test
@@ -66,29 +67,55 @@ public class ConsoleCommandTest {
     }
 
     @Test
-    void shouldValidateConnectorIdForPlugCommand() {
+    void shouldValidateEvseIdForPlugCommand() {
         //given
-        String nonNumericConnectorId = "x";
-        List<String> commandArgs = singletonList(nonNumericConnectorId);
+        String nonNumericEvseId = "x";
+        List<String> commandArgs = asList(nonNumericEvseId, CONNECTOR_ID.toString());
 
         //when
         Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(PLUG_CMD, commandArgs));
 
         //then
-        assertThat(throwable).hasMessage("Expected numeric argument at [0], but was '" + nonNumericConnectorId + "'");
+        assertThat(throwable).hasMessage(formatNumericError(0, nonNumericEvseId));
+    }
+
+    @Test
+    void shouldValidateConnectorIdForPlugCommand() {
+        //given
+        String nonNumericConnectorId = "x";
+        List<String> commandArgs = asList(EVSE_ID.toString(), nonNumericConnectorId);
+
+        //when
+        Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(PLUG_CMD, commandArgs));
+
+        //then
+        assertThat(throwable).hasMessage(formatNumericError(1, nonNumericConnectorId));
+    }
+
+    @Test
+    void shouldValidateEvseIdForUnplugCommand() {
+        //given
+        String nonNumericEvseId = "x";
+        List<String> commandArgs = asList(nonNumericEvseId, CONNECTOR_ID.toString());
+
+        //when
+        Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(UNPLUG_CMD, commandArgs));
+
+        //then
+        assertThat(throwable).hasMessage(formatNumericError(0, nonNumericEvseId));
     }
 
     @Test
     void shouldValidateConnectorIdForUnplugCommand() {
         //given
         String nonNumericConnectorId = "x";
-        List<String> commandArgs = singletonList(nonNumericConnectorId);
+        List<String> commandArgs = asList(EVSE_ID.toString(), nonNumericConnectorId);
 
         //when
         Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(UNPLUG_CMD, commandArgs));
 
         //then
-        assertThat(throwable).hasMessage("Expected numeric argument at [0], but was '" + nonNumericConnectorId + "'");
+        assertThat(throwable).hasMessage(formatNumericError(1, nonNumericConnectorId));
     }
 
     @Test
@@ -141,5 +168,9 @@ public class ConsoleCommandTest {
 
         //then
         assertThat(throwable).hasMessage("Expected numeric argument at [1], but was '" + nonNumericEvseId + "'");
+    }
+
+    private static String formatNumericError(int index, String actual) {
+        return String.format("Expected numeric argument at [%d], but was '%s'", index, actual);
     }
 }

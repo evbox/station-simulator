@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class Plug implements UserMessage {
 
+    private final Integer evseId;
     private final Integer connectorId;
 
     /**
@@ -30,11 +31,11 @@ public class Plug implements UserMessage {
     @Override
     public void perform(StationState stationState, StationMessageSender stationMessageSender) {
 
-        if (stationState.getCableStatus(connectorId) != CableStatus.UNPLUGGED) {
+        if (stationState.getCableStatus(evseId, connectorId) != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %s", connectorId));
         }
 
-        Evse evse = stationState.findEvseByConnectorId(connectorId);
+        Evse evse = stationState.findEvse(evseId);
 
         if (!evse.hasOngoingTransaction()) {
             Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();

@@ -51,9 +51,9 @@ public class StationMessageSenderTest {
     @Mock
     WebSocketClient webSocketClientMock;
 
-    StationMessageSender stationMessageSender;
+    private StationMessageSender stationMessageSender;
 
-    BlockingQueue<WebSocketClientInboxMessage> queue;
+    private BlockingQueue<WebSocketClientInboxMessage> queue;
 
     @BeforeEach
     void setUp() {
@@ -193,7 +193,7 @@ public class StationMessageSenderTest {
     void verifyStatusNotification() throws InterruptedException {
 
         when(stationStateMock.getCurrentTime()).thenReturn(new Date().toInstant());
-        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
+        when(stationStateMock.getCableStatus(anyInt(), anyInt())).thenReturn(CableStatus.UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 
