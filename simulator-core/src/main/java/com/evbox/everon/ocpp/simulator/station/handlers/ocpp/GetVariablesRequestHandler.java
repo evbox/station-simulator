@@ -1,9 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
-import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesResponse;
@@ -45,12 +43,7 @@ public class GetVariablesRequestHandler implements OcppRequestHandler<GetVariabl
                     .orElse(UNKNOWN_COMPONENT);
         }).collect(toList());
 
-        sendResponse(callId, new GetVariablesResponse().withGetVariableResult(results));
+        stationMessageSender.sendCallResult(callId, new GetVariablesResponse().withGetVariableResult(results));
     }
 
-    private void sendResponse(String callId, Object payload) {
-        CallResult callResult = new CallResult(callId, payload);
-        String callStr = callResult.toJson();
-        stationMessageSender.sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
-    }
 }
