@@ -23,7 +23,7 @@ public class StationComponentsHolder {
     /**
      * Maps component name to its implementation where each of them has variables
      */
-    private Map<String, StationComponent> components;
+    private final Map<String, StationComponent> components;
 
     public StationComponentsHolder(Station station) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
