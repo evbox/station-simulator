@@ -1,18 +1,10 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
-import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
+import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityStateMapper;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Optional;
-
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse.Status.*;
 
 /**
  * Handler for {@link ChangeAvailabilityRequest} request.
@@ -20,29 +12,26 @@ import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRespon
 @Slf4j
 public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<ChangeAvailabilityRequest> {
 
-    private final StationState stationState;
-    private final StationMessageSender stationMessageSender;
+    private final AvailabilityManager availabilityManager;
     private final AvailabilityStateMapper availabilityStateMapper;
 
     /**
      * Create an instance.
      *
-     * @param stationState         {@link StationState}
-     * @param stationMessageSender {@link StationMessageSender}
+     * @param availabilityManager {@link AvailabilityManager}
      */
-    public ChangeAvailabilityRequestHandler(StationState stationState, StationMessageSender stationMessageSender) {
-        this(stationState, stationMessageSender, new AvailabilityStateMapper());
+    public ChangeAvailabilityRequestHandler(AvailabilityManager availabilityManager) {
+        this(availabilityManager, new AvailabilityStateMapper());
     }
 
     /**
      * Create an instance.
      *
-     * @param stationState         {@link StationState}
-     * @param stationMessageSender {@link StationMessageSender}
+     * @param availabilityManager     {@link AvailabilityManager}
+     * @param availabilityStateMapper {@link AvailabilityStateMapper}
      */
-    public ChangeAvailabilityRequestHandler(StationState stationState, StationMessageSender stationMessageSender, AvailabilityStateMapper availabilityStateMapper) {
-        this.stationState = stationState;
-        this.stationMessageSender = stationMessageSender;
+    public ChangeAvailabilityRequestHandler(AvailabilityManager availabilityManager, AvailabilityStateMapper availabilityStateMapper) {
+        this.availabilityManager = availabilityManager;
         this.availabilityStateMapper = availabilityStateMapper;
     }
 
@@ -51,17 +40,12 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
      * <p>
      * It has 2 scenarios:
      * <p>
-     * -- when evseId == 0 then:
-     * Iterate over all evses that station has and do the following:
+     * when evseId == 0 then:
+     * change status of all EVSEs
+     *
      * <p>
-     * 1. Send response with ACCEPTED status when EVSE status is the same as requested.
-     * 2. Change EVSE status to the requested status when they do not match.
-     * In addition send response with ACCEPTED status and StatusNotification request for every EVSE Connector.
-     * 3. When a transaction is in progress.
-     * Send response with SCHEDULED status and save scheduled status for further processing.
-     * 4. If provided evse_id does not exists reply with REJECTED status.
-     * <p>
-     * -- when evseId != 0 then do the same as written above but only for one evse
+     * when evseId != 0 then
+     * change status of the specified EVSE
      *
      * @param callId  identity of the message
      * @param request incoming request from the server
@@ -71,90 +55,16 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
         EvseStatus requestedEvseStatus = availabilityStateMapper.mapFrom(request.getOperationalStatus());
 
-        if (changeEvseAvailability(request)) {
-
-            Optional<Evse> evse = stationState.tryFindEvse(request.getEvseId());
-
-            if (evse.isPresent()) {
-
-                sendResponseWithStatus(callId, defineStatusToSend(requestedEvseStatus, evse.get()));
-
-                sendNotificationRequest(evse.get());
-
-            } else {
-
-                sendResponseWithStatus(callId, REJECTED);
-
-            }
-
+        if (isEvseAvailability(request)) {
+            availabilityManager.changeEvseAvailability(callId, request, requestedEvseStatus);
         } else {
-
-            sendResponseWithStatus(callId, defineStatusToSend(requestedEvseStatus));
-
-            for (Evse evse : stationState.getEvses()) {
-                sendNotificationRequest(evse);
-            }
-        }
-
-
-    }
-
-    private ChangeAvailabilityResponse.Status defineStatusToSend(EvseStatus requestedEvseStatus) {
-
-        ChangeAvailabilityResponse.Status statusToSend = null;
-
-        for (Evse evse : stationState.getEvses()) {
-
-            ChangeAvailabilityResponse.Status evseStatus = defineStatusToSend(requestedEvseStatus, evse);
-
-            if (changeStatusIsNeeded(statusToSend)) {
-                statusToSend = evseStatus;
-            }
-        }
-
-        return statusToSend;
-    }
-
-    private ChangeAvailabilityResponse.Status defineStatusToSend(EvseStatus requestedEvseStatus, Evse evse) {
-
-        if (!evse.hasStatus(requestedEvseStatus)) {
-
-            if (evse.hasOngoingTransaction()) {
-
-                log.info("Scheduling status: {} for evse {}", requestedEvseStatus, evse.getId());
-
-                evse.setScheduledNewEvseStatus(requestedEvseStatus);
-
-                return SCHEDULED;
-
-            }
-
-            evse.changeStatus(requestedEvseStatus);
-        }
-
-        return ACCEPTED;
-
-    }
-
-    private void sendNotificationRequest(Evse evse) {
-
-        // for every connector send StatusNotification request
-        for (Connector connector : evse.getConnectors()) {
-            stationMessageSender.sendStatusNotification(evse, connector);
+            availabilityManager.changeStationAvailability(callId, requestedEvseStatus);
         }
 
     }
 
-    private boolean changeStatusIsNeeded(ChangeAvailabilityResponse.Status statusToSend) {
-        return statusToSend != SCHEDULED;
-    }
-
-    private boolean changeEvseAvailability(ChangeAvailabilityRequest request) {
+    private boolean isEvseAvailability(ChangeAvailabilityRequest request) {
         return request.getEvseId() != 0;
-    }
-
-    private void sendResponseWithStatus(String callId, ChangeAvailabilityResponse.Status status) {
-        stationMessageSender.sendCallResult(callId, new ChangeAvailabilityResponse().withStatus(status));
     }
 
 }
