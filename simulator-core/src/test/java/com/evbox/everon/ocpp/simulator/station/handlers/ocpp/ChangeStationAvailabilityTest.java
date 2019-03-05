@@ -130,9 +130,7 @@ public class ChangeStationAvailabilityTest {
 
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
-        assertAll(
-                () -> assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.SCHEDULED)
-        );
+        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.SCHEDULED);
 
     }
 
@@ -185,12 +183,8 @@ public class ChangeStationAvailabilityTest {
 
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
-        assertAll(
-                () -> assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.REJECTED)
-        );
+        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.REJECTED);
 
     }
-
-
 
 }

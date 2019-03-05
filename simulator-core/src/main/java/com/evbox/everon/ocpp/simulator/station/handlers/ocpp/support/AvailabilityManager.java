@@ -38,7 +38,7 @@ public class AvailabilityManager {
         try {
             Evse evse = stationState.findEvse(request.getEvseId());
 
-            ChangeAvailabilityResponse.Status evseStatus = defineEvseStatus(requestedEvseStatus, evse);
+            ChangeAvailabilityResponse.Status evseStatus = determineEvseStatus(requestedEvseStatus, evse);
 
             sendResponseWithStatus(callId, evseStatus);
 
@@ -72,24 +72,22 @@ public class AvailabilityManager {
             return;
         }
 
-        ChangeAvailabilityResponse.Status stationStatus = defineStationStatus(requestedEvseStatus);
+        ChangeAvailabilityResponse.Status stationStatus = determineStationStatus(requestedEvseStatus);
 
         sendResponseWithStatus(callId, stationStatus);
 
-        for (Evse evse : stationState.getEvses()) {
-            sendNotificationRequest(evse);
-        }
+        stationState.getEvses().forEach(this::sendNotificationRequest);
 
     }
 
 
-    private ChangeAvailabilityResponse.Status defineStationStatus(EvseStatus requestedEvseStatus) {
+    private ChangeAvailabilityResponse.Status determineStationStatus(EvseStatus requestedEvseStatus) {
 
         ChangeAvailabilityResponse.Status stationStatus = null;
 
         for (Evse evse : stationState.getEvses()) {
 
-            ChangeAvailabilityResponse.Status evseStatus = defineEvseStatus(requestedEvseStatus, evse);
+            ChangeAvailabilityResponse.Status evseStatus = determineEvseStatus(requestedEvseStatus, evse);
 
             if (stationStatus != SCHEDULED) {
                 stationStatus = evseStatus;
@@ -99,7 +97,7 @@ public class AvailabilityManager {
         return stationStatus;
     }
 
-    private ChangeAvailabilityResponse.Status defineEvseStatus(EvseStatus requestedEvseStatus, Evse evse) {
+    private ChangeAvailabilityResponse.Status determineEvseStatus(EvseStatus requestedEvseStatus, Evse evse) {
 
         if (evse.hasStatus(requestedEvseStatus)) {
             return ACCEPTED;

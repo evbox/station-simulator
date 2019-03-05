@@ -176,9 +176,7 @@ public class ChangeEvseAvailabilityRequestTest {
 
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
-        assertAll(
-                () -> assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.REJECTED)
-        );
+        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.REJECTED);
 
     }
 

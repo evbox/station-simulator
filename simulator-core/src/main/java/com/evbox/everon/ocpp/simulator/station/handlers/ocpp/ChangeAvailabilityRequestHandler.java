@@ -55,7 +55,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
         EvseStatus requestedEvseStatus = availabilityStateMapper.mapFrom(request.getOperationalStatus());
 
-        if (isEvseAvailability(request)) {
+        if (isChangeEvseAvailability(request)) {
             availabilityManager.changeEvseAvailability(callId, request, requestedEvseStatus);
         } else {
             availabilityManager.changeStationAvailability(callId, requestedEvseStatus);
@@ -63,7 +63,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
 
     }
 
-    private boolean isEvseAvailability(ChangeAvailabilityRequest request) {
+    private boolean isChangeEvseAvailability(ChangeAvailabilityRequest request) {
         return request.getEvseId() != 0;
     }
 

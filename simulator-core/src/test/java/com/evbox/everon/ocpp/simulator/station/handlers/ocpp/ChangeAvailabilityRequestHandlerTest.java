@@ -32,7 +32,7 @@ public class ChangeAvailabilityRequestHandlerTest {
     ChangeAvailabilityRequestHandler changeAvailabilityRequestHandler;
 
     @Test
-    @DisplayName("Should throw an exception on invalid operational status")
+    @DisplayName("Should throw an IllegalArgumentException on invalid operational status")
     void shouldThrowExceptionOnInvalidOperationalStatus() {
 
         when(availabilityStateMapperMock.mapFrom(any(ChangeAvailabilityRequest.OperationalStatus.class))).thenThrow(new IllegalArgumentException("some runtime exception"));
