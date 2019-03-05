@@ -117,9 +117,9 @@ It starts as part of station simulator.
 Press `Enter` to see list of available stations.
 To switch between stations enter station's number (e.g. 1, 2, 3) and press `Enter`.
 
-`plug {connectorId}` plug cable to given connector (e.g. `plug 1`)
+`plug {evseId} {connectorId}` plug cable to given connector (e.g. `plug 2 1`)
 
-`unplug {connectorId}` unplug cable from given connector (e.g. `unplug 1`)
+`unplug {evseId} {connectorId}` unplug cable from given connector (e.g. `unplug 2 1`)
 
 `auth {tokenId} {evseId}` authorize token at given evse (e.g. `auth 045918E24B4D80 1`)
 

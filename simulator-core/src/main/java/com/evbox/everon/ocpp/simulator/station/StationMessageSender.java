@@ -227,7 +227,8 @@ public class StationMessageSender {
      * @param connectorId connector identity
      */
     public void sendStatusNotification(int evseId, int connectorId) {
-        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, stationState.getCableStatus(connectorId), stationState.getCurrentTime());
+        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId,
+                stationState.findEvse(evseId).findConnector(connectorId).getCableStatus(), stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 

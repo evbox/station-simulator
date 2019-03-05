@@ -65,10 +65,6 @@ public class StationState {
         return findEvse(evseId).isCharging();
     }
 
-    public CableStatus getCableStatus(int connectorId) {
-        return findConnector(connectorId).getCableStatus();
-    }
-
     public Evse getDefaultEvse() {
         return evses.get(0);
     }
@@ -178,13 +174,4 @@ public class StationState {
                         .filter(connector -> connector.getId().equals(connectorId))
                         .findAny());
     }
-
-    private Connector findConnector(int connectorId) {
-        return evses.stream()
-                .flatMap(evse -> evse.getConnectors().stream())
-                .filter(connector -> connector.getId().equals(connectorId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
-    }
-
 }
