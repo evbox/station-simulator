@@ -14,7 +14,7 @@ plugins.withType(JsonSchemaPlugin).whenPluginAdded {
         initializeCollections = false
         useBigDecimals = true
         includeJsr303Annotations = true
-        includeHashcodeAndEquals = false
+        includeHashcodeAndEquals = true
         targetVersion = sourceCompatibility
         customRuleFactory = OcppGeneratorRuleFactory.class
         dateTimeType = 'java.time.ZonedDateTime'
