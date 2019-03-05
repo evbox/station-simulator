@@ -31,6 +31,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 - Reset (only IMMEDIATE reset is supported)
 - GetVariables (will return REJECTED status)
 - SetVariables (will return ACCEPTED, but does not store variables anywhere)
+- ChangeAvailability
 
 ## Auto-reconnect
 Simulator supports reconnection logic. In case of IO interruption in underlying WebSocket client it is going to try re-establishing connection each 5 seconds infinitely.
