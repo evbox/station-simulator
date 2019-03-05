@@ -13,15 +13,16 @@ import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_CONNECTOR_ID;
+import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_EVSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PlugTest {
@@ -39,13 +40,15 @@ public class PlugTest {
 
     @BeforeEach
     void setUp() {
-        this.plug = new Plug(DEFAULT_CONNECTOR_ID);
+        this.plug = new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
     }
 
     @Test
     void shouldThrowExceptionOnIllegalState() {
 
-        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.LOCKED);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
+        when(connectorMock.getCableStatus()).thenReturn(CableStatus.LOCKED);
 
         assertThrows(IllegalStateException.class, () -> plug.perform(stationStateMock, stationMessageSenderMock));
 
@@ -55,11 +58,11 @@ public class PlugTest {
     void verifyTransactionEventUpdate() {
 
         // given
-        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
-        when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(evseMock);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
         when(evseMock.hasTokenId()).thenReturn(true);
+        when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
         // when
         plug.perform(stationStateMock, stationMessageSenderMock);
@@ -80,11 +83,11 @@ public class PlugTest {
     void verifyTransactionEventStart() {
 
         // given
-        when(stationStateMock.getCableStatus(anyInt())).thenReturn(CableStatus.UNPLUGGED);
-        when(stationStateMock.findEvseByConnectorId(anyInt())).thenReturn(evseMock);
+        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
         when(evseMock.hasTokenId()).thenReturn(false);
+        when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
         // when
         plug.perform(stationStateMock, stationMessageSenderMock);

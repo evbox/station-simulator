@@ -181,7 +181,7 @@ public class StationSimulatorFunctionalTest {
         stationSimulatorRunner.run();
 
         //when
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
 
         //then
         await().untilAsserted(() -> {
@@ -226,7 +226,7 @@ public class StationSimulatorFunctionalTest {
         await().untilAsserted(() -> stationSimulatorRunner.getStation(STATION_ID).getState().hasAuthorizedToken());
 
         //when
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
 
         //then
         await().untilAsserted(() -> {
@@ -295,7 +295,7 @@ public class StationSimulatorFunctionalTest {
 
         stationSimulatorRunner.run();
 
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
 
         //when
         triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
@@ -347,7 +347,7 @@ public class StationSimulatorFunctionalTest {
         mockSuccessfulTransactionEventAnswer();
 
         stationSimulatorRunner.run();
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
         triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> {
@@ -397,7 +397,7 @@ public class StationSimulatorFunctionalTest {
         mockSuccessfulTransactionEventAnswer();
 
         stationSimulatorRunner.run();
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
         triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> {
@@ -438,7 +438,7 @@ public class StationSimulatorFunctionalTest {
             assertThat(transactionStartedEventOptional).isPresent();
         });
 
-        triggerUserAction(STATION_ID, new Unplug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Unplug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
 
         await().untilAsserted(() -> {
             Optional<Call> transactionStartedEventOptional = server.getReceivedCalls(STATION_ID)
@@ -462,14 +462,14 @@ public class StationSimulatorFunctionalTest {
         mockSuccessfulTransactionEventAnswer();
 
         stationSimulatorRunner.run();
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
 
         //when
         triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isTrue());
         triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isFalse());
-        triggerUserAction(STATION_ID, new Unplug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Unplug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
 
         //then
         await().untilAsserted(() -> {
@@ -540,7 +540,7 @@ public class StationSimulatorFunctionalTest {
 
         stationSimulatorRunner.run();
 
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_CONNECTOR_ID));
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
         triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isTrue());
 
