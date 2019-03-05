@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
@@ -19,6 +20,8 @@ import static java.util.stream.Collectors.toMap;
  * Supports validation, update and retrieval logic for component variables.
  */
 public abstract class StationComponent {
+
+    private static final GetVariableResult UNKNOWN_VARIABLE = new GetVariableResult().withAttributeStatus(GetVariableResult.AttributeStatus.UNKNOWN_VARIABLE);
 
     /**
      * Map of variable names and accessors for each of them.
@@ -44,6 +47,10 @@ public abstract class StationComponent {
         Variable variable = getVariableDatum.getVariable();
 
         VariableAccessor accessor = variableAccessors.get(variable.getName().toString());
+
+        if (isNull(accessor)) {
+            return UNKNOWN_VARIABLE;
+        }
 
         return accessor.get(new AttributePath(component, variable, attributeType));
     }
