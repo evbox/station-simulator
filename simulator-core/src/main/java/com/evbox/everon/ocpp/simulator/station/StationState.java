@@ -133,20 +133,6 @@ public class StationState {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
-    /**
-     * Find an instance of {@link Evse} by connectorId. If not found then throw {@link IllegalArgumentException}.
-     *
-     * @param connectorId connector identity
-     * @return {@link Evse} instance
-     */
-    public Evse findEvseByConnectorId(int connectorId) {
-        return evses.stream()
-                .filter(evse -> evse.getConnectors().stream().anyMatch(connector -> connector.getId().equals(connectorId)))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Connector %s is not present", connectorId)));
-    }
-
-
     @Override
     public String toString() {
         return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses + '}';
