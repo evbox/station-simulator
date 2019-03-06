@@ -120,7 +120,7 @@ class EnabledVariableAccessorTest {
     static AttributePath.AttributePathBuilder attributePathBuilder(int evseId) {
         return AttributePath.builder()
                 .component(new Component().withName(new CiString.CiString50(COMPONENT_NAME))
-                        .withEvse(new com.evbox.everon.ocpp.v20.message.centralserver.Evse().withId(evseId))
+                        .withEvse(new com.evbox.everon.ocpp.v20.message.common.Evse().withId(evseId))
                 )
                 .variable(new Variable().withName(new CiString.CiString50(VARIABLE_NAME)));
     }

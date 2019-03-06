@@ -1,0 +1,77 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:SetVariableMonitoringResponse",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "MonitorEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "UpperThreshold",
+        "LowerThreshold",
+        "Delta",
+        "Periodic",
+        "PeriodicClockAligned"
+      ]
+    },
+    "SetMonitoringStatusEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Accepted",
+        "UnknownComponent",
+        "UnknownVariable",
+        "UnsupportedMonitorType",
+        "Rejected",
+        "OutOfRange",
+        "Duplicate"
+      ]
+    },
+    "SetMonitoringResultType": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "type": {
+          "$ref": "#/definitions/MonitorEnumType"
+        },
+        "severity": {
+          "type": "integer"
+        },
+        "status": {
+          "$ref": "#/definitions/SetMonitoringStatusEnumType"
+        },
+        "component": {
+          "$ref": "../common/types/ComponentType.json#/ComponentType"
+        },
+        "variable": {
+          "$ref": "../common/types/VariableType.json#/VariableType"
+        }
+      },
+      "required": [
+        "type",
+        "severity",
+        "status",
+        "component",
+        "variable"
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "setMonitoringResult": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "$ref": "#/definitions/SetMonitoringResultType"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "setMonitoringResult"
+  ]
+}

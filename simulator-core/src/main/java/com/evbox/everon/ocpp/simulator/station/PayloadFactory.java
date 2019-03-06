@@ -122,7 +122,7 @@ public class PayloadFactory {
         transaction.setTriggerReason(reason);
         transaction.setSeqNo(seqNo);
         transaction.setTransactionData(transactionData);
-        transaction.setEvse(new com.evbox.everon.ocpp.v20.message.station.Evse().withId(evseId).withConnectorId(connectorId));
+        transaction.setEvse(new com.evbox.everon.ocpp.v20.message.common.Evse().withId(evseId).withConnectorId(connectorId));
 
         transaction.setMeterValue(Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now()).withSampledValue(
                 Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal("1010"))))));

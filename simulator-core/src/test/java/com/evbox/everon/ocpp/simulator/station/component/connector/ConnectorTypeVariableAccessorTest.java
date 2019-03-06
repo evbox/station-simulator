@@ -7,7 +7,11 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.Attr
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.support.StationConstants;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v20.message.centralserver.Component;
+import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v20.message.common.Evse;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

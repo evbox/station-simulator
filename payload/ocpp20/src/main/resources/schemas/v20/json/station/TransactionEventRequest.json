@@ -163,21 +163,6 @@
         "RemoteStart"
       ]
     },
-    "EVSEType": {
-      "type": "object",
-      "additionalProperties": true,
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "connectorId": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
     "MeterValueType": {
       "type": "object",
       "additionalProperties": true,
@@ -337,7 +322,7 @@
       "$ref": "#/definitions/TransactionType"
     },
     "evse": {
-      "$ref": "#/definitions/EVSEType"
+      "$ref": "../common/types/EvseType.json#/EVSEType"
     },
     "idToken": {
       "$ref": "./IdTokenType.json#IdTokenType"
