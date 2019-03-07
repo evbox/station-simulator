@@ -5,6 +5,8 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.common.IdToken;
+import com.evbox.everon.ocpp.v20.message.common.MeterValue;
+import com.evbox.everon.ocpp.v20.message.common.SampledValue;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
 import java.math.BigDecimal;

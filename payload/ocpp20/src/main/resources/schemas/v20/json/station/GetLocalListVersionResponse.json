@@ -1,15 +1,15 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "urn:OCPP:Cp:2:2018:4:SetDisplayMessageRequest",
+  "$id": "urn:OCPP:Cp:2:2018:4:GetLocalListVersionResponse",
   "comment": "OCPP 2.0 - v1p0",
   "type": "object",
   "additionalProperties": true,
   "properties": {
-    "message": {
-      "$ref": "../common/types/MessageInfoType.json#MessageInfoType"
+    "versionNumber": {
+      "type": "integer"
     }
   },
   "required": [
-    "message"
+    "versionNumber"
   ]
 }
