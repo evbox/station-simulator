@@ -1,0 +1,57 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:GetReportRequest",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "ComponentCriterionEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Active",
+        "Available",
+        "Enabled",
+        "Problem"
+      ]
+    },
+    "ComponentVariableType": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "component": {
+          "$ref": "../common/types/ComponentType.json#/ComponentType"
+        },
+        "variable": {
+          "$ref": "../common/types/VariableType.json#/VariableType"
+        }
+      },
+      "required": [
+        "component",
+        "variable"
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "componentVariable": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "$ref": "#/definitions/ComponentVariableType"
+      },
+      "minItems": 1
+    },
+    "requestId": {
+      "type": "integer"
+    },
+    "componentCriteria": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "$ref": "#/definitions/ComponentCriterionEnumType"
+      },
+      "minItems": 1,
+      "maxItems": 4
+    }
+  }
+}

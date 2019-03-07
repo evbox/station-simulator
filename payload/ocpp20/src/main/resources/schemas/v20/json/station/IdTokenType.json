@@ -33,6 +33,7 @@
         ]
     },
     "IdTokenType": {
+        "javaType": "com.evbox.everon.ocpp.v20.message.station.IdToken",
         "additionalProperties": true,
         "properties": {
             "additionalInfo": {
