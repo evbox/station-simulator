@@ -1,0 +1,131 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:RequestStartTransactionRequest",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "ChargingProfileKindEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Absolute",
+        "Recurring",
+        "Relative"
+      ]
+    },
+    "ChargingProfilePurposeEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "ChargingStationExternalConstraints",
+        "ChargingStationMaxProfile",
+        "TxDefaultProfile",
+        "TxProfile"
+      ]
+    },
+    "IdTokenEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Central",
+        "eMAID",
+        "ISO14443",
+        "KeyCode",
+        "Local",
+        "NoAuthorization",
+        "ISO15693"
+      ]
+    },
+    "RecurrencyKindEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Daily",
+        "Weekly"
+      ]
+    },
+    "AdditionalInfoType": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "additionalIdToken": {
+          "type": "string",
+          "maxLength": 36
+        },
+        "type": {
+          "type": "string",
+          "maxLength": 50
+        }
+      },
+      "required": [
+        "additionalIdToken",
+        "type"
+      ]
+    },
+    "ChargingProfileType": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "stackLevel": {
+          "type": "integer"
+        },
+        "primary": {
+          "type": "boolean"
+        },
+        "chargingProfilePurpose": {
+          "$ref": "#/definitions/ChargingProfilePurposeEnumType"
+        },
+        "chargingProfileKind": {
+          "$ref": "#/definitions/ChargingProfileKindEnumType"
+        },
+        "recurrencyKind": {
+          "$ref": "#/definitions/RecurrencyKindEnumType"
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validTo": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "chargingSchedule": {
+          "$ref": "../common/types/ChargingScheduleType.json#/ChargingScheduleType"
+        },
+        "transactionId": {
+          "type": "string",
+          "maxLength": 36
+        }
+      },
+      "required": [
+        "id",
+        "stackLevel",
+        "chargingProfilePurpose",
+        "chargingProfileKind",
+        "chargingSchedule"
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "evseId": {
+      "type": "integer"
+    },
+    "idToken": {
+      "$ref": "../common/types/IdTokenType.json#IdTokenType"
+    },
+    "remoteStartId": {
+      "type": "integer"
+    },
+    "chargingProfile": {
+      "$ref": "#/definitions/ChargingProfileType"
+    }
+  },
+  "required": [
+    "remoteStartId",
+    "idToken"
+  ]
+}

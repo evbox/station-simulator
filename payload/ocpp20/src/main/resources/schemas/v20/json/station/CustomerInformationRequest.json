@@ -47,7 +47,7 @@
       "$ref": "#/definitions/CertificateHashDataType"
     },
     "idToken": {
-      "$ref": "IdTokenType.json#/IdTokenType"
+      "$ref": "../common/types/IdTokenType.json#/IdTokenType"
     },
     "requestId": {
       "type": "integer"

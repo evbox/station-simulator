@@ -24,6 +24,7 @@
       ]
     },
     "ChargingProfileCriterionType": {
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingProfileCriterion",
       "type": "object",
       "additionalProperties": true,
       "properties": {

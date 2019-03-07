@@ -59,6 +59,12 @@ public abstract class CiString implements Comparable<CiString> {
         return lowerCaseString.compareTo(o.lowerCaseString);
     }
 
+    public static class CiString6 extends CiString {
+        public CiString6(String string) {
+            super(string, 6);
+        }
+    }
+
     public static class CiString8 extends CiString {
         public CiString8(String string) {
             super(string, 8);

@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.support;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.common.Evse;
+import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
 import java.math.BigDecimal;

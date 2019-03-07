@@ -1,16 +1,15 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "urn:OCPP:Cp:2:2018:4:GetReportRequest",
+  "$id": "urn:OCPP:Cp:2:2018:4:GetMonitoringReportRequest",
   "comment": "OCPP 2.0 - v1p0",
   "definitions": {
-    "ComponentCriterionEnumType": {
+    "MonitoringCriterionEnumType": {
       "type": "string",
       "additionalProperties": true,
       "enum": [
-        "Active",
-        "Available",
-        "Enabled",
-        "Problem"
+        "ThresholdMonitoring",
+        "DeltaMonitoring",
+        "PeriodicMonitoring"
       ]
     }
   },
@@ -28,14 +27,14 @@
     "requestId": {
       "type": "integer"
     },
-    "componentCriteria": {
+    "monitoringCriteria": {
       "type": "array",
       "additionalItems": false,
       "items": {
-        "$ref": "#/definitions/ComponentCriterionEnumType"
+        "$ref": "#/definitions/MonitoringCriterionEnumType"
       },
       "minItems": 1,
-      "maxItems": 4
+      "maxItems": 3
     }
   }
 }
