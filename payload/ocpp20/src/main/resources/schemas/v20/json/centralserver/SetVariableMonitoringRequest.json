@@ -1,0 +1,67 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:SetVariableMonitoringRequest",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "MonitorEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "UpperThreshold",
+        "LowerThreshold",
+        "Delta",
+        "Periodic",
+        "PeriodicClockAligned"
+      ]
+    },
+    "SetMonitoringDataType": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "value": {
+          "type": "number"
+        },
+        "type": {
+          "$ref": "#/definitions/MonitorEnumType"
+        },
+        "severity": {
+          "type": "integer"
+        },
+        "transaction": {
+          "type": "boolean"
+        },
+        "component": {
+          "$ref": "../common/types/ComponentType.json#/ComponentType"
+        },
+        "variable": {
+          "$ref": "../common/types/VariableType.json#/VariableType"
+        }
+      },
+      "required": [
+        "value",
+        "type",
+        "severity",
+        "component",
+        "variable"
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "setMonitoringData": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "$ref": "#/definitions/SetMonitoringDataType"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "setMonitoringData"
+  ]
+}
