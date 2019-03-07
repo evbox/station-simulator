@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:ChargingProfileType",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "ChargingProfileKindEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Absolute",
+        "Recurring",
+        "Relative"
+      ]
+    },
+    "ChargingProfilePurposeEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "ChargingStationExternalConstraints",
+        "ChargingStationMaxProfile",
+        "TxDefaultProfile",
+        "TxProfile"
+      ]
+    },
+    "RecurrencyKindEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "Daily",
+        "Weekly"
+      ]
+    }
+  },
+  "ChargingProfileType": {
+    "javaType": "com.evbox.everon.ocpp.v20.message.common.ChargingProfile",
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "stackLevel": {
+        "type": "integer"
+      },
+      "primary": {
+        "type": "boolean"
+      },
+      "chargingProfilePurpose": {
+        "$ref": "#/definitions/ChargingProfilePurposeEnumType"
+      },
+      "chargingProfileKind": {
+        "$ref": "#/definitions/ChargingProfileKindEnumType"
+      },
+      "recurrencyKind": {
+        "$ref": "#/definitions/RecurrencyKindEnumType"
+      },
+      "validFrom": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "validTo": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "chargingSchedule": {
+        "$ref": "ChargingScheduleType.json#/ChargingScheduleType"
+      },
+      "transactionId": {
+        "type": "string",
+        "maxLength": 36
+      }
+    },
+    "required": [
+      "id",
+      "stackLevel",
+      "chargingProfilePurpose",
+      "chargingProfileKind",
+      "chargingSchedule"
+    ]
+  }
+}
