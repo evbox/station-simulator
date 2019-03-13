@@ -2,8 +2,13 @@ package com.evbox.everon.ocpp.simulator.support;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
-import com.evbox.everon.ocpp.v20.message.station.Evse;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v20.message.common.Evse;
+import com.evbox.everon.ocpp.v20.message.common.IdToken;
+import com.evbox.everon.ocpp.v20.message.common.MeterValue;
+import com.evbox.everon.ocpp.v20.message.common.SampledValue;
+import com.evbox.everon.ocpp.v20.message.station.AuthorizeRequest;
+import com.evbox.everon.ocpp.v20.message.station.TransactionData;
+import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -1,0 +1,46 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:ReportChargingProfilesRequest",
+  "comment": "OCPP 2.0 - v1p0",
+  "definitions": {
+    "ChargingLimitSourceEnumType": {
+      "type": "string",
+      "additionalProperties": true,
+      "enum": [
+        "EMS",
+        "Other",
+        "SO",
+        "CSO"
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "requestId": {
+      "type": "integer"
+    },
+    "chargingLimitSource": {
+      "$ref": "#/definitions/ChargingLimitSourceEnumType"
+    },
+    "chargingProfile": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "$ref": "../common/types/ChargingProfileType.json#ChargingProfileType"
+      },
+      "minItems": 1
+    },
+    "tbc": {
+      "type": "boolean"
+    },
+    "evseId": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "chargingLimitSource",
+    "evseId",
+    "chargingProfile"
+  ]
+}

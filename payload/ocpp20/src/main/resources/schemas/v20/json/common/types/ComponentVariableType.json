@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "urn:OCPP:Cp:2:2018:4:ComponentVariableType",
+  "comment": "OCPP 2.0 - v1p0",
+  "ComponentVariableType": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "component": {
+        "$ref": "ComponentType.json#/ComponentType"
+      },
+      "variable": {
+        "$ref": "VariableType.json#/VariableType"
+      }
+    },
+    "required": [
+      "component",
+      "variable"
+    ]
+  }
+}

@@ -57,7 +57,7 @@
       "maxItems": 4
     },
     "idToken": {
-      "$ref": "./IdTokenType.json#IdTokenType"
+      "$ref": "../common/types/IdTokenType.json#IdTokenType"
     },
     "evseId": {
       "type": "array",

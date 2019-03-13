@@ -15,6 +15,7 @@ import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.Heartbeat
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.support.WebSocketServerMock;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.SneakyThrows;
 import org.awaitility.Awaitility;

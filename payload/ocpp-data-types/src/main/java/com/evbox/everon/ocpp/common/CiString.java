@@ -59,9 +59,21 @@ public abstract class CiString implements Comparable<CiString> {
         return lowerCaseString.compareTo(o.lowerCaseString);
     }
 
+    public static class CiString6 extends CiString {
+        public CiString6(String string) {
+            super(string, 6);
+        }
+    }
+
     public static class CiString8 extends CiString {
         public CiString8(String string) {
             super(string, 8);
+        }
+    }
+
+    public static class CiString16 extends CiString {
+        public CiString16(String string) {
+            super(string, 16);
         }
     }
 
@@ -77,6 +89,12 @@ public abstract class CiString implements Comparable<CiString> {
         }
     }
 
+    public static class CiString32 extends CiString {
+        public CiString32(String string) {
+            super(string, 32);
+        }
+    }
+
     public static class CiString36 extends CiString {
         public CiString36(String string) {
             super(string, 36);
@@ -86,6 +104,12 @@ public abstract class CiString implements Comparable<CiString> {
     public static class CiString50 extends CiString {
         public CiString50(String string) {
             super(string, 50);
+        }
+    }
+
+    public static class CiString64 extends CiString {
+        public CiString64(String string) {
+            super(string, 64);
         }
     }
 
@@ -111,6 +135,10 @@ public abstract class CiString implements Comparable<CiString> {
         public CiString512(String string) { super(string, 512); }
     }
 
+    public static class CiString800 extends CiString {
+        public CiString800(String string) { super(string, 800); }
+    }
+
     public static class CiString1000 extends CiString {
         public CiString1000(String string) {
             super(string, 1000);
@@ -120,6 +148,12 @@ public abstract class CiString implements Comparable<CiString> {
     public static class CiString2500 extends CiString {
         public CiString2500(String string) {
             super(string, 2500);
+        }
+    }
+
+    public static class CiString5500 extends CiString {
+        public CiString5500(String string) {
+            super(string, 5500);
         }
     }
 

@@ -1,9 +1,12 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.common.CiString;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.v20.message.common.IdToken;
+import com.evbox.everon.ocpp.v20.message.common.MeterValue;
+import com.evbox.everon.ocpp.v20.message.common.SampledValue;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
 import java.math.BigDecimal;
@@ -74,7 +77,7 @@ public class PayloadFactory {
     }
 
     TransactionEventRequest createTransactionEventStart(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
-            TransactionData.ChargingState chargingState, Instant currentDateTime) {
+                                                        TransactionData.ChargingState chargingState, Instant currentDateTime) {
 
         TransactionData transactionData = new TransactionData()
                 .withId(new CiString.CiString36(evse.getTransaction().toString()))
@@ -89,7 +92,7 @@ public class PayloadFactory {
     }
 
     TransactionEventRequest createTransactionEventUpdate(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
-            TransactionData.ChargingState chargingState, Instant currentDateTime) {
+                                                         TransactionData.ChargingState chargingState, Instant currentDateTime) {
 
         TransactionData transactionData = new TransactionData()
                 .withId(new CiString.CiString36(Integer.toString(evse.getTransaction().getTransactionId())))
@@ -115,14 +118,14 @@ public class PayloadFactory {
     }
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
-            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo) {
+                                                           TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo) {
         TransactionEventRequest transaction = new TransactionEventRequest();
         transaction.setEventType(eventType);
         transaction.setTimestamp(currentDateTime.atZone(ZoneOffset.UTC));
         transaction.setTriggerReason(reason);
         transaction.setSeqNo(seqNo);
         transaction.setTransactionData(transactionData);
-        transaction.setEvse(new com.evbox.everon.ocpp.v20.message.station.Evse().withId(evseId).withConnectorId(connectorId));
+        transaction.setEvse(new com.evbox.everon.ocpp.v20.message.common.Evse().withId(evseId).withConnectorId(connectorId));
 
         transaction.setMeterValue(Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now()).withSampledValue(
                 Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal("1010"))))));
