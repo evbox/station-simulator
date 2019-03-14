@@ -44,16 +44,16 @@ public class HeartbeatScheduler {
         long HeartbeatIntervalInMs = 1000L * heartBeatInterval.get();
 
         if (now - lastMessage > HeartbeatIntervalInMs || now - lastHeartbeat > TimeUnit.DAYS.toMillis(1)) {
-            sendHeartbeat();
+            sendHeartbeat(now);
         }
     }
 
-    private void sendHeartbeat() {
+    private void sendHeartbeat(long now) {
         try {
             HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
             Subscriber<HeartbeatRequest, HeartbeatResponse> subscriber = (request, response) -> stationState.setCurrentTime(response.getCurrentTime());
             stationMessageSender.sendHeartBeatAndSubscribe(heartbeatRequest, subscriber);
-            timeOfLastHeartbeatSent.set(System.currentTimeMillis());
+            timeOfLastHeartbeatSent.set(now);
         } catch (Exception e) {
             LOGGER.error("Unable to send heartbeat", e);
         }
