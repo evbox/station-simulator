@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Send station messages to the OCPP server.
@@ -39,10 +40,13 @@ public class StationMessageSender {
 
     private final Map<String, Call> sentCallsCache = new LRUCache<>(MAX_CALLS);
 
+    private AtomicLong timeOfLastMessageSent;
+
     public StationMessageSender(SubscriptionRegistry subscriptionRegistry, StationState stationState, WebSocketClient webSocketClient) {
         this.stationState = stationState;
         this.callRegistry = subscriptionRegistry;
         this.webSocketClient = webSocketClient;
+        this.timeOfLastMessageSent = new AtomicLong(0);
     }
 
     /**
@@ -271,6 +275,7 @@ public class StationMessageSender {
     public void sendMessage(WebSocketClientInboxMessage message) {
         try {
             webSocketClient.getInbox().put(message);
+            timeOfLastMessageSent.set(System.currentTimeMillis());
         } catch (InterruptedException e) {
             log.error("Exception on adding message to WebSocketInbox", e);
             Thread.currentThread().interrupt();
@@ -297,6 +302,13 @@ public class StationMessageSender {
     public Map<String, Call> getSentCalls() {
         return Collections.unmodifiableMap(sentCallsCache);
     }
+
+    /**
+     * Return the timestamp in milliseconds of the last message sent to the server.
+     *
+     * @return timestamp in milliseconds
+     */
+    public long getTimeOfLastMessageSent() { return timeOfLastMessageSent.get(); }
 
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
         TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationState.findEvse(evseId),
