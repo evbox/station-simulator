@@ -38,24 +38,24 @@ public class HeartbeatScheduler {
     }
 
     private void shouldSendHeartbeat() {
-        long now = System.currentTimeMillis();
-        long lastHeartbeat = timeOfLastHeartbeatSent.get();
-        long lastMessage = stationMessageSender.getTimeOfLastMessageSent();
-        long HeartbeatIntervalInMs = 1000L * heartBeatInterval.get();
+        try {
+            long now = System.currentTimeMillis();
+            long lastHeartbeat = timeOfLastHeartbeatSent.get();
+            long lastMessage = stationMessageSender.getTimeOfLastMessageSent();
+            long HeartbeatIntervalInMs = 1000L * heartBeatInterval.get();
 
-        if (now - lastMessage > HeartbeatIntervalInMs || now - lastHeartbeat > TimeUnit.DAYS.toMillis(1)) {
-            sendHeartbeat(now);
+            if (now - lastMessage > HeartbeatIntervalInMs || now - lastHeartbeat > TimeUnit.DAYS.toMillis(1)) {
+                sendHeartbeat(now);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Heartbeat send exception", e);
         }
     }
 
     private void sendHeartbeat(long now) {
-        try {
-            HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
-            Subscriber<HeartbeatRequest, HeartbeatResponse> subscriber = (request, response) -> stationState.setCurrentTime(response.getCurrentTime());
-            stationMessageSender.sendHeartBeatAndSubscribe(heartbeatRequest, subscriber);
-            timeOfLastHeartbeatSent.set(now);
-        } catch (Exception e) {
-            LOGGER.error("Unable to send heartbeat", e);
-        }
+        HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
+        Subscriber<HeartbeatRequest, HeartbeatResponse> subscriber = (request, response) -> stationState.setCurrentTime(response.getCurrentTime());
+        stationMessageSender.sendHeartBeatAndSubscribe(heartbeatRequest, subscriber);
+        timeOfLastHeartbeatSent.set(now);
     }
 }
