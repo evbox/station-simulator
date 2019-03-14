@@ -1,5 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station;
 
+import static java.lang.Math.max;
+
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.HeartbeatRequest;
 import com.evbox.everon.ocpp.v20.message.station.HeartbeatResponse;
@@ -37,7 +39,7 @@ public class HeartbeatScheduler {
         heartbeatExecutor.scheduleAtFixedRate(
                 this::shouldSendHeartbeat,
                 heartbeatInterval,
-                Math.max(1, heartbeatInterval / 2),
+                max(1, heartbeatInterval / 2),
                 TimeUnit.SECONDS);
     }
 
