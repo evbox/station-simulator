@@ -33,6 +33,7 @@ public class HeartbeatScheduler {
 
     public void updateHeartbeat(int heartbeatInterval) {
         LOGGER.debug("Scheduling heartbeat to {} sec.", heartbeatInterval);
+        heartBeatInterval.set(heartbeatInterval)
         heartbeatExecutor.scheduleAtFixedRate(this::shouldSendHeartbeat, heartbeatInterval, heartbeatInterval, TimeUnit.SECONDS);
     }
 
