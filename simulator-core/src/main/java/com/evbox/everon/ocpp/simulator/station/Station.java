@@ -172,7 +172,7 @@ public class Station {
     public void updateHeartbeat(int newHeartbeatInterval) {
         int interval = newHeartbeatInterval == 0 ? defaultHeartBeatIntervalSec : newHeartbeatInterval;
 
-        heartbeatScheduler.scheduleHeartbeat(interval);
+        heartbeatScheduler.updateHeartbeat(interval);
         state.setHeartbeatInterval(interval);
     }
 }
