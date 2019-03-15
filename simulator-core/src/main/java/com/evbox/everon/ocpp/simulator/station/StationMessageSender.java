@@ -14,6 +14,7 @@ import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +41,13 @@ public class StationMessageSender {
 
     private final Map<String, Call> sentCallsCache = new LRUCache<>(MAX_CALLS);
 
-    private AtomicLong timeOfLastMessageSent;
+    private LocalDateTime timeOfLastMessageSent;
 
     public StationMessageSender(SubscriptionRegistry subscriptionRegistry, StationState stationState, WebSocketClient webSocketClient) {
         this.stationState = stationState;
         this.callRegistry = subscriptionRegistry;
         this.webSocketClient = webSocketClient;
-        this.timeOfLastMessageSent = new AtomicLong(0);
+        this.timeOfLastMessageSent = LocalDateTime.MIN;
     }
 
     /**
@@ -275,7 +276,7 @@ public class StationMessageSender {
     public void sendMessage(WebSocketClientInboxMessage message) {
         try {
             webSocketClient.getInbox().put(message);
-            timeOfLastMessageSent.set(System.currentTimeMillis());
+            timeOfLastMessageSent = LocalDateTime.now();
         } catch (InterruptedException e) {
             log.error("Exception on adding message to WebSocketInbox", e);
             Thread.currentThread().interrupt();
@@ -308,7 +309,7 @@ public class StationMessageSender {
      *
      * @return timestamp in milliseconds
      */
-    public long getTimeOfLastMessageSent() { return timeOfLastMessageSent.get(); }
+    public LocalDateTime getTimeOfLastMessageSent() { return timeOfLastMessageSent; }
 
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
         TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationState.findEvse(evseId),
