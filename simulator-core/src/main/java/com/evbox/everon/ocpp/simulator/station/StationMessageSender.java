@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Send station messages to the OCPP server.
@@ -41,7 +40,7 @@ public class StationMessageSender {
 
     private final Map<String, Call> sentCallsCache = new LRUCache<>(MAX_CALLS);
 
-    private LocalDateTime timeOfLastMessageSent;
+    private volatile LocalDateTime timeOfLastMessageSent;
 
     public StationMessageSender(SubscriptionRegistry subscriptionRegistry, StationState stationState, WebSocketClient webSocketClient) {
         this.stationState = stationState;

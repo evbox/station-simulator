@@ -3,22 +3,20 @@ package com.evbox.everon.ocpp.simulator.station;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.HeartbeatRequest;
 import com.evbox.everon.ocpp.v20.message.station.HeartbeatResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Background task that will check if heartbeat should be sent
  */
+@Slf4j
 public final class HeartbeatSenderTask implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HeartbeatSenderTask.class);
+    private final StationState stationState;
+    private final StationMessageSender stationMessageSender;
 
     private int heartBeatInterval;
-    private StationState stationState;
-    private StationMessageSender stationMessageSender;
     private LocalDateTime timeOfLastHeartbeatSent;
 
     public HeartbeatSenderTask(StationState stationState, StationMessageSender stationMessageSender) {
@@ -43,14 +41,16 @@ public final class HeartbeatSenderTask implements Runnable {
                 timeOfLastHeartbeatSent = now;
             }
         } catch (Exception e) {
-            LOGGER.error("Heartbeat send exception", e);
+            log.error("Heartbeat send exception", e);
         }
     }
 
+    // Send heartbeat if:
+    // 1) No message was sent in the previous heartBeatInterval seconds OR
+    // 2) No heartbeat was sent in the previous 24 hours
     private boolean shouldSendHeartbeat(LocalDateTime now, LocalDateTime timeOfLastMessageSent) {
         return heartBeatInterval > 0 &&
-                (ChronoUnit.SECONDS.between(timeOfLastMessageSent, now) > heartBeatInterval ||
-                ChronoUnit.DAYS.between(timeOfLastHeartbeatSent, now) > 1);
+                (timeOfLastMessageSent.plusSeconds(heartBeatInterval).isBefore(now) || timeOfLastHeartbeatSent.plusDays(1).isBefore(now));
 
     }
 }
