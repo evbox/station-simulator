@@ -27,7 +27,7 @@ public class HeartbeatSenderTaskTest {
     @BeforeEach
     void setUp() {
         this.task = new HeartbeatSenderTask(stationState, stationMessageSender);
-        task.updateHeartBeatInterval(HEARTBEAT_INTERVAL); // 30s
+        task.updateHeartBeatInterval(HEARTBEAT_INTERVAL);
     }
 
     @Test
