@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
 @FieldDefaults(makeFinal = true)
 public class HeartbeatScheduler {
 
