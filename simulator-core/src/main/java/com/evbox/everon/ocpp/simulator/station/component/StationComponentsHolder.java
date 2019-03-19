@@ -5,9 +5,11 @@ import com.evbox.everon.ocpp.simulator.station.component.chargingstation.Chargin
 import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComponent;
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
+import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,5 +40,16 @@ public class StationComponentsHolder {
 
     public Optional<StationComponent> getComponent(String componentName) {
         return Optional.ofNullable(components.get(componentName));
+    }
+
+    /**
+     * Generates report data for all components in the holder
+     *
+     * @return list of {@link ReportDatum}
+     */
+    public List<ReportDatum> generateReportData() {
+        List<ReportDatum> reportData = new ArrayList<>();
+        components.values().forEach(component -> reportData.addAll(component.generateReportData()));
+        return reportData;
     }
 }

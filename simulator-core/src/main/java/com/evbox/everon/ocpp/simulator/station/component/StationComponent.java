@@ -5,8 +5,10 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -94,4 +96,14 @@ public abstract class StationComponent {
         return new SetVariableValidationResult(setVariableDatum, validationResult);
     }
 
+    /**
+     * Generates report data for all variable in the component
+     *
+     * @return list of {@link ReportDatum}
+     */
+    public List<ReportDatum> generateReportData() {
+        List<ReportDatum> reportData = new ArrayList<>();
+        variableAccessors.values().forEach(accessor -> reportData.addAll(accessor.generateReportData(getComponentName())));
+        return reportData;
+    }
 }
