@@ -8,12 +8,23 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v20.message.station.VariableAttribute;
+import com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.OPTION_LIST;
+import static java.util.Collections.singletonList;
 
 public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
@@ -50,6 +61,33 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
     @Override
     public Map<AttributeType, SetVariableValidator> getVariableValidators() {
         return variableValidators;
+    }
+
+    @Override
+    public List<ReportDatum> generateReportData(String componentName) {
+        List<ReportDatum> reportData = new ArrayList<>();
+
+        for (Evse evse: getStation().getState().getEvses()) {
+                com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
+                        .withId(evse.getId());
+
+                Component component = new Component()
+                        .withName(new CiString.CiString50(componentName))
+                        .withEvse(componentEvse);
+
+                VariableAttribute variableAttribute = new VariableAttribute()
+                        .withValue(new CiString.CiString1000(EVSE_AVAILABILITY));
+
+                ReportDatum reportDatum = new ReportDatum()
+                        .withComponent(component)
+                        .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
+                        .withVariableCharacteristics(new VariableCharacteristics().withDataType(OPTION_LIST))
+                        .withVariableAttribute(singletonList(variableAttribute));
+
+                reportData.add(reportDatum);
+        }
+
+        return reportData;
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {

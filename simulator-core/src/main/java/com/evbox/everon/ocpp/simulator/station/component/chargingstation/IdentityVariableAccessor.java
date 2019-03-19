@@ -10,10 +10,14 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.Attr
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.emptyList;
 
 public class IdentityVariableAccessor extends VariableAccessor {
 
@@ -49,6 +53,11 @@ public class IdentityVariableAccessor extends VariableAccessor {
     @Override
     public Map<AttributeType, SetVariableValidator> getVariableValidators() {
         return variableValidators;
+    }
+
+    @Override
+    public List<ReportDatum> generateReportData(String componentName) {
+        return emptyList();
     }
 
     private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {

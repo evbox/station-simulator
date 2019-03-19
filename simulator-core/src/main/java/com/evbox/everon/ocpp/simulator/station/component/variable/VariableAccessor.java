@@ -8,7 +8,9 @@ import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,6 +60,8 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
     public abstract Map<AttributeType, VariableSetter> getVariableSetters();
 
     public abstract Map<AttributeType, SetVariableValidator> getVariableValidators();
+
+    public abstract List<ReportDatum> generateReportData(String componentName);
 
     @Override
     public GetVariableResult get(AttributePath attributePath) {
