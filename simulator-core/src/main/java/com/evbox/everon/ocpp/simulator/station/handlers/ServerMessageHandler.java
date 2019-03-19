@@ -51,7 +51,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ResetRequest.class, new ResetRequestHandler(stationState, stationMessageSender))
                 .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationState, stationMessageSender)))
-                .put(GetBaseReportHandler.class, new GetBaseReportHandler(stationComponentsHolder, stationMessageSender))
+                .put(GetBaseReportRequestHandler.class, new GetBaseReportRequestHandler(stationComponentsHolder, stationMessageSender))
                 .build();
     }
 
