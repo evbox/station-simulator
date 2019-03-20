@@ -45,11 +45,12 @@ public class StationComponentsHolder {
     /**
      * Generates report data for all components in the holder
      *
+     * @param onlyMutableVariables if true, returns only those variables that can be set by the operator
      * @return list of {@link ReportDatum}
      */
-    public List<ReportDatum> generateReportData() {
+    public List<ReportDatum> generateReportData(boolean onlyMutableVariables) {
         List<ReportDatum> reportData = new ArrayList<>();
-        components.values().forEach(component -> reportData.addAll(component.generateReportData()));
+        components.values().forEach(component -> reportData.addAll(component.generateReportData(onlyMutableVariables)));
         return reportData;
     }
 }

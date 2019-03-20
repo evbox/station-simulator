@@ -268,6 +268,22 @@ public class StationMessageSender {
     }
 
     /**
+     * Send NotifyReport event
+     * @param requestId requestId from GetBaseReport
+     * @param tbc to be continued, signifies if this is the last report
+     * @param seqNo sequence number of this message
+     * @param reportData report data containing information about variables
+     */
+    public void sendNotifyReport(int requestId, boolean tbc, int seqNo, List<ReportDatum> reportData) {
+        NotifyReportRequest payload =
+                payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, reportData);
+
+        Call call = createAndRegisterCall(ActionType.NOTIFY_REPORT, payload);
+
+        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+    }
+
+    /**
      * Send an incoming message {@link WebSocketClientInboxMessage} to ocpp server.
      *
      * @param message {@link WebSocketClientInboxMessage}

@@ -77,6 +77,9 @@ public class ModelVariableAccessor extends VariableAccessor {
         return singletonList(reportDatum);
     }
 
+    @Override
+    public boolean isMutable() { return false; }
+
     private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableResult.AttributeStatus.REJECTED);
     }

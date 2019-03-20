@@ -81,6 +81,9 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
         return singletonList(reportDatum);
     }
 
+    @Override
+    public boolean isMutable() { return true; }
+
     private SetVariableResult validateActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         SetVariableResult setVariableResult = new SetVariableResult()
                 .withComponent(attributePath.getComponent())

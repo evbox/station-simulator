@@ -99,11 +99,20 @@ public abstract class StationComponent {
     /**
      * Generates report data for all variable in the component
      *
+     * @param onlyMutableVariables if true, returns only those variables that can be set by the operator
      * @return list of {@link ReportDatum}
      */
-    public List<ReportDatum> generateReportData() {
+    public List<ReportDatum> generateReportData(boolean onlyMutableVariables) {
         List<ReportDatum> reportData = new ArrayList<>();
-        variableAccessors.values().forEach(accessor -> reportData.addAll(accessor.generateReportData(getComponentName())));
+        variableAccessors.values().forEach(accessor -> {
+            if (shouldGenerateReportDataForVariable(onlyMutableVariables, accessor.isMutable())) {
+                reportData.addAll(accessor.generateReportData(getComponentName()));
+            }
+        });
         return reportData;
+    }
+
+    private boolean shouldGenerateReportDataForVariable(boolean onlyMutableVariables, boolean isMutableVariable) {
+        return onlyMutableVariables && isMutableVariable || !onlyMutableVariables;
     }
 }

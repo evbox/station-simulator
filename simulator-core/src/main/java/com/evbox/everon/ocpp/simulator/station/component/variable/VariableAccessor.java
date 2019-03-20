@@ -63,6 +63,8 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
 
     public abstract List<ReportDatum> generateReportData(String componentName);
 
+    public abstract boolean isMutable();
+
     @Override
     public GetVariableResult get(AttributePath attributePath) {
         return getVariableGetters().getOrDefault(attributePath.getAttributeType(), NOT_SUPPORTED_ATTRIBUTE_TYPE_GETTER)

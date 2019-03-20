@@ -94,6 +94,9 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
         return reportData;
     }
 
+    @Override
+    public boolean isMutable() { return false; }
+
     private SetVariableResult validateActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableResult.AttributeStatus.REJECTED);
     }

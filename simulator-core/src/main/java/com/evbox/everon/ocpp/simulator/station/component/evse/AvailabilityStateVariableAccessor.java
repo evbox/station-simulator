@@ -90,6 +90,9 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
         return reportData;
     }
 
+    @Override
+    public boolean isMutable() { return false; }
+
     private GetVariableResult getActualValue(AttributePath attributePath) {
         Integer evseId = attributePath.getComponent().getEvse().getId();
 

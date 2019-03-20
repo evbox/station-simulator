@@ -21,6 +21,8 @@ import static java.math.BigDecimal.ZERO;
 
 public class PayloadFactory {
 
+    private static final int UNKNOWN_REQUEST_ID = 0;
+
     AuthorizeRequest createAuthorizeRequest(String tokenId, List<Integer> evseIds) {
         AuthorizeRequest payload = new AuthorizeRequest();
         if (evseIds.size() > 0) {
@@ -115,6 +117,20 @@ public class PayloadFactory {
                 .withStoppedReason(stoppedReason);
 
         return createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement());
+    }
+
+    NotifyReportRequest createNotifyReportRequest(int requestId, boolean tbc, int seqNo, List<ReportDatum> reportData) {
+        NotifyReportRequest notifyReportRequest = new NotifyReportRequest()
+                .withGeneratedAt(ZonedDateTime.now())
+                .withReportData(reportData)
+                .withSeqNo(seqNo)
+                .withTbc(tbc);
+
+        if (requestId != UNKNOWN_REQUEST_ID) {
+            notifyReportRequest.setRequestId(requestId);
+        }
+
+        return notifyReportRequest;
     }
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
