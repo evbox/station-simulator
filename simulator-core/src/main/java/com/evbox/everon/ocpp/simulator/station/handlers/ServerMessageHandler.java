@@ -13,6 +13,7 @@ import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
+import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +52,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ResetRequest.class, new ResetRequestHandler(stationState, stationMessageSender))
                 .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationState, stationMessageSender)))
-                .put(GetBaseReportRequestHandler.class, new GetBaseReportRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(stationComponentsHolder, stationMessageSender))
                 .build();
     }
 

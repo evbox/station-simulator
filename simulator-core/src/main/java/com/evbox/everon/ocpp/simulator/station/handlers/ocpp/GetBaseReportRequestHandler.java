@@ -32,9 +32,11 @@ public class GetBaseReportRequestHandler implements OcppRequestHandler<GetBaseRe
             case FULL_INVENTORY:
                 stationMessageSender.sendCallResult(callId, new GetBaseReportResponse().withStatus(ACCEPTED));
                 sendNotifyReportRequests(request.getRequestId(), false);
+                break;
             case CONFIGURATION_INVENTORY:
                 stationMessageSender.sendCallResult(callId, new GetBaseReportResponse().withStatus(ACCEPTED));
                 sendNotifyReportRequests(request.getRequestId(), true);
+                break;
             default: // SUMMARY_INVENTORY
                 stationMessageSender.sendCallResult(callId, new GetBaseReportResponse().withStatus(NOT_SUPPORTED));
         }
