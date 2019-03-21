@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 @FieldDefaults(makeFinal = true)
 public class HeartbeatScheduler {
 
+    private static final int TASK_DELAY_IN_SECONDS = 1;
+
     private HeartbeatSenderTask heartbeatTask;
     private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -22,6 +24,6 @@ public class HeartbeatScheduler {
         log.debug("Updating heartbeat to {} sec.", heartbeatInterval);
         heartbeatTask.updateHeartBeatInterval(heartbeatInterval);
         scheduledExecutorService.scheduleAtFixedRate(
-                heartbeatTask, heartbeatInterval, heartbeatInterval, TimeUnit.SECONDS);
+                heartbeatTask, TASK_DELAY_IN_SECONDS, TASK_DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
 }
