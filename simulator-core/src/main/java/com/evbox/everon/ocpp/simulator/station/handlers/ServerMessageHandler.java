@@ -17,6 +17,7 @@ import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Clock;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ResetRequest.class, new ResetRequestHandler(stationState, stationMessageSender))
                 .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationState, stationMessageSender)))
-                .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(Clock.systemUTC(), stationComponentsHolder, stationMessageSender))
                 .build();
     }
 

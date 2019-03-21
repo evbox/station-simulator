@@ -51,6 +51,5 @@ public final class HeartbeatSenderTask implements Runnable {
     private boolean shouldSendHeartbeat(LocalDateTime now, LocalDateTime timeOfLastMessageSent) {
         return heartBeatInterval > 0 &&
                 (timeOfLastMessageSent.plusSeconds(heartBeatInterval).isBefore(now) || timeOfLastHeartbeatSent.plusDays(1).isBefore(now));
-
     }
 }

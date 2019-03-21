@@ -6,6 +6,9 @@ import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 
+import javax.annotation.Nullable;
+import java.time.Clock;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,17 +16,19 @@ import java.util.stream.IntStream;
 
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.NOT_SUPPORTED;
+import static java.time.ZonedDateTime.ofInstant;
 import static java.util.Collections.singletonList;
 
 public class GetBaseReportRequestHandler implements OcppRequestHandler<GetBaseReportRequest> {
 
     private final StationMessageSender stationMessageSender;
     private final StationComponentsHolder stationComponentsHolder;
+    private final Clock clock;
 
-
-    public GetBaseReportRequestHandler(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender) {
+    public GetBaseReportRequestHandler(Clock clock, StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender) {
         this.stationMessageSender = stationMessageSender;
         this.stationComponentsHolder = stationComponentsHolder;
+        this.clock = clock;
     }
 
     @Override
@@ -42,7 +47,7 @@ public class GetBaseReportRequestHandler implements OcppRequestHandler<GetBaseRe
         }
     }
 
-    private void sendNotifyReportRequests(int requestId, boolean onlyMutableVariables) {
+    private void sendNotifyReportRequests(@Nullable Integer requestId, boolean onlyMutableVariables) {
         List<ReportDatum> reportData = stationComponentsHolder.generateReportData(onlyMutableVariables);
 
         int size = reportData.size();
@@ -50,8 +55,9 @@ public class GetBaseReportRequestHandler implements OcppRequestHandler<GetBaseRe
         Collections.shuffle(sendOrder);
 
         sendOrder.forEach(seqNo -> {
+            ZonedDateTime now = ofInstant(clock.instant(), clock.getZone());
             stationMessageSender
-                    .sendNotifyReport(requestId, seqNo != size - 1, seqNo, singletonList(reportData.get(seqNo)));
+                    .sendNotifyReport(requestId, seqNo != size - 1, seqNo, now, singletonList(reportData.get(seqNo)));
         });
     }
 

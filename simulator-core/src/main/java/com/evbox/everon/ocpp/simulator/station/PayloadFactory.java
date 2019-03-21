@@ -9,6 +9,7 @@ import com.evbox.everon.ocpp.v20.message.common.MeterValue;
 import com.evbox.everon.ocpp.v20.message.common.SampledValue;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -18,10 +19,9 @@ import java.util.List;
 
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.STARTED;
 import static java.math.BigDecimal.ZERO;
+import static java.util.Objects.nonNull;
 
 public class PayloadFactory {
-
-    private static final int UNKNOWN_REQUEST_ID = 0;
 
     AuthorizeRequest createAuthorizeRequest(String tokenId, List<Integer> evseIds) {
         AuthorizeRequest payload = new AuthorizeRequest();
@@ -119,14 +119,14 @@ public class PayloadFactory {
         return createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement());
     }
 
-    NotifyReportRequest createNotifyReportRequest(int requestId, boolean tbc, int seqNo, List<ReportDatum> reportData) {
+    NotifyReportRequest createNotifyReportRequest(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
         NotifyReportRequest notifyReportRequest = new NotifyReportRequest()
-                .withGeneratedAt(ZonedDateTime.now())
+                .withGeneratedAt(generatedAt)
                 .withReportData(reportData)
                 .withSeqNo(seqNo)
                 .withTbc(tbc);
 
-        if (requestId != UNKNOWN_REQUEST_ID) {
+        if (nonNull(requestId)) {
             notifyReportRequest.setRequestId(requestId);
         }
 

@@ -5,9 +5,7 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCallResult;
 import static com.evbox.everon.ocpp.simulator.support.OcppMessageFactory.createGetVariablesRequest;
 import static com.evbox.everon.ocpp.simulator.support.OcppMessageFactory.createGetVariablesResponse;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;

@@ -14,7 +14,9 @@ import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -274,9 +276,9 @@ public class StationMessageSender {
      * @param seqNo sequence number of this message
      * @param reportData report data containing information about variables
      */
-    public void sendNotifyReport(int requestId, boolean tbc, int seqNo, List<ReportDatum> reportData) {
+    public void sendNotifyReport(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
         NotifyReportRequest payload =
-                payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, reportData);
+                payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, generatedAt, reportData);
 
         Call call = createAndRegisterCall(ActionType.NOTIFY_REPORT, payload);
 
