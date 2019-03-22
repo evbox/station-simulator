@@ -166,9 +166,7 @@ public class Station {
      * @param newHeartbeatInterval heartbeat interval in seconds
      */
     public void updateHeartbeat(int newHeartbeatInterval) {
-        int interval = newHeartbeatInterval;
-
-        heartbeatScheduler.updateHeartbeat(interval);
-        state.setHeartbeatInterval(interval);
+        heartbeatScheduler.updateHeartbeat(newHeartbeatInterval);
+        state.setHeartbeatInterval(newHeartbeatInterval);
     }
 }
