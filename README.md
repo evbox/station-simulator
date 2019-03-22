@@ -77,7 +77,6 @@ Starts simulator with one station, which has single EVSE and single connector at
 ### File-based configuration
 **Configuration file sample**
 ```YAML
-heartbeatInterval: 60
 stations:
   - id: EVB-P17390866
     evse:
