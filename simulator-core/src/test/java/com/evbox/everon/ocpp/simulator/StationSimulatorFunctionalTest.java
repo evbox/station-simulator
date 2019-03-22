@@ -25,10 +25,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -37,6 +34,7 @@ import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.cre
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -657,7 +655,21 @@ public class StationSimulatorFunctionalTest {
 
         await().untilAsserted(() -> {
             List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
-            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.NOTIFY_REPORT);
+
+            List<NotifyReportRequest> notifyReportRequests =
+                    stationCalls
+                            .stream()
+                            .filter(call -> call.getActionType() == ActionType.NOTIFY_REPORT)
+                            .map(call -> NotifyReportRequest.class.cast(call.getPayload()))
+                            .collect(toList());
+
+            sort(notifyReportRequests, new NotifyReportComparator());
+
+            int size = notifyReportRequests.size();
+            for (int i = 0; i < size; i++) {
+                assertThat(notifyReportRequests.get(i).getSeqNo()).isEqualTo(i);
+                assertThat(notifyReportRequests.get(i).getTbc()).isEqualTo(i != size - 1);
+            }
         });
     }
 
@@ -714,5 +726,13 @@ public class StationSimulatorFunctionalTest {
 
     private void triggerUserAction(String stationId, UserMessage action) {
         stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
+    }
+
+    static class NotifyReportComparator implements Comparator<NotifyReportRequest>
+    {
+        public int compare(NotifyReportRequest first, NotifyReportRequest second)
+        {
+            return first.getSeqNo().compareTo(second.getSeqNo());
+        }
     }
 }

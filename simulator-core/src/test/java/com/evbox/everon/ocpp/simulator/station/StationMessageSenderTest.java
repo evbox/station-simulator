@@ -234,7 +234,7 @@ public class StationMessageSenderTest {
     }
 
     @Test
-    void verifyNotifyReport() throws InterruptedException, JsonProcessingException {
+    void verifyNotifyReportAsync() throws InterruptedException, JsonProcessingException {
         List<ReportDatum> reportData = singletonList(new ReportDatum());
         ZonedDateTime now = ZonedDateTime.now();
 

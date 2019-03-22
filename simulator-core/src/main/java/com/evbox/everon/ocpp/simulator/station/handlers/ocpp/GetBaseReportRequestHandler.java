@@ -9,10 +9,7 @@ import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import javax.annotation.Nullable;
 import java.time.Clock;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.NOT_SUPPORTED;
@@ -51,14 +48,10 @@ public class GetBaseReportRequestHandler implements OcppRequestHandler<GetBaseRe
         List<ReportDatum> reportData = stationComponentsHolder.generateReportData(onlyMutableVariables);
 
         int size = reportData.size();
-        List<Integer> sendOrder = IntStream.range(0, size).boxed().collect(Collectors.toList());
-        Collections.shuffle(sendOrder);
-
-        sendOrder.forEach(seqNo -> {
+        for (int seqNo = 0; seqNo < size; seqNo++) {
             ZonedDateTime now = ofInstant(clock.instant(), clock.getZone());
-            stationMessageSender
-                    .sendNotifyReport(requestId, seqNo != size - 1, seqNo, now, singletonList(reportData.get(seqNo)));
-        });
+            stationMessageSender.sendNotifyReport(requestId, seqNo != size - 1, seqNo, now, singletonList(reportData.get(seqNo)));
+        }
     }
 
 }
