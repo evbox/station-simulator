@@ -32,7 +32,7 @@ class StationTest {
         evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
         stationConfiguration.setEvse(evse);
 
-        station = new Station(stationConfiguration, DEFAULT_HEARTBEAT_INTERVAL);
+        station = new Station(stationConfiguration);
 
         injectMock(station, "webSocketClient", webSocketClientMock);
     }
