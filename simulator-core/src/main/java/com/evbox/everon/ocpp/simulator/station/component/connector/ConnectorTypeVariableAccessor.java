@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.OPTION_LIST;
+import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.SEQUENCE_LIST;
 import static java.util.Collections.singletonList;
 
 public class ConnectorTypeVariableAccessor extends VariableAccessor {
@@ -84,7 +84,7 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
                 ReportDatum reportDatum = new ReportDatum()
                         .withComponent(component)
                         .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                        .withVariableCharacteristics(new VariableCharacteristics().withDataType(OPTION_LIST))
+                        .withVariableCharacteristics(new VariableCharacteristics().withDataType(SEQUENCE_LIST))
                         .withVariableAttribute(singletonList(variableAttribute));
 
                 reportData.add(reportDatum);

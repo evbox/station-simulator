@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createStationConfiguration;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -637,6 +638,29 @@ public class StationSimulatorFunctionalTest {
         });
     }
 
+    @Test
+    void shouldSendNotifyReportOnGetBaseReportRequest() {
+        mockSuccessfulGetBaseReportAnswer();
+
+        stationSimulatorRunner.run();
+
+        GetBaseReportRequest request = new GetBaseReportRequest().withRequestId(200).withReportBase(FULL_INVENTORY);
+
+        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
+
+        await().untilAsserted(() -> {
+            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
+            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION);
+        });
+
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
+
+        await().untilAsserted(() -> {
+            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
+            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.NOTIFY_REPORT);
+        });
+    }
+
     private void mockSuccessfulBootNotificationAnswer() {
         mockSuccessfulBootNotificationAnswer(ZonedDateTime.now(), 100);
     }
@@ -670,6 +694,12 @@ public class StationSimulatorFunctionalTest {
         server.addCallAnswer(
                 call -> call.getActionType() == ActionType.TRANSACTION_EVENT,
                 call -> "[3, \"" + call.getMessageId() + "\", {}]");
+    }
+
+    private void mockSuccessfulGetBaseReportAnswer() {
+        server.addCallAnswer(
+                call -> call.getActionType() == ActionType.TRANSACTION_EVENT,
+                call -> "[3, \"" + call.getMessageId() + "\", {\"status\":\"Accepted\"}]");
     }
 
     @SneakyThrows

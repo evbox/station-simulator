@@ -19,7 +19,6 @@ import java.util.List;
 
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.STARTED;
 import static java.math.BigDecimal.ZERO;
-import static java.util.Objects.nonNull;
 
 public class PayloadFactory {
 
@@ -126,9 +125,7 @@ public class PayloadFactory {
                 .withSeqNo(seqNo)
                 .withTbc(tbc);
 
-        if (nonNull(requestId)) {
-            notifyReportRequest.setRequestId(requestId);
-        }
+        notifyReportRequest.setRequestId(requestId);
 
         return notifyReportRequest;
     }

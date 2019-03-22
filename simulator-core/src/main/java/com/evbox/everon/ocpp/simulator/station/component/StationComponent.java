@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toMap;
 
 /**
  * Represents Component entity from OCPP 2.0 (Appendix 3. Standardized Components).
- * Supports validation, update and retrieval logic for component variables.
+ * Supports validation, update, report generation and retrieval logic for component variables.
  */
 public abstract class StationComponent {
 
@@ -97,22 +97,27 @@ public abstract class StationComponent {
     }
 
     /**
-     * Generates report data for all variable in the component
+     * Generates report data for all variables in the component
      *
      * @param onlyMutableVariables if true, returns only those variables that can be set by the operator
      * @return list of {@link ReportDatum}
      */
     public List<ReportDatum> generateReportData(boolean onlyMutableVariables) {
         List<ReportDatum> reportData = new ArrayList<>();
+
         variableAccessors.values().forEach(accessor -> {
             if (shouldGenerateReportDataForVariable(onlyMutableVariables, accessor.isMutable())) {
                 reportData.addAll(accessor.generateReportData(getComponentName()));
             }
         });
+
         return reportData;
     }
 
+    // Generate report datum if
+    // 1) We are generating report datum for all variable OR
+    // 2) The variable is mutable
     private boolean shouldGenerateReportDataForVariable(boolean onlyMutableVariables, boolean isMutableVariable) {
-        return onlyMutableVariables && isMutableVariable || !onlyMutableVariables;
+        return !onlyMutableVariables || isMutableVariable;
     }
 }
