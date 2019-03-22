@@ -323,7 +323,7 @@ public class StationMessageSender {
 
     private <REQ> Call createAndRegisterCall(ActionType actionType, REQ payload) {
 
-        String callId = callIdGenerator.get();
+        String callId = callIdGenerator.generate();
 
         Call call = new Call(callId, actionType, payload);
 
