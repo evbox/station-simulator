@@ -20,27 +20,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class StationComponentTest {
 
-    private static final List<ReportDatum> REPORT_DATUM = singletonList(new ReportDatum());
+    private static final List<ReportDatum> REPORT_DATA = singletonList(new ReportDatum());
 
     private static final String COMPONENT_NAME = "testComponent";
 
-    private StationComponent stationComponent;
+    StationComponent stationComponent;
 
     @Mock
-    VariableAccessor mutableAccessor;
+    VariableAccessor mutableAccessorMock;
 
     @Mock
-    VariableAccessor immutableAccessor;
+    VariableAccessor immutableAccessorMock;
 
     @BeforeEach
     void initComponent() {
-        when(mutableAccessor.isMutable()).thenReturn(true);
-        when(immutableAccessor.isMutable()).thenReturn(false);
-        when(mutableAccessor.getVariableName()).thenReturn("MutableVariable");
-        when(immutableAccessor.getVariableName()).thenReturn("ImmutableVariable");
-        when(mutableAccessor.generateReportData(any())).thenReturn(REPORT_DATUM);
+        when(mutableAccessorMock.isMutable()).thenReturn(true);
+        when(immutableAccessorMock.isMutable()).thenReturn(false);
+        when(mutableAccessorMock.getVariableName()).thenReturn("MutableVariable");
+        when(immutableAccessorMock.getVariableName()).thenReturn("ImmutableVariable");
+        when(mutableAccessorMock.generateReportData(any())).thenReturn(REPORT_DATA);
 
-        stationComponent = new StationComponent(asList(mutableAccessor, immutableAccessor)) {
+        stationComponent = new StationComponent(asList(mutableAccessorMock, immutableAccessorMock)) {
             @Override
             public String getComponentName() {
                 return COMPONENT_NAME;
@@ -58,7 +58,7 @@ public class StationComponentTest {
     @Test
     @DisplayName("Generating base reports for all variables")
     void shouldGenerateBaseReportForAllVariables() {
-        when(immutableAccessor.generateReportData(any())).thenReturn(REPORT_DATUM);
+        when(immutableAccessorMock.generateReportData(any())).thenReturn(REPORT_DATA);
 
         List<ReportDatum> reportData = stationComponent.generateReportData(false);
         assertThat(reportData.size()).isEqualTo(2);

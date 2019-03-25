@@ -644,14 +644,18 @@ public class StationSimulatorFunctionalTest {
 
         GetBaseReportRequest request = new GetBaseReportRequest().withRequestId(200).withReportBase(FULL_INVENTORY);
 
-        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
-
         await().untilAsserted(() -> {
             List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
             assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION);
         });
 
+        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
         stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
+
+        await().untilAsserted(() -> {
+            Optional<CallResult> responseFromStation = server.getReceivedCallResults(STATION_ID).stream().findAny();
+            assertThat(responseFromStation).isPresent();
+        });
 
         await().untilAsserted(() -> {
             List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
@@ -666,10 +670,13 @@ public class StationSimulatorFunctionalTest {
             sort(notifyReportRequests, new NotifyReportComparator());
 
             int size = notifyReportRequests.size();
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < size - 1; i++) {
                 assertThat(notifyReportRequests.get(i).getSeqNo()).isEqualTo(i);
-                assertThat(notifyReportRequests.get(i).getTbc()).isEqualTo(i != size - 1);
+                assertThat(notifyReportRequests.get(i).getTbc()).isEqualTo(true);
             }
+
+            assertThat(notifyReportRequests.get(size - 1).getSeqNo()).isEqualTo(size - 1);
+            assertThat(notifyReportRequests.get(size - 1).getTbc()).isEqualTo(false);
         });
     }
 
@@ -710,7 +717,7 @@ public class StationSimulatorFunctionalTest {
 
     private void mockSuccessfulGetBaseReportAnswer() {
         server.addCallAnswer(
-                call -> call.getActionType() == ActionType.TRANSACTION_EVENT,
+                call -> call.getActionType() == ActionType.GET_BASE_REPORT,
                 call -> "[3, \"" + call.getMessageId() + "\", {\"status\":\"Accepted\"}]");
     }
 

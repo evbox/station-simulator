@@ -29,7 +29,7 @@ import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.St
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.ZonedDateTime.ofInstant;
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,7 +42,7 @@ public class GetBaseReportRequestHandlerTest {
     private static final ReportDatum REPORT_DATUM = new ReportDatum();
 
     @Mock
-    StationMessageSender stationMessageSender;
+    StationMessageSender stationMessageSenderMock;
     @Mock
     StationComponentsHolder componentsHolderMock;
     @Mock
@@ -63,8 +63,8 @@ public class GetBaseReportRequestHandlerTest {
     void verifyCallResultSummaryInventory() {
         requestHandler.handle(DEFAULT_MESSAGE_ID, new GetBaseReportRequest().withReportBase(SUMMARY_INVENTORY));
 
-        verify(stationMessageSender).sendCallResult(any(), messageCaptor.capture());
-        assertEquals(messageCaptor.getValue().getStatus(), NOT_SUPPORTED);
+        verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());
+        assertThat(messageCaptor.getValue().getStatus()).isEqualTo(NOT_SUPPORTED);
     }
 
     @Test
@@ -75,10 +75,10 @@ public class GetBaseReportRequestHandlerTest {
         GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(FULL_INVENTORY).withRequestId(REQUEST_ID);
         requestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        verify(stationMessageSender).sendCallResult(any(), messageCaptor.capture());
-        verify(stationMessageSender).sendNotifyReport(REQUEST_ID, true, 0, now(), singletonList(REPORT_DATUM));
-        verify(stationMessageSender).sendNotifyReport(REQUEST_ID, false, 1, now(), singletonList(REPORT_DATUM));
-        assertEquals(messageCaptor.getValue().getStatus(), ACCEPTED);
+        verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());
+        verify(stationMessageSenderMock).sendNotifyReport(REQUEST_ID, true, 0, now(), singletonList(REPORT_DATUM));
+        verify(stationMessageSenderMock).sendNotifyReport(REQUEST_ID, false, 1, now(), singletonList(REPORT_DATUM));
+        assertThat(messageCaptor.getValue().getStatus()).isEqualTo(ACCEPTED);
     }
 
     @Test
@@ -89,9 +89,9 @@ public class GetBaseReportRequestHandlerTest {
         GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(CONFIGURATION_INVENTORY).withRequestId(REQUEST_ID);
         requestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        verify(stationMessageSender).sendCallResult(any(), messageCaptor.capture());
-        verify(stationMessageSender).sendNotifyReport(REQUEST_ID, false, 0, now(), singletonList(REPORT_DATUM));
-        assertEquals(messageCaptor.getValue().getStatus(), ACCEPTED);
+        verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());
+        verify(stationMessageSenderMock).sendNotifyReport(REQUEST_ID, false, 0, now(), singletonList(REPORT_DATUM));
+        assertThat(messageCaptor.getValue().getStatus()).isEqualTo(ACCEPTED);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class GetBaseReportRequestHandlerTest {
         GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(CONFIGURATION_INVENTORY);
         requestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        verify(stationMessageSender).sendNotifyReport(null, false, 0, now(),singletonList(REPORT_DATUM));
+        verify(stationMessageSenderMock).sendNotifyReport(null, false, 0, now(),singletonList(REPORT_DATUM));
     }
 
     private ZonedDateTime now() {
