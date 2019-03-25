@@ -67,7 +67,7 @@ public class EnabledVariableAccessor extends VariableAccessor {
     public List<ReportDatum> generateReportData(String componentName) {
         List<ReportDatum> reportData = new ArrayList<>();
 
-        for (Evse evse: getStation().getState().getEvses()) {
+        for (Evse evse : getStation().getState().getEvses()) {
             com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
                     .withId(evse.getId());
 

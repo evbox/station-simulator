@@ -674,14 +674,14 @@ public class StationSimulatorFunctionalTest {
 
             sort(notifyReportRequests, new NotifyReportComparator());
 
-            int size = notifyReportRequests.size();
-            for (int i = 0; i < size - 1; i++) {
+            int sizeMinusOne = notifyReportRequests.size() - 1;
+            for (int i = 0; i < sizeMinusOne; i++) {
                 assertThat(notifyReportRequests.get(i).getSeqNo()).isEqualTo(i);
                 assertThat(notifyReportRequests.get(i).getTbc()).isEqualTo(true);
             }
 
-            assertThat(notifyReportRequests.get(size - 1).getSeqNo()).isEqualTo(size - 1);
-            assertThat(notifyReportRequests.get(size - 1).getTbc()).isEqualTo(false);
+            assertThat(notifyReportRequests.get(sizeMinusOne).getSeqNo()).isEqualTo(sizeMinusOne);
+            assertThat(notifyReportRequests.get(sizeMinusOne).getTbc()).isEqualTo(false);
         });
     }
 

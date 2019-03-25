@@ -67,24 +67,24 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
     public List<ReportDatum> generateReportData(String componentName) {
         List<ReportDatum> reportData = new ArrayList<>();
 
-        for (Evse evse: getStation().getState().getEvses()) {
-                com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
-                        .withId(evse.getId());
+        for (Evse evse : getStation().getState().getEvses()) {
+            com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
+                    .withId(evse.getId());
 
-                Component component = new Component()
-                        .withName(new CiString.CiString50(componentName))
-                        .withEvse(componentEvse);
+            Component component = new Component()
+                    .withName(new CiString.CiString50(componentName))
+                    .withEvse(componentEvse);
 
-                VariableAttribute variableAttribute = new VariableAttribute()
-                        .withValue(new CiString.CiString1000(EVSE_AVAILABILITY));
+            VariableAttribute variableAttribute = new VariableAttribute()
+                    .withValue(new CiString.CiString1000(EVSE_AVAILABILITY));
 
-                ReportDatum reportDatum = new ReportDatum()
-                        .withComponent(component)
-                        .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                        .withVariableCharacteristics(new VariableCharacteristics().withDataType(SEQUENCE_LIST))
-                        .withVariableAttribute(singletonList(variableAttribute));
+            ReportDatum reportDatum = new ReportDatum()
+                    .withComponent(component)
+                    .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
+                    .withVariableCharacteristics(new VariableCharacteristics().withDataType(SEQUENCE_LIST))
+                    .withVariableAttribute(singletonList(variableAttribute));
 
-                reportData.add(reportDatum);
+            reportData.add(reportDatum);
         }
 
         return reportData;

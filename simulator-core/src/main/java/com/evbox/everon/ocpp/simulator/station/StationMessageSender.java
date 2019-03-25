@@ -270,7 +270,7 @@ public class StationMessageSender {
     }
 
     /**
-     * Sends NotifyReport event asynchronously
+     * Sends NotifyReport event
      *
      * @param requestId requestId from GetBaseReport
      * @param tbc to be continued, signifies if this is the last report

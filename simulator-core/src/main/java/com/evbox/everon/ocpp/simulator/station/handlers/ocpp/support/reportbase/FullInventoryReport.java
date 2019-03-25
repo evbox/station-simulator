@@ -6,23 +6,24 @@ import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 
+import java.time.Clock;
 import java.util.List;
 
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 
-public class FullInventoryGenerator extends ReportBaseGenerator {
+public class FullInventoryReport extends BaseReport {
 
-    private final StationMessageSender stationMessageSender;
     private final StationComponentsHolder stationComponentsHolder;
 
-    public FullInventoryGenerator(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender) {
-        this.stationMessageSender = stationMessageSender;
+    public FullInventoryReport(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender, Clock clock) {
+        super(stationMessageSender, clock);
         this.stationComponentsHolder = stationComponentsHolder;
     }
 
     @Override
-    public List<ReportDatum> generateAndRespond(String callId, GetBaseReportRequest request) {
+    public void generateAndRespond(String callId, GetBaseReportRequest request) {
         stationMessageSender.sendCallResult(callId, new GetBaseReportResponse().withStatus(ACCEPTED));
-        return stationComponentsHolder.generateReportData(false);
+        List<ReportDatum> reportData = stationComponentsHolder.generateReportData(false);
+        sendNotifyReportRequests(reportData, request);
     }
 }
