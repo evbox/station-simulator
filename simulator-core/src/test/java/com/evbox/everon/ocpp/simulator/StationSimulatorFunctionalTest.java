@@ -637,25 +637,30 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    void shouldSendNotifyReportOnGetBaseReportRequest() {
-        mockSuccessfulGetBaseReportAnswer();
-
+    void shouldReplyToGetBaseReportRequest() {
         stationSimulatorRunner.run();
 
-        GetBaseReportRequest request = new GetBaseReportRequest().withRequestId(200).withReportBase(FULL_INVENTORY);
-
-        await().untilAsserted(() -> {
-            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
-            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION);
-        });
-
+        GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(FULL_INVENTORY);
         String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
+
         stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
 
         await().untilAsserted(() -> {
             Optional<CallResult> responseFromStation = server.getReceivedCallResults(STATION_ID).stream().findAny();
             assertThat(responseFromStation).isPresent();
         });
+    }
+
+    @Test
+    void shouldSendNotifyReportOnGetBaseReportRequest() {
+        mockSuccessfulGetBaseReportAnswer();
+
+        stationSimulatorRunner.run();
+
+        GetBaseReportRequest request = new GetBaseReportRequest().withRequestId(200).withReportBase(FULL_INVENTORY);
+        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
+
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
 
         await().untilAsserted(() -> {
             List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
