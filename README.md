@@ -36,7 +36,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 
 
 ## Auto-reconnect
-Station simulator supports reconnection logic. In case of connection loss, the simulator is going to try to reconnect, once every 5 seconds, indefinitely.
+Station simulator supports reconnection logic. In case of connection loss, the simulator will try to reconnect, once every 5 seconds, indefinitely.
 
 -----------
 
