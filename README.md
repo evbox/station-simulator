@@ -158,6 +158,7 @@ In the same manner, station is using message queue to send messages to WebSocket
 Our primary development tool is IDEA. If you are using other IDE share your experience and propose adjustments to this README.
 
 -----------
+
 # OCPP 2.0 Support
 
 | Subject                           | Use Case                                                                    | Supported | Comments                                      |
