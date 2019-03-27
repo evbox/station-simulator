@@ -30,16 +30,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-<<<<<<< HEAD:simulator-core/src/test/java/com/evbox/everon/ocpp/scenarios/todo/StationSimulatorFunctionalTest.java
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createStationConfiguration;
-=======
-import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createSimulatorConfiguration;
-import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createStationConfiguration;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
->>>>>>> master:simulator-core/src/test/java/com/evbox/everon/ocpp/simulator/StationSimulatorFunctionalTest.java
 import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toList;

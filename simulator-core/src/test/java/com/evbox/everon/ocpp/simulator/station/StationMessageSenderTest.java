@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import java.util.stream.IntStream;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.factory.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -150,7 +150,7 @@ public class StationMessageSenderTest {
     @Test
     void verifyAuthorize() throws InterruptedException {
 
-        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, Collections.singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
+        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
 
         WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
 

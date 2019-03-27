@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_MESSAGE_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_MESSAGE_ID;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.*;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.NOT_SUPPORTED;
