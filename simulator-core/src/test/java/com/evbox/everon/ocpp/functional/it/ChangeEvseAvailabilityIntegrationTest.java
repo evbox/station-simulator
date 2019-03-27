@@ -1,8 +1,8 @@
 package com.evbox.everon.ocpp.functional.it;
 
-import com.evbox.everon.ocpp.testutil.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
+import com.evbox.everon.ocpp.testutil.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +11,7 @@ import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.bootNoti
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.bootNotificationResponse;
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.statusNotificationResponse;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
@@ -18,11 +19,6 @@ import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationReques
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_EVSE_ID;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_MESSAGE_ID;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.CHANGE_AVAILABILITY_ACTION;
 
 
 public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp {

@@ -2,10 +2,10 @@ package com.evbox.everon.ocpp.functional.it;
 
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.testutil.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
+import com.evbox.everon.ocpp.testutil.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,24 +17,16 @@ import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.bootNoti
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.bootNotificationResponse;
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.statusNotificationResponse;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createStationConfiguration;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.CHANGE_AVAILABILITY_ACTION;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-
-
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.EVSE_COUNT_TWO;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.EVSE_CONNECTORS_TWO;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.OCPP_SERVER_URL;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_MESSAGE_ID;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.EVSE_ID_ZERO;
 
 public class ChangeStationAvailabilityIntegrationTest extends StationSimulatorSetUp {
 
