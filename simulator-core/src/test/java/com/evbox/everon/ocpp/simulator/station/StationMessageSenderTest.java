@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -220,6 +221,30 @@ public class StationMessageSenderTest {
                 .withMessageId(DEFAULT_MESSAGE_ID)
                 .withAction(HEART_BEAT_ACTION)
                 .withPayload(new HeartbeatRequest())
+                .toJson();
+
+        assertThat(actualMessage.getData().get()).isEqualTo(expectedCall);
+    }
+
+    @Test
+    void verifyNotifyReportAsync() throws InterruptedException, JsonProcessingException {
+        List<ReportDatum> reportData = singletonList(new ReportDatum());
+        ZonedDateTime now = ZonedDateTime.now();
+
+        NotifyReportRequest request = new NotifyReportRequest()
+                .withTbc(false)
+                .withSeqNo(0)
+                .withReportData(reportData)
+                .withGeneratedAt(now);
+
+        stationMessageSender.sendNotifyReport(null, false, 0, now, reportData);
+
+        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+
+        String expectedCall = createCall()
+                .withMessageId(DEFAULT_MESSAGE_ID)
+                .withAction(NOTIFY_REPORT_ACTION)
+                .withPayload(request)
                 .toJson();
 
         assertThat(actualMessage.getData().get()).isEqualTo(expectedCall);

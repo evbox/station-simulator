@@ -48,6 +48,7 @@ public class StationConstants {
 
 
     // Actions
+    public static final String NOTIFY_REPORT_ACTION = "NotifyReport";
     public static final String GET_VARIABLES_ACTION = "GetVariables";
     public static final String SET_VARIABLES_ACTION = "SetVariables";
     public static final String RESET_ACTION = "Reset";

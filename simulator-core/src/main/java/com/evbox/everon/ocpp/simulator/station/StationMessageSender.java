@@ -14,7 +14,9 @@ import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -266,6 +268,22 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.HEARTBEAT, heartbeatRequest);
         callRegistry.addSubscription(call.getMessageId(), heartbeatRequest, subscriber);
 
+        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+    }
+
+    /**
+     * Sends NotifyReport event
+     *
+     * @param requestId requestId from GetBaseReport
+     * @param tbc to be continued, signifies if this is the last report
+     * @param seqNo sequence number of this message
+     * @param reportData report data containing information about variables
+     */
+    public void sendNotifyReport(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
+        NotifyReportRequest payload =
+                payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, generatedAt, reportData);
+
+        Call call = createAndRegisterCall(ActionType.NOTIFY_REPORT, payload);
         sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
