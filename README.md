@@ -75,14 +75,14 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | LocalAuthorizationList Management | D01 - Send Local Authorization List                                         |           |                                               |
 | LocalAuthorizationList Management | D02 - Get Local List Version                                                |           |                                               |
 | Transactions                      | E01 - Start Transaction options                                             |           |                                               |
-| Transactions                      | E02 - Start Transaction - Cable Plugin First                                |           |                                               |
-| Transactions                      | E03 - Start Transaction - IdToken First                                     |           |                                               |
+| Transactions                      | E02 - Start Transaction - Cable Plugin First                                | Yes       |                                               |
+| Transactions                      | E03 - Start Transaction - IdToken First                                     | Yes       |                                               |
 | Transactions                      | E04 - Transaction started while Charging Station is offline                 |           |                                               |
 | Transactions                      | E05 - Start Transaction - Id not Accepted                                   |           |                                               |
 | Transactions                      | E06 - Stop Transaction options                                              |           |                                               |
-| Transactions                      | E07 - Transaction locally stopped by IdToken                                |           |                                               |
+| Transactions                      | E07 - Transaction locally stopped by IdToken                                | Yes       |                                               |
 | Transactions                      | E08 - Transaction stopped while Charging Station is offline                 |           |                                               |
-| Transactions                      | E09 - When cable disconnected on EV-side: Stop Transaction                  |           |                                               |
+| Transactions                      | E09 - When cable disconnected on EV-side: Stop Transaction                  | Yes       |                                               |
 | Transactions                      | E10 - When cable disconnected on EV-side: Suspend Transaction               |           |                                               |
 | Transactions                      | E11 - Connection Loss During Transaction                                    |           |                                               |
 | Transactions                      | E12 - Inform CSMS of an Offline Occurred Transaction                        |           |                                               |
@@ -158,7 +158,6 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | DisplayMessage                    | O06 - Replace DisplayMessage                                                |           |                                               |
 | DataTransfer                      | P01 - Data Transfer to the Charging Station                                 |           |                                               |
 | DataTransfer                      | P02 - Data Transfer to the CSMS                                             |           |                                               |
-
 
 
 ## Auto-reconnect
