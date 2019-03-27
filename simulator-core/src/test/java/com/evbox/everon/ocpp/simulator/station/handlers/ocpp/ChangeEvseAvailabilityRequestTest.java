@@ -72,7 +72,7 @@ public class ChangeEvseAvailabilityRequestTest {
     }
 
     @Test
-    @DisplayName("Evse and connector should change status to UNAVAILABLE")
+    @DisplayName("Evse expectResponseFromStation connector should change status to UNAVAILABLE")
     void shouldChangeEvseAndConnectorStatus() {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
@@ -97,7 +97,7 @@ public class ChangeEvseAvailabilityRequestTest {
     }
 
     @Test
-    @DisplayName("Send response with ACCEPT status and StatusNotification request for every connector")
+    @DisplayName("Send response with ACCEPT status expectResponseFromStation StatusNotification request for every connector")
     void shouldSendAcceptStatusAndStatusNotification() {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)

@@ -1,6 +1,7 @@
-package com.evbox.everon.ocpp.testutil.assertion;
+package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.testutil.assertion.ExpectedCount;
 import lombok.Data;
 
 import java.util.concurrent.atomic.AtomicInteger;

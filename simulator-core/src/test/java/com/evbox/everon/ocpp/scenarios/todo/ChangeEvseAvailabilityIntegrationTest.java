@@ -1,18 +1,17 @@
-package com.evbox.everon.ocpp.functional.it;
+package com.evbox.everon.ocpp.scenarios.todo;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
-import com.evbox.everon.ocpp.testutil.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedCount.twice;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.bootNotificationRequest;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.statusNotificationRequestWithStatus;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.bootNotificationResponse;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.statusNotificationResponse;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
@@ -29,15 +28,15 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
         // given
         ocppMockServer
                 .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponse());
+                .thenReturn(bootNotificationResponseMock());
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(AVAILABLE))
-                .thenReturn(statusNotificationResponse());
+                .thenReturn(emptyResponse());
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(UNAVAILABLE))
-                .thenReturn(statusNotificationResponse());
+                .thenReturn(emptyResponse());
 
         // when
         stationSimulatorRunner.run();
@@ -63,15 +62,15 @@ public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp
         // given
         ocppMockServer
                 .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponse());
+                .thenReturn(bootNotificationResponseMock());
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(AVAILABLE), twice())
-                .thenReturn(statusNotificationResponse());
+                .thenReturn(emptyResponse());
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(UNAVAILABLE))
-                .thenReturn(statusNotificationResponse());
+                .thenReturn(emptyResponse());
 
         // when
         stationSimulatorRunner.run();

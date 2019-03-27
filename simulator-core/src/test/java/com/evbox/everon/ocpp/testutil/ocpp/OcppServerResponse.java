@@ -1,9 +1,7 @@
-package com.evbox.everon.ocpp.testutil.mock;
+package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.testutil.assertion.ExpectedCount;
-import com.evbox.everon.ocpp.testutil.assertion.RequestExpectationManager;
-import com.evbox.everon.ocpp.testutil.assertion.RequestExpectationMatcher;
 import lombok.AllArgsConstructor;
 
 import java.util.function.Function;

@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.testutil.assertion;
+package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory;
@@ -7,16 +7,16 @@ import java.time.ZonedDateTime;
 import java.util.function.Function;
 
 /**
- * A simple class with factory methods.
+ * Mocked ocpp responses
  */
-public class ExpectedResponses {
+public class MockedResponses {
 
     /**
      * Create BootNotificationResponse with default configuration.
      *
      * @return BootNotificationResponse in json.
      */
-    public static Function<Call, String> bootNotificationResponse() {
+    public static Function<Call, String> bootNotificationResponseMock() {
         return incomingRequest -> JsonMessageTypeFactory.createCallResult()
                 .withMessageId(incomingRequest.getMessageId())
                 .withCurrentTime(ZonedDateTime.now().toString())
@@ -26,14 +26,15 @@ public class ExpectedResponses {
     }
 
     /**
-     * Create StatusNotificationResponse with empty payload.
+     * Create a response with empty payload.
      *
-     * @return StatusNotificationResponse in json.
+     * @return response in json.
      */
-    public static Function<Call, String> statusNotificationResponse() {
+    public static Function<Call, String> emptyResponse() {
         return incomingRequest -> JsonMessageTypeFactory.createCallResult()
                 .withMessageId(incomingRequest.getMessageId())
                 .withPayload("")
                 .toJson();
     }
+
 }

@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.functional.todo;
+package com.evbox.everon.ocpp.scenarios.todo;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
@@ -14,7 +14,7 @@ import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
 import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.testutil.factory.WebSocketServerMock;
+import com.evbox.everon.ocpp.testutil.remove.WebSocketServerMock;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.station.*;
@@ -573,38 +573,6 @@ public class StationSimulatorFunctionalTest {
                     .findAny();
 
             assertThat(statusNotificationOptional).isPresent();
-        });
-    }
-
-    @Test
-    void shouldSetHeartbeatIntervalWithSetVariablesRequest() {
-        //given
-        int newHeartbeatInterval = 120;
-        mockSuccessfulBootNotificationAnswer();
-
-        //when
-        stationSimulatorRunner.run();
-
-        SetVariableDatum setVariableDatum = new SetVariableDatum()
-                .withComponent(new Component().withName(new CiString.CiString50(OCPPCommCtrlrComponent.NAME)))
-                .withVariable(new Variable().withName(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME)))
-                .withAttributeType(SetVariableDatum.AttributeType.ACTUAL)
-                .withAttributeValue(new CiString.CiString1000(String.valueOf(newHeartbeatInterval)));
-
-        String setHeartbeatIntervalVariable = new Call(UUID.randomUUID().toString(), ActionType.SET_VARIABLES, new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum)))
-                .toJson();
-
-        await().untilAsserted(() -> {
-            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
-            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION);
-        });
-
-        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, setHeartbeatIntervalVariable));
-
-        //then
-        await().untilAsserted(() -> {
-            int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval();
-            assertThat(heartbeatInterval).isEqualTo(newHeartbeatInterval);
         });
     }
 

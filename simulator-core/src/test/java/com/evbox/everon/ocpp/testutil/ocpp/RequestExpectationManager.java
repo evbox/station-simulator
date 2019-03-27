@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.testutil.assertion;
+package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
 

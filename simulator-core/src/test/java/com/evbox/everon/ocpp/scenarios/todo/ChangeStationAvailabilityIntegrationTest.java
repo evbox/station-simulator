@@ -1,11 +1,11 @@
-package com.evbox.everon.ocpp.functional.it;
+package com.evbox.everon.ocpp.scenarios.todo;
 
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
-import com.evbox.everon.ocpp.testutil.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,14 +13,13 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static com.evbox.everon.ocpp.testutil.assertion.ExpectedCount.times;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.bootNotificationRequest;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.statusNotificationRequestWithStatus;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.bootNotificationResponse;
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.statusNotificationResponse;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createStationConfiguration;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
@@ -45,15 +44,15 @@ public class ChangeStationAvailabilityIntegrationTest extends StationSimulatorSe
         // given
         ocppMockServer
                 .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponse());
+                .thenReturn(bootNotificationResponseMock());
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(AVAILABLE), times(4))
-                .thenReturn(statusNotificationResponse());
+                .thenReturn(emptyResponse());
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(UNAVAILABLE), times(4))
-                .thenReturn(statusNotificationResponse());
+                .thenReturn(emptyResponse());
 
         // when
         stationSimulatorRunner.run();

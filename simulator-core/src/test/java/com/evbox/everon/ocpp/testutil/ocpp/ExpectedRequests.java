@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.testutil.assertion;
+package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
@@ -34,6 +34,14 @@ public class ExpectedRequests {
             }
             return false;
         };
+    }
+
+    /**
+     * HeartbeatRequest
+     * @@return checks whether an incoming request is HeartbeatRequest or not.
+     */
+    public static Predicate<Call> heartbeatRequest() {
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.HEARTBEAT;
     }
 
 }

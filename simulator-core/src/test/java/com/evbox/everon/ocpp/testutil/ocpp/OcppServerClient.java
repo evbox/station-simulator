@@ -1,5 +1,6 @@
-package com.evbox.everon.ocpp.testutil.mock;
+package com.evbox.everon.ocpp.testutil.ocpp;
 
+import com.evbox.everon.ocpp.testutil.WebSocketSender;
 import io.undertow.websockets.core.WebSocketChannel;
 
 import java.util.Map;

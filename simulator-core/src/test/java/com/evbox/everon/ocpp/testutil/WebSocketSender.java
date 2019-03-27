@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.testutil.mock;
+package com.evbox.everon.ocpp.testutil;
 
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;

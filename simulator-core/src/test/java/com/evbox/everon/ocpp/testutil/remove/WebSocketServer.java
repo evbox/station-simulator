@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.testutil.mock;
+package com.evbox.everon.ocpp.testutil.remove;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallResult;

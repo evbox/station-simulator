@@ -1,8 +1,10 @@
-package com.evbox.everon.ocpp.testutil.mock;
+package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.testutil.assertion.ExpectedCount;
-import com.evbox.everon.ocpp.testutil.assertion.RequestExpectationManager;
+import com.evbox.everon.ocpp.testutil.station.ResponseExpectationManager;
+import com.evbox.everon.ocpp.testutil.station.StationExpectedResponse;
 import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +26,7 @@ public class OcppMockServer {
     private Undertow server;
 
     private final RequestExpectationManager requestExpectationManager = new RequestExpectationManager();
+    private final ResponseExpectationManager responseExpectationManager = new ResponseExpectationManager();
 
     private final OcppServerClient ocppServerClient;
     private final String hostname;
@@ -53,7 +56,7 @@ public class OcppMockServer {
                 .setHandler(
                         path().addPrefixPath(path, websocket((exchange, channel) -> {
                             String stationId = channel.getUrl().replace(targetUrl, "");
-                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, ocppServerClient));
+                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, responseExpectationManager, ocppServerClient));
                             channel.resumeReceives();
 
                             ocppServerClient.putIfAbsent(stationId, channel);
@@ -94,10 +97,21 @@ public class OcppMockServer {
     }
 
     /**
+     * Accepts a predicate that is responsible for response expectation.
+     *
+     * @param responseExpectation a response expectation predicate
+     * @return {@link OcppServerResponse} instance
+     */
+    public StationExpectedResponse expectResponseFromStation(Predicate<CallResult> responseExpectation) {
+        return new StationExpectedResponse(responseExpectationManager, responseExpectation);
+    }
+
+    /**
      * Verify all expectations.
      */
     public void verify() {
         requestExpectationManager.verify();
+        responseExpectationManager.verify();
     }
 
     /**
@@ -115,7 +129,7 @@ public class OcppMockServer {
     }
 
     /**
-     * Create a builder class in order to configure ocpp mock server.
+     * Create a builder class ixn order to configure ocpp mock server.
      *
      * @return {@link OcppServerMockBuilder} instance
      */

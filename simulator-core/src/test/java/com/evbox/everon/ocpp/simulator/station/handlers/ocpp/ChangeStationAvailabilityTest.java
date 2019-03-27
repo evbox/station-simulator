@@ -74,7 +74,7 @@ public class ChangeStationAvailabilityTest {
     }
 
     @Test
-    @DisplayName("Evse and connector should change status to UNAVAILABLE")
+    @DisplayName("Evse expectResponseFromStation connector should change status to UNAVAILABLE")
     void shouldChangeEvseAndConnectorStatus() {
         // given
         Evse evse = createEvse()
