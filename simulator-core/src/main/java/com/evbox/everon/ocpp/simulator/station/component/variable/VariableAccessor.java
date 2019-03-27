@@ -8,13 +8,16 @@ import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * Contains logic for variable read, write and validation of these operations.
- * Since station has to reply to SetVariablesRequest immediately, validation logic should happen before update's execution. This is why validate stands as a separate operation.
+ * Since station has to reply to SetVariablesRequest immediately, validation logic should happen before update's execution.
+ * This is why validate stands as a separate operation.
  */
 public abstract class VariableAccessor implements VariableGetter, VariableSetter, SetVariableValidator {
 
@@ -58,6 +61,10 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
     public abstract Map<AttributeType, VariableSetter> getVariableSetters();
 
     public abstract Map<AttributeType, SetVariableValidator> getVariableValidators();
+
+    public abstract List<ReportDatum> generateReportData(String componentName);
+
+    public abstract boolean isMutable();
 
     @Override
     public GetVariableResult get(AttributePath attributePath) {

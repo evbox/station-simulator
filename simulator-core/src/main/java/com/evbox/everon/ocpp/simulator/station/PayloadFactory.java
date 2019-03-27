@@ -9,6 +9,7 @@ import com.evbox.everon.ocpp.v20.message.common.MeterValue;
 import com.evbox.everon.ocpp.v20.message.common.SampledValue;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -115,6 +116,18 @@ public class PayloadFactory {
                 .withStoppedReason(stoppedReason);
 
         return createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement());
+    }
+
+    NotifyReportRequest createNotifyReportRequest(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
+        NotifyReportRequest notifyReportRequest = new NotifyReportRequest()
+                .withGeneratedAt(generatedAt)
+                .withReportData(reportData)
+                .withSeqNo(seqNo)
+                .withTbc(tbc);
+
+        notifyReportRequest.setRequestId(requestId);
+
+        return notifyReportRequest;
     }
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,

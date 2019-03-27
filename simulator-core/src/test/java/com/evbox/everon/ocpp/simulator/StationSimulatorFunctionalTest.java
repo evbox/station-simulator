@@ -25,17 +25,16 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.simulator.support.SimulatorConfigCreator.createStationConfiguration;
 import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -637,6 +636,55 @@ public class StationSimulatorFunctionalTest {
         });
     }
 
+    @Test
+    void shouldReplyToGetBaseReportRequest() {
+        stationSimulatorRunner.run();
+
+        GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(FULL_INVENTORY);
+        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
+
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
+
+        await().untilAsserted(() -> {
+            Optional<CallResult> responseFromStation = server.getReceivedCallResults(STATION_ID).stream().findAny();
+            assertThat(responseFromStation).isPresent();
+        });
+    }
+
+    @Test
+    void shouldSendNotifyReportOnGetBaseReportRequest() {
+        mockSuccessfulGetBaseReportAnswer();
+
+        stationSimulatorRunner.run();
+
+        GetBaseReportRequest request = new GetBaseReportRequest().withRequestId(200).withReportBase(FULL_INVENTORY);
+        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
+
+        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
+
+        await().untilAsserted(() -> {
+            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
+
+            List<NotifyReportRequest> notifyReportRequests =
+                    stationCalls
+                            .stream()
+                            .filter(call -> call.getActionType() == ActionType.NOTIFY_REPORT)
+                            .map(call -> NotifyReportRequest.class.cast(call.getPayload()))
+                            .collect(toList());
+
+            sort(notifyReportRequests, new NotifyReportComparator());
+
+            int sizeMinusOne = notifyReportRequests.size() - 1;
+            for (int i = 0; i < sizeMinusOne; i++) {
+                assertThat(notifyReportRequests.get(i).getSeqNo()).isEqualTo(i);
+                assertThat(notifyReportRequests.get(i).getTbc()).isEqualTo(true);
+            }
+
+            assertThat(notifyReportRequests.get(sizeMinusOne).getSeqNo()).isEqualTo(sizeMinusOne);
+            assertThat(notifyReportRequests.get(sizeMinusOne).getTbc()).isEqualTo(false);
+        });
+    }
+
     private void mockSuccessfulBootNotificationAnswer() {
         mockSuccessfulBootNotificationAnswer(ZonedDateTime.now(), 100);
     }
@@ -672,6 +720,12 @@ public class StationSimulatorFunctionalTest {
                 call -> "[3, \"" + call.getMessageId() + "\", {}]");
     }
 
+    private void mockSuccessfulGetBaseReportAnswer() {
+        server.addCallAnswer(
+                call -> call.getActionType() == ActionType.GET_BASE_REPORT,
+                call -> "[3, \"" + call.getMessageId() + "\", {\"status\":\"Accepted\"}]");
+    }
+
     @SneakyThrows
     private String toJson(Object object) {
         return ObjectMapperHolder.getJsonObjectMapper().writeValueAsString(object);
@@ -684,5 +738,13 @@ public class StationSimulatorFunctionalTest {
 
     private void triggerUserAction(String stationId, UserMessage action) {
         stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
+    }
+
+    static class NotifyReportComparator implements Comparator<NotifyReportRequest>
+    {
+        public int compare(NotifyReportRequest first, NotifyReportRequest second)
+        {
+            return first.getSeqNo().compareTo(second.getSeqNo());
+        }
     }
 }
