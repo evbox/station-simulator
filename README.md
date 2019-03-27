@@ -33,7 +33,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 - StatusNotification
 - Reset (only IMMEDIATE reset is supported)
 - GetVariables
-- SetVariables (heartbeat only)
+- SetVariables 
 - ChangeAvailability
 - GetBaseReport (FullInventory and ConfigurationInventory only, monitoring is not supported)
 
@@ -48,7 +48,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | Provisioning                      | B02 - Cold Boot Charging Station - Pending                                  |           |                                               |
 | Provisioning                      | B03 - Cold Boot Charging Station - Rejected                                 |           |                                               |
 | Provisioning                      | B04 - Offline Behavior Idle Charging Station                                |           |                                               |
-| Provisioning                      | B05 - Set Variables                                                         | Yes       | Heartbeat only                                |
+| Provisioning                      | B05 - Set Variables                                                         | Yes       |                                               |
 | Provisioning                      | B06 - Get Variables                                                         | Yes       |                                               |
 | Provisioning                      | B07 - Get Base Report                                                       | Yes       | FullInventory and ConfigurationInventory only |
 | Provisioning                      | B08 - Get Custom Report                                                     |           |                                               |
@@ -158,7 +158,6 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | DisplayMessage                    | O06 - Replace DisplayMessage                                                |           |                                               |
 | DataTransfer                      | P01 - Data Transfer to the Charging Station                                 |           |                                               |
 | DataTransfer                      | P02 - Data Transfer to the CSMS                                             |           |                                               |
-
 
 
 
