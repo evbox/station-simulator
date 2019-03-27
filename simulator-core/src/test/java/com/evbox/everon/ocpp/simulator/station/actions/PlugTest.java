@@ -13,16 +13,16 @@ import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_CONNECTOR_ID;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_CONNECTOR_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_EVSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class PlugTest {

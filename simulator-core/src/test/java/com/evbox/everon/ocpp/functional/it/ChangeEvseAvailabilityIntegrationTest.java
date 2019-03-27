@@ -1,0 +1,110 @@
+package com.evbox.everon.ocpp.functional.it;
+
+import com.evbox.everon.ocpp.testutil.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
+import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
+import org.junit.jupiter.api.Test;
+
+import static com.evbox.everon.ocpp.testutil.assertion.ExpectedCount.twice;
+import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.bootNotificationRequest;
+import static com.evbox.everon.ocpp.testutil.assertion.ExpectedRequests.statusNotificationRequestWithStatus;
+import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.bootNotificationResponse;
+import static com.evbox.everon.ocpp.testutil.assertion.ExpectedResponses.statusNotificationResponse;
+import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
+import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_MESSAGE_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.CHANGE_AVAILABILITY_ACTION;
+
+
+public class ChangeEvseAvailabilityIntegrationTest extends StationSimulatorSetUp {
+
+    @Test
+    void shouldChangeEvseStatusToUnavailable() {
+
+        // given
+        ocppMockServer
+                .when(bootNotificationRequest())
+                .thenReturn(bootNotificationResponse());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(AVAILABLE))
+                .thenReturn(statusNotificationResponse());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(UNAVAILABLE))
+                .thenReturn(statusNotificationResponse());
+
+        // when
+        stationSimulatorRunner.run();
+
+        ocppMockServer.waitUntilConnected();
+
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(changeAvailabilityRequestWithStatus(INOPERATIVE));
+
+        // then
+        await().untilAsserted(() -> {
+            Station station = stationSimulatorRunner.getStation(STATION_ID);
+
+            assertThat(station.getState().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.UNAVAILABLE);
+
+            ocppMockServer.verify();
+        });
+
+    }
+
+    @Test
+    void shouldChangeEvseStatusToAvailable() {
+
+        // given
+        ocppMockServer
+                .when(bootNotificationRequest())
+                .thenReturn(bootNotificationResponse());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(AVAILABLE), twice())
+                .thenReturn(statusNotificationResponse());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(UNAVAILABLE))
+                .thenReturn(statusNotificationResponse());
+
+        // when
+        stationSimulatorRunner.run();
+
+        ocppMockServer.waitUntilConnected();
+
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(changeAvailabilityRequestWithStatus(INOPERATIVE));
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(changeAvailabilityRequestWithStatus(OPERATIVE));
+
+        // then
+        await().untilAsserted(() -> {
+            Station station = stationSimulatorRunner.getStation(STATION_ID);
+
+            assertThat(station.getState().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.AVAILABLE);
+
+            ocppMockServer.verify();
+        });
+
+    }
+
+    String changeAvailabilityRequestWithStatus(ChangeAvailabilityRequest.OperationalStatus operationalStatus) {
+        ChangeAvailabilityRequest changeAvailabilityRequest = new ChangeAvailabilityRequest()
+                .withEvseId(DEFAULT_EVSE_ID)
+                .withOperationalStatus(operationalStatus);
+
+        return createCall()
+                .withMessageId(DEFAULT_MESSAGE_ID)
+                .withAction(CHANGE_AVAILABILITY_ACTION)
+                .withPayload(changeAvailabilityRequest)
+                .toJson();
+    }
+}

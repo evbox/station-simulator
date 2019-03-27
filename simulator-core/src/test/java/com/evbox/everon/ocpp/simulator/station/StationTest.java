@@ -9,8 +9,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.evbox.everon.ocpp.simulator.support.ReflectionUtils.injectMock;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.testutil.ReflectionUtils.injectMock;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 

@@ -5,9 +5,7 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,11 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCallResult;
-import static com.evbox.everon.ocpp.simulator.support.OcppMessageFactory.createGetVariablesRequest;
-import static com.evbox.everon.ocpp.simulator.support.OcppMessageFactory.createGetVariablesResponse;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_MESSAGE_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_MESSAGE_ID;
+import static com.evbox.everon.ocpp.testutil.factory.OcppMessageFactory.createGetVariablesRequest;
+import static com.evbox.everon.ocpp.testutil.factory.OcppMessageFactory.createGetVariablesResponse;
 import static com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult.AttributeStatus.UNKNOWN_COMPONENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;

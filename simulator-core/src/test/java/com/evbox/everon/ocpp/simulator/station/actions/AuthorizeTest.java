@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_EVSE_ID;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_TOKEN_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_TOKEN_ID;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 

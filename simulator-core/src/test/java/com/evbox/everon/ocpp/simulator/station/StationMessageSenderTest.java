@@ -28,9 +28,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
-import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCall;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.testutil.factory.EvseCreator.createEvse;
+import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;

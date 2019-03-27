@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
-import static com.evbox.everon.ocpp.simulator.assertion.CiStringAssert.assertCiString;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
+import static com.evbox.everon.ocpp.testutil.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.eq;
