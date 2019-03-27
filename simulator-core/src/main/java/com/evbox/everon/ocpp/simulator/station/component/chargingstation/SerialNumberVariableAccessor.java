@@ -67,12 +67,18 @@ public class SerialNumberVariableAccessor extends VariableAccessor {
                 .withName(new CiString.CiString50(componentName));
 
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString1000(StationHardwareData.SERIAL_NUMBER));
+                .withValue(new CiString.CiString1000(StationHardwareData.SERIAL_NUMBER))
+                .withPersistence(true)
+                .withConstant(true);
+
+        VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                .withDataType(STRING)
+                .withSupportsMonitoring(false);
 
         ReportDatum reportDatum = new ReportDatum()
                 .withComponent(component)
                 .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                .withVariableCharacteristics(new VariableCharacteristics().withDataType(STRING))
+                .withVariableCharacteristics(variableCharacteristics)
                 .withVariableAttribute(singletonList(variableAttribute));
 
         return singletonList(reportDatum);

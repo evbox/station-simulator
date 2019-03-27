@@ -76,12 +76,18 @@ public class EnabledVariableAccessor extends VariableAccessor {
                     .withEvse(componentEvse);
 
             VariableAttribute variableAttribute = new VariableAttribute()
-                    .withValue(new CiString.CiString1000(EVSE_ENABLED_STATUS));
+                    .withValue(new CiString.CiString1000(EVSE_ENABLED_STATUS))
+                    .withPersistence(false)
+                    .withConstant(true);
+
+            VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                    .withDataType(BOOLEAN)
+                    .withSupportsMonitoring(false);
 
             ReportDatum reportDatum = new ReportDatum()
                     .withComponent(component)
                     .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                    .withVariableCharacteristics(new VariableCharacteristics().withDataType(BOOLEAN))
+                    .withVariableCharacteristics(variableCharacteristics)
                     .withVariableAttribute(singletonList(variableAttribute));
 
             reportData.add(reportDatum);

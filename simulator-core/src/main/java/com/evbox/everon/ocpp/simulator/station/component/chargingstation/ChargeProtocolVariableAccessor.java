@@ -67,12 +67,18 @@ public class ChargeProtocolVariableAccessor extends VariableAccessor {
                 .withName(new CiString.CiString50(componentName));
 
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString1000(StationHardwareData.PROTOCOL_VERSION));
+                .withValue(new CiString.CiString1000(StationHardwareData.PROTOCOL_VERSION))
+                .withPersistence(false)
+                .withConstant(true);
+
+        VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                .withDataType(STRING)
+                .withSupportsMonitoring(false);
 
         ReportDatum reportDatum = new ReportDatum()
                 .withComponent(component)
                 .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                .withVariableCharacteristics(new VariableCharacteristics().withDataType(STRING))
+                .withVariableCharacteristics(variableCharacteristics)
                 .withVariableAttribute(singletonList(variableAttribute));
 
         return singletonList(reportDatum);

@@ -79,12 +79,18 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
                         .withEvse(componentEvse);
 
                 VariableAttribute variableAttribute = new VariableAttribute()
-                        .withValue(new CiString.CiString1000(CONNECTOR_TYPE));
+                        .withValue(new CiString.CiString1000(CONNECTOR_TYPE))
+                        .withPersistence(false)
+                        .withConstant(true);
+
+                VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                        .withDataType(SEQUENCE_LIST)
+                        .withSupportsMonitoring(false);
 
                 ReportDatum reportDatum = new ReportDatum()
                         .withComponent(component)
                         .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                        .withVariableCharacteristics(new VariableCharacteristics().withDataType(SEQUENCE_LIST))
+                        .withVariableCharacteristics(variableCharacteristics)
                         .withVariableAttribute(singletonList(variableAttribute));
 
                 reportData.add(reportDatum);

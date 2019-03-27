@@ -70,12 +70,18 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
 
         int heartbeatInterval = getStation().getState().getHeartbeatInterval();
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString1000(String.valueOf(heartbeatInterval)));
+                .withValue(new CiString.CiString1000(String.valueOf(heartbeatInterval)))
+                .withPersistence(false)
+                .withConstant(false);
+
+        VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                .withDataType(INTEGER)
+                .withSupportsMonitoring(false);
 
         ReportDatum reportDatum = new ReportDatum()
                 .withComponent(component)
                 .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                .withVariableCharacteristics(new VariableCharacteristics().withDataType(INTEGER))
+                .withVariableCharacteristics(variableCharacteristics)
                 .withVariableAttribute(singletonList(variableAttribute));
 
         return singletonList(reportDatum);
