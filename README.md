@@ -238,7 +238,7 @@ java -jar simulator-core-shadow/lib/simulator-core.jar ws://${ocpp_endpoint_url}
 ```
 
 ## Use as console tool
-Console tool supports user interactions with running stations: plug cable, unplug cable, authorize token etc.
+Console tool supports user interactions with running stations: plug cable, unplug cable, authorize token, etc.
 It launches as part of the station simulator project, and is available for user input.
 
 **List of available actions**
