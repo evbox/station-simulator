@@ -29,7 +29,6 @@ public class ConfigurationPrinter {
         String config = header;
         config += "\n" + "";
         config += "\n" + ("OCPP URL: " + runConfiguration.getUrl());
-        config += "\n" + ("Default heartbeat interval: " + configuration.getHeartbeatInterval());
         config += "\n" + "";
         config += "\n" + "Console-ready configuration:";
         config += "\n" + toJsonString(configuration, false).replace("\"", "'");

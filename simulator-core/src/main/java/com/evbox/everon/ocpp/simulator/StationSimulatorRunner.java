@@ -40,7 +40,7 @@ public class StationSimulatorRunner {
 
         simulatorConfiguration.getStations().forEach(stationConfiguration -> {
 
-            Station station = new Station(stationConfiguration, simulatorConfiguration.getHeartbeatInterval());
+            Station station = new Station(stationConfiguration);
 
             station.connectToServer(serverWebSocketUrl);
 

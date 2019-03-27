@@ -40,7 +40,7 @@ public abstract class StationComponent {
      * Validates {@link GetVariableDatum} for proper variable path (variable name, instance, attributeType, evseId, connectorId) and read access.
      * Retrieves variable from station.
      *
-     * @param getVariableDatum contains necessary data to get variable from station
+     * @param getVariableDatum contains necessary data to generate variable from station
      * @return result of getting variable
      */
     public GetVariableResult getVariable(GetVariableDatum getVariableDatum) {

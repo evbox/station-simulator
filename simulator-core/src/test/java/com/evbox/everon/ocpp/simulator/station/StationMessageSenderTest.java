@@ -7,8 +7,6 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
-import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
-import com.evbox.everon.ocpp.simulator.support.ReflectionUtils;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.station.*;
@@ -45,7 +43,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class StationMessageSenderTest {
 
-
     @Mock
     StationState stationStateMock;
     @Mock
@@ -61,9 +58,6 @@ public class StationMessageSenderTest {
     void setUp() {
         this.queue = new LinkedBlockingQueue<>();
         when(webSocketClientMock.getInbox()).thenReturn(queue);
-
-        ReflectionUtils.injectMock(CallIdGenerator.getInstance(), "callId", ThreadLocal.withInitial(() -> 1));
-
         this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStateMock, webSocketClientMock);
     }
 

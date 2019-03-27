@@ -44,6 +44,8 @@ public class StationMessageSender {
 
     private volatile LocalDateTime timeOfLastMessageSent;
 
+    private final CallIdGenerator callIdGenerator = new CallIdGenerator();
+
     public StationMessageSender(SubscriptionRegistry subscriptionRegistry, StationState stationState, WebSocketClient webSocketClient) {
         this.stationState = stationState;
         this.callRegistry = subscriptionRegistry;
@@ -339,7 +341,7 @@ public class StationMessageSender {
 
     private <REQ> Call createAndRegisterCall(ActionType actionType, REQ payload) {
 
-        String callId = CallIdGenerator.getInstance().getAndIncrement() + "";
+        String callId = callIdGenerator.generate();
 
         Call call = new Call(callId, actionType, payload);
 
