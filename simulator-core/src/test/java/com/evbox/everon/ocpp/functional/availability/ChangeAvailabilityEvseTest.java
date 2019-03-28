@@ -6,12 +6,12 @@ import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.Test;
 
-import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.times;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.*;
 import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.*;
 import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.*;
+import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.anyResponse;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
@@ -25,17 +25,14 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
     @Test
     void shouldChangeEvseStatusToUnavailable() {
 
-        ocppMockServer
-                .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponseMock());
-
-        ocppMockServer
-                .when(statusNotificationRequestWithStatus(AVAILABLE))
-                .thenReturn(emptyResponse());
+        mockBootResponses();
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(UNAVAILABLE))
                 .thenReturn(emptyResponse());
+
+        ocppMockServer
+                .expectResponseFromStation(anyResponse());
 
         stationSimulatorRunner.run();
 
@@ -67,6 +64,13 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(UNAVAILABLE))
                 .thenReturn(emptyResponse());
+
+        ocppMockServer
+                .when(heartbeatRequest())
+                .thenReturn(emptyResponse());
+
+        ocppMockServer
+                .expectResponseFromStation(anyResponse(), atLeastOnce());
 
         stationSimulatorRunner.run();
 

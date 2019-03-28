@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.atLeastOnce;
 import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.times;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequestWithStatus;
@@ -20,6 +21,7 @@ import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.crea
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createStationConfiguration;
 import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.*;
+import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.anyResponse;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
@@ -52,6 +54,9 @@ public class ChangeAvailabilityChargingStationTest extends StationSimulatorSetUp
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(UNAVAILABLE), times(4))
                 .thenReturn(emptyResponse());
+
+        ocppMockServer
+                .expectResponseFromStation(anyResponse(), atLeastOnce());
 
         stationSimulatorRunner.run();
 
