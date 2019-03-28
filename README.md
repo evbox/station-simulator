@@ -97,8 +97,8 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | RemoteControl                     | F06 - Trigger Message                                                       |           |                                               |
 | Availability                      | G01 - Status Notification                                                   | Yes       |                                               |
 | Availability                      | G02 - Heartbeat                                                             | Yes       |                                               |
-| Availability                      | G03 - Change Availability                                                   | Yes       |                                               |
-| Availability                      | G04 - Change Availability                                                   | Yes       |                                               |
+| Availability                      | G03 - Change Availability EVSE                                              | Yes       |                                               |
+| Availability                      | G04 - Change Availability Charging Station                                  | Yes       |                                               |
 | Availability                      | G05 - Lock Failure                                                          |           |                                               |
 | Reservation                       | H01 - Reservation                                                           |           |                                               |
 | Reservation                       | H02 - Cancel Reservation                                                    |           |                                               |
