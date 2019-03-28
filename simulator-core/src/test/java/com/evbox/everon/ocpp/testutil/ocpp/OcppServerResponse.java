@@ -1,7 +1,9 @@
 package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.testutil.assertion.ExpectedCount;
+import com.evbox.everon.ocpp.testutil.expect.ExpectedCount;
+import com.evbox.everon.ocpp.testutil.expect.RequestExpectationManager;
+import com.evbox.everon.ocpp.testutil.match.RequestMatcher;
 import lombok.AllArgsConstructor;
 
 import java.util.function.Function;
@@ -23,7 +25,7 @@ public class OcppServerResponse {
      * @param expectedResponse expected response.
      */
     public void thenReturn(Function<Call, String> expectedResponse) {
-        requestExpectationManager.add(new RequestExpectationMatcher(requestExpectation, expectedCount, expectedResponse));
+        requestExpectationManager.add(new RequestMatcher(requestExpectation, expectedCount, expectedResponse));
     }
 
 }

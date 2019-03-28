@@ -6,7 +6,7 @@ import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.Test;
 
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedCount.twice;
+import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.twice;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;

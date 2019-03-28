@@ -3,7 +3,8 @@ package com.evbox.everon.ocpp.testutil.ocpp;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.message.RawCall;
-import com.evbox.everon.ocpp.testutil.station.ResponseExpectationManager;
+import com.evbox.everon.ocpp.testutil.expect.RequestExpectationManager;
+import com.evbox.everon.ocpp.testutil.expect.ResponseExpectationManager;
 import io.undertow.websockets.core.AbstractReceiveListener;
 import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.WebSocketChannel;
@@ -53,14 +54,14 @@ public class OcppReceiveListener extends AbstractReceiveListener {
             // the first request should BootNotification
             ocppServerClient.setConnected(true);
         } else {
-            requestExpectationManager.addUnexpectedRequest(request);
+            requestExpectationManager.addUnexpected(request);
         }
     }
 
     private void handleCallResult(String request) {
         CallResult response = CallResult.from(request);
         if (!responseExpectationManager.isExpectedResponsePresent(response)) {
-            responseExpectationManager.addUnexpectedRequest(request);
+            responseExpectationManager.addUnexpected(request);
         }
     }
 }

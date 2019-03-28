@@ -39,13 +39,11 @@ public class StationConstants {
     public static final String DEFAULT_COMPONENT_NAME = "OCPPCommCtrlr";
     public static final String DEFAULT_VARIABLE_NAME = "RetryBackOffRandomRange";
 
-    public static final Subscriber DEFAULT_SUBSCRIBER = (req, res) -> {
-    };
+    public static final Subscriber DEFAULT_SUBSCRIBER = (req, res) -> { };
 
     public static final String DEFAULT_SERIAL_NUMBER = "00000000000F";
     public static final String DEFAULT_MODEL = "G5";
     public static final String DEFAULT_FIRMWARE_VERSION = "G5-0.00.01";
-
 
     // Actions
     public static final String NOTIFY_REPORT_ACTION = "NotifyReport";

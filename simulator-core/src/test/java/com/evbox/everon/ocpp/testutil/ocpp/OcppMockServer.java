@@ -2,8 +2,9 @@ package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallResult;
-import com.evbox.everon.ocpp.testutil.assertion.ExpectedCount;
-import com.evbox.everon.ocpp.testutil.station.ResponseExpectationManager;
+import com.evbox.everon.ocpp.testutil.expect.ExpectedCount;
+import com.evbox.everon.ocpp.testutil.expect.RequestExpectationManager;
+import com.evbox.everon.ocpp.testutil.expect.ResponseExpectationManager;
 import com.evbox.everon.ocpp.testutil.station.StationExpectedResponse;
 import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedCount.once;
+import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.once;
 import static io.undertow.Handlers.path;
 import static io.undertow.Handlers.websocket;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,12 +99,24 @@ public class OcppMockServer {
 
     /**
      * Accepts a predicate that is responsible for response expectation.
+     * By default: expected count is 1
      *
      * @param responseExpectation a response expectation predicate
      * @return {@link OcppServerResponse} instance
      */
     public StationExpectedResponse expectResponseFromStation(Predicate<CallResult> responseExpectation) {
-        return new StationExpectedResponse(responseExpectationManager, responseExpectation);
+        return expectResponseFromStation(responseExpectation, once());
+    }
+
+    /**
+     * Accepts a predicate that is responsible for response expectation.
+     *
+     * @param responseExpectation a response expectation predicate
+     * @param expectedCount      expected count
+     * @return {@link OcppServerResponse} instance
+     */
+    public StationExpectedResponse expectResponseFromStation(Predicate<CallResult> responseExpectation, ExpectedCount expectedCount) {
+        return new StationExpectedResponse(responseExpectationManager, responseExpectation, expectedCount);
     }
 
     /**
@@ -119,6 +132,7 @@ public class OcppMockServer {
      */
     public void reset() {
         requestExpectationManager.reset();
+        responseExpectationManager.reset();
     }
 
     /**

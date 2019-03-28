@@ -1,6 +1,9 @@
 package com.evbox.everon.ocpp.testutil.station;
 
 import com.evbox.everon.ocpp.simulator.message.CallResult;
+import com.evbox.everon.ocpp.testutil.expect.ExpectedCount;
+import com.evbox.everon.ocpp.testutil.expect.ResponseExpectationManager;
+import com.evbox.everon.ocpp.testutil.match.ResponseMatcher;
 
 import java.util.function.Predicate;
 
@@ -11,9 +14,9 @@ public class StationExpectedResponse {
 
     private final ResponseExpectationManager responseExpectationManager;
 
-    public StationExpectedResponse(ResponseExpectationManager responseExpectationManager, Predicate<CallResult> responseExpectation) {
+    public StationExpectedResponse(ResponseExpectationManager responseExpectationManager, Predicate<CallResult> responseExpectation, ExpectedCount expectedCount) {
         this.responseExpectationManager = responseExpectationManager;
-        responseExpectationManager.add(new ResponseExpectationMatcher(responseExpectation));
+        responseExpectationManager.add(new ResponseMatcher(responseExpectation, expectedCount));
     }
 
     /**
@@ -21,7 +24,7 @@ public class StationExpectedResponse {
      *
      * @param responseExpectation expected response.
      */
-    public StationExpectedResponse expectResponseFromStation(Predicate<CallResult> responseExpectation) {
-        return new StationExpectedResponse(responseExpectationManager, responseExpectation);
+    public StationExpectedResponse expectResponseFromStation(Predicate<CallResult> responseExpectation, ExpectedCount expectedCount) {
+        return new StationExpectedResponse(responseExpectationManager, responseExpectation, expectedCount);
     }
 }

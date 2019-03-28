@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.evbox.everon.ocpp.testutil.assertion.ExpectedCount.times;
+import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.times;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequestWithStatus;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
