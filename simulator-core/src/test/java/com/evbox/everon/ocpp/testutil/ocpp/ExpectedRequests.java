@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.v20.message.station.NotifyReportRequest;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 
 import java.util.function.Predicate;
@@ -12,7 +13,7 @@ import java.util.function.Predicate;
 public class ExpectedRequests {
 
     /**
-     * BootNotificationRequest with default configuration.
+     * BootNotificationRequest with any configuration.
      *
      * @return checks whether an incoming request is BootNotification or not.
      */
@@ -37,11 +38,33 @@ public class ExpectedRequests {
     }
 
     /**
-     * HeartbeatRequest
+     * HeartbeatRequest with any configuration.
      * @@return checks whether an incoming request is HeartbeatRequest or not.
      */
     public static Predicate<Call> heartbeatRequest() {
         return incomingRequest -> incomingRequest.getActionType() == ActionType.HEARTBEAT;
+    }
+
+    /**
+     * NotifyReportRequest with any configuration.
+     * @return checks whether an incoming request is NotifyReportRequest or not.
+     */
+    public static Predicate<Call> notifyReportRequest() {
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.NOTIFY_REPORT;
+    }
+
+    /**
+     * NotifyReportRequest with given configuration.
+     * @return checks whether an incoming request is NotifyReportRequest or not.
+     */
+    public static Predicate<Call> notifyReportRequest(int seqNo, boolean tbc) {
+        return incomingRequest -> {
+            if (incomingRequest.getActionType() == ActionType.NOTIFY_REPORT) {
+                NotifyReportRequest request = NotifyReportRequest.class.cast(incomingRequest.getPayload());
+                return seqNo == request.getSeqNo() && tbc == request.getTbc();
+            }
+            return false;
+        };
     }
 
 }

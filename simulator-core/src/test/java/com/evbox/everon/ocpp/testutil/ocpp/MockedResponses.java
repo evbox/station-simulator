@@ -37,4 +37,16 @@ public class MockedResponses {
                 .toJson();
     }
 
+    /**
+     * Create a HeartbeatResponse with given timestamp.
+     *
+     * @return response in json.
+     */
+    public static Function<Call, String> heartbeatResponse(ZonedDateTime serverTime) {
+        return incomingRequest -> JsonMessageTypeFactory.createCallResult()
+                .withMessageId(incomingRequest.getMessageId())
+                .withCurrentTime(serverTime.toString())
+                .toJson();
+    }
+
 }

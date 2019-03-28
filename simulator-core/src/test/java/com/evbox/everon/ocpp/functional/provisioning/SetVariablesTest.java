@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.scenarios.provisioning;
+package com.evbox.everon.ocpp.functional.provisioning;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
@@ -16,12 +16,8 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.*;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.bootNotificationResponseMock;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.emptyResponse;
 import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.anyResponse;
 import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.responseWithId;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -30,25 +26,14 @@ public class SetVariablesTest extends StationSimulatorSetUp {
 
     @Test
     void shouldReplyToSetVariablesRequest() {
-        //given
+
         String id = UUID.randomUUID().toString();
 
-        ocppMockServer
-                .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponseMock());
-
-        ocppMockServer
-                .when(statusNotificationRequestWithStatus(AVAILABLE))
-                .thenReturn(emptyResponse());
-
-        ocppMockServer
-                .when(heartbeatRequest())
-                .thenReturn(emptyResponse());
+        mockBootResponses();
 
         ocppMockServer
                 .expectResponseFromStation(responseWithId(id));
 
-        //when
         stationSimulatorRunner.run();
 
         SetVariableDatum setVariableDatum = new SetVariableDatum()
@@ -64,7 +49,6 @@ public class SetVariablesTest extends StationSimulatorSetUp {
 
         ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
 
-        //then
         await().untilAsserted(() -> {
             ocppMockServer.verify();
         });
@@ -72,25 +56,14 @@ public class SetVariablesTest extends StationSimulatorSetUp {
 
     @Test
     void shouldSetHeartbeatIntervalWithSetVariablesRequest() {
-        //given
+
         int newHeartbeatInterval = 120;
 
-        ocppMockServer
-                .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponseMock());
-
-        ocppMockServer
-                .when(statusNotificationRequestWithStatus(AVAILABLE))
-                .thenReturn(emptyResponse());
-
-        ocppMockServer
-                .when(heartbeatRequest())
-                .thenReturn(emptyResponse());
+        mockBootResponses();
 
         ocppMockServer
                 .expectResponseFromStation(anyResponse(), ExpectedCount.atLeastOnce());
 
-        //when
         stationSimulatorRunner.run();
 
         SetVariableDatum setVariableDatum = new SetVariableDatum()
@@ -105,7 +78,6 @@ public class SetVariablesTest extends StationSimulatorSetUp {
 
         ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
 
-        //then
         await().untilAsserted(() -> {
             int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval();
             assertThat(heartbeatInterval).isEqualTo(newHeartbeatInterval);

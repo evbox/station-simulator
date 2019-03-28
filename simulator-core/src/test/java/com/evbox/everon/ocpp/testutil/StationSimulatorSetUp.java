@@ -10,6 +10,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.*;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.bootNotificationResponseMock;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.emptyResponse;
+import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 
 public class StationSimulatorSetUp {
 
@@ -38,5 +42,19 @@ public class StationSimulatorSetUp {
     void tearDown() {
         ocppMockServer.stop();
         ocppMockServer.reset();
+    }
+
+    protected void mockBootResponses() {
+        ocppMockServer
+                .when(bootNotificationRequest())
+                .thenReturn(bootNotificationResponseMock());
+
+        ocppMockServer
+                .when(statusNotificationRequestWithStatus(AVAILABLE))
+                .thenReturn(emptyResponse());
+
+        ocppMockServer
+                .when(heartbeatRequest())
+                .thenReturn(emptyResponse());
     }
 }

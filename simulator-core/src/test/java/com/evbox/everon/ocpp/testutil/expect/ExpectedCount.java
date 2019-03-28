@@ -41,14 +41,14 @@ public class ExpectedCount {
     public static ExpectedCount once() { return new ExpectedCount(1, EXACT); }
 
     /**
-     * Exactly twice.
-     */
-    public static ExpectedCount twice() { return new ExpectedCount(2, EXACT); }
-
-    /**
      * Exactly N times.
      */
     public static ExpectedCount times(int count) { return new ExpectedCount(count, EXACT); }
+
+    /**
+     * Any amount of times.
+     */
+    public static ExpectedCount any() { return new ExpectedCount(0, !EXACT); }
 
     /**
      * At least once.

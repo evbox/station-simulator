@@ -1,21 +1,17 @@
-package com.evbox.everon.ocpp.scenarios.todo;
+package com.evbox.everon.ocpp.functional.todo;
 
-import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.message.ObjectMapperHolder;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
 import com.evbox.everon.ocpp.simulator.station.actions.Authorize;
 import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
 import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
-import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
-import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.testutil.remove.WebSocketServerMock;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.SneakyThrows;
@@ -23,8 +19,6 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -33,10 +27,6 @@ import java.util.stream.Stream;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createStationConfiguration;
-
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -62,119 +52,6 @@ public class StationSimulatorFunctionalTest {
         stationSimulatorRunner = new StationSimulatorRunner(ocppServerUrl, simulatorConfiguration);
 
         mockSuccessfulStatusNotificationAnswer();
-    }
-
-    @Test
-    void shouldStartStation() {
-        //when
-        mockSuccessfulBootNotificationAnswer();
-        stationSimulatorRunner.run();
-
-        //then
-        await().untilAsserted(() -> {
-            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
-
-            assertThat(stationCalls).hasSize(2);
-            assertThat(stationCalls.stream().anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION)).isTrue();
-            Optional<Call> statusNotificationOptional = stationCalls.stream().filter(call -> call.getActionType() == ActionType.STATUS_NOTIFICATION).findAny();
-
-            assertThat(statusNotificationOptional).isPresent();
-            StatusNotificationRequest payload = (StatusNotificationRequest) statusNotificationOptional.get().getPayload();
-            assertThat(payload.getEvseId()).isEqualTo(1);
-            assertThat(payload.getConnectorId()).isEqualTo(1);
-            assertThat(payload.getConnectorStatus()).isEqualTo(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
-        });
-    }
-
-    @Test
-    void shouldStartMultipleStations() {
-        //given
-        SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(
-                createStationConfiguration(STATION_ID, 1, 1),
-                createStationConfiguration("EVB-P18090564", 1, 2));
-        stationSimulatorRunner = new StationSimulatorRunner(ocppServerUrl, simulatorConfiguration);
-
-        mockSuccessfulBootNotificationAnswer();
-
-        //when
-        stationSimulatorRunner.run();
-
-        //then
-        await().untilAsserted(() -> {
-            List<Call> stationCalls1 = server.getReceivedCalls(STATION_ID);
-            List<Call> stationCalls2 = server.getReceivedCalls("EVB-P18090564");
-
-            assertThat(server.getReceivedCalls()).hasSize(5);
-
-            assertThat(stationCalls1.stream().anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION)).isTrue();
-            assertThat(stationCalls2.stream().anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION)).isTrue();
-
-            assertThat(stationCalls1.stream().filter(call -> call.getActionType() == ActionType.STATUS_NOTIFICATION).anyMatch(call -> {
-                StatusNotificationRequest payload = (StatusNotificationRequest) call.getPayload();
-                return payload.getEvseId().equals(1) &&
-                        payload.getConnectorId().equals(1) &&
-                        payload.getConnectorStatus() == StatusNotificationRequest.ConnectorStatus.AVAILABLE;
-            })).isTrue();
-
-
-            assertThat(stationCalls2.stream().filter(call -> call.getActionType() == ActionType.STATUS_NOTIFICATION).anyMatch(call -> {
-                StatusNotificationRequest payload = (StatusNotificationRequest) call.getPayload();
-                return payload.getEvseId().equals(1) &&
-                        payload.getConnectorId().equals(1) &&
-                        payload.getConnectorStatus() == StatusNotificationRequest.ConnectorStatus.AVAILABLE;
-            })).isTrue();
-
-            assertThat(stationCalls2.stream().filter(call -> call.getActionType() == ActionType.STATUS_NOTIFICATION).anyMatch(call -> {
-                StatusNotificationRequest payload = (StatusNotificationRequest) call.getPayload();
-                return payload.getEvseId().equals(1) &&
-                        payload.getConnectorId().equals(2) &&
-                        payload.getConnectorStatus() == StatusNotificationRequest.ConnectorStatus.AVAILABLE;
-            })).isTrue();
-        });
-    }
-
-    @Test
-    void shouldSendHeartbeatsWithGivenInterval() {
-        //given
-        int intervalInSec = 1;
-
-        server.addCallAnswer(
-                call -> call.getActionType() == ActionType.BOOT_NOTIFICATION,
-                call -> "[3, \"" + call.getMessageId() + "\", {\"currentTime\":\"" + ZonedDateTime.now() + "\", \"interval\":" + intervalInSec + ", \"status\":\"Accepted\"}]");
-
-        //when
-        stationSimulatorRunner.run();
-
-        //then
-        await().atMost(2000, TimeUnit.MILLISECONDS).untilAsserted(() -> {
-            long heartbeatCallsSent = stationSimulatorRunner.getStation(STATION_ID).getSentCalls().values()
-                    .stream()
-                    .filter(call -> call.getActionType() == ActionType.HEARTBEAT)
-                    .count();
-
-            assertThat(heartbeatCallsSent).isGreaterThanOrEqualTo(1).isLessThan(3);
-        });
-    }
-
-    @Test
-    void shouldAdjustCurrentTimeBasedOnHeartbeatResponse() {
-        //given
-        ZonedDateTime serverTime = ZonedDateTime.of(2035, 1, 1, 1, 1, 1, 0, ZoneOffset.UTC);
-
-        mockSuccessfulBootNotificationAnswer(ZonedDateTime.now(), 1);
-
-        server.addCallAnswer(
-                call -> call.getActionType() == ActionType.HEARTBEAT,
-                call -> "[3, \"" + call.getMessageId() + "\", {\"currentTime\":\"" + serverTime + "\", \"status\":\"Accepted\"}]");
-
-        //when
-        stationSimulatorRunner.run();
-
-        //then
-        await().untilAsserted(() -> {
-            Instant timeOfStation = stationSimulatorRunner.getStation(STATION_ID).getState().getCurrentTime();
-            assertThat(timeOfStation).isAfterOrEqualTo(serverTime.toInstant());
-        });
     }
 
     @Test
@@ -508,33 +385,6 @@ public class StationSimulatorFunctionalTest {
     }
 
     @Test
-    void shouldReplyToSetVariablesRequest() {
-        //given
-        mockSuccessfulBootNotificationAnswer();
-        stationSimulatorRunner.run();
-
-        SetVariableDatum setVariableDatum = new SetVariableDatum()
-                .withVariable(new Variable().withName(new CiString.CiString50("ReserveConnectorZeroSupported")))
-                .withComponent(new Component().withName(new CiString.CiString50("ReservationFeature")))
-                .withAttributeValue(new CiString.CiString1000("true")).withAttributeType(SetVariableDatum.AttributeType.TARGET);
-
-        SetVariablesRequest request = new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum));
-
-        Call call = new Call(UUID.randomUUID().toString(), ActionType.SET_VARIABLES, request);
-
-        //when
-        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, call.toJson()));
-
-        //then
-        await().untilAsserted(() -> {
-            Optional<CallResult> responseFromStationOptional = server.getReceivedCallResults(STATION_ID).stream()
-                    .findAny();
-
-            assertThat(responseFromStationOptional).isPresent();
-        });
-    }
-
-    @Test
     void shouldImmediatelyRebootWithOngoingTransaction() {
         //given
         mockSuccessfulBootNotificationAnswer();
@@ -573,86 +423,6 @@ public class StationSimulatorFunctionalTest {
                     .findAny();
 
             assertThat(statusNotificationOptional).isPresent();
-        });
-    }
-
-    @Test
-    void shouldGetHeartbeatIntervalWithGetVariablesRequest() {
-        //given
-        int expectedHeartbeatInterval = 42;
-        mockSuccessfulBootNotificationAnswer(ZonedDateTime.now(), expectedHeartbeatInterval);
-
-        //when
-        stationSimulatorRunner.run();
-
-        GetVariableDatum getVariableDatum = new GetVariableDatum()
-                .withComponent(new Component().withName(new CiString.CiString50(OCPPCommCtrlrComponent.NAME)))
-                .withVariable(new Variable().withName(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME)))
-                .withAttributeType(GetVariableDatum.AttributeType.ACTUAL);
-
-        String getHeartbeatIntervalVariable = new Call(UUID.randomUUID().toString(), ActionType.GET_VARIABLES, new GetVariablesRequest().withGetVariableData(singletonList(getVariableDatum)))
-                .toJson();
-
-        await().untilAsserted(() -> {
-            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
-            assertThat(stationCalls.stream()).anyMatch(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION);
-        });
-
-        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, getHeartbeatIntervalVariable));
-
-        //then
-        await().untilAsserted(() -> {
-            int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval();
-            assertThat(heartbeatInterval).isEqualTo(expectedHeartbeatInterval);
-        });
-    }
-
-    @Test
-    void shouldReplyToGetBaseReportRequest() {
-        stationSimulatorRunner.run();
-
-        GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(FULL_INVENTORY);
-        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
-
-        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
-
-        await().untilAsserted(() -> {
-            Optional<CallResult> responseFromStation = server.getReceivedCallResults(STATION_ID).stream().findAny();
-            assertThat(responseFromStation).isPresent();
-        });
-    }
-
-    @Test
-    void shouldSendNotifyReportOnGetBaseReportRequest() {
-        mockSuccessfulGetBaseReportAnswer();
-
-        stationSimulatorRunner.run();
-
-        GetBaseReportRequest request = new GetBaseReportRequest().withRequestId(200).withReportBase(FULL_INVENTORY);
-        String payload = new Call(UUID.randomUUID().toString(), ActionType.GET_BASE_REPORT, request).toJson();
-
-        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, payload));
-
-        await().untilAsserted(() -> {
-            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
-
-            List<NotifyReportRequest> notifyReportRequests =
-                    stationCalls
-                            .stream()
-                            .filter(call -> call.getActionType() == ActionType.NOTIFY_REPORT)
-                            .map(call -> NotifyReportRequest.class.cast(call.getPayload()))
-                            .collect(toList());
-
-            sort(notifyReportRequests, new NotifyReportComparator());
-
-            int sizeMinusOne = notifyReportRequests.size() - 1;
-            for (int i = 0; i < sizeMinusOne; i++) {
-                assertThat(notifyReportRequests.get(i).getSeqNo()).isEqualTo(i);
-                assertThat(notifyReportRequests.get(i).getTbc()).isEqualTo(true);
-            }
-
-            assertThat(notifyReportRequests.get(sizeMinusOne).getSeqNo()).isEqualTo(sizeMinusOne);
-            assertThat(notifyReportRequests.get(sizeMinusOne).getTbc()).isEqualTo(false);
         });
     }
 
