@@ -39,7 +39,7 @@ public class ExpectedRequests {
      *
      * @return checks whether an incoming request is StatusNotification or not.
      */
-    public static Predicate<Call> statusNotificationRequestWithStatus(StatusNotificationRequest.ConnectorStatus expectedStatus) {
+    public static Predicate<Call> statusNotificationRequest(StatusNotificationRequest.ConnectorStatus expectedStatus) {
 
         return incomingRequest -> incomingRequest.getActionType() == ActionType.STATUS_NOTIFICATION &&
                 ((StatusNotificationRequest) incomingRequest.getPayload()).getConnectorStatus() == expectedStatus;
@@ -103,7 +103,19 @@ public class ExpectedRequests {
     public static Predicate<Call> transactionEventRequest(TransactionEventRequest.EventType type) {
         return incomingRequest -> incomingRequest.getActionType() == ActionType.TRANSACTION_EVENT &&
                 ((TransactionEventRequest) incomingRequest.getPayload()).getEventType() == type;
+    }
 
+    /**
+     * Transaction event with given configuration.
+     *
+     * @return checks whether an incoming request is TrasanctionEvent or not.
+     */
+    public static Predicate<Call> transactionEventRequest(TransactionEventRequest.EventType type, int seqNo, String trasanctionId, int evseId) {
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.TRANSACTION_EVENT &&
+                ((TransactionEventRequest) incomingRequest.getPayload()).getEventType() == type &&
+                ((TransactionEventRequest) incomingRequest.getPayload()).getSeqNo() == seqNo &&
+                ((TransactionEventRequest) incomingRequest.getPayload()).getTransactionData().getId().toString().equals(trasanctionId) &&
+                ((TransactionEventRequest) incomingRequest.getPayload()).getEvse().getId() == evseId;
     }
 
 }

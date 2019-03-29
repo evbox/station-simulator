@@ -5,7 +5,8 @@ import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.testutil.expect.ExpectedCount;
 import com.evbox.everon.ocpp.testutil.expect.RequestExpectationManager;
 import com.evbox.everon.ocpp.testutil.expect.ResponseExpectationManager;
-import com.evbox.everon.ocpp.testutil.station.StationExpectedResponse;
+import com.evbox.everon.ocpp.testutil.match.RequestMatcher;
+import com.evbox.everon.ocpp.testutil.match.ResponseMatcher;
 import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.once;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.emptyResponse;
 import static io.undertow.Handlers.path;
 import static io.undertow.Handlers.websocket;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,7 +106,7 @@ public class OcppMockServer {
      * @param responseExpectation a response expectation predicate
      * @return {@link OcppServerResponse} instance
      */
-    public StationExpectedResponse expectResponseFromStation(Predicate<CallResult> responseExpectation) {
+    public OcppMockServer expectResponseFromStation(Predicate<CallResult> responseExpectation) {
         return expectResponseFromStation(responseExpectation, once());
     }
 
@@ -115,8 +117,31 @@ public class OcppMockServer {
      * @param expectedCount      expected count
      * @return {@link OcppServerResponse} instance
      */
-    public StationExpectedResponse expectResponseFromStation(Predicate<CallResult> responseExpectation, ExpectedCount expectedCount) {
-        return new StationExpectedResponse(responseExpectationManager, responseExpectation, expectedCount);
+    public OcppMockServer expectResponseFromStation(Predicate<CallResult> responseExpectation, ExpectedCount expectedCount) {
+        responseExpectationManager.add(new ResponseMatcher(responseExpectation, expectedCount));
+        return this;
+    }
+
+    /**
+     * Accepts a predicate that is responsible for request expectation.
+     *
+     * @param requestExpectation a request expectation predicate
+     * @return {@link OcppServerResponse} instance
+     */
+    public OcppMockServer expectRequestFromStation(Predicate<Call> requestExpectation) {
+        return expectRequestFromStation(requestExpectation, once());
+    }
+
+    /**
+     * Accepts a predicate that is responsible for request expectation.
+     *
+     * @param requestExpectation a request expectation predicate
+     * @param expectedCount      expected count
+     * @return {@link OcppServerResponse} instance
+     */
+    public OcppMockServer expectRequestFromStation(Predicate<Call> requestExpectation, ExpectedCount expectedCount) {
+        requestExpectationManager.add(new RequestMatcher(requestExpectation, expectedCount, emptyResponse()));
+        return this;
     }
 
     /**

@@ -10,15 +10,6 @@ import java.util.function.Predicate;
 public class ExpectedResponses {
 
     /**
-     * Checks for any response
-     *
-     * @return check whether the predicate is any response from station
-     */
-    public static Predicate<CallResult> anyResponse() {
-        return request -> true;
-    }
-
-    /**
      * Checks for response with a given id
      *
      * @param id response message id

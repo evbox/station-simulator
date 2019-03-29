@@ -2,17 +2,14 @@ package com.evbox.everon.ocpp.functional.provisioning;
 
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.once;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.notifyReportRequest;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.emptyResponse;
-import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.anyResponse;
 import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.responseWithId;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.CONFIGURATION_INVENTORY;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
@@ -27,8 +24,7 @@ public class GetBaseReportTest extends StationSimulatorSetUp {
 
         String id = UUID.randomUUID().toString();
 
-        ocppMockServer
-                .expectResponseFromStation(responseWithId(id));
+        ocppMockServer.expectResponseFromStation(responseWithId(id));
 
         stationSimulatorRunner.run();
 
@@ -48,17 +44,10 @@ public class GetBaseReportTest extends StationSimulatorSetUp {
     void shouldSendNotifyReportOnGetBaseReportRequest() {
 
         for (int i = 0; i < NOTIFY_REPORT_VARIABLES; i++) {
-            ocppMockServer
-                    .when(notifyReportRequest(i, true), once())
-                    .thenReturn(emptyResponse());
+            ocppMockServer.expectRequestFromStation(notifyReportRequest(i, true));
         }
 
-        ocppMockServer
-                .when(notifyReportRequest(NOTIFY_REPORT_VARIABLES, false), once())
-                .thenReturn(emptyResponse());
-
-        ocppMockServer
-                .expectResponseFromStation(anyResponse());
+        ocppMockServer.expectRequestFromStation(notifyReportRequest(NOTIFY_REPORT_VARIABLES, false));
 
         stationSimulatorRunner.run();
 

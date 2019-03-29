@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.testutil;
+package com.evbox.everon.ocpp.testutil.station;
 
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;

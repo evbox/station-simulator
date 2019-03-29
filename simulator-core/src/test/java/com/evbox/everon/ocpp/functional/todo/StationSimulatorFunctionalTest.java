@@ -34,7 +34,6 @@ import static org.awaitility.Awaitility.await;
 
 // todo
 //C01 - EV Driver Authorization using RFID
-//E02 - Start Transaction - Cable Plugin First
 //E03 - Start Transaction - IdToken First
 //E07 - Transaction locally stopped by IdToken
 //E09 - When cable disconnected on EV-side: Stop Transaction
@@ -59,42 +58,6 @@ public class StationSimulatorFunctionalTest {
         stationSimulatorRunner = new StationSimulatorRunner(ocppServerUrl, simulatorConfiguration);
 
         mockSuccessfulStatusNotificationAnswer();
-    }
-
-    @Test
-    void shouldSendConnectorStatusAndTransactionStartedWhenCablePluggedIn() {
-        //given
-        mockSuccessfulBootNotificationAnswer();
-        stationSimulatorRunner.run();
-
-        //when
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
-
-        //then
-        await().untilAsserted(() -> {
-
-            List<Call> stationCalls = server.getReceivedCalls(STATION_ID);
-
-            Optional<Call> statusNotificationCallOptional = stationCalls.stream()
-                    .filter(call -> call.getActionType() == ActionType.STATUS_NOTIFICATION)
-                    .filter(call -> ((StatusNotificationRequest) call.getPayload()).getConnectorStatus() == StatusNotificationRequest.ConnectorStatus.OCCUPIED)
-                    .findAny();
-
-            assertThat(statusNotificationCallOptional).isPresent();
-        });
-
-        await().untilAsserted(() -> {
-            Optional<Call> transactionEventCallOptional = server.getReceivedCalls(STATION_ID).stream().filter(call -> call.getActionType() == ActionType.TRANSACTION_EVENT).findAny();
-
-            assertThat(transactionEventCallOptional).isPresent();
-
-            TransactionEventRequest transactionEventPayload = (TransactionEventRequest) transactionEventCallOptional.get().getPayload();
-            assertThat(transactionEventPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED);
-            assertThat(transactionEventPayload.getSeqNo()).isEqualTo(0);
-
-            assertThat(transactionEventPayload.getTransactionData().getId().toString()).isEqualTo("1");
-            assertThat(transactionEventPayload.getEvse().getId()).isEqualTo(DEFAULT_EVSE_ID);
-        });
     }
 
     @Test

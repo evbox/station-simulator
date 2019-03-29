@@ -4,7 +4,7 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.actions.Authorize;
 import com.evbox.everon.ocpp.simulator.station.actions.Plug;
-import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,8 @@ import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.atLeastOnce;
 import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.times;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.*;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.*;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.authorizeResponseMock;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.bootNotificationResponseMock;
 import static com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest.Reason.REMOTE_RESET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -29,16 +30,12 @@ public class ResetWithOngoingTransaction extends StationSimulatorSetUp {
                 .thenReturn(bootNotificationResponseMock());
 
         ocppMockServer
-                .when(bootNotificationRequest(REMOTE_RESET))
-                .thenReturn(emptyResponse());
-
-        ocppMockServer
                 .when(authorizeRequest())
                 .thenReturn(authorizeResponseMock(DEFAULT_TOKEN_ID));
 
         ocppMockServer
-                .when(transactionEventRequest(), atLeastOnce())
-                .thenReturn(emptyResponse());
+                .expectRequestFromStation(bootNotificationRequest(REMOTE_RESET))
+                .expectRequestFromStation(transactionEventRequest(), atLeastOnce());
 
         stationSimulatorRunner.run();
 

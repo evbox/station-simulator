@@ -14,6 +14,18 @@ import java.util.function.Function;
 public class MockedResponses {
 
     /**
+     * Create a response with empty payload.
+     *
+     * @return response in json.
+     */
+    public static Function<Call, String> emptyResponse() {
+        return incomingRequest -> JsonMessageTypeFactory.createCallResult()
+                .withMessageId(incomingRequest.getMessageId())
+                .withPayload("")
+                .toJson();
+    }
+
+    /**
      * Create BootNotificationResponse with default configuration.
      *
      * @return BootNotificationResponse in json.
@@ -24,18 +36,6 @@ public class MockedResponses {
                 .withCurrentTime(ZonedDateTime.now().toString())
                 .withIntervalInSeconds(100)
                 .withStatus("Accepted")
-                .toJson();
-    }
-
-    /**
-     * Create a response with empty payload.
-     *
-     * @return response in json.
-     */
-    public static Function<Call, String> emptyResponse() {
-        return incomingRequest -> JsonMessageTypeFactory.createCallResult()
-                .withMessageId(incomingRequest.getMessageId())
-                .withPayload("")
                 .toJson();
     }
 

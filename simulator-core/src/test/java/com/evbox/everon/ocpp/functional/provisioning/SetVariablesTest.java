@@ -5,7 +5,7 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
@@ -27,8 +27,7 @@ public class SetVariablesTest extends StationSimulatorSetUp {
 
         String id = UUID.randomUUID().toString();
 
-        ocppMockServer
-                .expectResponseFromStation(responseWithId(id));
+        ocppMockServer.expectResponseFromStation(responseWithId(id));
 
         stationSimulatorRunner.run();
 
