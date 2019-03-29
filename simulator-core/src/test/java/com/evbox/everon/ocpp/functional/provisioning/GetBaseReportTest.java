@@ -4,13 +4,11 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.any;
 import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.once;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.notifyReportRequest;
 import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.emptyResponse;
@@ -28,12 +26,6 @@ public class GetBaseReportTest extends StationSimulatorSetUp {
     void shouldReplyToGetBaseReportRequest() {
 
         String id = UUID.randomUUID().toString();
-
-        mockBootResponses();
-
-        ocppMockServer
-                .when(notifyReportRequest(), any())
-                .thenReturn(emptyResponse());
 
         ocppMockServer
                 .expectResponseFromStation(responseWithId(id));
@@ -53,9 +45,7 @@ public class GetBaseReportTest extends StationSimulatorSetUp {
     }
 
     @Test
-    void shouldSendNotifyReportOnGetBaseReportRequest() throws JsonProcessingException {
-
-        mockBootResponses();
+    void shouldSendNotifyReportOnGetBaseReportRequest() {
 
         for (int i = 0; i < NOTIFY_REPORT_VARIABLES; i++) {
             ocppMockServer

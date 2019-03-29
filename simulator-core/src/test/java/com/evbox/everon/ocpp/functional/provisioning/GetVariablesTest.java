@@ -28,8 +28,6 @@ public class GetVariablesTest extends StationSimulatorSetUp {
         int expectedHeartbeatInterval = 100;
         String id = UUID.randomUUID().toString();
 
-        mockBootResponses();
-
         ocppMockServer
                 .expectResponseFromStation(responseWithId(id));
 

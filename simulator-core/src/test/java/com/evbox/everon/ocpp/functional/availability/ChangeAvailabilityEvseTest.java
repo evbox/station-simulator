@@ -25,8 +25,6 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
     @Test
     void shouldChangeEvseStatusToUnavailable() {
 
-        mockBootResponses();
-
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(UNAVAILABLE))
                 .thenReturn(emptyResponse());
@@ -47,15 +45,10 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
 
             ocppMockServer.verify();
         });
-
     }
 
     @Test
     void shouldChangeEvseStatusToAvailable() {
-
-        ocppMockServer
-                .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponseMock());
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(AVAILABLE), times(2))
@@ -68,9 +61,6 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
         ocppMockServer
                 .when(heartbeatRequest())
                 .thenReturn(emptyResponse());
-
-        ocppMockServer
-                .expectResponseFromStation(anyResponse(), atLeastOnce());
 
         stationSimulatorRunner.run();
 

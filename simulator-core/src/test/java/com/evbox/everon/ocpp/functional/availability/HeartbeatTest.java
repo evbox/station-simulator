@@ -8,9 +8,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.*;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.*;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.heartbeatRequest;
+import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.heartbeatResponseMock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -22,16 +21,8 @@ public class HeartbeatTest extends StationSimulatorSetUp {
         ZonedDateTime serverTime = ZonedDateTime.of(2035, 1, 1, 1, 1, 1, 0, ZoneOffset.UTC);
 
         ocppMockServer
-                .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponseMock());
-
-        ocppMockServer
-                .when(statusNotificationRequestWithStatus(AVAILABLE))
-                .thenReturn(emptyResponse());
-
-        ocppMockServer
                 .when(heartbeatRequest())
-                .thenReturn(heartbeatResponse(serverTime));
+                .thenReturn(heartbeatResponseMock(serverTime));
 
         stationSimulatorRunner.run();
 
@@ -47,8 +38,6 @@ public class HeartbeatTest extends StationSimulatorSetUp {
     @Test
     void shouldSetHeartbeatWithGivenInterval() {
         int expectedHeartbeatInterval = 100;
-
-        mockBootResponses();
 
         stationSimulatorRunner.run();
 

@@ -136,6 +136,14 @@ public class OcppMockServer {
     }
 
     /**
+     * Use strict verification, and fail if there are any unexpected requests or responses.
+     */
+    public void useStrictVerification() {
+        requestExpectationManager.useStrictVerification();
+        responseExpectationManager.useStrictVerification();
+    }
+
+    /**
      * Block thread until ocpp server establishes websocket connection.
      */
     public void waitUntilConnected() {

@@ -6,7 +6,6 @@ import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.testutil.StationSimulatorSetUp;
-import com.evbox.everon.ocpp.testutil.expect.ExpectedCount;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.anyResponse;
 import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.responseWithId;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,8 +26,6 @@ public class SetVariablesTest extends StationSimulatorSetUp {
     void shouldReplyToSetVariablesRequest() {
 
         String id = UUID.randomUUID().toString();
-
-        mockBootResponses();
 
         ocppMockServer
                 .expectResponseFromStation(responseWithId(id));
@@ -58,11 +54,6 @@ public class SetVariablesTest extends StationSimulatorSetUp {
     void shouldSetHeartbeatIntervalWithSetVariablesRequest() {
 
         int newHeartbeatInterval = 120;
-
-        mockBootResponses();
-
-        ocppMockServer
-                .expectResponseFromStation(anyResponse(), ExpectedCount.atLeastOnce());
 
         stationSimulatorRunner.run();
 

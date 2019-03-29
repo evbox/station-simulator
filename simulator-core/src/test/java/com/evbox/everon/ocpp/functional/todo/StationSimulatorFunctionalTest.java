@@ -11,7 +11,6 @@ import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
 import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
 import com.evbox.everon.ocpp.testutil.remove.WebSocketServerMock;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.SneakyThrows;
@@ -20,7 +19,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -31,6 +32,12 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+// todo
+//C01 - EV Driver Authorization using RFID
+//E02 - Start Transaction - Cable Plugin First
+//E03 - Start Transaction - IdToken First
+//E07 - Transaction locally stopped by IdToken
+//E09 - When cable disconnected on EV-side: Stop Transaction
 
 public class StationSimulatorFunctionalTest {
 
@@ -384,47 +391,6 @@ public class StationSimulatorFunctionalTest {
         });
     }
 
-    @Test
-    void shouldImmediatelyRebootWithOngoingTransaction() {
-        //given
-        mockSuccessfulBootNotificationAnswer();
-        mockSuccessfulAuthorizationAnswer(DEFAULT_TOKEN_ID);
-        mockSuccessfulTransactionEventAnswer();
-
-        stationSimulatorRunner.run();
-
-        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
-        triggerUserAction(STATION_ID, new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
-        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isTrue());
-
-        String immediateResetRequest = new Call(UUID.randomUUID().toString(), ActionType.RESET, new ResetRequest().withType(ResetRequest.Type.IMMEDIATE))
-                .toJson();
-
-        //when
-        stationSimulatorRunner.getStation(STATION_ID).sendMessage(new StationMessage(STATION_ID, StationMessage.Type.OCPP_MESSAGE, immediateResetRequest));
-
-        //then
-        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isFalse());
-        await().untilAsserted(() -> {
-            Optional<Call> bootNotificationOptional = server.getReceivedCalls(STATION_ID)
-                    .stream()
-                    .filter(call -> call.getActionType() == ActionType.BOOT_NOTIFICATION)
-                    .filter(call -> ((BootNotificationRequest) call.getPayload()).getReason() == BootNotificationRequest.Reason.REMOTE_RESET)
-                    .findAny();
-
-            assertThat(bootNotificationOptional).isPresent();
-        });
-
-        await().untilAsserted(() -> {
-            Optional<Call> statusNotificationOptional = server.getReceivedCalls(STATION_ID)
-                    .stream()
-                    .filter(call -> call.getActionType() == ActionType.STATUS_NOTIFICATION)
-                    .filter(call -> ((StatusNotificationRequest) call.getPayload()).getConnectorStatus() == StatusNotificationRequest.ConnectorStatus.OCCUPIED)
-                    .findAny();
-
-            assertThat(statusNotificationOptional).isPresent();
-        });
-    }
 
     private void mockSuccessfulBootNotificationAnswer() {
         mockSuccessfulBootNotificationAnswer(ZonedDateTime.now(), 100);
@@ -461,12 +427,6 @@ public class StationSimulatorFunctionalTest {
                 call -> "[3, \"" + call.getMessageId() + "\", {}]");
     }
 
-    private void mockSuccessfulGetBaseReportAnswer() {
-        server.addCallAnswer(
-                call -> call.getActionType() == ActionType.GET_BASE_REPORT,
-                call -> "[3, \"" + call.getMessageId() + "\", {\"status\":\"Accepted\"}]");
-    }
-
     @SneakyThrows
     private String toJson(Object object) {
         return ObjectMapperHolder.getJsonObjectMapper().writeValueAsString(object);
@@ -481,11 +441,4 @@ public class StationSimulatorFunctionalTest {
         stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
     }
 
-    static class NotifyReportComparator implements Comparator<NotifyReportRequest>
-    {
-        public int compare(NotifyReportRequest first, NotifyReportRequest second)
-        {
-            return first.getSeqNo().compareTo(second.getSeqNo());
-        }
-    }
 }

@@ -54,14 +54,14 @@ public class OcppReceiveListener extends AbstractReceiveListener {
             // the first request should BootNotification
             ocppServerClient.setConnected(true);
         } else {
-            requestExpectationManager.addUnexpected(request);
+            requestExpectationManager.addUnexpectedCall(request);
         }
     }
 
     private void handleCallResult(String request) {
         CallResult response = CallResult.from(request);
         if (!responseExpectationManager.isExpectedResponsePresent(response)) {
-            responseExpectationManager.addUnexpected(request);
+            responseExpectationManager.addUnexpectedCall(request);
         }
     }
 }

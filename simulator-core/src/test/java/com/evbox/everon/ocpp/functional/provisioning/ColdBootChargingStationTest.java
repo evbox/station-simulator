@@ -22,7 +22,10 @@ public class ColdBootChargingStationTest extends StationSimulatorSetUp {
 
     @Test
     void shouldStartStation() {
-        mockBootResponses();
+
+        ocppMockServer
+                .when(bootNotificationRequest())
+                .thenReturn(bootNotificationResponseMock());
 
         stationSimulatorRunner.run();
 
@@ -42,10 +45,6 @@ public class ColdBootChargingStationTest extends StationSimulatorSetUp {
 
         ocppMockServer
                 .when(statusNotificationRequestWithStatus(AVAILABLE), times(4))
-                .thenReturn(emptyResponse());
-
-        ocppMockServer
-                .when(heartbeatRequest(), times(2))
                 .thenReturn(emptyResponse());
 
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(

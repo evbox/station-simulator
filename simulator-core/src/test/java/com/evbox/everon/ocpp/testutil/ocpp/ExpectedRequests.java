@@ -2,8 +2,10 @@ package com.evbox.everon.ocpp.testutil.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
 import com.evbox.everon.ocpp.v20.message.station.NotifyReportRequest;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
+import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 
 import java.util.function.Predicate;
 
@@ -23,22 +25,30 @@ public class ExpectedRequests {
     }
 
     /**
+     * BootNotificationRequest with given reason.
+     *
+     * @return checks whether an incoming request is BootNotification or not.
+     */
+    public static Predicate<Call> bootNotificationRequest(BootNotificationRequest.Reason reason) {
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.BOOT_NOTIFICATION &&
+                ((BootNotificationRequest) incomingRequest.getPayload()).getReason() == reason;
+    }
+
+    /**
      * StatusNotificationRequest that should have expected status.
      *
      * @return checks whether an incoming request is StatusNotification or not.
      */
     public static Predicate<Call> statusNotificationRequestWithStatus(StatusNotificationRequest.ConnectorStatus expectedStatus) {
 
-        return incomingRequest -> {
-            if (incomingRequest.getActionType() == ActionType.STATUS_NOTIFICATION) {
-                return StatusNotificationRequest.class.cast(incomingRequest.getPayload()).getConnectorStatus() == expectedStatus;
-            }
-            return false;
-        };
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.STATUS_NOTIFICATION &&
+                ((StatusNotificationRequest) incomingRequest.getPayload()).getConnectorStatus() == expectedStatus;
     }
+
 
     /**
      * HeartbeatRequest with any configuration.
+     *
      * @@return checks whether an incoming request is HeartbeatRequest or not.
      */
     public static Predicate<Call> heartbeatRequest() {
@@ -47,6 +57,7 @@ public class ExpectedRequests {
 
     /**
      * NotifyReportRequest with any configuration.
+     *
      * @return checks whether an incoming request is NotifyReportRequest or not.
      */
     public static Predicate<Call> notifyReportRequest() {
@@ -55,16 +66,44 @@ public class ExpectedRequests {
 
     /**
      * NotifyReportRequest with given configuration.
+     *
      * @return checks whether an incoming request is NotifyReportRequest or not.
      */
     public static Predicate<Call> notifyReportRequest(int seqNo, boolean tbc) {
-        return incomingRequest -> {
-            if (incomingRequest.getActionType() == ActionType.NOTIFY_REPORT) {
-                NotifyReportRequest request = NotifyReportRequest.class.cast(incomingRequest.getPayload());
-                return seqNo == request.getSeqNo() && tbc == request.getTbc();
-            }
-            return false;
-        };
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.NOTIFY_REPORT &&
+                ((NotifyReportRequest) incomingRequest.getPayload()).getSeqNo() == seqNo &&
+                ((NotifyReportRequest) incomingRequest.getPayload()).getTbc() == tbc;
+    }
+
+
+    /**
+     * Authorize request with any configuration.
+     *
+     * @return checks whether an incoming request is AuthorizeRequest or not.
+     */
+    public static Predicate<Call> authorizeRequest() {
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.AUTHORIZE;
+
+    }
+
+    /**
+     * Transaction event with any configuration.
+     *
+     * @return checks whether an incoming request is TrasanctionEvent or not.
+     */
+    public static Predicate<Call> transactionEventRequest() {
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.TRANSACTION_EVENT;
+    }
+
+    /**
+     * Transaction event with given type.
+     *
+     * @return checks whether an incoming request is TrasanctionEvent or not.
+     */
+    public static Predicate<Call> transactionEventRequest(TransactionEventRequest.EventType type) {
+        return incomingRequest -> incomingRequest.getActionType() == ActionType.TRANSACTION_EVENT &&
+                ((TransactionEventRequest) incomingRequest.getPayload()).getEventType() == type;
+
     }
 
 }

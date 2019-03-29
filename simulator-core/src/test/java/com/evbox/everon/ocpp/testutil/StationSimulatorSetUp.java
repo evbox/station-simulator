@@ -2,6 +2,8 @@ package com.evbox.everon.ocpp.testutil;
 
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.simulator.station.StationMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
 import com.evbox.everon.ocpp.testutil.constants.StationConstants;
 import com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator;
 import com.evbox.everon.ocpp.testutil.ocpp.OcppMockServer;
@@ -10,12 +12,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.*;
+import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.atLeastOnce;
+import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
 import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.bootNotificationResponseMock;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.emptyResponse;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 
-public class StationSimulatorSetUp {
+public class StationSimulatorSetUp  {
 
     protected OcppServerClient ocppServerClient = new OcppServerClient();
 
@@ -35,6 +36,10 @@ public class StationSimulatorSetUp {
         SimulatorConfiguration.StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS);
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
+        ocppMockServer
+                .when(bootNotificationRequest(), atLeastOnce())
+                .thenReturn(bootNotificationResponseMock());
+
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);
     }
 
@@ -44,17 +49,7 @@ public class StationSimulatorSetUp {
         ocppMockServer.reset();
     }
 
-    protected void mockBootResponses() {
-        ocppMockServer
-                .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponseMock());
-
-        ocppMockServer
-                .when(statusNotificationRequestWithStatus(AVAILABLE))
-                .thenReturn(emptyResponse());
-
-        ocppMockServer
-                .when(heartbeatRequest())
-                .thenReturn(emptyResponse());
+    protected void triggerUserAction(String stationId, UserMessage action) {
+        stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
     }
 }

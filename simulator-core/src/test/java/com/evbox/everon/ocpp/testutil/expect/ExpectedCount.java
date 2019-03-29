@@ -46,11 +46,6 @@ public class ExpectedCount {
     public static ExpectedCount times(int count) { return new ExpectedCount(count, EXACT); }
 
     /**
-     * Any amount of times.
-     */
-    public static ExpectedCount any() { return new ExpectedCount(0, !EXACT); }
-
-    /**
      * At least once.
      */
     public static ExpectedCount atLeastOnce() { return new ExpectedCount(1, !EXACT); }
