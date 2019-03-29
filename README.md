@@ -55,7 +55,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | Provisioning                      | B09 - Setting a new NetworkConnectionProfile                                |           |                                               |
 | Provisioning                      | B10 - Migrate to new ConnectionProfile                                      |           |                                               |
 | Provisioning                      | B11 - Reset - Without Ongoing Transaction                                   | Yes       | Immediate reset only                          |
-| Provisioning                      | B12 - Reset - With Ongoing Transaction                                      |           |                                               |
+| Provisioning                      | B12 - Reset - With Ongoing Transaction                                      | Yes       | Immediate reset only                          |
 | Authorization                     | C01 - EV Driver Authorization using RFID                                    | Yes       |                                               |
 | Authorization                     | C02 - Authorization using a start button                                    |           |                                               |
 | Authorization                     | C03 - Authorization using credit/debit card                                 |           |                                               |
