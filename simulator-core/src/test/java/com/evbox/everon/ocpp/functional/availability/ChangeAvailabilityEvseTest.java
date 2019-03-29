@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.times;
 import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.heartbeatRequest;
 import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequest;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
@@ -24,14 +23,18 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
     @Test
     void shouldChangeEvseStatusToUnavailable() {
 
-        ocppMockServer.expectRequestFromStation(statusNotificationRequest(UNAVAILABLE));
+        ocppMockServer
+                .expectRequestFromStation(statusNotificationRequest(AVAILABLE))
+                .expectRequestFromStation(statusNotificationRequest(UNAVAILABLE));
 
+        // when
         stationSimulatorRunner.run();
 
         ocppMockServer.waitUntilConnected();
 
         ocppServerClient.findStationSender(STATION_ID).sendMessage(changeAvailabilityRequestWithStatus(INOPERATIVE));
 
+        // then
         await().untilAsserted(() -> {
             Station station = stationSimulatorRunner.getStation(STATION_ID);
 
@@ -39,6 +42,7 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
 
             ocppMockServer.verify();
         });
+
     }
 
     @Test
@@ -46,8 +50,7 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
 
         ocppMockServer
                 .expectRequestFromStation(statusNotificationRequest(AVAILABLE), times(2))
-                .expectRequestFromStation(statusNotificationRequest(UNAVAILABLE))
-                .expectRequestFromStation(heartbeatRequest());
+                .expectRequestFromStation(statusNotificationRequest(UNAVAILABLE));
 
         stationSimulatorRunner.run();
 

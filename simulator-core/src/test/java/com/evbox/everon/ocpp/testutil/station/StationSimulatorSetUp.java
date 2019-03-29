@@ -8,8 +8,11 @@ import com.evbox.everon.ocpp.testutil.constants.StationConstants;
 import com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator;
 import com.evbox.everon.ocpp.testutil.ocpp.OcppMockServer;
 import com.evbox.everon.ocpp.testutil.ocpp.OcppServerClient;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.atLeastOnce;
@@ -31,6 +34,7 @@ public class StationSimulatorSetUp  {
 
     @BeforeEach
     void setUp() {
+        Awaitility.setDefaultTimeout(20, TimeUnit.SECONDS);
         ocppMockServer.start();
 
         SimulatorConfiguration.StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS);
