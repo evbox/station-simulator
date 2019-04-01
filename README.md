@@ -55,7 +55,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | Provisioning                      | B09 - Setting a new NetworkConnectionProfile                                |           |                                               |
 | Provisioning                      | B10 - Migrate to new ConnectionProfile                                      |           |                                               |
 | Provisioning                      | B11 - Reset - Without Ongoing Transaction                                   | Yes       | Immediate reset only                          |
-| Provisioning                      | B12 - Reset - With Ongoing Transaction                                      |           |                                               |
+| Provisioning                      | B12 - Reset - With Ongoing Transaction                                      | Yes       | Immediate reset only                          |
 | Authorization                     | C01 - EV Driver Authorization using RFID                                    | Yes       |                                               |
 | Authorization                     | C02 - Authorization using a start button                                    |           |                                               |
 | Authorization                     | C03 - Authorization using credit/debit card                                 |           |                                               |
@@ -97,8 +97,8 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | RemoteControl                     | F06 - Trigger Message                                                       |           |                                               |
 | Availability                      | G01 - Status Notification                                                   | Yes       |                                               |
 | Availability                      | G02 - Heartbeat                                                             | Yes       |                                               |
-| Availability                      | G03 - Change Availability                                                   | Yes       |                                               |
-| Availability                      | G04 - Change Availability                                                   | Yes       |                                               |
+| Availability                      | G03 - Change Availability EVSE                                              | Yes       |                                               |
+| Availability                      | G04 - Change Availability Charging Station                                  | Yes       |                                               |
 | Availability                      | G05 - Lock Failure                                                          |           |                                               |
 | Reservation                       | H01 - Reservation                                                           |           |                                               |
 | Reservation                       | H02 - Cancel Reservation                                                    |           |                                               |
