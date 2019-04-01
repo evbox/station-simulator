@@ -21,13 +21,13 @@ public abstract class Matcher<T> {
      * @return true if matches otherwise false
      */
     public boolean match(T request) {
-        boolean matchResult = expectedRequest.test(request);
+        boolean isMatched = expectedRequest.test(request);
 
-        if (matchResult) {
+        if (isMatched) {
             actualCount.incrementAndGet();
         }
 
-        return matchResult;
+        return isMatched;
     }
 
     /**

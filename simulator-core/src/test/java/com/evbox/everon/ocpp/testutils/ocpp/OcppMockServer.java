@@ -5,7 +5,6 @@ import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.testutils.expect.ExpectedCount;
 import com.evbox.everon.ocpp.testutils.expect.RequestExpectationManager;
 import com.evbox.everon.ocpp.testutils.expect.ResponseExpectationManager;
-import com.evbox.everon.ocpp.testutils.match.RequestMatcher;
 import com.evbox.everon.ocpp.testutils.match.ResponseMatcher;
 import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.testutils.expect.ExpectedCount.once;
-import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Exchange.defaultResponse;
 import static io.undertow.Handlers.path;
 import static io.undertow.Handlers.websocket;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -119,29 +117,6 @@ public class OcppMockServer {
      */
     public OcppMockServer expectResponseFromStation(Predicate<CallResult> responseExpectation, ExpectedCount expectedCount) {
         responseExpectationManager.add(new ResponseMatcher(responseExpectation, expectedCount));
-        return this;
-    }
-
-    /**
-     * Expect request from station and return an empty response.
-     * By default: expected count is 1
-     *
-     * @param requestExpectation a request expectation predicate
-     * @return {@link OcppServerResponse} instance
-     */
-    public OcppMockServer expectRequestFromStation(Predicate<Call> requestExpectation) {
-        return expectRequestFromStation(requestExpectation, once());
-    }
-
-    /**
-     * Expect request from station and return an empty response.
-     *
-     * @param requestExpectation a request expectation predicate
-     * @param expectedCount      expected count
-     * @return {@link OcppServerResponse} instance
-     */
-    public OcppMockServer expectRequestFromStation(Predicate<Call> requestExpectation, ExpectedCount expectedCount) {
-        requestExpectationManager.add(new RequestMatcher(requestExpectation, expectedCount, defaultResponse()));
         return this;
     }
 

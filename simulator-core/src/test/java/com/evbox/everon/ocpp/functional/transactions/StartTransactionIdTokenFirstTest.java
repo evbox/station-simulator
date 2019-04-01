@@ -31,12 +31,19 @@ public class StartTransactionIdTokenFirstTest extends StationSimulatorSetUp {
 
         ocppMockServer
                 .when(StatusNotification.request(OCCUPIED))
-                .thenReturn(StatusNotification.defaultResponse());
+                .thenReturn(StatusNotification.response());
 
         ocppMockServer
-                .expectRequestFromStation(TransactionEvent.request(STARTED, seqNo, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
-                .expectRequestFromStation(TransactionEvent.request(UPDATED, seqNo + 1, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID, EV_DETECTED, CABLE_PLUGGED_IN))
-                .expectRequestFromStation(TransactionEvent.request(UPDATED, seqNo + 2, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID, CHARGING, CHARGING_STATE_CHANGED));
+                .when(TransactionEvent.request(STARTED, seqNo, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
+                .thenReturn(TransactionEvent.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(UPDATED, seqNo + 1, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID, EV_DETECTED, CABLE_PLUGGED_IN))
+                .thenReturn(TransactionEvent.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(UPDATED, seqNo + 2, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID, CHARGING, CHARGING_STATE_CHANGED))
+                .thenReturn(TransactionEvent.response());
 
         stationSimulatorRunner.run();
         ocppMockServer.waitUntilConnected();

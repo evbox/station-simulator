@@ -23,7 +23,9 @@ public class ResetWithoutOngoingTransactionTest extends StationSimulatorSetUp {
                 .when(BootNotification.request(), times(2))
                 .thenReturn(BootNotification.response());
 
-        ocppMockServer.expectRequestFromStation(BootNotification.request(REMOTE_RESET));
+        ocppMockServer
+                .when(BootNotification.request(REMOTE_RESET))
+                .thenReturn(BootNotification.response());
 
         stationSimulatorRunner.run();
 

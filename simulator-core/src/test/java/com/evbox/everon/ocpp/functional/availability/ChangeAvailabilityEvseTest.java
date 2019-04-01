@@ -24,8 +24,12 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
     void shouldChangeEvseStatusToUnavailable() {
 
         ocppMockServer
-                .expectRequestFromStation(StatusNotification.request(AVAILABLE))
-                .expectRequestFromStation(StatusNotification.request(UNAVAILABLE));
+                .when(StatusNotification.request(AVAILABLE))
+                .thenReturn(StatusNotification.response());
+
+        ocppMockServer
+                .when(StatusNotification.request(UNAVAILABLE))
+                .thenReturn(StatusNotification.response());
 
         // when
         stationSimulatorRunner.run();
@@ -42,15 +46,18 @@ public class ChangeAvailabilityEvseTest extends StationSimulatorSetUp {
 
             ocppMockServer.verify();
         });
-
     }
 
     @Test
     void shouldChangeEvseStatusToAvailable() {
 
         ocppMockServer
-                .expectRequestFromStation(StatusNotification.request(AVAILABLE), times(2))
-                .expectRequestFromStation(StatusNotification.request(UNAVAILABLE));
+                .when(StatusNotification.request(AVAILABLE), times(2))
+                .thenReturn(StatusNotification.response());
+
+        ocppMockServer
+                .when(StatusNotification.request(UNAVAILABLE))
+                .thenReturn(StatusNotification.response());
 
         stationSimulatorRunner.run();
 

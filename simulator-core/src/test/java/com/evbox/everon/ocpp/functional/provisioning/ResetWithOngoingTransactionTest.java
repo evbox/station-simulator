@@ -34,8 +34,12 @@ public class ResetWithOngoingTransactionTest extends StationSimulatorSetUp {
                 .thenReturn(Authorize.response());
 
         ocppMockServer
-                .expectRequestFromStation(BootNotification.request(REMOTE_RESET))
-                .expectRequestFromStation(TransactionEvent.request(), atLeastOnce());
+                .when(BootNotification.request(REMOTE_RESET), atLeastOnce())
+                .thenReturn(BootNotification.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(), atLeastOnce())
+                .thenReturn(TransactionEvent.response());
 
         stationSimulatorRunner.run();
         ocppMockServer.waitUntilConnected();

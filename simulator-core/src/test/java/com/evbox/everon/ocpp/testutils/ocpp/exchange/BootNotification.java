@@ -9,8 +9,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.simulator.message.ActionType.BOOT_NOTIFICATION;
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.equalsType;
 
-public class BootNotification extends Exchange {
+public class BootNotification {
 
     /**
      * BootNotificationRequest with any configuration.

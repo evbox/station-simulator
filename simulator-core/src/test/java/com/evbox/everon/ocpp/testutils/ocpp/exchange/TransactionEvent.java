@@ -4,11 +4,14 @@ import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.simulator.message.ActionType.TRANSACTION_EVENT;
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.emptyResponse;
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.equalsType;
 
-public class TransactionEvent extends Exchange {
+public class TransactionEvent {
 
     /**
      * Transaction event with any configuration.
@@ -94,6 +97,15 @@ public class TransactionEvent extends Exchange {
                 equalsTokenId(request, tokenId) &&
                 equalsChargingState(request, chargingState) &&
                 equalsTriggerReason(request, triggerReason);
+    }
+
+    /**
+     * Create a response for TransactionEvent.
+     *
+     * @return response in json.
+     */
+    public static Function<Call, String> response() {
+        return emptyResponse();
     }
 
     private static boolean equalsEventType(Call request, TransactionEventRequest.EventType type) {

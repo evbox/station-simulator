@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.testutils.ocpp.exchange.BootNotification;
 import com.evbox.everon.ocpp.testutils.ocpp.exchange.StatusNotification;
+import com.evbox.everon.ocpp.testutils.ocpp.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.testutils.station.StationSimulatorSetUp;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +43,9 @@ public class ColdBootChargingStationTest extends StationSimulatorSetUp {
                 .when(BootNotification.request(), times(2))
                 .thenReturn(BootNotification.response());
 
-        ocppMockServer.expectRequestFromStation(StatusNotification.request(AVAILABLE), times(4));
+        ocppMockServer
+                .when(StatusNotification.request(AVAILABLE), times(4))
+                .thenReturn(TransactionEvent.response());
 
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(
                 createStationConfiguration(STATION_ID, 1, 1),

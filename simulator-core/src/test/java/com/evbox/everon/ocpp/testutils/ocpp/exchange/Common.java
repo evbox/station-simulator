@@ -6,17 +6,13 @@ import com.evbox.everon.ocpp.testutils.factory.JsonMessageTypeFactory;
 
 import java.util.function.Function;
 
-/**
- * Class for common responses and requests.
- */
-public abstract class Exchange {
+public final class Common {
 
     /**
-     * Create a response with empty payload.
-     *
-     * @return response in json.
+     * Returns an empty response.
+     * @return empty response in json.
      */
-    public static Function<Call, String> defaultResponse() {
+    public static Function<Call, String> emptyResponse() {
         return request -> JsonMessageTypeFactory.createCallResult()
                 .withMessageId(request.getMessageId())
                 .withPayload("")

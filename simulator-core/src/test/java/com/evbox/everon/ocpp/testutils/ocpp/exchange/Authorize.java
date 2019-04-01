@@ -11,8 +11,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.simulator.message.ActionType.AUTHORIZE;
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.equalsType;
 
-public class Authorize extends Exchange {
+public class Authorize {
 
     /**
      * Authorize request with given tokenId and tokenType.

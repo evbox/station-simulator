@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.functional.availability;
 
 import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import com.evbox.everon.ocpp.testutils.ocpp.exchange.StatusNotification;
+import com.evbox.everon.ocpp.testutils.ocpp.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.testutils.station.StationSimulatorSetUp;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,9 @@ public class StatusNotificationTest extends StationSimulatorSetUp {
     @Test
     void shouldSendStatusNotificationRequestWhenChangeOccurs() {
 
-        ocppMockServer.expectRequestFromStation(StatusNotification.request(OCCUPIED));
+        ocppMockServer
+                .when(StatusNotification.request(OCCUPIED))
+                .thenReturn(TransactionEvent.response());
 
         stationSimulatorRunner.run();
 

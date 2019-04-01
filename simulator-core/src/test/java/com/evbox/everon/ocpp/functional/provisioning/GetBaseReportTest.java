@@ -44,10 +44,14 @@ public class GetBaseReportTest extends StationSimulatorSetUp {
     void shouldSendNotifyReportOnGetBaseReportRequest() {
 
         for (int i = 0; i < NOTIFY_REPORT_VARIABLES_LESS_ONE; i++) {
-            ocppMockServer.expectRequestFromStation(NotifyReport.request(i, true));
+            ocppMockServer
+                    .when(NotifyReport.request(i, true))
+                    .thenReturn(NotifyReport.response());
         }
 
-        ocppMockServer.expectRequestFromStation(NotifyReport.request(NOTIFY_REPORT_VARIABLES_LESS_ONE, false));
+        ocppMockServer
+                .when(NotifyReport.request(NOTIFY_REPORT_VARIABLES_LESS_ONE, false))
+                .thenReturn(NotifyReport.response());
 
         stationSimulatorRunner.run();
 

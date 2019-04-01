@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.emptyResponse;
+
 /**
  * A receive listener that handles an incoming text message.
  */
@@ -55,6 +57,7 @@ public class OcppReceiveListener extends AbstractReceiveListener {
             // the first request should always be BootNotification
             ocppServerClient.setConnected(true);
         } else {
+            WebSockets.sendText(emptyResponse().apply(incomingCall), channel, null);
             requestExpectationManager.addUnexpectedCall(request);
         }
     }

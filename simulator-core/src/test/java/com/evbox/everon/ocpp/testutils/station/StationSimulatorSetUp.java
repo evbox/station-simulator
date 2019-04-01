@@ -39,15 +39,15 @@ public class StationSimulatorSetUp  {
 
         ocppMockServer.start();
 
-        // Station always needs boot notification message on startup
-        ocppMockServer
-                .when(BootNotification.request(), any())
-                .thenReturn(BootNotification.response());
-
         SimulatorConfiguration.StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS);
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);
+
+        // Station always needs boot notification message on startup
+        ocppMockServer
+                .when(BootNotification.request(), any())
+                .thenReturn(BootNotification.response());
     }
 
     @AfterEach

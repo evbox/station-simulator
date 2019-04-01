@@ -18,8 +18,12 @@ public class StartTransactionCablePluginFirstTest extends StationSimulatorSetUp 
     void shouldSendConnectorStatusAndTransactionStartedWhenCablePluggedIn() {
 
         ocppMockServer
-                .expectRequestFromStation(StatusNotification.request(OCCUPIED), atLeastOnce())
-                .expectRequestFromStation(TransactionEvent.request(STARTED, DEFAULT_SEQ_NUMBER, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID));
+                .when(StatusNotification.request(OCCUPIED), atLeastOnce())
+                .thenReturn(TransactionEvent.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(STARTED, DEFAULT_SEQ_NUMBER, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
+                .thenReturn(TransactionEvent.response());
 
         stationSimulatorRunner.run();
         ocppMockServer.waitUntilConnected();

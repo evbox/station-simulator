@@ -15,14 +15,14 @@ import static org.awaitility.Awaitility.await;
 
 public class HeartbeatTest extends StationSimulatorSetUp {
 
+    private static final ZonedDateTime SERVER_TIME = ZonedDateTime.of(2035, 1, 1, 1, 1, 1, 0, ZoneOffset.UTC);
+
     @Test
     void shouldAdjustCurrentTimeBasedOnHeartbeatResponse() {
 
-        ZonedDateTime serverTime = ZonedDateTime.of(2035, 1, 1, 1, 1, 1, 0, ZoneOffset.UTC);
-
         ocppMockServer
                 .when(Heartbeat.request(), atLeastOnce())
-                .thenReturn(Heartbeat.response(serverTime));
+                .thenReturn(Heartbeat.response(SERVER_TIME));
 
         stationSimulatorRunner.run();
 
@@ -30,7 +30,7 @@ public class HeartbeatTest extends StationSimulatorSetUp {
 
         await().untilAsserted(() -> {
             Instant timeOfStation = stationSimulatorRunner.getStation(STATION_ID).getState().getCurrentTime();
-            assertThat(timeOfStation).isAfterOrEqualTo(serverTime.toInstant());
+            assertThat(timeOfStation).isAfterOrEqualTo(SERVER_TIME.toInstant());
             ocppMockServer.verify();
         });
     }
@@ -39,7 +39,9 @@ public class HeartbeatTest extends StationSimulatorSetUp {
     void shouldSendHeartbeatWithGivenInterval() {
         int expectedHeartbeatInterval = 100;
 
-        ocppMockServer.expectRequestFromStation(Heartbeat.request());
+        ocppMockServer
+                .when(Heartbeat.request(), atLeastOnce())
+                .thenReturn(Heartbeat.response(SERVER_TIME));
 
         stationSimulatorRunner.run();
 

@@ -8,7 +8,9 @@ import java.time.ZonedDateTime;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class Heartbeat extends Exchange {
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.equalsType;
+
+public class Heartbeat {
 
     /**
      * HeartbeatRequest with any configuration.

@@ -28,12 +28,19 @@ public class TransactionLocallyStoppedByIdTokenTest extends StationSimulatorSetU
 
         ocppMockServer
                 .when(StatusNotification.request(OCCUPIED))
-                .thenReturn(StatusNotification.defaultResponse());
+                .thenReturn(StatusNotification.response());
 
         ocppMockServer
-                .expectRequestFromStation(TransactionEvent.request(STARTED, seqNo, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
-                .expectRequestFromStation(TransactionEvent.request(UPDATED, seqNo + 1, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
-                .expectRequestFromStation(TransactionEvent.request(UPDATED, seqNo + 2, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID));
+                .when(TransactionEvent.request(STARTED, seqNo, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
+                .thenReturn(TransactionEvent.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(UPDATED, seqNo + 1, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
+                .thenReturn(TransactionEvent.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(UPDATED, seqNo + 2, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
+                .thenReturn(TransactionEvent.response());
 
         stationSimulatorRunner.run();
         ocppMockServer.waitUntilConnected();

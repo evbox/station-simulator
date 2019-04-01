@@ -3,11 +3,14 @@ package com.evbox.everon.ocpp.testutils.ocpp.exchange;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.v20.message.station.NotifyReportRequest;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.simulator.message.ActionType.NOTIFY_REPORT;
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.emptyResponse;
+import static com.evbox.everon.ocpp.testutils.ocpp.exchange.Common.equalsType;
 
-public class NotifyReport extends Exchange {
+public class NotifyReport {
 
     /**
      * NotifyReportRequest with any configuration.
@@ -27,6 +30,15 @@ public class NotifyReport extends Exchange {
      */
     public static Predicate<Call> request(int seqNo, boolean tbc) {
         return request -> equalsType(request, NOTIFY_REPORT) && equalsSeqNo(request, seqNo) && equalsTbc(request, tbc);
+    }
+
+    /**
+     * Create a response for NotifyReport.
+     *
+     * @return response in json.
+     */
+    public static Function<Call, String> response() {
+        return emptyResponse();
     }
 
     private static boolean equalsSeqNo(Call request, int seqNo) {
