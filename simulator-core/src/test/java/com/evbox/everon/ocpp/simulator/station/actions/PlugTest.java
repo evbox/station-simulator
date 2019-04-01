@@ -17,8 +17,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_CONNECTOR_ID;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.DEFAULT_CONNECTOR_ID;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.DEFAULT_EVSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;

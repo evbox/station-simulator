@@ -16,10 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.DEFAULT_MESSAGE_ID;
-import static com.evbox.everon.ocpp.testutil.factory.OcppMessageFactory.createGetVariablesRequest;
-import static com.evbox.everon.ocpp.testutil.factory.OcppMessageFactory.createGetVariablesResponse;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.DEFAULT_MESSAGE_ID;
+import static com.evbox.everon.ocpp.testutils.factory.OcppMessageFactory.createGetVariablesRequest;
+import static com.evbox.everon.ocpp.testutils.factory.OcppMessageFactory.createGetVariablesResponse;
 import static com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult.AttributeStatus.UNKNOWN_COMPONENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;

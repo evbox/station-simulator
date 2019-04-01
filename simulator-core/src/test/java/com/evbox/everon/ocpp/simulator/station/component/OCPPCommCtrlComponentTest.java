@@ -8,7 +8,7 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.testutil.constants.StationConstants;
+import com.evbox.everon.ocpp.testutils.constants.StationConstants;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 
-import static com.evbox.everon.ocpp.testutil.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.testutils.assertion.CiStringAssert.assertCiString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

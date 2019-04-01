@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.AVAILABLE;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;

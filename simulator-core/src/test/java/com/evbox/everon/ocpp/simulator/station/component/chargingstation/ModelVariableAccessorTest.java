@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
-import static com.evbox.everon.ocpp.testutil.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.testutils.assertion.CiStringAssert.assertCiString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 

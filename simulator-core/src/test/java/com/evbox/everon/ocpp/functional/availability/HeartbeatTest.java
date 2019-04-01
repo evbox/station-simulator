@@ -1,16 +1,15 @@
 package com.evbox.everon.ocpp.functional.availability;
 
-import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutils.ocpp.exchange.Heartbeat;
+import com.evbox.everon.ocpp.testutils.station.StationSimulatorSetUp;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.atLeastOnce;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.heartbeatRequest;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.heartbeatResponseMock;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.STATION_ID;
+import static com.evbox.everon.ocpp.testutils.expect.ExpectedCount.atLeastOnce;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -22,8 +21,8 @@ public class HeartbeatTest extends StationSimulatorSetUp {
         ZonedDateTime serverTime = ZonedDateTime.of(2035, 1, 1, 1, 1, 1, 0, ZoneOffset.UTC);
 
         ocppMockServer
-                .when(heartbeatRequest(), atLeastOnce())
-                .thenReturn(heartbeatResponseMock(serverTime));
+                .when(Heartbeat.request(), atLeastOnce())
+                .thenReturn(Heartbeat.response(serverTime));
 
         stationSimulatorRunner.run();
 
@@ -40,7 +39,7 @@ public class HeartbeatTest extends StationSimulatorSetUp {
     void shouldSendHeartbeatWithGivenInterval() {
         int expectedHeartbeatInterval = 100;
 
-        ocppMockServer.expectRequestFromStation(heartbeatRequest());
+        ocppMockServer.expectRequestFromStation(Heartbeat.request());
 
         stationSimulatorRunner.run();
 

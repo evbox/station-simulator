@@ -5,19 +5,19 @@ import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
-import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutils.ocpp.exchange.StatusNotification;
+import com.evbox.everon.ocpp.testutils.station.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.times;
-import static com.evbox.everon.ocpp.testutil.factory.JsonMessageTypeFactory.createCall;
-import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createSimulatorConfiguration;
-import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createStationConfiguration;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequest;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.testutils.expect.ExpectedCount.times;
+import static com.evbox.everon.ocpp.testutils.factory.JsonMessageTypeFactory.createCall;
+import static com.evbox.everon.ocpp.testutils.factory.SimulatorConfigCreator.createSimulatorConfiguration;
+import static com.evbox.everon.ocpp.testutils.factory.SimulatorConfigCreator.createStationConfiguration;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
@@ -40,8 +40,8 @@ public class ChangeAvailabilityChargingStationTest extends StationSimulatorSetUp
     void shouldChangeStationStatusToUnavailable() {
 
         ocppMockServer
-                .expectRequestFromStation(statusNotificationRequest(AVAILABLE), times(4))
-                .expectRequestFromStation(statusNotificationRequest(UNAVAILABLE), times(4));
+                .expectRequestFromStation(StatusNotification.request(AVAILABLE), times(4))
+                .expectRequestFromStation(StatusNotification.request(UNAVAILABLE), times(4));
 
         stationSimulatorRunner.run();
 

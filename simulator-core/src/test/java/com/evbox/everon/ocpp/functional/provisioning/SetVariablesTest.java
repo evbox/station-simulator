@@ -5,7 +5,7 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutils.station.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.responseWithId;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.STATION_ID;
+import static com.evbox.everon.ocpp.testutils.station.ExpectedResponses.responseWithId;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -31,14 +31,13 @@ public class SetVariablesTest extends StationSimulatorSetUp {
 
         stationSimulatorRunner.run();
 
-        SetVariableDatum setVariableDatum = new SetVariableDatum()
-                .withVariable(new Variable().withName(new CiString.CiString50("ReserveConnectorZeroSupported")))
-                .withComponent(new Component().withName(new CiString.CiString50("ReservationFeature")))
-                .withAttributeValue(new CiString.CiString1000("true")).withAttributeType(SetVariableDatum.AttributeType.TARGET);
+        SetVariablesRequest setVariablesRequest = createSetVariableRequest(
+                "ReservationFeature",
+                "ReserveConnectorZeroSupported",
+                "true",
+                SetVariableDatum.AttributeType.TARGET);
 
-        SetVariablesRequest request = new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum));
-
-        Call call = new Call(id, ActionType.SET_VARIABLES, request);
+        Call call = new Call(id, ActionType.SET_VARIABLES, setVariablesRequest);
 
         ocppMockServer.waitUntilConnected();
 
@@ -56,13 +55,13 @@ public class SetVariablesTest extends StationSimulatorSetUp {
 
         stationSimulatorRunner.run();
 
-        SetVariableDatum setVariableDatum = new SetVariableDatum()
-                .withComponent(new Component().withName(new CiString.CiString50(OCPPCommCtrlrComponent.NAME)))
-                .withVariable(new Variable().withName(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME)))
-                .withAttributeType(SetVariableDatum.AttributeType.ACTUAL)
-                .withAttributeValue(new CiString.CiString1000(String.valueOf(newHeartbeatInterval)));
+        SetVariablesRequest setVariablesRequest = createSetVariableRequest(
+                OCPPCommCtrlrComponent.NAME,
+                HeartbeatIntervalVariableAccessor.NAME,
+                String.valueOf(newHeartbeatInterval),
+                SetVariableDatum.AttributeType.ACTUAL);
 
-        Call call = new Call(UUID.randomUUID().toString(), ActionType.SET_VARIABLES, new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum)));
+        Call call = new Call(UUID.randomUUID().toString(), ActionType.SET_VARIABLES, setVariablesRequest);
 
         ocppMockServer.waitUntilConnected();
 
@@ -73,5 +72,15 @@ public class SetVariablesTest extends StationSimulatorSetUp {
             assertThat(heartbeatInterval).isEqualTo(newHeartbeatInterval);
             ocppMockServer.verify();
         });
+    }
+
+    SetVariablesRequest createSetVariableRequest(String component, String variable, String value, SetVariableDatum.AttributeType type) {
+        SetVariableDatum setVariableDatum = new SetVariableDatum()
+                .withComponent(new Component().withName(new CiString.CiString50(component)))
+                .withVariable(new Variable().withName(new CiString.CiString50(variable)))
+                .withAttributeType(type)
+                .withAttributeValue(new CiString.CiString1000(value));
+
+        return new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum));
     }
 }

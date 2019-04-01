@@ -5,7 +5,7 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutils.station.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.station.ExpectedResponses.responseWithId;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.STATION_ID;
+import static com.evbox.everon.ocpp.testutils.station.ExpectedResponses.responseWithId;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;

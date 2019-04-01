@@ -2,30 +2,29 @@ package com.evbox.everon.ocpp.functional.provisioning;
 
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.testutil.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.testutils.ocpp.exchange.BootNotification;
+import com.evbox.everon.ocpp.testutils.ocpp.exchange.StatusNotification;
+import com.evbox.everon.ocpp.testutils.station.StationSimulatorSetUp;
 import org.junit.jupiter.api.Test;
 
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.OCPP_SERVER_URL;
-import static com.evbox.everon.ocpp.testutil.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.testutil.expect.ExpectedCount.times;
-import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createSimulatorConfiguration;
-import static com.evbox.everon.ocpp.testutil.factory.SimulatorConfigCreator.createStationConfiguration;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.bootNotificationRequest;
-import static com.evbox.everon.ocpp.testutil.ocpp.ExpectedRequests.statusNotificationRequest;
-import static com.evbox.everon.ocpp.testutil.ocpp.MockedResponses.bootNotificationResponseMock;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.OCPP_SERVER_URL;
+import static com.evbox.everon.ocpp.testutils.constants.StationConstants.STATION_ID;
+import static com.evbox.everon.ocpp.testutils.expect.ExpectedCount.times;
+import static com.evbox.everon.ocpp.testutils.factory.SimulatorConfigCreator.createSimulatorConfiguration;
+import static com.evbox.everon.ocpp.testutils.factory.SimulatorConfigCreator.createStationConfiguration;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static org.awaitility.Awaitility.await;
 
 public class ColdBootChargingStationTest extends StationSimulatorSetUp {
 
-    private static String ADDITIONA_STATION_ID = "EVB-P18090564";
+    private static String ADDITIONAL_STATION_ID = "EVB-P18090564";
 
     @Test
     void shouldStartStation() {
 
         ocppMockServer
-                .when(bootNotificationRequest())
-                .thenReturn(bootNotificationResponseMock());
+                .when(BootNotification.request())
+                .thenReturn(BootNotification.response());
 
         stationSimulatorRunner.run();
 
@@ -40,14 +39,14 @@ public class ColdBootChargingStationTest extends StationSimulatorSetUp {
     void shouldStartMultipleStations() {
 
         ocppMockServer
-                .when(bootNotificationRequest(), times(2))
-                .thenReturn(bootNotificationResponseMock());
+                .when(BootNotification.request(), times(2))
+                .thenReturn(BootNotification.response());
 
-        ocppMockServer.expectRequestFromStation(statusNotificationRequest(AVAILABLE), times(4));
+        ocppMockServer.expectRequestFromStation(StatusNotification.request(AVAILABLE), times(4));
 
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(
                 createStationConfiguration(STATION_ID, 1, 1),
-                createStationConfiguration(ADDITIONA_STATION_ID, 1, 3));
+                createStationConfiguration(ADDITIONAL_STATION_ID, 1, 3));
 
         stationSimulatorRunner = new StationSimulatorRunner(OCPP_SERVER_URL, simulatorConfiguration);
 
