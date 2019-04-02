@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.station;
+package com.evbox.everon.ocpp.mock;
 
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;

@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.it.availability;
 import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.StatusNotification;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.TransactionEvent;
-import com.evbox.everon.ocpp.mock.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;

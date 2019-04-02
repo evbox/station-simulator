@@ -13,6 +13,8 @@ import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.equalsType;
 
 public class BootNotification {
 
+    public static final int DEFAULT_HEARTBEAT_INTERVAL = 100;
+
     /**
      * BootNotificationRequest with any configuration.
      *
@@ -41,7 +43,7 @@ public class BootNotification {
         return incomingRequest -> JsonMessageTypeFactory.createCallResult()
                 .withMessageId(incomingRequest.getMessageId())
                 .withCurrentTime(ZonedDateTime.now().toString())
-                .withIntervalInSeconds(100)
+                .withIntervalInSeconds(DEFAULT_HEARTBEAT_INTERVAL)
                 .withStatus("Accepted")
                 .toJson();
     }

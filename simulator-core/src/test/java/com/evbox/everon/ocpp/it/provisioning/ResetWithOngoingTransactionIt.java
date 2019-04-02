@@ -6,7 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.Authorize;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.TransactionEvent;
-import com.evbox.everon.ocpp.mock.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import org.junit.jupiter.api.Test;
 

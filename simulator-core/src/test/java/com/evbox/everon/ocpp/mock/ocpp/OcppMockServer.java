@@ -1,11 +1,9 @@
 package com.evbox.everon.ocpp.mock.ocpp;
 
-import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;
 import com.evbox.everon.ocpp.mock.expect.ResponseExpectationManager;
-import com.evbox.everon.ocpp.mock.match.ResponseMatcher;
+import com.evbox.everon.ocpp.simulator.message.Call;
 import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,29 +93,6 @@ public class OcppMockServer {
      */
     public OcppServerResponse when(Predicate<Call> requestExpectation, ExpectedCount expectedCount) {
         return new OcppServerResponse(requestExpectation, expectedCount, requestExpectationManager);
-    }
-
-    /**
-     * Accepts a predicate that is responsible for response expectation.
-     * By default: expected count is 1
-     *
-     * @param responseExpectation a response expectation predicate
-     * @return {@link OcppServerResponse} instance
-     */
-    public OcppMockServer expectResponseFromStation(Predicate<CallResult> responseExpectation) {
-        return expectResponseFromStation(responseExpectation, once());
-    }
-
-    /**
-     * Accepts a predicate that is responsible for response expectation.
-     *
-     * @param responseExpectation a response expectation predicate
-     * @param expectedCount      expected count
-     * @return {@link OcppServerResponse} instance
-     */
-    public OcppMockServer expectResponseFromStation(Predicate<CallResult> responseExpectation, ExpectedCount expectedCount) {
-        responseExpectationManager.add(new ResponseMatcher(responseExpectation, expectedCount));
-        return this;
     }
 
     /**

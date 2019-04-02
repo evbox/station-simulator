@@ -5,11 +5,12 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.mock.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class SetVariablesIt extends StationSimulatorSetUp {
 
         stationSimulatorRunner.run();
 
-        SetVariablesRequest setVariablesRequest = createSetVariableRequest(
+        SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
                 "ReservationFeature",
                 "ReserveConnectorZeroSupported",
                 "true",
@@ -55,7 +56,7 @@ public class SetVariablesIt extends StationSimulatorSetUp {
 
         stationSimulatorRunner.run();
 
-        SetVariablesRequest setVariablesRequest = createSetVariableRequest(
+        SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
                 OCPPCommCtrlrComponent.NAME,
                 HeartbeatIntervalVariableAccessor.NAME,
                 String.valueOf(newHeartbeatInterval),
@@ -74,7 +75,7 @@ public class SetVariablesIt extends StationSimulatorSetUp {
         });
     }
 
-    SetVariablesRequest createSetVariableRequest(String component, String variable, String value, SetVariableDatum.AttributeType type) {
+    SetVariablesRequest createSetVariablesRequest(String component, String variable, String value, SetVariableDatum.AttributeType type) {
         SetVariableDatum setVariableDatum = new SetVariableDatum()
                 .withComponent(new Component().withName(new CiString.CiString50(component)))
                 .withVariable(new Variable().withName(new CiString.CiString50(variable)))

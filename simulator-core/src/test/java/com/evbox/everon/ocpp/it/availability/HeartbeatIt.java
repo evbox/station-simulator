@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.it.availability;
 
 import com.evbox.everon.ocpp.mock.ocpp.exchange.Heartbeat;
-import com.evbox.everon.ocpp.mock.station.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

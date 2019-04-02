@@ -1,11 +1,12 @@
 package com.evbox.everon.ocpp.it.provisioning;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.mock.station.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
@@ -23,21 +24,41 @@ import static org.awaitility.Awaitility.await;
 public class GetVariablesIt extends StationSimulatorSetUp {
 
     @Test
-    void shouldGetHeartbeatIntervalWithGetVariablesRequest() {
+    void shouldReplyToGetVariablesRequest() {
 
-        int expectedHeartbeatInterval = 100;
         String id = UUID.randomUUID().toString();
 
         ocppMockServer.expectResponseFromStation(responseWithId(id));
 
         stationSimulatorRunner.run();
 
-        GetVariableDatum getVariableDatum = new GetVariableDatum()
-                .withComponent(new Component().withName(new CiString.CiString50(OCPPCommCtrlrComponent.NAME)))
-                .withVariable(new Variable().withName(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME)))
-                .withAttributeType(GetVariableDatum.AttributeType.ACTUAL);
+        GetVariablesRequest getVariablesRequest =
+                createGetVariablesRequest(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL);
 
-        Call call = new Call(id, ActionType.GET_VARIABLES, new GetVariablesRequest().withGetVariableData(singletonList(getVariableDatum)));
+        Call call = new Call(id, ActionType.GET_VARIABLES, getVariablesRequest);
+
+        ocppMockServer.waitUntilConnected();
+
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
+
+        await().untilAsserted(() -> {
+            ocppMockServer.verify();
+        });
+    }
+
+    @Test
+    void shouldGetHeartbeatIntervalWithGetVariablesRequest() {
+
+        int expectedHeartbeatInterval = BootNotification.DEFAULT_HEARTBEAT_INTERVAL;
+
+        String id = UUID.randomUUID().toString();
+
+        stationSimulatorRunner.run();
+
+        GetVariablesRequest getVariablesRequest =
+                createGetVariablesRequest(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL);
+
+        Call call = new Call(id, ActionType.GET_VARIABLES, getVariablesRequest);
 
         ocppMockServer.waitUntilConnected();
 
@@ -48,5 +69,14 @@ public class GetVariablesIt extends StationSimulatorSetUp {
             assertThat(heartbeatInterval).isEqualTo(expectedHeartbeatInterval);
             ocppMockServer.verify();
         });
+    }
+
+    GetVariablesRequest createGetVariablesRequest(String component, String variable, GetVariableDatum.AttributeType attributeType) {
+        GetVariableDatum getVariableDatum = new GetVariableDatum()
+                .withComponent(new Component().withName(new CiString.CiString50(component)))
+                .withVariable(new Variable().withName(new CiString.CiString50(variable)))
+                .withAttributeType(attributeType);
+
+        return new GetVariablesRequest().withGetVariableData(singletonList(getVariableDatum));
     }
 }
