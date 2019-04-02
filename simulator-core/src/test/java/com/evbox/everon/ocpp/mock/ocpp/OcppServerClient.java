@@ -1,8 +1,5 @@
 package com.evbox.everon.ocpp.mock.ocpp;
 
-import com.evbox.everon.ocpp.mock.WebSocketSender;
-import io.undertow.websockets.core.WebSocketChannel;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,11 +18,11 @@ public class OcppServerClient {
      * Puts a new entry to the map. If exists then return the associated websocket sender.
      *
      * @param stationId station identity
-     * @param webSocketChannel {@link WebSocketChannel} instance
+     * @param webSocketSender {@link WebSocketSender} instance
      * @return
      */
-    public WebSocketSender putIfAbsent(String stationId, WebSocketChannel webSocketChannel) {
-        return webSocketChannelMap.putIfAbsent(stationId, new WebSocketSender(webSocketChannel));
+    public WebSocketSender putIfAbsent(String stationId, WebSocketSender webSocketSender) {
+        return webSocketChannelMap.putIfAbsent(stationId, webSocketSender);
     }
 
     /**
