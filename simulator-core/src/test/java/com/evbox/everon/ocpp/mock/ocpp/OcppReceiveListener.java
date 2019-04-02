@@ -27,6 +27,7 @@ public class OcppReceiveListener extends AbstractReceiveListener {
     private final RequestExpectationManager requestExpectationManager;
     private final ResponseExpectationManager responseExpectationManager;
     private final OcppServerClient ocppServerClient;
+    private final RequestResponseSynchronizer requestResponseSynchronizer;
 
     @Override
     protected void onFullTextMessage(WebSocketChannel channel, BufferedTextMessage message) {
@@ -64,6 +65,8 @@ public class OcppReceiveListener extends AbstractReceiveListener {
 
     private void handleCallResult(String request) {
         CallResult response = CallResult.from(request);
+        requestResponseSynchronizer.offer(response);
+
         if (!responseExpectationManager.isExpectedResponsePresent(response)) {
             responseExpectationManager.addUnexpectedCall(request);
         }

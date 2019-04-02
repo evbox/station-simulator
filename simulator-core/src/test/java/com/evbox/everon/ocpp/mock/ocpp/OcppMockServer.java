@@ -26,6 +26,7 @@ public class OcppMockServer {
 
     private final RequestExpectationManager requestExpectationManager = new RequestExpectationManager();
     private final ResponseExpectationManager responseExpectationManager = new ResponseExpectationManager();
+    private final RequestResponseSynchronizer requestResponseSynchronizer = new RequestResponseSynchronizer();
 
     private final OcppServerClient ocppServerClient;
     private final String hostname;
@@ -55,10 +56,10 @@ public class OcppMockServer {
                 .setHandler(
                         path().addPrefixPath(path, websocket((exchange, channel) -> {
                             String stationId = channel.getUrl().replace(targetUrl, "");
-                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, responseExpectationManager, ocppServerClient));
+                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, responseExpectationManager, ocppServerClient, requestResponseSynchronizer));
                             channel.resumeReceives();
 
-                            ocppServerClient.putIfAbsent(stationId, channel);
+                            ocppServerClient.putIfAbsent(stationId, new WebSocketSender(channel, requestResponseSynchronizer));
 
                         })))
                 .build();
