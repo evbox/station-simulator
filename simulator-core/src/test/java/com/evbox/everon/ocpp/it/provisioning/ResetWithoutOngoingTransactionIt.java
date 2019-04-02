@@ -1,9 +1,9 @@
 package com.evbox.everon.ocpp.it.provisioning;
 
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
-import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import org.junit.jupiter.api.Test;
 

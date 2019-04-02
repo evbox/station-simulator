@@ -1,11 +1,11 @@
 package com.evbox.everon.ocpp.it.provisioning;
 
-import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
-import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.StatusNotification;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.TransactionEvent;
-import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.OCPP_SERVER_URL;

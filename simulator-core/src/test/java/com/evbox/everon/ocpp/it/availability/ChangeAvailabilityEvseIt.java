@@ -1,9 +1,9 @@
 package com.evbox.everon.ocpp.it.availability;
 
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.ocpp.exchange.StatusNotification;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.StatusNotification;
-import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.Test;
 

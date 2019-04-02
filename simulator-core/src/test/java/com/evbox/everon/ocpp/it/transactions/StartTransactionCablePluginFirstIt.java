@@ -1,9 +1,9 @@
 package com.evbox.everon.ocpp.it.transactions;
 
-import com.evbox.everon.ocpp.simulator.station.actions.Plug;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.StatusNotification;
 import com.evbox.everon.ocpp.mock.ocpp.exchange.TransactionEvent;
-import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;

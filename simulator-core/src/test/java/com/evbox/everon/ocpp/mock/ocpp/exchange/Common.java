@@ -1,8 +1,8 @@
 package com.evbox.everon.ocpp.mock.ocpp.exchange;
 
+import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 
 import java.util.function.Function;
 

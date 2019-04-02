@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.mock.ocpp.exchange;
 
-import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
+import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.station.AuthorizeRequest;
 import com.evbox.everon.ocpp.v20.message.station.AuthorizeResponse;
@@ -10,8 +10,8 @@ import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.evbox.everon.ocpp.simulator.message.ActionType.AUTHORIZE;
 import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.equalsType;
+import static com.evbox.everon.ocpp.simulator.message.ActionType.AUTHORIZE;
 
 public class Authorize {
 

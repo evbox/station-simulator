@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.mock.factory;
 
-import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
+import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 
 import java.util.Collections;

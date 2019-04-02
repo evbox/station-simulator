@@ -7,9 +7,9 @@ import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.evbox.everon.ocpp.simulator.message.ActionType.TRANSACTION_EVENT;
 import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.emptyResponse;
 import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.equalsType;
+import static com.evbox.everon.ocpp.simulator.message.ActionType.TRANSACTION_EVENT;
 
 public class TransactionEvent {
 

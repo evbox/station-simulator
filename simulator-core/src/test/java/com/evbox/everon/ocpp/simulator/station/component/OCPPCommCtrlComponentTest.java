@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.mock.constants.StationConstants;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
@@ -8,7 +9,6 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.mock.constants.StationConstants;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.reflect.FieldUtils;

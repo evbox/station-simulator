@@ -1,15 +1,15 @@
 package com.evbox.everon.ocpp.mock.ocpp.exchange;
 
-import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
+import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.evbox.everon.ocpp.simulator.message.ActionType.BOOT_NOTIFICATION;
 import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.equalsType;
+import static com.evbox.everon.ocpp.simulator.message.ActionType.BOOT_NOTIFICATION;
 
 public class BootNotification {
 
