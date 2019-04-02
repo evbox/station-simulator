@@ -11,14 +11,14 @@ import java.util.concurrent.TimeUnit;
 public class HeartbeatScheduler {
 
     private static final int INITIAL_DELAY_IN_SECONDS = 5;
-    private static final int TASK_FREQUENCY_IN_SECONDS = 1;
+    private static final int PERIOD_IN_SECONDS = 1;
 
     private HeartbeatSenderTask heartbeatTask;
 
     public HeartbeatScheduler(StationState stationState, StationMessageSender stationMessageSender) {
         this.heartbeatTask = new HeartbeatSenderTask(stationState, stationMessageSender);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-                heartbeatTask, INITIAL_DELAY_IN_SECONDS, TASK_FREQUENCY_IN_SECONDS, TimeUnit.SECONDS);
+                heartbeatTask, INITIAL_DELAY_IN_SECONDS, PERIOD_IN_SECONDS, TimeUnit.SECONDS);
     }
 
     public void updateHeartbeat(int heartbeatInterval) {

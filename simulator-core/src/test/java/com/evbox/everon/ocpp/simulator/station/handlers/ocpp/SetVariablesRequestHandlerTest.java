@@ -21,11 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.evbox.everon.ocpp.testutils.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
-import static com.evbox.everon.ocpp.testutils.constants.StationConstants.DEFAULT_MESSAGE_ID;
-import static com.evbox.everon.ocpp.testutils.factory.JsonMessageTypeFactory.createCallResult;
-import static com.evbox.everon.ocpp.testutils.factory.OcppMessageFactory.createSetVariablesRequest;
-import static com.evbox.everon.ocpp.testutils.factory.OcppMessageFactory.createSetVariablesResponse;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_MESSAGE_ID;
+import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.createCallResult;
+import static com.evbox.everon.ocpp.mock.factory.OcppMessageFactory.createSetVariablesRequest;
+import static com.evbox.everon.ocpp.mock.factory.OcppMessageFactory.createSetVariablesResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;

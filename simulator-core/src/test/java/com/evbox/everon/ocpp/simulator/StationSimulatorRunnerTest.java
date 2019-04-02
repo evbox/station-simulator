@@ -3,8 +3,8 @@ package com.evbox.everon.ocpp.simulator;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import org.junit.jupiter.api.Test;
 
-import static com.evbox.everon.ocpp.testutils.factory.SimulatorConfigCreator.createSimulatorConfiguration;
-import static com.evbox.everon.ocpp.testutils.factory.SimulatorConfigCreator.createStationConfiguration;
+import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createSimulatorConfiguration;
+import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createStationConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StationSimulatorRunnerTest {

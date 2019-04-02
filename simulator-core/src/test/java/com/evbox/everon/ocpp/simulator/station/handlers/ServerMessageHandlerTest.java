@@ -26,10 +26,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
-import static com.evbox.everon.ocpp.testutils.ReflectionUtils.injectMock;
-import static com.evbox.everon.ocpp.testutils.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.testutils.factory.JsonMessageTypeFactory.*;
-import static com.evbox.everon.ocpp.testutils.factory.OcppMessageFactory.*;
+import static com.evbox.everon.ocpp.mock.ReflectionUtils.injectMock;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.*;
+import static com.evbox.everon.ocpp.mock.factory.OcppMessageFactory.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
