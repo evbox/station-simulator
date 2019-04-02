@@ -1,18 +1,20 @@
 package com.evbox.everon.ocpp.it.provisioning;
 
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
+import com.evbox.everon.ocpp.mock.ocpp.exchange.NotifyReport;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.NotifyReport;
-import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
+import com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.mock.station.ExpectedResponses.responseWithId;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.CONFIGURATION_INVENTORY;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
+import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 public class GetBaseReportIt extends StationSimulatorSetUp {
@@ -24,8 +26,6 @@ public class GetBaseReportIt extends StationSimulatorSetUp {
 
         String id = UUID.randomUUID().toString();
 
-        ocppMockServer.expectResponseFromStation(responseWithId(id));
-
         stationSimulatorRunner.run();
 
         GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(CONFIGURATION_INVENTORY);
@@ -33,9 +33,11 @@ public class GetBaseReportIt extends StationSimulatorSetUp {
 
         ocppMockServer.waitUntilConnected();
 
-        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
+        GetBaseReportResponse response =
+                ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson(), GetBaseReportResponse.class);
 
         await().untilAsserted(() -> {
+            assertThat(response.getStatus()).isEqualTo(ACCEPTED);
             ocppMockServer.verify();
         });
     }

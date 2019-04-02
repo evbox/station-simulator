@@ -16,6 +16,11 @@ public class WebSocketSender {
     private final WebSocketChannel webSocketChannel;
     private final RequestResponseSynchronizer requestResponseSynchronizer;
 
+    /**
+     * Send a message without waiting for the response.
+     *
+     * @param message to the station
+     */
     public void sendMessage(String message) {
         WebSockets.sendText(message, webSocketChannel, null);
     }
@@ -24,8 +29,8 @@ public class WebSocketSender {
      * Send a message to the station and wait for the response.
      *
      * @param message to the station
-     * @param clazz serialize incoming response to the specified class
-     * @param <T> type of the response
+     * @param clazz   serialize incoming response to the specified class
+     * @param <T>     type of the response
      * @return an instance of the specified class
      */
     public <T> T sendMessage(String message, Class<T> clazz) {

@@ -2,21 +2,16 @@ package com.evbox.everon.ocpp.it.provisioning;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.mock.station.ExpectedResponses.responseWithId;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -26,9 +21,8 @@ public class GetVariablesIt extends StationSimulatorSetUp {
     @Test
     void shouldReplyToGetVariablesRequest() {
 
+        int expectedNumberOfVariables = 1;
         String id = UUID.randomUUID().toString();
-
-        ocppMockServer.expectResponseFromStation(responseWithId(id));
 
         stationSimulatorRunner.run();
 
@@ -39,9 +33,12 @@ public class GetVariablesIt extends StationSimulatorSetUp {
 
         ocppMockServer.waitUntilConnected();
 
-        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
+
+        GetVariablesResponse response =
+                ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson(), GetVariablesResponse.class);
 
         await().untilAsserted(() -> {
+            assertThat(response.getGetVariableResult().size()).isEqualTo(expectedNumberOfVariables);
             ocppMockServer.verify();
         });
     }
@@ -49,8 +46,7 @@ public class GetVariablesIt extends StationSimulatorSetUp {
     @Test
     void shouldGetHeartbeatIntervalWithGetVariablesRequest() {
 
-        int expectedHeartbeatInterval = BootNotification.DEFAULT_HEARTBEAT_INTERVAL;
-
+        int expectedHeartbeatInterval = 100;
         String id = UUID.randomUUID().toString();
 
         stationSimulatorRunner.run();

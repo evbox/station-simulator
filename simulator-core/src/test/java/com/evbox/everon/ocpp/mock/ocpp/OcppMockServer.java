@@ -2,7 +2,6 @@ package com.evbox.everon.ocpp.mock.ocpp;
 
 import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;
-import com.evbox.everon.ocpp.mock.expect.ResponseExpectationManager;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ public class OcppMockServer {
     private Undertow server;
 
     private final RequestExpectationManager requestExpectationManager = new RequestExpectationManager();
-    private final ResponseExpectationManager responseExpectationManager = new ResponseExpectationManager();
     private final RequestResponseSynchronizer requestResponseSynchronizer = new RequestResponseSynchronizer();
 
     private final OcppServerClient ocppServerClient;
@@ -56,7 +54,7 @@ public class OcppMockServer {
                 .setHandler(
                         path().addPrefixPath(path, websocket((exchange, channel) -> {
                             String stationId = channel.getUrl().replace(targetUrl, "");
-                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, responseExpectationManager, ocppServerClient, requestResponseSynchronizer));
+                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, ocppServerClient, requestResponseSynchronizer));
                             channel.resumeReceives();
 
                             ocppServerClient.putIfAbsent(stationId, new WebSocketSender(channel, requestResponseSynchronizer));
@@ -101,7 +99,6 @@ public class OcppMockServer {
      */
     public void verify() {
         requestExpectationManager.verify();
-        responseExpectationManager.verify();
     }
 
     /**
@@ -109,7 +106,6 @@ public class OcppMockServer {
      */
     public void reset() {
         requestExpectationManager.reset();
-        responseExpectationManager.reset();
     }
 
     /**
@@ -117,7 +113,6 @@ public class OcppMockServer {
      */
     public void useStrictVerification() {
         requestExpectationManager.useStrictVerification();
-        responseExpectationManager.useStrictVerification();
     }
 
     /**

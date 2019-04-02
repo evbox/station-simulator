@@ -1,10 +1,9 @@
 package com.evbox.everon.ocpp.mock.ocpp;
 
+import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.message.RawCall;
-import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;
-import com.evbox.everon.ocpp.mock.expect.ResponseExpectationManager;
 import io.undertow.websockets.core.AbstractReceiveListener;
 import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.WebSocketChannel;
@@ -25,7 +24,6 @@ import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.emptyResponse;
 public class OcppReceiveListener extends AbstractReceiveListener {
 
     private final RequestExpectationManager requestExpectationManager;
-    private final ResponseExpectationManager responseExpectationManager;
     private final OcppServerClient ocppServerClient;
     private final RequestResponseSynchronizer requestResponseSynchronizer;
 
@@ -66,9 +64,5 @@ public class OcppReceiveListener extends AbstractReceiveListener {
     private void handleCallResult(String request) {
         CallResult response = CallResult.from(request);
         requestResponseSynchronizer.offer(response);
-
-        if (!responseExpectationManager.isExpectedResponsePresent(response)) {
-            responseExpectationManager.addUnexpectedCall(request);
-        }
     }
 }

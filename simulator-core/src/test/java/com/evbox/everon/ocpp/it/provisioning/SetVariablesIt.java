@@ -1,22 +1,17 @@
 package com.evbox.everon.ocpp.it.provisioning;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
-import org.assertj.core.api.Condition;
+import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.mock.station.ExpectedResponses.responseWithId;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -26,9 +21,8 @@ public class SetVariablesIt extends StationSimulatorSetUp {
     @Test
     void shouldReplyToSetVariablesRequest() {
 
+        int expectedNumberOfVariables = 1;
         String id = UUID.randomUUID().toString();
-
-        ocppMockServer.expectResponseFromStation(responseWithId(id));
 
         stationSimulatorRunner.run();
 
@@ -42,9 +36,11 @@ public class SetVariablesIt extends StationSimulatorSetUp {
 
         ocppMockServer.waitUntilConnected();
 
-        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
+        SetVariablesResponse response =
+                ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson(), SetVariablesResponse.class);
 
         await().untilAsserted(() -> {
+            assertThat(response.getSetVariableResult().size()).isEqualTo(expectedNumberOfVariables);
             ocppMockServer.verify();
         });
     }
