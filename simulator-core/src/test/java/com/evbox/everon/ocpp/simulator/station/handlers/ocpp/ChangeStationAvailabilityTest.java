@@ -21,11 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.factory.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.UNAVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
-import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.eq;
@@ -74,7 +74,7 @@ public class ChangeStationAvailabilityTest {
     }
 
     @Test
-    @DisplayName("Evse and connector should change status to UNAVAILABLE")
+    @DisplayName("Evse expectResponseFromStation connector should change status to UNAVAILABLE")
     void shouldChangeEvseAndConnectorStatus() {
         // given
         Evse evse = createEvse()

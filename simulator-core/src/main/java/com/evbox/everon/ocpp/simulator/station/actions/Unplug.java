@@ -33,7 +33,6 @@ public class Unplug implements UserMessage {
             throw new IllegalStateException(String.format("Unable to unplug locked connector: %d %d", evseId, connectorId));
         }
 
-
         evse.unplug(connectorId);
 
         evse.clearToken();

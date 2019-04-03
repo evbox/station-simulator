@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +28,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
-import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCall;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.factory.EvseCreator.createEvse;
+import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.createCall;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -145,13 +144,12 @@ public class StationMessageSenderTest {
                 () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getTransactionData().getStoppedReason()).isEqualTo(TransactionData.StoppedReason.STOPPED_BY_EV)
         );
-
     }
 
     @Test
     void verifyAuthorize() throws InterruptedException {
 
-        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, Collections.singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
+        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
 
         WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
 

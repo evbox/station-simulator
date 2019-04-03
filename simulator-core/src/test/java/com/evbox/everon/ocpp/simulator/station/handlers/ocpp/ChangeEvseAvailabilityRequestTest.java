@@ -16,11 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.factory.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.UNAVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
-import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,7 +72,7 @@ public class ChangeEvseAvailabilityRequestTest {
     }
 
     @Test
-    @DisplayName("Evse and connector should change status to UNAVAILABLE")
+    @DisplayName("Evse expectResponseFromStation connector should change status to UNAVAILABLE")
     void shouldChangeEvseAndConnectorStatus() {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
@@ -97,7 +97,7 @@ public class ChangeEvseAvailabilityRequestTest {
     }
 
     @Test
-    @DisplayName("Send response with ACCEPT status and StatusNotification request for every connector")
+    @DisplayName("Send response with ACCEPT status expectResponseFromStation StatusNotification request for every connector")
     void shouldSendAcceptStatusAndStatusNotification() {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
