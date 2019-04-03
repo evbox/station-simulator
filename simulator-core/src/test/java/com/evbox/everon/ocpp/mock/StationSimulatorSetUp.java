@@ -1,10 +1,11 @@
 package com.evbox.everon.ocpp.mock;
 
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
+import com.evbox.everon.ocpp.mock.csms.OcppMockServer;
+import com.evbox.everon.ocpp.mock.csms.OcppServerClient;
+import com.evbox.everon.ocpp.mock.csms.exchange.BootNotification;
+import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator;
-import com.evbox.everon.ocpp.mock.ocpp.OcppMockServer;
-import com.evbox.everon.ocpp.mock.ocpp.OcppServerClient;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
@@ -16,11 +17,13 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.any;
+import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.atLeastOnce;
+import static com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest.Reason.POWER_UP;
 
 public class StationSimulatorSetUp  {
 
     private static final int ASSERT_TIMEOUT_IN_SECONDS = 10;
+    protected ExpectedCount stationBootCount = atLeastOnce();
 
     protected OcppServerClient ocppServerClient = new OcppServerClient();
 
@@ -44,9 +47,9 @@ public class StationSimulatorSetUp  {
 
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);
 
-        // Station always needs boot notification message on startup
+        // Station always needs to send boot notification on startup
         ocppMockServer
-                .when(BootNotification.request(), any())
+                .when(BootNotification.request(POWER_UP), stationBootCount)
                 .thenReturn(BootNotification.response());
     }
 

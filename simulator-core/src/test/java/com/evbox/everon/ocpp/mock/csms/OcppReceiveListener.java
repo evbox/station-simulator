@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.ocpp;
+package com.evbox.everon.ocpp.mock.csms;
 
 import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;
 import com.evbox.everon.ocpp.simulator.message.Call;
@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.emptyResponse;
+import static com.evbox.everon.ocpp.mock.csms.exchange.Common.emptyResponse;
 
 /**
  * A receive listener that handles an incoming text message.

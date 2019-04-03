@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.ocpp;
+package com.evbox.everon.ocpp.mock.csms;
 
 import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;

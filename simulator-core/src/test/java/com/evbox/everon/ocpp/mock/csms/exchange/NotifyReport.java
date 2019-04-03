@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.ocpp.exchange;
+package com.evbox.everon.ocpp.mock.csms.exchange;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.v20.message.station.NotifyReportRequest;
@@ -6,8 +6,8 @@ import com.evbox.everon.ocpp.v20.message.station.NotifyReportRequest;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.emptyResponse;
-import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.equalsType;
+import static com.evbox.everon.ocpp.mock.csms.exchange.Common.emptyResponse;
+import static com.evbox.everon.ocpp.mock.csms.exchange.Common.equalsType;
 import static com.evbox.everon.ocpp.simulator.message.ActionType.NOTIFY_REPORT;
 
 public class NotifyReport {

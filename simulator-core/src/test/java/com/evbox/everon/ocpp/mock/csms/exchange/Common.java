@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.ocpp.exchange;
+package com.evbox.everon.ocpp.mock.csms.exchange;
 
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.simulator.message.ActionType;

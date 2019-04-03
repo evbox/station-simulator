@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.ocpp;
+package com.evbox.everon.ocpp.mock.csms;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

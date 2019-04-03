@@ -54,9 +54,4 @@ public class ExpectedCount {
      * At least N times.
      */
     public static ExpectedCount atLeast(int count) { return new ExpectedCount(count, !EXACT); }
-
-    /**
-     * Any amount of times.
-     */
-    public static ExpectedCount any() { return new ExpectedCount(0, !EXACT); }
 }

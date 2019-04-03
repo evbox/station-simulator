@@ -1,16 +1,14 @@
 package com.evbox.everon.ocpp.it.provisioning;
 
 import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.Authorize;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.BootNotification;
-import com.evbox.everon.ocpp.mock.ocpp.exchange.TransactionEvent;
+import com.evbox.everon.ocpp.mock.csms.exchange.Authorize;
+import com.evbox.everon.ocpp.mock.csms.exchange.BootNotification;
+import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.actions.Plug;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.atLeastOnce;
@@ -25,9 +23,7 @@ public class ResetWithOngoingTransactionIt extends StationSimulatorSetUp {
     @Test
     void shouldImmediatelyResetWithOngoingTransaction() {
 
-        ocppMockServer
-                .when(BootNotification.request(), times(2))
-                .thenReturn(BootNotification.response());
+        stationBootCount = times(2);
 
         ocppMockServer
                 .when(Authorize.request(DEFAULT_TOKEN_ID, ISO_14443))
@@ -49,7 +45,7 @@ public class ResetWithOngoingTransactionIt extends StationSimulatorSetUp {
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isTrue());
 
-        Call call = new Call(UUID.randomUUID().toString(), ActionType.RESET, new ResetRequest().withType(ResetRequest.Type.IMMEDIATE));
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.RESET, new ResetRequest().withType(ResetRequest.Type.IMMEDIATE));
 
         ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
 

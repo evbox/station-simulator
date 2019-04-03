@@ -3,7 +3,6 @@ package com.evbox.everon.ocpp.mock.expect;
 import com.evbox.everon.ocpp.mock.match.RequestMatcher;
 import com.evbox.everon.ocpp.simulator.message.Call;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -20,8 +19,7 @@ public class RequestExpectationManager extends ExpectationManager<RequestMatcher
      * @return optional of expected response.
      */
     public Optional<Function<Call, String>> findExpectedResponse(Call incomingRequest) {
-
-        List<RequestMatcher> matchers = getSuccessfulMatchers(incomingRequest);
-        return matchers.isEmpty() ? Optional.empty() : Optional.of(matchers.get(0).getExpectedResponse());
+        Optional<RequestMatcher> matcher = getSuccessfulMatcher(incomingRequest);
+        return matcher.isPresent() ? Optional.of(matcher.get().getExpectedResponse()) : Optional.empty();
     }
 }

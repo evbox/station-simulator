@@ -10,6 +10,7 @@ public class StationConstants {
     public static final String OCPP_SERVER_URL = "ws://" + HOST + ":" + PORT + PATH;
 
     public static final String STATION_ID = "EVB-P18090564";
+    public static final String ADDITIONAL_STATION_ID = "EVB-P18090564";
 
     public static final int DEFAULT_EVSE_COUNT = 1;
 
@@ -44,6 +45,8 @@ public class StationConstants {
     public static final String DEFAULT_SERIAL_NUMBER = "00000000000F";
     public static final String DEFAULT_MODEL = "G5";
     public static final String DEFAULT_FIRMWARE_VERSION = "G5-0.00.01";
+
+    public static final String DEFAULT_CALL_ID = "7f38cd56-5916-4ebc-a01c-384c63b68fd0";
 
     // Actions
     public static final String NOTIFY_REPORT_ACTION = "NotifyReport";

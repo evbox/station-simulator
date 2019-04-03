@@ -4,7 +4,6 @@ import com.evbox.everon.ocpp.mock.match.Matcher;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class ExpectationManager<S extends Matcher<T>, T> {
@@ -58,13 +57,13 @@ public abstract class ExpectationManager<S extends Matcher<T>, T> {
     }
 
     /**
-     * Applies all matchers to the given call, and filter the successful ones
+     * Return the first successful matcher that matches the call
      *
      * @param call call to match
      * @return list of successful matchers
      */
-    protected List<S> getSuccessfulMatchers(T call) {
-        return matchers.stream().filter(matcher -> matcher.match(call)).collect(toList());
+    protected Optional<S> getSuccessfulMatcher(T call) {
+        return matchers.stream().filter(matcher -> matcher.match(call)).findFirst();
     }
 
     private void verifyUnexpectedCalls() {

@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.ocpp;
+package com.evbox.everon.ocpp.mock.csms;
 
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.mock.ocpp.exchange;
+package com.evbox.everon.ocpp.mock.csms.exchange;
 
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.simulator.message.Call;
@@ -8,21 +8,12 @@ import java.time.ZonedDateTime;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.evbox.everon.ocpp.mock.ocpp.exchange.Common.equalsType;
+import static com.evbox.everon.ocpp.mock.csms.exchange.Common.equalsType;
 import static com.evbox.everon.ocpp.simulator.message.ActionType.BOOT_NOTIFICATION;
 
 public class BootNotification {
 
     public static final int DEFAULT_HEARTBEAT_INTERVAL = 100;
-
-    /**
-     * BootNotificationRequest with any configuration.
-     *
-     * @return checks whether an incoming request is BootNotification or not.
-     */
-    public static Predicate<Call> request() {
-        return request -> equalsType(request, BOOT_NOTIFICATION);
-    }
 
     /**
      * BootNotificationRequest with given reason.

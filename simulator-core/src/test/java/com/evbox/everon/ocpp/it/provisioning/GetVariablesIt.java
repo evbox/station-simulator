@@ -9,8 +9,7 @@ import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommC
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,14 +21,13 @@ public class GetVariablesIt extends StationSimulatorSetUp {
     void shouldReplyToGetVariablesRequest() {
 
         int expectedNumberOfVariables = 1;
-        String id = UUID.randomUUID().toString();
 
         stationSimulatorRunner.run();
 
         GetVariablesRequest getVariablesRequest =
                 createGetVariablesRequest(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL);
 
-        Call call = new Call(id, ActionType.GET_VARIABLES, getVariablesRequest);
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.GET_VARIABLES, getVariablesRequest);
 
         ocppMockServer.waitUntilConnected();
 
@@ -47,14 +45,13 @@ public class GetVariablesIt extends StationSimulatorSetUp {
     void shouldGetHeartbeatIntervalWithGetVariablesRequest() {
 
         int expectedHeartbeatInterval = 100;
-        String id = UUID.randomUUID().toString();
 
         stationSimulatorRunner.run();
 
         GetVariablesRequest getVariablesRequest =
                 createGetVariablesRequest(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL);
 
-        Call call = new Call(id, ActionType.GET_VARIABLES, getVariablesRequest);
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.GET_VARIABLES, getVariablesRequest);
 
         ocppMockServer.waitUntilConnected();
 
