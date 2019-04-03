@@ -19,7 +19,6 @@ public class RequestExpectationManager extends ExpectationManager<RequestMatcher
      * @return optional of expected response.
      */
     public Optional<Function<Call, String>> findExpectedResponse(Call incomingRequest) {
-        Optional<RequestMatcher> matcher = getSuccessfulMatcher(incomingRequest);
-        return matcher.isPresent() ? Optional.of(matcher.get().getExpectedResponse()) : Optional.empty();
+        return getSuccessfulMatcher(incomingRequest).map(matcher -> Optional.of(matcher.getExpectedResponse())).orElse(Optional.empty());
     }
 }
