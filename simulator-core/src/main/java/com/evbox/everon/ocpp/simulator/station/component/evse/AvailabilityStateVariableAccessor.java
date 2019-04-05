@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.evbox.everon.ocpp.v20.message.station.VariableAttribute.Mutability.READ_ONLY;
 import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.SEQUENCE_LIST;
 import static java.util.Collections.singletonList;
 
@@ -77,8 +78,9 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
             VariableAttribute variableAttribute = new VariableAttribute()
                     .withValue(new CiString.CiString1000(EVSE_AVAILABILITY))
-                    .withPersistence(false)
-                    .withConstant(true);
+                    .withPersistence(true)
+                    .withConstant(true)
+                    .withMutability(READ_ONLY);
 
             VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
                     .withDataType(SEQUENCE_LIST)

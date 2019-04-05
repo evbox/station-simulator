@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.evbox.everon.ocpp.v20.message.station.VariableAttribute.Mutability.READ_ONLY;
 import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.STRING;
 import static java.util.Collections.singletonList;
 
@@ -68,7 +69,8 @@ public class ModelVariableAccessor extends VariableAccessor {
         VariableAttribute variableAttribute = new VariableAttribute()
                 .withValue(new CiString.CiString1000(StationHardwareData.MODEL))
                 .withPersistence(true)
-                .withConstant(true);
+                .withConstant(true)
+                .withMutability(READ_ONLY);
 
         VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
                 .withDataType(STRING)
