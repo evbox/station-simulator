@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.evbox.everon.ocpp.v20.message.station.VariableAttribute.Mutability.READ_ONLY;
 import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.BOOLEAN;
 import static java.util.Collections.singletonList;
 
@@ -81,7 +82,8 @@ public class EnabledVariableAccessor extends VariableAccessor {
                 VariableAttribute variableAttribute = new VariableAttribute()
                         .withValue(new CiString.CiString1000(CONNECTOR_STATUS))
                         .withPersistence(false)
-                        .withConstant(true);
+                        .withConstant(true)
+                        .withMutability(READ_ONLY);
 
                 VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
                         .withDataType(BOOLEAN)
