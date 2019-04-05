@@ -81,7 +81,7 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
 
                 VariableAttribute variableAttribute = new VariableAttribute()
                         .withValue(new CiString.CiString1000(CONNECTOR_TYPE))
-                        .withPersistence(false)
+                        .withPersistence(true)
                         .withConstant(true)
                         .withMutability(READ_ONLY);
 

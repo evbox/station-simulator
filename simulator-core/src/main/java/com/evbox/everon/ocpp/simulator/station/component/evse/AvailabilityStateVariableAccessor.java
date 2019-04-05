@@ -78,7 +78,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
             VariableAttribute variableAttribute = new VariableAttribute()
                     .withValue(new CiString.CiString1000(EVSE_AVAILABILITY))
-                    .withPersistence(false)
+                    .withPersistence(true)
                     .withConstant(true)
                     .withMutability(READ_ONLY);
 

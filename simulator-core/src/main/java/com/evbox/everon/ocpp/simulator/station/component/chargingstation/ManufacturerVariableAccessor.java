@@ -69,7 +69,7 @@ public class ManufacturerVariableAccessor extends VariableAccessor {
 
         VariableAttribute variableAttribute = new VariableAttribute()
                 .withValue(new CiString.CiString1000(StationHardwareData.VENDOR_NAME))
-                .withPersistence(false)
+                .withPersistence(true)
                 .withConstant(true)
                 .withMutability(READ_ONLY);
 

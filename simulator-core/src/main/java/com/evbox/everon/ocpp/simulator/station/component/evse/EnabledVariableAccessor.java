@@ -78,7 +78,7 @@ public class EnabledVariableAccessor extends VariableAccessor {
 
             VariableAttribute variableAttribute = new VariableAttribute()
                     .withValue(new CiString.CiString1000(EVSE_ENABLED_STATUS))
-                    .withPersistence(false)
+                    .withPersistence(true)
                     .withConstant(true)
                     .withMutability(READ_ONLY);
 
