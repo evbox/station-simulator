@@ -73,7 +73,7 @@ public class Station {
         this.defaultHeartBeatIntervalSec = defaultHeartBeatIntervalSec;
         this.state = new StationState(configuration);
 
-        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(okHttpClient));
+        this.webSocketClient = new WebSocketClient(this, new OkHttpWebSocketClient(okHttpClient));
 
         this.callRegistry = new SubscriptionRegistry();
         this.stationMessageSender = new StationMessageSender(callRegistry, state, webSocketClient);
@@ -174,5 +174,14 @@ public class Station {
 
         heartbeatScheduler.scheduleHeartbeat(interval);
         state.setHeartbeatInterval(interval);
+    }
+
+    /**
+     * Getter for station identity.
+     *
+     * @return station id
+     */
+    public String getId() {
+        return configuration.getId();
     }
 }

@@ -269,12 +269,7 @@ public class StationMessageSender {
      * @param message {@link WebSocketClientInboxMessage}
      */
     public void sendMessage(WebSocketClientInboxMessage message) {
-        try {
-            webSocketClient.getInbox().put(message);
-        } catch (InterruptedException e) {
-            log.error("Exception on adding message to WebSocketInbox", e);
-            Thread.currentThread().interrupt();
-        }
+        webSocketClient.getInbox().offer(message);
     }
 
     /**

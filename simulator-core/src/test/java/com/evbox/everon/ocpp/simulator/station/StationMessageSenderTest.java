@@ -11,6 +11,7 @@ import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
 import com.evbox.everon.ocpp.simulator.support.ReflectionUtils;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.WebSocketMessageInbox;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData.ChargingState;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason;
@@ -25,9 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
@@ -53,11 +51,10 @@ public class StationMessageSenderTest {
 
     StationMessageSender stationMessageSender;
 
-    BlockingQueue<WebSocketClientInboxMessage> queue;
+    WebSocketMessageInbox queue = new WebSocketMessageInbox();
 
     @BeforeEach
     void setUp() {
-        this.queue = new LinkedBlockingQueue<>();
         when(webSocketClientMock.getInbox()).thenReturn(queue);
 
         ReflectionUtils.injectMock(CallIdGenerator.getInstance(), "callId", ThreadLocal.withInitial(() -> 1));
@@ -89,7 +86,7 @@ public class StationMessageSenderTest {
 
         stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
 
-        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+        WebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -113,7 +110,7 @@ public class StationMessageSenderTest {
 
         stationMessageSender.sendTransactionEventUpdate(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.CHARGING);
 
-        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+        WebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -136,7 +133,7 @@ public class StationMessageSenderTest {
 
         stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV);
 
-        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+        WebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -157,7 +154,7 @@ public class StationMessageSenderTest {
 
         stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, Collections.singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
 
-        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+        WebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -174,7 +171,7 @@ public class StationMessageSenderTest {
 
         stationMessageSender.sendBootNotification(BootNotificationRequest.Reason.POWER_UP);
 
-        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+        WebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -199,7 +196,7 @@ public class StationMessageSenderTest {
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 
-        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+        WebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -220,7 +217,7 @@ public class StationMessageSenderTest {
 
         stationMessageSender.sendHeartBeatAndSubscribe(heartbeatRequest, DEFAULT_SUBSCRIBER);
 
-        WebSocketClientInboxMessage actualMessage = queue.poll(100, TimeUnit.MILLISECONDS);
+        WebSocketClientInboxMessage actualMessage = queue.take();
 
         String expectedCall = createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)

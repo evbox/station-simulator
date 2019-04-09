@@ -1,21 +1,26 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
-import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
-@FieldDefaults(makeFinal = true)
-public class WebSocketMesageSender {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketClient.class);
+/**
+ * Send message to the websocket channel.
+ */
+@Slf4j
+public class WebSocketMessageSender {
 
-    private WebSocketClientAdapter webSocketClientAdapter;
-    private int maxSendAttempts;
+    private final OkHttpWebSocketClient webSocketClientAdapter;
+    private final int maxSendAttempts;
 
-    public WebSocketMesageSender(WebSocketClientAdapter webSocketClientAdapter, int maxSendAttempts) {
+    public WebSocketMessageSender(OkHttpWebSocketClient webSocketClientAdapter, int maxSendAttempts) {
         this.webSocketClientAdapter = webSocketClientAdapter;
         this.maxSendAttempts = maxSendAttempts;
     }
 
+    /**
+     * Send message to the websocket channel or retry. Give up after {@code maxSendAttempts} exceeded.
+     *
+     * @param message incoming message from station
+     */
     public void send(String message) {
         boolean retry = false;
         boolean sentSuccessfully;
@@ -28,7 +33,7 @@ public class WebSocketMesageSender {
                 if (attempts < maxSendAttempts) {
                     retry = true;
                 } else {
-                    LOGGER.error("Unable to send message (attempts={}): {}", attempts, message);
+                    log.error("Unable to send message (attempts={}): {}", attempts, message);
                     retry = false;
                 }
             }
