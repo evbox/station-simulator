@@ -1,42 +1,28 @@
 package com.evbox.everon.ocpp.simulator.station;
 
-import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
-import com.evbox.everon.ocpp.v20.message.station.HeartbeatRequest;
-import com.evbox.everon.ocpp.v20.message.station.HeartbeatResponse;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @FieldDefaults(makeFinal = true)
 public class HeartbeatScheduler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HeartbeatScheduler.class);
 
-    private ScheduledExecutorService heartbeatExecutor = Executors.newSingleThreadScheduledExecutor();
-    private StationState stationState;
-    private StationMessageSender stationMessageSender;
+    private static final int INITIAL_TASK_DELAY_IN_SECONDS = 5;
+    private static final int TASK_PERIOD_IN_SECONDS = 1;
+
+    private HeartbeatSenderTask heartbeatTask;
 
     public HeartbeatScheduler(StationState stationState, StationMessageSender stationMessageSender) {
-        this.stationState = stationState;
-        this.stationMessageSender = stationMessageSender;
+        this.heartbeatTask = new HeartbeatSenderTask(stationState, stationMessageSender);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+                heartbeatTask, INITIAL_TASK_DELAY_IN_SECONDS, TASK_PERIOD_IN_SECONDS, TimeUnit.SECONDS);
     }
 
-    public void scheduleHeartbeat(int heartbeatInterval) {
-        LOGGER.debug("Scheduling heartbeat to {} sec.", heartbeatInterval);
-        heartbeatExecutor.scheduleAtFixedRate(this::sendHeartbeat, heartbeatInterval, heartbeatInterval, TimeUnit.SECONDS);
-    }
-
-    private void sendHeartbeat() {
-        try {
-            HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
-            Subscriber<HeartbeatRequest, HeartbeatResponse> subscriber = (request, response) -> stationState.setCurrentTime(response.getCurrentTime());
-
-            stationMessageSender.sendHeartBeatAndSubscribe(heartbeatRequest, subscriber);
-        } catch (Exception e) {
-            LOGGER.error("Unable to send heartbeat", e);
-        }
+    public void updateHeartbeat(int heartbeatInterval) {
+        log.debug("Updating heartbeat to {} sec.", heartbeatInterval);
+        heartbeatTask.updateHeartBeatInterval(heartbeatInterval);
     }
 }

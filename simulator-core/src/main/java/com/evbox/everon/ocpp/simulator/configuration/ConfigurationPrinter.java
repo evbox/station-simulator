@@ -29,7 +29,6 @@ public class ConfigurationPrinter {
         String config = header;
         config += "\n" + "";
         config += "\n" + ("OCPP URL: " + runConfiguration.getUrl());
-        config += "\n" + ("Default heartbeat interval: " + configuration.getHeartbeatInterval());
         config += "\n" + "";
         config += "\n" + "Console-ready configuration:";
         config += "\n" + toJsonString(configuration, false).replace("\"", "'");
@@ -44,8 +43,8 @@ public class ConfigurationPrinter {
     }
 
     private static String makeHeader(String str, int width) {
-        String leftBorder = "╒═";
-        String rightBorder = "═╕";
+        String leftBorder = "=";
+        String rightBorder = "=";
 
         String title = " " + str + " ";
         int requiredWidth = title.length() + leftBorder.length() + rightBorder.length();
@@ -53,21 +52,21 @@ public class ConfigurationPrinter {
 
         int paddingSize = (finalWidth - requiredWidth) / 2;
 
-        String leftPadding = StringUtils.repeat('═', paddingSize);
-        String rightPadding = StringUtils.repeat('═', paddingSize);
+        String leftPadding = StringUtils.repeat('=', paddingSize);
+        String rightPadding = StringUtils.repeat('=', paddingSize);
 
         if (requiredWidth + paddingSize * 2 < width) {
-            rightPadding += "═";
+            rightPadding += "=";
         }
 
         return "\n" + leftBorder + leftPadding + title + rightPadding + rightBorder;
     }
 
     private static String makeBottomBorder(int width) {
-        String leftBorder = "╘═";
-        String rightBorder = "═╛";
+        String leftBorder = "=";
+        String rightBorder = "=";
 
-        String padding = StringUtils.repeat('═', width - leftBorder.length() - rightBorder.length());
+        String padding = StringUtils.repeat('=', width - leftBorder.length() - rightBorder.length());
         return "\n" + leftBorder + padding + rightBorder;
     }
 

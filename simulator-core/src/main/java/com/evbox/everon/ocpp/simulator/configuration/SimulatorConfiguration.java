@@ -4,22 +4,12 @@ import lombok.Data;
 
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-
 @Data
 public class SimulatorConfiguration {
 
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
-    /**
-     * Default heartbeatInterval (in seconds) for all stations
-     */
-    private Integer heartbeatInterval;
     private List<StationConfiguration> stations;
-
-    public int getHeartbeatInterval() {
-        return defaultIfNull(heartbeatInterval, DEFAULT_HEARTBEAT_INTERVAL);
-    }
 
     @Data
     public static class StationConfiguration {

@@ -7,8 +7,6 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
-import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
-import com.evbox.everon.ocpp.simulator.support.ReflectionUtils;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketMessageInbox;
@@ -22,15 +20,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
-import static com.evbox.everon.ocpp.simulator.support.JsonMessageTypeFactory.createCall;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.factory.EvseCreator.createEvse;
+import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.createCall;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -40,7 +39,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class StationMessageSenderTest {
-
 
     @Mock
     StationState stationStateMock;
@@ -56,9 +54,6 @@ public class StationMessageSenderTest {
     @BeforeEach
     void setUp() {
         when(webSocketClientMock.getInbox()).thenReturn(queue);
-
-        ReflectionUtils.injectMock(CallIdGenerator.getInstance(), "callId", ThreadLocal.withInitial(() -> 1));
-
         this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStateMock, webSocketClientMock);
     }
 
@@ -146,13 +141,12 @@ public class StationMessageSenderTest {
                 () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getTransactionData().getStoppedReason()).isEqualTo(TransactionData.StoppedReason.STOPPED_BY_EV)
         );
-
     }
 
     @Test
     void verifyAuthorize() throws InterruptedException {
 
-        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, Collections.singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
+        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
 
         WebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -223,6 +217,30 @@ public class StationMessageSenderTest {
                 .withMessageId(DEFAULT_MESSAGE_ID)
                 .withAction(HEART_BEAT_ACTION)
                 .withPayload(new HeartbeatRequest())
+                .toJson();
+
+        assertThat(actualMessage.getData().get()).isEqualTo(expectedCall);
+    }
+
+    @Test
+    void verifyNotifyReportAsync() throws InterruptedException, JsonProcessingException {
+        List<ReportDatum> reportData = singletonList(new ReportDatum());
+        ZonedDateTime now = ZonedDateTime.now();
+
+        NotifyReportRequest request = new NotifyReportRequest()
+                .withTbc(false)
+                .withSeqNo(0)
+                .withReportData(reportData)
+                .withGeneratedAt(now);
+
+        stationMessageSender.sendNotifyReport(null, false, 0, now, reportData);
+
+        WebSocketClientInboxMessage actualMessage = queue.take();
+
+        String expectedCall = createCall()
+                .withMessageId(DEFAULT_MESSAGE_ID)
+                .withAction(NOTIFY_REPORT_ACTION)
+                .withPayload(request)
                 .toJson();
 
         assertThat(actualMessage.getData().get()).isEqualTo(expectedCall);

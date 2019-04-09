@@ -4,9 +4,7 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
-import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityStateMapper;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -18,19 +16,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.factory.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.UNAVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
-import static com.evbox.everon.ocpp.simulator.support.EvseCreator.createEvse;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
 import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,7 +72,7 @@ public class ChangeEvseAvailabilityRequestTest {
     }
 
     @Test
-    @DisplayName("Evse and connector should change status to UNAVAILABLE")
+    @DisplayName("Evse expectResponseFromStation connector should change status to UNAVAILABLE")
     void shouldChangeEvseAndConnectorStatus() {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)
@@ -103,7 +97,7 @@ public class ChangeEvseAvailabilityRequestTest {
     }
 
     @Test
-    @DisplayName("Send response with ACCEPT status and StatusNotification request for every connector")
+    @DisplayName("Send response with ACCEPT status expectResponseFromStation StatusNotification request for every connector")
     void shouldSendAcceptStatusAndStatusNotification() {
         Evse evse = createEvse()
                 .withId(DEFAULT_EVSE_ID)

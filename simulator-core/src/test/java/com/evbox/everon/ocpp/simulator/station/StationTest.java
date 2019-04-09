@@ -9,8 +9,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.evbox.everon.ocpp.simulator.support.ReflectionUtils.injectMock;
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.ReflectionUtils.injectMock;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
@@ -32,7 +32,7 @@ class StationTest {
         evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
         stationConfiguration.setEvse(evse);
 
-        station = new Station(stationConfiguration, DEFAULT_HEARTBEAT_INTERVAL);
+        station = new Station(stationConfiguration);
 
         injectMock(station, "webSocketClient", webSocketClientMock);
     }

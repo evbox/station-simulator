@@ -30,3 +30,7 @@ hs_err_pid*
 .gradle/
 build/
 build-cache
+
+# Out  
+payload/ocpp20/out*
+simulator-core/out*

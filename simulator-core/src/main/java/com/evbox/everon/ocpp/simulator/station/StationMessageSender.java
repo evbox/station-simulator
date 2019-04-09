@@ -14,6 +14,9 @@ import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +42,15 @@ public class StationMessageSender {
 
     private final Map<String, Call> sentCallsCache = new LRUCache<>(MAX_CALLS);
 
+    private volatile LocalDateTime timeOfLastMessageSent;
+
+    private final CallIdGenerator callIdGenerator = new CallIdGenerator();
+
     public StationMessageSender(SubscriptionRegistry subscriptionRegistry, StationState stationState, WebSocketClient webSocketClient) {
         this.stationState = stationState;
         this.callRegistry = subscriptionRegistry;
         this.webSocketClient = webSocketClient;
+        this.timeOfLastMessageSent = LocalDateTime.MIN;
     }
 
     /**
@@ -264,12 +272,29 @@ public class StationMessageSender {
     }
 
     /**
+     * Sends NotifyReport event
+     *
+     * @param requestId requestId from GetBaseReport
+     * @param tbc to be continued, signifies if this is the last report
+     * @param seqNo sequence number of this message
+     * @param reportData report data containing information about variables
+     */
+    public void sendNotifyReport(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
+        NotifyReportRequest payload =
+                payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, generatedAt, reportData);
+
+        Call call = createAndRegisterCall(ActionType.NOTIFY_REPORT, payload);
+        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+    }
+
+    /**
      * Send an incoming message {@link WebSocketClientInboxMessage} to ocpp server.
      *
      * @param message {@link WebSocketClientInboxMessage}
      */
     public void sendMessage(WebSocketClientInboxMessage message) {
         webSocketClient.getInbox().offer(message);
+        timeOfLastMessageSent = LocalDateTime.now();
     }
 
     /**
@@ -293,6 +318,13 @@ public class StationMessageSender {
         return Collections.unmodifiableMap(sentCallsCache);
     }
 
+    /**
+     * Return the timestamp in milliseconds of the last message sent to the server.
+     *
+     * @return timestamp in milliseconds
+     */
+    public LocalDateTime getTimeOfLastMessageSent() { return timeOfLastMessageSent; }
+
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
         TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationState.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, stationState.getCurrentTime());
@@ -304,7 +336,7 @@ public class StationMessageSender {
 
     private <REQ> Call createAndRegisterCall(ActionType actionType, REQ payload) {
 
-        String callId = CallIdGenerator.getInstance().getAndIncrement() + "";
+        String callId = callIdGenerator.generate();
 
         Call call = new Call(callId, actionType, payload);
 

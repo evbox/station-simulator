@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.ConnectException;
 
-import static com.evbox.everon.ocpp.simulator.support.StationConstants.STATION_ID;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
