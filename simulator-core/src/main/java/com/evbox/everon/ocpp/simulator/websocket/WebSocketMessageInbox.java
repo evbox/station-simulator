@@ -16,9 +16,10 @@ public class WebSocketMessageInbox {
     }
 
     /**
-     * Inserts the message into this inbox. If no space available throws {@link StationException}.
+     * Add message into inbox. If no space available throws {@link StationException}.
      *
      * @param message station messages
+     * @throws {@link StationException} if could not add message
      */
     public void offer(WebSocketClientInboxMessage message) {
         boolean success = webSocketMessageInbox.offer(message);
@@ -29,7 +30,7 @@ public class WebSocketMessageInbox {
     }
 
     /**
-     * Takes the message from the head of this inbox.
+     * Take message from the head of the inbox.
      *
      * @return station message
      * @throws InterruptedException if current thread is interrupted.

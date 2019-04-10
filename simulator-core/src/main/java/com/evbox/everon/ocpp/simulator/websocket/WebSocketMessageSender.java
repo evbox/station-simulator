@@ -22,21 +22,14 @@ public class WebSocketMessageSender {
      * @param message incoming message from station
      */
     public void send(String message) {
-        boolean retry = false;
-        boolean sentSuccessfully;
-        int attempts = 0;
-        do {
-            attempts += 1;
-            sentSuccessfully = webSocketClientAdapter.sendMessage(message);
 
-            if (!sentSuccessfully) {
-                if (attempts < maxSendAttempts) {
-                    retry = true;
-                } else {
-                    log.error("Unable to send message (attempts={}): {}", attempts, message);
-                    retry = false;
-                }
-            }
-        } while (retry);
+        int attempts = 0;
+        for (; attempts < maxSendAttempts; attempts++) {
+            boolean sentSuccessfully = webSocketClientAdapter.sendMessage(message);
+            if (sentSuccessfully)
+                return;
+        }
+
+        log.error("Unable to send message (attempts={}): {}", attempts, message);
     }
 }
