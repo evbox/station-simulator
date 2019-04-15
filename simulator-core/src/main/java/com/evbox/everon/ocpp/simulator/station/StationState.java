@@ -164,12 +164,12 @@ public class StationState {
                         .findAny());
     }
 
-    public void refreshView() {
-        this.stationStateView = copyOf(this);
-    }
-
     public StationState getView() {
         return stationStateView;
+    }
+
+    public void refreshView() {
+        this.stationStateView = copyOf(this);
     }
 
     private StationState copyOf(StationState stationState) {

@@ -170,7 +170,12 @@ public class Station {
         state.setHeartbeatInterval(newHeartbeatInterval);
     }
 
-    public void refreshStateView() {
+
+    /**
+     * Refreshes state view. Allowed to be called only by 'station-consumer' thread for thread-safety reasons.
+     * @see StationMessageConsumer
+     */
+    void refreshStateView() {
         state.refreshView();
     }
 }
