@@ -113,7 +113,7 @@ class AvailabilityStateVariableAccessorTest {
     }
 
     private void initEvseMock() {
-        given(stationMock.getState()).willReturn(stationStateMock);
+        given(stationMock.getStateView()).willReturn(stationStateMock);
         given(stationStateMock.hasEvse(eq(EVSE_ID))).willReturn(true);
         given(stationStateMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
     }

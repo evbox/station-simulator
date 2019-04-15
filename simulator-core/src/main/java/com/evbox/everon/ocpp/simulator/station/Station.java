@@ -122,7 +122,7 @@ public class Station {
 
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("station-consumer-" + getConfiguration().getId()).build();
 
-        StationMessageConsumer.runSingleThreaded(stationMessageInbox, stationMessageRouter, threadFactory);
+        StationMessageConsumer.runSingleThreaded(this, stationMessageInbox, stationMessageRouter, threadFactory);
     }
 
     /**
@@ -135,12 +135,12 @@ public class Station {
     }
 
     /**
-     * Returns the current state of the Station.
+     * Returns current state of the Station.
      *
      * @return {@link StationState}
      */
-    public StationState getState() {
-        return StationState.copyOf(state);
+    public StationState getStateView() {
+        return state.getView();
     }
 
     /**
@@ -168,5 +168,9 @@ public class Station {
     public void updateHeartbeat(int newHeartbeatInterval) {
         heartbeatScheduler.updateHeartbeat(newHeartbeatInterval);
         state.setHeartbeatInterval(newHeartbeatInterval);
+    }
+
+    public void refreshStateView() {
+        state.refreshView();
     }
 }

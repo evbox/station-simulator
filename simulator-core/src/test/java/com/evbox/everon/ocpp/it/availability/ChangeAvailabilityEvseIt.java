@@ -42,7 +42,7 @@ public class ChangeAvailabilityEvseIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> {
             Station station = stationSimulatorRunner.getStation(STATION_ID);
 
-            assertThat(station.getState().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.UNAVAILABLE);
+            assertThat(station.getStateView().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.UNAVAILABLE);
 
             ocppMockServer.verify();
         });
@@ -69,7 +69,7 @@ public class ChangeAvailabilityEvseIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> {
             Station station = stationSimulatorRunner.getStation(STATION_ID);
 
-            assertThat(station.getState().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.AVAILABLE);
+            assertThat(station.getStateView().findEvse(DEFAULT_EVSE_ID).getEvseStatus()).isEqualTo(EvseStatus.AVAILABLE);
 
             ocppMockServer.verify();
         });

@@ -44,7 +44,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
      */
     public ServerMessageHandler(Station station, StationState stationState, StationMessageSender stationMessageSender, String stationId, SubscriptionRegistry subscriptionRegistry) {
 
-        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station);
+        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station, stationState);
         this.stationId = stationId;
         this.subscriptionRegistry = subscriptionRegistry;
         this.stationMessageSender = stationMessageSender;

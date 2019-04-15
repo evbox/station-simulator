@@ -14,6 +14,7 @@ public class StationMessageConsumer implements Runnable {
 
     private final StationMessageInbox stationMessageInbox;
     private final StationMessageRouter stationMessageRouter;
+    private final Station station;
 
     /**
      * Create message consumer. Should not be instantiated from outside.
@@ -21,7 +22,8 @@ public class StationMessageConsumer implements Runnable {
      * @param stationMessageInbox inbox backed by java.util.concurrent data-structures
      * @param stationMessageRouter handles incoming messages
      */
-    private StationMessageConsumer(StationMessageInbox stationMessageInbox, StationMessageRouter stationMessageRouter) {
+    private StationMessageConsumer(Station station, StationMessageInbox stationMessageInbox, StationMessageRouter stationMessageRouter) {
+        this.station = station;
         this.stationMessageInbox = stationMessageInbox;
         this.stationMessageRouter = stationMessageRouter;
     }
@@ -33,9 +35,9 @@ public class StationMessageConsumer implements Runnable {
      * @param stationMessageRouter handles incoming messages
      * @param threadFactory creates threads
      */
-    public static void runSingleThreaded(StationMessageInbox stationMessageInbox, StationMessageRouter stationMessageRouter, ThreadFactory threadFactory) {
+    public static void runSingleThreaded(Station station, StationMessageInbox stationMessageInbox, StationMessageRouter stationMessageRouter, ThreadFactory threadFactory) {
         ExecutorService stationCommandsThreadPool = Executors.newSingleThreadExecutor(threadFactory);
-        stationCommandsThreadPool.submit(new StationMessageConsumer(stationMessageInbox, stationMessageRouter));
+        stationCommandsThreadPool.submit(new StationMessageConsumer(station, stationMessageInbox, stationMessageRouter));
     }
 
     /**
@@ -50,6 +52,7 @@ public class StationMessageConsumer implements Runnable {
                 StationMessage message = stationMessageInbox.take();
                 log.debug("RECEIVED MESSAGE:\n{}", message);
                 stationMessageRouter.route(message);
+                station.refreshStateView();
             } catch (InterruptedException e) {
                 log.error("Received interrupt signal to terminate execution", e);
                 Thread.currentThread().interrupt();

@@ -5,7 +5,6 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.google.common.collect.ImmutableList;
-import lombok.AllArgsConstructor;
 
 import java.time.*;
 import java.util.List;
@@ -13,25 +12,23 @@ import java.util.Optional;
 
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@AllArgsConstructor
 public class StationState {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private List<Evse> evses;
+    private volatile StationState stationStateView;
 
     public StationState(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
     }
 
-    public static StationState copyOf(StationState stationState) {
-        List<Evse> evsesCopy = stationState.evses.stream().map(Evse::copyOf).collect(toList());
-
-        return new StationState(Clock.offset(stationState.clock, Duration.ZERO),
-                stationState.heartbeatInterval, evsesCopy);
+    public StationState(Clock clock, int heartbeatInterval, List<Evse> evses) {
+        this.clock = clock;
+        this.heartbeatInterval = heartbeatInterval;
+        this.evses = evses;
     }
 
     public Instant getCurrentTime() {
@@ -159,5 +156,20 @@ public class StationState {
                 .flatMap(evse -> evse.getConnectors().stream()
                         .filter(connector -> connector.getId().equals(connectorId))
                         .findAny());
+    }
+
+    public void refreshView() {
+        this.stationStateView = copyOf(this);
+    }
+
+    public StationState getView() {
+        return stationStateView;
+    }
+
+    private StationState copyOf(StationState stationState) {
+        List<Evse> evsesCopy = stationState.evses.stream().map(Evse::copyOf).collect(toList());
+
+        return new StationState(Clock.offset(stationState.clock, Duration.ZERO),
+                stationState.heartbeatInterval, evsesCopy);
     }
 }

@@ -48,12 +48,12 @@ public class TransactionLocallyStoppedByIdTokenIt extends StationSimulatorSetUp 
         triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
         triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
-        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(1)).isTrue());
 
         triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> {
-            assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(1)).isFalse();
+            assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(1)).isFalse();
             ocppMockServer.verify();
         });
     }
