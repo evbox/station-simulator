@@ -169,4 +169,13 @@ public class Station {
         heartbeatScheduler.updateHeartbeat(newHeartbeatInterval);
         state.setHeartbeatInterval(newHeartbeatInterval);
     }
+
+    /**
+     * Getter for station identity.
+     *
+     * @return station id
+     */
+    public String getId() {
+        return configuration.getId();
+    }
 }
