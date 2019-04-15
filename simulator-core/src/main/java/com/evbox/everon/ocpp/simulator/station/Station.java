@@ -170,7 +170,6 @@ public class Station {
         state.setHeartbeatInterval(newHeartbeatInterval);
     }
 
-
     /**
      * Refreshes state view. Allowed to be called only by 'station-consumer' thread for thread-safety reasons.
      * @see StationMessageConsumer
