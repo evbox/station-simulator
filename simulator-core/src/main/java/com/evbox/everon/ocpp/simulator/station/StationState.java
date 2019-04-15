@@ -14,6 +14,12 @@ import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationReques
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+/**
+ * Contains all station data that can be mutated.
+ * Allowed to access only by 'station-consumer' thread.
+ * The rest of threads can read view-only copy for informational and testing purpose.
+ * @see StationMessageConsumer
+ */
 public class StationState {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
