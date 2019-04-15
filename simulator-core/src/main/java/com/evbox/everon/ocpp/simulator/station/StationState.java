@@ -16,8 +16,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Contains all station data that can be mutated.
- * Allowed to access only by 'station-consumer' thread.
- * The rest of threads can read view-only copy for informational and testing purpose.
+ * Allowed to be accessed only by 'station-consumer' thread.
+ * The rest of threads can use getView() method for informational and testing purposes.
  * @see StationMessageConsumer
  */
 public class StationState {
@@ -164,8 +164,12 @@ public class StationState {
                         .findAny());
     }
 
+    /**
+     * Returns defensive copy of station state view
+     * @return copy of station state view
+     */
     public StationState getView() {
-        return stationStateView;
+        return copyOf(stationStateView);
     }
 
     public void refreshView() {
