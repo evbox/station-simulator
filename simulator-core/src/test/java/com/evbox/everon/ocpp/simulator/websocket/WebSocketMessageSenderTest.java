@@ -17,13 +17,13 @@ public class WebSocketMessageSenderTest {
     private static int MAX_SEND_ATTEMPTS = 5;
 
     @Mock
-    WebSocketClientAdapter webSocketClientAdapterMock;
+    OkHttpWebSocketClient webSocketClientAdapterMock;
 
-    WebSocketMesageSender mesageSender;
+    WebSocketMessageSender mesageSender;
 
     @BeforeEach
     void setUp() {
-        mesageSender = new WebSocketMesageSender(webSocketClientAdapterMock, MAX_SEND_ATTEMPTS);
+        mesageSender = new WebSocketMessageSender(webSocketClientAdapterMock, MAX_SEND_ATTEMPTS);
     }
 
     @Test

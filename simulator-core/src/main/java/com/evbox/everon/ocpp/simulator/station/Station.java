@@ -177,4 +177,13 @@ public class Station {
     void refreshStateView() {
         state.refreshView();
     }
+
+    /**
+     * Getter for station identity.
+     *
+     * @return station id
+     */
+    public String getId() {
+        return configuration.getId();
+    }
 }
