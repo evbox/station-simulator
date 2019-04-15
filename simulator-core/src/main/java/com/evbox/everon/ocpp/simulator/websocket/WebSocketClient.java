@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
-import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
+import com.evbox.everon.ocpp.simulator.station.StationMessageInbox;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,8 @@ import java.util.concurrent.ThreadFactory;
 @Slf4j
 public class WebSocketClient implements ChannelListener {
 
-    private final Station station;
+    private final StationMessageInbox stationMessageInbox;
+    private final String stationId;
     private final OkHttpWebSocketClient webSocketClientAdapter;
     private final WebSocketClientConfiguration configuration;
     private final WebSocketMessageSender messageSender;
@@ -25,12 +26,13 @@ public class WebSocketClient implements ChannelListener {
     private volatile boolean connected = false;
     private volatile String webSocketConnectionUrl;
 
-    public WebSocketClient(Station station, OkHttpWebSocketClient webSocketClientAdapter) {
-        this(station, webSocketClientAdapter, WebSocketClientConfiguration.DEFAULT_CONFIGURATION);
+    public WebSocketClient(StationMessageInbox stationMessageInbox, String stationId, OkHttpWebSocketClient webSocketClientAdapter) {
+        this(stationMessageInbox, stationId, webSocketClientAdapter, WebSocketClientConfiguration.DEFAULT_CONFIGURATION);
     }
 
-    public WebSocketClient(Station station, OkHttpWebSocketClient webSocketClientAdapter, WebSocketClientConfiguration configuration) {
-        this.station = station;
+    public WebSocketClient(StationMessageInbox stationMessageInbox, String stationId, OkHttpWebSocketClient webSocketClientAdapter, WebSocketClientConfiguration configuration) {
+        this.stationMessageInbox = stationMessageInbox;
+        this.stationId = stationId;
         this.webSocketClientAdapter = webSocketClientAdapter;
         this.configuration = configuration;
 
@@ -51,7 +53,7 @@ public class WebSocketClient implements ChannelListener {
 
         WebSocketMessageRouter webSocketMessageRouter = new WebSocketMessageRouter(this);
 
-        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("websocket-message-consumer-" + station.getId()).build();
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("websocket-message-consumer-" + stationId).build();
         WebSocketMessageConsumer.runSingleThreaded(webSocketMessageInbox, webSocketMessageRouter, threadFactory);
     }
 
@@ -95,7 +97,7 @@ public class WebSocketClient implements ChannelListener {
     @Override
     public void onMessage(String message) {
         log.info("RECEIVED: {}", message);
-        station.sendMessage(new StationMessage(station.getId(), StationMessage.Type.OCPP_MESSAGE, message));
+        stationMessageInbox.offer(new StationMessage(stationId, StationMessage.Type.OCPP_MESSAGE, message));
     }
 
     /**
