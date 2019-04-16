@@ -102,4 +102,5 @@ bintray {
         desc = 'OCPP 2.0 Station Simulator'
     }
 
+    publish = true
 }
