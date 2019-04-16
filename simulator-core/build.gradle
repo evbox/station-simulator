@@ -67,10 +67,6 @@ jar {
                 'Main-Class': 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
         )
     }
-
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
 }
 
 task sourcesJar(type: Jar) {
