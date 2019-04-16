@@ -91,7 +91,7 @@ publishing {
             artifact javadocJar
             groupId 'io.github.evbox'
             artifactId 'ocpp-station-simulator'
-            version '0.1'
+            version project.version
         }
     }
 }
@@ -110,7 +110,7 @@ bintray {
     }
 
     version {
-        name = '0.1-Alpha'
+        name = 'station-simulator'
         desc = 'OCPP 2.0 Station Simulator'
     }
 
