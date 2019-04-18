@@ -31,8 +31,14 @@ lombok {
     sha256 = "39f3922deb679b1852af519eb227157ef2dd0a21eec3542c8ce1b45f2df39742"
 }
 
+configurations {
+    internalDependencies
+}
+
+configurations.compile.extendsFrom(configurations.internalDependencies)
+
 dependencies {
-    compile project(':payload:ocpp20')
+    internalDependencies project(':payload:ocpp20')
 
     compile 'info.picocli:picocli:3.9.2'
     compile 'com.squareup.okhttp3:okhttp:3.12.1'
@@ -67,6 +73,10 @@ jar {
                 'Main-Class': 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
         )
     }
+
+    from {
+        configurations.internalDependencies.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 task sourcesJar(type: Jar) {
@@ -83,9 +93,16 @@ publishing {
     publications {
         StationSimulator(MavenPublication) {
             from components.java
+            pom.withXml { // Exclude payload:ocpp20 from generated pom file
+                asNode().dependencies.dependency.each { dep ->
+                    if (dep.artifactId.last().value().last() in ["ocpp20"]) {
+                        assert dep.parent().remove(dep)
+                    }
+                }
+            }
             artifact sourcesJar
             artifact javadocJar
-            groupId 'io.github.evbox'
+            groupId 'io.everon'
             artifactId 'ocpp-station-simulator'
             version project.version
         }
@@ -99,14 +116,14 @@ bintray {
 
     pkg {
         repo = 'maven'
-        name = 'station-simulator'
+        name = 'ocpp-station-simulator'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/evbox/station-simulator.git'
         publicDownloadNumbers = true
     }
 
     version {
-        name = 'station-simulator'
+        name = 'ocpp-station-simulator'
         desc = 'OCPP 2.0 Station Simulator'
     }
 
