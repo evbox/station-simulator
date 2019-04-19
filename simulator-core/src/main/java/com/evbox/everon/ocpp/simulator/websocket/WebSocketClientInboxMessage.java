@@ -1,8 +1,11 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
+import lombok.ToString;
+
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@ToString
 public abstract class WebSocketClientInboxMessage {
     private static final AtomicInteger SEQUENCE = new AtomicInteger();
 
