@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import net.jcip.annotations.ThreadSafe;
 
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
@@ -14,21 +15,12 @@ import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationReques
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@ThreadSafe
 public class Connector {
 
     private final Integer id;
-    private CableStatus cableStatus;
-    private ConnectorStatus connectorStatus;
-
-    /**
-     * Create a new connector from the specified.
-     *
-     * @param connector EVSE connector
-     * @return a new instance of {@link Connector}
-     */
-    static Connector copyOf(Connector connector) {
-        return new Connector(connector.id, connector.cableStatus, connector.connectorStatus);
-    }
+    private volatile CableStatus cableStatus;
+    private volatile ConnectorStatus connectorStatus;
 
     /**
      * Change the cable status to {@code CableStatus.PLUGGED}. If status is not {@code CableStatus.UNPLUGGED}
@@ -36,7 +28,7 @@ public class Connector {
      *
      * @return identity of the connector
      */
-    public Integer plug() {
+    public synchronized Integer plug() {
         if (cableStatus != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %s=%s", id, cableStatus));
         }
@@ -51,7 +43,7 @@ public class Connector {
      *
      * @return identity of the connector
      */
-    public Integer unplug() {
+    public synchronized Integer unplug() {
         if (cableStatus == CableStatus.LOCKED) {
             throw new IllegalStateException(String.format("Connector is locked: %s", id));
         }
@@ -66,7 +58,7 @@ public class Connector {
      *
      * @return identity of the connector
      */
-    public Integer lock() {
+    public synchronized Integer lock() {
         if (cableStatus != CableStatus.PLUGGED) {
             throw new IllegalStateException(String.format("Connector cannot be locked: %s=%s", id, cableStatus));
         }

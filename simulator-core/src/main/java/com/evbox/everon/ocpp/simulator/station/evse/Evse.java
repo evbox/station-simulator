@@ -1,13 +1,13 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
@@ -18,8 +18,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * An EVSE is considered as an independently operated and managed part of the ChargingStation that can deliver energy to one EV at a time.
  */
 @Slf4j
-@Getter
 @EqualsAndHashCode(of = "id")
+@ThreadSafe
 public class Evse {
 
     /**
@@ -32,15 +32,16 @@ public class Evse {
      */
     private final List<Connector> connectors;
 
-    private String tokenId;
-    private boolean charging;
-    private long seqNo;
+    private volatile boolean charging;
+    private volatile String tokenId;
+    private final AtomicLong seqNo = new AtomicLong();
 
-    private EvseStatus evseStatus;
-    private EvseTransaction transaction;
+    private volatile EvseStatus evseStatus;
+    private volatile EvseTransaction transaction;
     /**
      * If nonNull should be applied when transaction stops
      */
+    @GuardedBy("this")
     private EvseStatus scheduledNewEvseStatus;
 
     /**
@@ -79,25 +80,22 @@ public class Evse {
         this.connectors = connectors;
     }
 
-    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction transaction, EvseStatus evseStatus) {
-        this.id = id;
-        this.connectors = connectors;
-        this.tokenId = tokenId;
-        this.charging = charging;
-        this.seqNo = seqNo;
-        this.transaction = transaction;
-        this.evseStatus = evseStatus;
+    /**
+     * Getter for id.
+     *
+     * @return id
+     */
+    public int getId() {
+        return id;
     }
 
     /**
-     * Copy factory method.
+     * Getter for charging.
      *
-     * @param evse {@link Evse}
-     * @return new instance of {@link Evse}
+     * @return charging
      */
-    public static Evse copyOf(Evse evse) {
-        List<Connector> connectorsCopy = evse.connectors.stream().map(Connector::copyOf).collect(Collectors.toList());
-        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.transaction, evse.evseStatus);
+    public boolean isCharging() {
+        return charging;
     }
 
     /**
@@ -105,14 +103,8 @@ public class Evse {
      *
      * @return identity of the connector
      */
-    public Integer startCharging() {
-        Connector lockedConnector = connectors.stream()
-                .filter(Connector::isCableLocked)
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
-
+    public void startCharging() {
         charging = true;
-        return lockedConnector.getId();
     }
 
     /**
@@ -128,7 +120,65 @@ public class Evse {
      * @return current sequence number
      */
     public Long getSeqNoAndIncrement() {
-        return seqNo++;
+        return seqNo.getAndIncrement();
+    }
+
+    /**
+     * Change EVSE status and status of connectors.
+     *
+     * @param evseStatus
+     */
+    public void changeStatus(EvseStatus evseStatus) {
+        this.evseStatus = evseStatus;
+        log.info("Changing status to {} for evse {}", evseStatus, id);
+        evseStatus.changeConnectorStatus(connectors);
+
+    }
+
+    /**
+     * Setter for scheduled evse status.
+     *
+     * @param scheduledNewEvseStatus
+     */
+    public synchronized void setScheduledNewEvseStatus(EvseStatus scheduledNewEvseStatus) {
+        this.scheduledNewEvseStatus = scheduledNewEvseStatus;
+    }
+
+    /**
+     * Getter for scheduled evse status.
+     *
+     * @return scheduledNewEvseStatus
+     */
+    public synchronized EvseStatus getScheduledNewEvseStatus() {
+        return this.scheduledNewEvseStatus;
+    }
+
+    /**
+     * Check whether the given status matches the existing or not.
+     *
+     * @param requestedEvseStatus given evse status
+     * @return `true` if status do match otherwise `false`
+     */
+    public boolean hasStatus(EvseStatus requestedEvseStatus) {
+        return this.evseStatus == requestedEvseStatus;
+    }
+
+    /**
+     * Getter for evseStatus.
+     *
+     * @return evseStatus
+     */
+    public EvseStatus getEvseStatus() {
+        return evseStatus;
+    }
+
+    /**
+     * Check whether transaction is ongoing or not.
+     *
+     * @return `true` in case if ongoing `false` otherwise
+     */
+    public boolean hasOngoingTransaction() {
+        return transaction.getStatus() == IN_PROGRESS;
     }
 
     /**
@@ -150,63 +200,19 @@ public class Evse {
     }
 
     /**
-     * Setter for evse transaction.
-     *
-     * @param transaction
-     */
-    public void setTransaction(EvseTransaction transaction) {
-        Objects.requireNonNull(transaction);
-
-        this.transaction = transaction;
-    }
-
-    /**
-     * Change EVSE status and status of connectors.
-     *
-     * @param evseStatus
-     */
-    public void changeStatus(EvseStatus evseStatus) {
-        this.evseStatus = evseStatus;
-        log.info("Changing status to {} for evse {}", evseStatus, id);
-        evseStatus.changeConnectorStatus(connectors);
-
-    }
-
-    /**
-     * Setter for scheduled evse status.
-     *
-     * @param scheduledNewEvseStatus
-     */
-    public void setScheduledNewEvseStatus(EvseStatus scheduledNewEvseStatus) {
-        this.scheduledNewEvseStatus = scheduledNewEvseStatus;
-    }
-
-    /**
-     * Check whether the given status matches the existing or not.
-     *
-     * @param requestedEvseStatus given evse status
-     * @return `true` if status do match otherwise `false`
-     */
-    public boolean hasStatus(EvseStatus requestedEvseStatus) {
-        return this.evseStatus == requestedEvseStatus;
-    }
-
-    /**
-     * Check whether transaction is ongoing or not.
-     *
-     * @return `true` in case if ongoing `false` otherwise
-     */
-    public boolean hasOngoingTransaction() {
-        return transaction.getStatus() == IN_PROGRESS;
-    }
-
-    /**
      * Checks whether EVSE has a token or not.
      *
      * @return true if token does exist otherwise false
      */
     public boolean hasTokenId() {
         return isNotBlank(tokenId);
+    }
+
+    /**
+     * Clear tokenId.
+     */
+    public void clearToken() {
+        tokenId = StringUtils.EMPTY;
     }
 
     /**
@@ -228,12 +234,13 @@ public class Evse {
     }
 
     /**
-     * Clear tokenId.
+     * Getter for transaction.
+     *
+     * @return transaction
      */
-    public void clearToken() {
-        tokenId = StringUtils.EMPTY;
+    public EvseTransaction getTransaction() {
+        return transaction;
     }
-
 
     /**
      * Plug connector.
@@ -304,7 +311,7 @@ public class Evse {
      * @return true if cable plugged otherwise false
      */
     public boolean isCablePlugged() {
-        return getConnectors().stream().anyMatch(Connector::isCablePlugged);
+        return connectors.stream().anyMatch(Connector::isCablePlugged);
     }
 
     /**
@@ -320,6 +327,10 @@ public class Evse {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
     }
 
+    public List<Connector> getConnectors() {
+        return connectors;
+    }
+
     @Override
     public String toString() {
         return "Evse{" +
@@ -333,7 +344,7 @@ public class Evse {
                 '}';
     }
 
-    private void changeEvseStatusIfScheduled() {
+    private synchronized void changeEvseStatusIfScheduled() {
         if (nonNull(scheduledNewEvseStatus)) {
             changeStatus(scheduledNewEvseStatus);
             // clean

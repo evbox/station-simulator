@@ -140,7 +140,7 @@ public class Station {
      * @return {@link StationState}
      */
     public StationState getStateView() {
-        return state.getView();
+        return state;
     }
 
     /**
@@ -168,14 +168,6 @@ public class Station {
     public void updateHeartbeat(int newHeartbeatInterval) {
         heartbeatScheduler.updateHeartbeat(newHeartbeatInterval);
         state.setHeartbeatInterval(newHeartbeatInterval);
-    }
-
-    /**
-     * Refreshes state view. Allowed to be called only by 'station-consumer' thread for thread-safety reasons.
-     * @see StationMessageConsumer
-     */
-    void refreshStateView() {
-        state.refreshView();
     }
 
     /**
