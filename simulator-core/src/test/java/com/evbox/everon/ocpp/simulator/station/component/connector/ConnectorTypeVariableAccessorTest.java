@@ -128,7 +128,7 @@ class ConnectorTypeVariableAccessorTest {
     }
 
     private void initConnectorMock(Integer evseId, Integer connectorId) {
-        given(stationMock.getStateView()).willReturn(stationStateMock);
+        given(stationMock.getState()).willReturn(stationStateMock);
         given(stationStateMock.tryFindConnector(anyInt(), anyInt()))
                 .willAnswer(invocation -> equal(invocation.getArgument(0), evseId) && equal(invocation.getArgument(1), connectorId) ?
                         Optional.of(connectorMock) :

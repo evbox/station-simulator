@@ -29,7 +29,7 @@ public class HeartbeatIt extends StationSimulatorSetUp {
         ocppMockServer.waitUntilConnected();
 
         await().untilAsserted(() -> {
-            Instant timeOfStation = stationSimulatorRunner.getStation(STATION_ID).getStateView().getCurrentTime();
+            Instant timeOfStation = stationSimulatorRunner.getStation(STATION_ID).getState().getCurrentTime();
             assertThat(timeOfStation).isAfterOrEqualTo(SERVER_TIME.toInstant());
             ocppMockServer.verify();
         });
@@ -48,7 +48,7 @@ public class HeartbeatIt extends StationSimulatorSetUp {
         ocppMockServer.waitUntilConnected();
 
         await().untilAsserted(() -> {
-            assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().getHeartbeatInterval()).isEqualTo(expectedHeartbeatInterval);
+            assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval()).isEqualTo(expectedHeartbeatInterval);
             ocppMockServer.verify();
         });
     }

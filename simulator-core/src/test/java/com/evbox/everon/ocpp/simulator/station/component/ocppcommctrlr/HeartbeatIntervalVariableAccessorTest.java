@@ -109,7 +109,7 @@ class HeartbeatIntervalVariableAccessorTest {
     }
 
     private void initStationMockHeartbeat() {
-        given(stationMock.getStateView()).willReturn(stationStateMock);
+        given(stationMock.getState()).willReturn(stationStateMock);
         given(stationStateMock.getHeartbeatInterval()).willReturn(DEFAULT_HEARTBEAT_INTERVAL);
     }
 

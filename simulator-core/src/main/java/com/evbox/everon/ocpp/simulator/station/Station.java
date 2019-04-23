@@ -139,7 +139,7 @@ public class Station {
      *
      * @return {@link StationState}
      */
-    public StationState getStateView() {
+    public StationState getState() {
         return state;
     }
 

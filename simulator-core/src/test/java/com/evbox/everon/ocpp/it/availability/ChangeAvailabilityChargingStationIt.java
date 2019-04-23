@@ -56,7 +56,7 @@ public class ChangeAvailabilityChargingStationIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> {
             Station station = stationSimulatorRunner.getStation(STATION_ID);
 
-            List<EvseStatus> evseStatuses = station.getStateView().getEvses().stream().map(Evse::getEvseStatus).collect(toList());
+            List<EvseStatus> evseStatuses = station.getState().getEvses().stream().map(Evse::getEvseStatus).collect(toList());
 
             assertThat(evseStatuses).containsOnly(EvseStatus.UNAVAILABLE);
 

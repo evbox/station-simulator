@@ -50,12 +50,12 @@ public class EvDriverAuthorizationUsingRfidIt extends StationSimulatorSetUp {
 
         triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
-        await().untilAsserted(() -> stationSimulatorRunner.getStation(STATION_ID).getStateView().hasAuthorizedToken());
+        await().untilAsserted(() -> stationSimulatorRunner.getStation(STATION_ID).getState().hasAuthorizedToken());
 
         triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
 
         await().untilAsserted(() -> {
-            assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isTrue();
+            assertThat(stationSimulatorRunner.getStation(STATION_ID).getState().isCharging(DEFAULT_EVSE_ID)).isTrue();
             ocppMockServer.verify();
         });
     }
