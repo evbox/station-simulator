@@ -153,7 +153,7 @@ public class Station {
     }
 
     /**
-     * Returns a map of callId & Call (OCPP-MessageType)
+     * Returns a map of callId and Call (OCPP-MessageType)
      *
      * @return [callId, {@link Call}] map
      */

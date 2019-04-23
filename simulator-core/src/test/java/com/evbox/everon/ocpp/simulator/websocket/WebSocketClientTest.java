@@ -11,7 +11,6 @@ import java.net.ConnectException;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 
@@ -29,7 +28,7 @@ public class WebSocketClientTest {
 
     @BeforeEach
     void setUp() {
-        client = new WebSocketClient(stationMessageInboxMock, STATION_ID, webSocketClientAdapterMock, new WebSocketClientConfiguration(1, RECONNECT_INTERVAL_MS));
+        client = new WebSocketClient(stationMessageInboxMock, STATION_ID, webSocketClientAdapterMock, new WebSocketClientConfiguration(1, 0L, RECONNECT_INTERVAL_MS));
     }
 
     @Test

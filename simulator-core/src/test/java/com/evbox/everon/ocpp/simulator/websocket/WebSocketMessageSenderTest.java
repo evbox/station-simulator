@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class WebSocketMessageSenderTest {
 
+    private static final int SEND_RETRY_INTERVAL_MS = 0;
     private static int MAX_SEND_ATTEMPTS = 5;
 
     @Mock
@@ -23,20 +25,23 @@ public class WebSocketMessageSenderTest {
 
     @BeforeEach
     void setUp() {
-        mesageSender = new WebSocketMessageSender(webSocketClientAdapterMock, MAX_SEND_ATTEMPTS);
+        mesageSender = new WebSocketMessageSender(webSocketClientAdapterMock, SEND_RETRY_INTERVAL_MS, MAX_SEND_ATTEMPTS);
     }
 
     @Test
     void shouldRetrySendingMessages() {
         //given
-        given(webSocketClientAdapterMock.sendMessage(any())).willReturn(false);
+        given(webSocketClientAdapterMock.sendMessage(any()))
+                .willReturn(false)
+                .willReturn(false)
+                .willReturn(true);
 
 
         //when
         mesageSender.send("hello");
 
         //then
-        verify(webSocketClientAdapterMock, times(MAX_SEND_ATTEMPTS)).sendMessage(any());
+        verify(webSocketClientAdapterMock, times(3)).sendMessage(contains("hello"));
     }
 
 }

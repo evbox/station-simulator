@@ -23,7 +23,6 @@ public class WebSocketClient implements ChannelListener {
     private final WebSocketMessageSender messageSender;
     private final WebSocketMessageInbox webSocketMessageInbox;
 
-    private volatile boolean connected = false;
     private volatile String webSocketConnectionUrl;
 
     public WebSocketClient(StationMessageInbox stationMessageInbox, String stationId, OkHttpWebSocketClient webSocketClientAdapter) {
@@ -36,7 +35,7 @@ public class WebSocketClient implements ChannelListener {
         this.webSocketClientAdapter = webSocketClientAdapter;
         this.configuration = configuration;
 
-        this.messageSender = new WebSocketMessageSender(webSocketClientAdapter, configuration.getMaxSendAttempts());
+        this.messageSender = new WebSocketMessageSender(webSocketClientAdapter, configuration.getSendRetryIntervalMs(), configuration.getMaxSendAttempts());
         this.webSocketMessageInbox = new WebSocketMessageInbox();
 
         webSocketClientAdapter.setListener(this);
@@ -65,29 +64,12 @@ public class WebSocketClient implements ChannelListener {
         return messageSender;
     }
 
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void setConnected(boolean connected) {
-        this.connected = connected;
-    }
-
     public String getWebSocketConnectionUrl() {
         return webSocketConnectionUrl;
     }
 
     public OkHttpWebSocketClient getWebSocketClientAdapter() {
         return webSocketClientAdapter;
-    }
-
-    /**
-     * Method is called by 3rd-party WebSocket client thread
-     * @param message
-     */
-    @Override
-    public void onOpen(String message) {
-        connected = true;
     }
 
     /**
@@ -110,15 +92,11 @@ public class WebSocketClient implements ChannelListener {
 
         if (throwable instanceof IOException) {
 
-            if (connected) {
-                connected = false;
-            } else {
-                log.error("Connection is broken, will try to reconnect in {} ms...", configuration.getReconnectIntervalMs());
-                try {
-                    Thread.sleep(configuration.getReconnectIntervalMs());
-                } catch (InterruptedException e) {
-                    log.error(e.getMessage(), e);
-                }
+            log.error("Connection is broken, will try to reconnect in {} ms...", configuration.getReconnectIntervalMs());
+            try {
+                Thread.sleep(configuration.getReconnectIntervalMs());
+            } catch (InterruptedException e) {
+                log.error(e.getMessage(), e);
             }
 
             webSocketClientAdapter.connect(webSocketConnectionUrl);

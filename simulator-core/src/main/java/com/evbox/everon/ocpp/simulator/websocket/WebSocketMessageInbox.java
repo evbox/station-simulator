@@ -19,7 +19,6 @@ public class WebSocketMessageInbox {
      * Add message into inbox. If no space available throws {@link StationException}.
      *
      * @param message station messages
-     * @throws {@link StationException} if could not add message
      */
     public void offer(WebSocketClientInboxMessage message) {
         boolean success = webSocketMessageInbox.offer(message);

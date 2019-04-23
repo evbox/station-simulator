@@ -1,10 +1,21 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+    }
+}
+
 plugins {
     id 'io.franzbecker.gradle-lombok'   version '2.0'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
-apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
 
@@ -50,4 +61,56 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
+        )
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+publishing {
+    publications {
+        StationSimulator(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'io.github.evbox'
+            artifactId 'ocpp-station-simulator'
+            version project.version
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('user') ? project.property('user') : null
+    key = project.hasProperty('key') ? project.property('key') : null
+    publications = ['StationSimulator']
+
+    pkg {
+        repo = 'maven'
+        name = 'station-simulator'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/evbox/station-simulator.git'
+        publicDownloadNumbers = true
+    }
+
+    version {
+        name = 'station-simulator'
+        desc = 'OCPP 2.0 Station Simulator'
+    }
+
+    publish = true
 }
