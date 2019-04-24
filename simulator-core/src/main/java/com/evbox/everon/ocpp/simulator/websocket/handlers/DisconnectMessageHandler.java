@@ -15,6 +15,5 @@ public class DisconnectMessageHandler implements MessageHandler<WebSocketClientI
     @Override
     public void handle(WebSocketClientInboxMessage.Disconnect message) {
         webSocketClient.getWebSocketClientAdapter().disconnect();
-        webSocketClient.setConnected(false);
     }
 }

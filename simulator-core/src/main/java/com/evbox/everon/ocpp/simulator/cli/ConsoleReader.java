@@ -80,7 +80,7 @@ public class ConsoleReader {
     }
 
     private void showStationState() {
-        System.out.println(stations.get(selectedStation).getStateView());
+        System.out.println(stations.get(selectedStation).getState());
     }
 
     private void selectNewStation(int newStationIndex) {

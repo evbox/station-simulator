@@ -16,12 +16,8 @@ public class OcppMessageHandler implements MessageHandler<WebSocketClientInboxMe
 
     @Override
     public void handle(WebSocketClientInboxMessage.OcppMessage message) {
-        if (webSocketClient.isConnected()) {
-            String ocppMessage = (String) message.getData().orElseThrow(() -> new IllegalArgumentException("OCPP message is null"));
-            webSocketClient.getMessageSender().send(ocppMessage);
-            log.info("SENT: {}", ocppMessage);
-        } else {
-            webSocketClient.getInbox().offer(message);
-        }
+        String ocppMessage = (String) message.getData().orElseThrow(() -> new IllegalArgumentException("OCPP message is null"));
+        webSocketClient.getMessageSender().send(ocppMessage);
+        log.info("SENT: {}", ocppMessage);
     }
 }
