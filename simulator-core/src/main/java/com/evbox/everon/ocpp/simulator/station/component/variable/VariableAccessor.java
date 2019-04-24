@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.variable;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
@@ -45,13 +46,19 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
                     .withAttributeStatus(attributeStatus);
 
     private final Station station;
+    private final StationState stationState;
 
-    public VariableAccessor(Station station) {
+    public VariableAccessor(Station station, StationState stationState) {
         this.station = station;
+        this.stationState = stationState;
     }
 
     public Station getStation() {
         return station;
+    }
+
+    public StationState getStationState() {
+        return stationState;
     }
 
     public abstract String getVariableName();

@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
+import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -38,8 +39,8 @@ public class SerialNumberVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::rejectVariable)
             .build();
 
-    public SerialNumberVariableAccessor(Station station) {
-        super(station);
+    public SerialNumberVariableAccessor(Station station, StationState stationState) {
+        super(station, stationState);
     }
 
     @Override

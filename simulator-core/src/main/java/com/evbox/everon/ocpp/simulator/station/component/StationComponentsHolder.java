@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.chargingstation.ChargingStationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComponent;
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
@@ -27,12 +28,12 @@ public class StationComponentsHolder {
      */
     private final Map<String, StationComponent> components;
 
-    public StationComponentsHolder(Station station) {
+    public StationComponentsHolder(Station station, StationState stationState) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
-                .add(new OCPPCommCtrlrComponent(station))
-                .add(new ChargingStationComponent(station))
-                .add(new EVSEComponent(station))
-                .add(new ConnectorComponent(station))
+                .add(new OCPPCommCtrlrComponent(station, stationState))
+                .add(new ChargingStationComponent(station, stationState))
+                .add(new EVSEComponent(station, stationState))
+                .add(new ConnectorComponent(station, stationState))
                 .build();
 
         components = ImmutableMap.copyOf(componentsList.stream().collect(Collectors.toMap(StationComponent::getComponentName, identity())));

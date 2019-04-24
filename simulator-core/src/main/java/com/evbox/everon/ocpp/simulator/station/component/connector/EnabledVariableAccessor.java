@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.connector;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -41,8 +42,8 @@ public class EnabledVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::validateActualValue)
             .build();
 
-    public EnabledVariableAccessor(Station station) {
-        super(station);
+    public EnabledVariableAccessor(Station station, StationState stationState) {
+        super(station, stationState);
     }
 
     @Override
@@ -69,7 +70,7 @@ public class EnabledVariableAccessor extends VariableAccessor {
     public List<ReportDatum> generateReportData(String componentName) {
         List<ReportDatum> reportData = new ArrayList<>();
 
-        for (Evse evse : getStation().getState().getEvses()) {
+        for (Evse evse : getStationState().getEvses()) {
             for (Connector connector : evse.getConnectors()) {
                 com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
                         .withConnectorId(connector.getId())
@@ -113,7 +114,7 @@ public class EnabledVariableAccessor extends VariableAccessor {
         Integer evseId = attributePath.getComponent().getEvse().getId();
         Integer connectorId = attributePath.getComponent().getEvse().getConnectorId();
 
-        boolean connectorExists = getStation().getState().tryFindConnector(evseId, connectorId).isPresent();
+        boolean connectorExists = getStationState().tryFindConnector(evseId, connectorId).isPresent();
 
         GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(attributePath.getComponent())

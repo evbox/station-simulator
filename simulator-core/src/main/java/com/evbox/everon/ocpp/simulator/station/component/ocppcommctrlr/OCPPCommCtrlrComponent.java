@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.google.common.collect.ImmutableList;
 
@@ -16,9 +17,9 @@ public class OCPPCommCtrlrComponent extends StationComponent {
         return NAME;
     }
 
-    public OCPPCommCtrlrComponent(Station station) {
+    public OCPPCommCtrlrComponent(Station station, StationState stationState) {
         super(ImmutableList.of(
-                new HeartbeatIntervalVariableAccessor(station)
+                new HeartbeatIntervalVariableAccessor(station, stationState)
         ));
     }
 }

@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.simulator.station.StationState.StationStateView;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
-import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +36,7 @@ public class Station {
     private final SimulatorConfiguration.StationConfiguration configuration;
 
     private final StationState state;
+    private volatile StationStateView stationStateView;
 
     private final WebSocketClient webSocketClient;
 
@@ -122,7 +122,7 @@ public class Station {
 
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("station-consumer-" + getConfiguration().getId()).build();
 
-        StationMessageConsumer.runSingleThreaded(stationMessageInbox, stationMessageRouter, threadFactory);
+        StationMessageConsumer.runSingleThreaded(this, stationMessageInbox, stationMessageRouter, threadFactory);
     }
 
     /**
@@ -135,12 +135,12 @@ public class Station {
     }
 
     /**
-     * Returns the current state of the Station.
+     * Returns current state of the Station.
      *
      * @return {@link StationState}
      */
-    public StationState getState() {
-        return StationState.copyOf(state);
+    public StationStateView getStateView() {
+        return stationStateView;
     }
 
     /**
@@ -150,15 +150,6 @@ public class Station {
      */
     public SimulatorConfiguration.StationConfiguration getConfiguration() {
         return configuration;
-    }
-
-    /**
-     * Returns a map of callId and Call (OCPP-MessageType)
-     *
-     * @return [callId, {@link Call}] map
-     */
-    public Map<String, Call> getSentCalls() {
-        return stationMessageSender.getSentCalls();
     }
 
     /**
@@ -178,4 +169,12 @@ public class Station {
     public String getId() {
         return configuration.getId();
     }
+
+    /**
+     * Refresh state view.
+     */
+    void refreshStateView() {
+        this.stationStateView = state.createView();
+    }
+
 }

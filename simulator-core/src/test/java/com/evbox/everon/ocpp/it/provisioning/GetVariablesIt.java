@@ -58,7 +58,7 @@ public class GetVariablesIt extends StationSimulatorSetUp {
         ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
 
         await().untilAsserted(() -> {
-            int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getState().getHeartbeatInterval();
+            int heartbeatInterval = stationSimulatorRunner.getStation(STATION_ID).getStateView().getHeartbeatInterval();
             assertThat(heartbeatInterval).isEqualTo(expectedHeartbeatInterval);
             ocppMockServer.verify();
         });

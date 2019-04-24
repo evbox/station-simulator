@@ -21,16 +21,6 @@ public class Connector {
     private ConnectorStatus connectorStatus;
 
     /**
-     * Create a new connector from the specified.
-     *
-     * @param connector EVSE connector
-     * @return a new instance of {@link Connector}
-     */
-    static Connector copyOf(Connector connector) {
-        return new Connector(connector.id, connector.cableStatus, connector.connectorStatus);
-    }
-
-    /**
      * Change the cable status to {@code CableStatus.PLUGGED}. If status is not {@code CableStatus.UNPLUGGED}
      * then throw {@link IllegalStateException}
      *
@@ -119,5 +109,18 @@ public class Connector {
                 ", cableStatus=" + cableStatus +
                 ", connectorStatus=" + connectorStatus +
                 '}';
+    }
+
+    ConnectorView createView() {
+        return new ConnectorView(this.id, this.cableStatus, this.connectorStatus);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public class ConnectorView {
+
+        private final Integer id;
+        private final CableStatus cableStatus;
+        private final ConnectorStatus connectorStatus;
     }
 }
