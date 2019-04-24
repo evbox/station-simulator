@@ -48,10 +48,12 @@ class AvailabilityStateVariableAccessorTest {
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder(EVSE_ID)
             .attributeType(AttributeType.TARGET).build();
 
+    @SuppressWarnings("unused")
     @Mock(lenient = true)
     Station stationMock;
     @Mock(lenient = true)
     StationState stationStateMock;
+    @SuppressWarnings("unused")
     @Mock
     Evse evseMock;
 
@@ -113,7 +115,6 @@ class AvailabilityStateVariableAccessorTest {
     }
 
     private void initEvseMock() {
-        given(stationMock.getStateView()).willReturn(stationStateMock);
         given(stationStateMock.hasEvse(eq(EVSE_ID))).willReturn(true);
         given(stationStateMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
     }

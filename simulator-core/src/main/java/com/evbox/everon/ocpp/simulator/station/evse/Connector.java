@@ -120,4 +120,17 @@ public class Connector {
                 ", connectorStatus=" + connectorStatus +
                 '}';
     }
+
+    ConnectorView createView() {
+        return new ConnectorView(this.id, this.cableStatus, this.connectorStatus);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public class ConnectorView {
+
+        private final Integer id;
+        private final CableStatus cableStatus;
+        private final ConnectorStatus connectorStatus;
+    }
 }

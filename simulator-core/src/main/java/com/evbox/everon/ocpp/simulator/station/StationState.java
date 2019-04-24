@@ -3,8 +3,12 @@ package com.evbox.everon.ocpp.simulator.station;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector.ConnectorView;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.google.common.collect.ImmutableList;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.*;
 import java.util.List;
@@ -15,17 +19,13 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
- * Contains all station data that can be mutated.
- * Allowed to be accessed only by 'station-consumer' thread.
- * The rest of threads can use getView() method for informational and testing purposes.
- * @see StationMessageConsumer
+ * Represents the state of the station.
  */
 public class StationState {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private List<Evse> evses;
-    private volatile StationState stationStateView;
 
     public StationState(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
@@ -64,23 +64,8 @@ public class StationState {
         findEvse(evseId).stopCharging();
     }
 
-    public boolean isCharging(Integer evseId) {
-        return findEvse(evseId).isCharging();
-    }
-
     public Evse getDefaultEvse() {
         return evses.get(0);
-    }
-
-    public boolean hasAuthorizedToken() {
-        if (evses.size() > 1) {
-            throw new IllegalStateException("One or more EVSE IDs have to be specified");
-        }
-        return hasAuthorizedToken(getDefaultEvse());
-    }
-
-    public boolean hasAuthorizedToken(Evse evse) {
-        return isNotBlank(evse.getTokenId());
     }
 
     public void clearTokens() {
@@ -136,6 +121,13 @@ public class StationState {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
+    public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
+        return tryFindEvse(evseId)
+                .flatMap(evse -> evse.getConnectors().stream()
+                        .filter(connector -> connector.getId().equals(connectorId))
+                        .findAny());
+    }
+
     @Override
     public String toString() {
         return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses + '}';
@@ -157,29 +149,69 @@ public class StationState {
         return evseListBuilder.build();
     }
 
-    public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
-        return tryFindEvse(evseId)
-                .flatMap(evse -> evse.getConnectors().stream()
-                        .filter(connector -> connector.getId().equals(connectorId))
-                        .findAny());
+    StationStateView createView() {
+        List<EvseView> evsesCopy = evses.stream().map(Evse::createView).collect(toList());
+
+        return new StationStateView(clock, heartbeatInterval, evsesCopy);
     }
 
-    /**
-     * Returns defensive copy of station state view
-     * @return copy of station state view
-     */
-    public StationState getView() {
-        return copyOf(stationStateView);
-    }
+    @Getter
+    @AllArgsConstructor
+    public class StationStateView {
 
-    public void refreshView() {
-        this.stationStateView = copyOf(this);
-    }
+        private final Clock clock;
+        private final int heartbeatInterval;
+        private final List<EvseView> evses;
 
-    private StationState copyOf(StationState stationState) {
-        List<Evse> evsesCopy = stationState.evses.stream().map(Evse::copyOf).collect(toList());
+        public boolean hasAuthorizedToken() {
+            if (evses.size() > 1) {
+                throw new IllegalStateException("One or more EVSE IDs have to be specified");
+            }
+            return hasAuthorizedToken(getDefaultEvse());
+        }
 
-        return new StationState(Clock.offset(stationState.clock, Duration.ZERO),
-                stationState.heartbeatInterval, evsesCopy);
+        public boolean hasAuthorizedToken(EvseView evse) {
+            return isNotBlank(evse.getTokenId());
+        }
+
+        public boolean hasOngoingTransaction(Integer evseId) {
+            return findEvse(evseId).hasOngoingTransaction();
+        }
+
+        public Instant getCurrentTime() {
+            return clock.instant();
+        }
+
+        public EvseView getDefaultEvse() {
+            return evses.get(0);
+        }
+
+        public boolean isCharging(Integer evseId) {
+            return findEvse(evseId).isCharging();
+        }
+
+        /**
+         * Find an instance of {@link Evse} by evseId. If not found then throw {@link IllegalArgumentException}.
+         *
+         * @param evseId EVSE identity
+         * @return an instance of {@link Evse}
+         */
+        public EvseView findEvse(int evseId) {
+            return tryFindEvse(evseId)
+                    .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
+        }
+
+        /**
+         * Try to find EVSE by given EVSE ID or return empty result.
+         *
+         * @param evseId EVSE identity
+         * @return optional with instance of {@link Evse} or Optional.empty()
+         */
+        public Optional<EvseView> tryFindEvse(int evseId) {
+            return evses.stream()
+                    .filter(evse -> evse.getId() == evseId)
+                    .findAny();
+        }
+
     }
 }

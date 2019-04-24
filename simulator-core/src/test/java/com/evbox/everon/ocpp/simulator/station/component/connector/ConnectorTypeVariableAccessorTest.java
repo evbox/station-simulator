@@ -54,6 +54,7 @@ class ConnectorTypeVariableAccessorTest {
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder(EVSE_ID, CONNECTOR_ID)
             .attributeType(AttributeType.TARGET).build();
 
+    @SuppressWarnings("unused")
     @Mock(lenient = true)
     Station stationMock;
     @Mock(lenient = true)
@@ -128,7 +129,6 @@ class ConnectorTypeVariableAccessorTest {
     }
 
     private void initConnectorMock(Integer evseId, Integer connectorId) {
-        given(stationMock.getStateView()).willReturn(stationStateMock);
         given(stationStateMock.tryFindConnector(anyInt(), anyInt()))
                 .willAnswer(invocation -> equal(invocation.getArgument(0), evseId) && equal(invocation.getArgument(1), connectorId) ?
                         Optional.of(connectorMock) :

@@ -6,6 +6,7 @@ import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +57,7 @@ public class ChangeAvailabilityChargingStationIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> {
             Station station = stationSimulatorRunner.getStation(STATION_ID);
 
-            List<EvseStatus> evseStatuses = station.getStateView().getEvses().stream().map(Evse::getEvseStatus).collect(toList());
+            List<EvseStatus> evseStatuses = station.getStateView().getEvses().stream().map(EvseView::getEvseStatus).collect(toList());
 
             assertThat(evseStatuses).containsOnly(EvseStatus.UNAVAILABLE);
 

@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.simulator.station.StationState.StationStateView;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
-import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +36,7 @@ public class Station {
     private final SimulatorConfiguration.StationConfiguration configuration;
 
     private final StationState state;
+    private volatile StationStateView stationStateView;
 
     private final WebSocketClient webSocketClient;
 
@@ -139,8 +139,8 @@ public class Station {
      *
      * @return {@link StationState}
      */
-    public StationState getStateView() {
-        return state.getView();
+    public StationStateView getStateView() {
+        return stationStateView;
     }
 
     /**
@@ -153,29 +153,12 @@ public class Station {
     }
 
     /**
-     * Returns a map of callId & Call (OCPP-MessageType)
-     *
-     * @return [callId, {@link Call}] map
-     */
-    public Map<String, Call> getSentCalls() {
-        return stationMessageSender.getSentCalls();
-    }
-
-    /**
      * Updates station heartbeat interval
      * @param newHeartbeatInterval heartbeat interval in seconds
      */
     public void updateHeartbeat(int newHeartbeatInterval) {
         heartbeatScheduler.updateHeartbeat(newHeartbeatInterval);
         state.setHeartbeatInterval(newHeartbeatInterval);
-    }
-
-    /**
-     * Refreshes state view. Allowed to be called only by 'station-consumer' thread for thread-safety reasons.
-     * @see StationMessageConsumer
-     */
-    void refreshStateView() {
-        state.refreshView();
     }
 
     /**
@@ -186,4 +169,13 @@ public class Station {
     public String getId() {
         return configuration.getId();
     }
+
+    /**
+     * Refreshes state view. Allowed to be called only by 'station-consumer' thread for thread-safety reasons.
+     * @see StationMessageConsumer
+     */
+    void refreshStateView() {
+        this.stationStateView = state.createView();
+    }
+
 }

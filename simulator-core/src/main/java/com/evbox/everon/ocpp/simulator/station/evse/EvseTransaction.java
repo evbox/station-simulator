@@ -35,6 +35,11 @@ public class EvseTransaction {
         this.status = EvseTransactionStatus.IN_PROGRESS;
     }
 
+    @Override
+    public String toString() {
+        return Integer.toString(transactionId);
+    }
+
     /**
      * Create transaction with the given status.
      *
@@ -46,8 +51,15 @@ public class EvseTransaction {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return Integer.toString(transactionId);
+    EvseTransactionView createView() {
+        return new EvseTransactionView(this.transactionId, this.status);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public class EvseTransactionView {
+
+        private final int transactionId;
+        private final EvseTransactionStatus status;
     }
 }

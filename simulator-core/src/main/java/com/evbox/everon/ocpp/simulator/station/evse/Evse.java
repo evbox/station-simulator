@@ -1,17 +1,19 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
+import com.evbox.everon.ocpp.simulator.station.evse.Connector.ConnectorView;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction.EvseTransactionView;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -79,27 +81,6 @@ public class Evse {
         this.connectors = connectors;
     }
 
-    private Evse(int id, List<Connector> connectors, String tokenId, boolean charging, long seqNo, EvseTransaction transaction, EvseStatus evseStatus) {
-        this.id = id;
-        this.connectors = connectors;
-        this.tokenId = tokenId;
-        this.charging = charging;
-        this.seqNo = seqNo;
-        this.transaction = transaction;
-        this.evseStatus = evseStatus;
-    }
-
-    /**
-     * Copy factory method.
-     *
-     * @param evse {@link Evse}
-     * @return new instance of {@link Evse}
-     */
-    public static Evse copyOf(Evse evse) {
-        List<Connector> connectorsCopy = evse.connectors.stream().map(Connector::copyOf).collect(Collectors.toList());
-        return new Evse(evse.id, connectorsCopy, evse.tokenId, evse.charging, evse.seqNo, evse.transaction, evse.evseStatus);
-    }
-
     /**
      * Find any LOCKED connector and switch to charging status.
      *
@@ -147,17 +128,6 @@ public class Evse {
      */
     public String getTokenId() {
         return tokenId;
-    }
-
-    /**
-     * Setter for evse transaction.
-     *
-     * @param transaction
-     */
-    public void setTransaction(EvseTransaction transaction) {
-        Objects.requireNonNull(transaction);
-
-        this.transaction = transaction;
     }
 
     /**
@@ -233,7 +203,6 @@ public class Evse {
     public void clearToken() {
         tokenId = StringUtils.EMPTY;
     }
-
 
     /**
      * Plug connector.
@@ -333,12 +302,61 @@ public class Evse {
                 '}';
     }
 
+    public EvseView createView() {
+
+        List<ConnectorView> connectorViews = connectors.stream().map(Connector::createView).collect(toList());
+
+        return EvseView.builder()
+                .id(id)
+                .connectors(connectorViews)
+                .tokenId(tokenId)
+                .charging(charging)
+                .seqNo(seqNo)
+                .evseStatus(evseStatus)
+                .transaction(transaction.createView())
+                .scheduledNewEvseStatus(scheduledNewEvseStatus)
+                .build();
+    }
+
     private void changeEvseStatusIfScheduled() {
         if (nonNull(scheduledNewEvseStatus)) {
             changeStatus(scheduledNewEvseStatus);
             // clean
             scheduledNewEvseStatus = null;
         }
+    }
+
+    @Getter
+    @Builder
+    public static class EvseView {
+
+        private final int id;
+        private final List<ConnectorView> connectors;
+        private final String tokenId;
+        private final boolean charging;
+        private final long seqNo;
+        private final EvseStatus evseStatus;
+        private final EvseTransactionView transaction;
+        private final EvseStatus scheduledNewEvseStatus;
+
+        /**
+         * Checks whether EVSE has a token or not.
+         *
+         * @return true if token does exist otherwise false
+         */
+        public boolean hasTokenId() {
+            return isNotBlank(tokenId);
+        }
+
+        /**
+         * Check whether transaction is ongoing or not.
+         *
+         * @return `true` in case if ongoing `false` otherwise
+         */
+        public boolean hasOngoingTransaction() {
+            return transaction.getStatus() == IN_PROGRESS;
+        }
+
     }
 
 }
