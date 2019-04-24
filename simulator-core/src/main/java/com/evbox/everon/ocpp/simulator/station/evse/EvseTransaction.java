@@ -3,7 +3,6 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.jcip.annotations.ThreadSafe;
 
 import java.util.Objects;
 
@@ -13,7 +12,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @AllArgsConstructor
-@ThreadSafe
 public class EvseTransaction {
 
     /**
@@ -21,8 +19,8 @@ public class EvseTransaction {
      */
     public static final EvseTransaction NONE = new EvseTransaction(EvseTransactionStatus.NONE);
 
-    private volatile int transactionId;
-    private volatile EvseTransactionStatus status;
+    private int transactionId;
+    private EvseTransactionStatus status;
 
     /**
      * Create transaction with the given identity.

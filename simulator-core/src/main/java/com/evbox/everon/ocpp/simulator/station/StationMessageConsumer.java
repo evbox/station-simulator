@@ -52,6 +52,7 @@ public class StationMessageConsumer implements Runnable {
                 StationMessage message = stationMessageInbox.take();
                 log.debug("RECEIVED MESSAGE:\n{}", message);
                 stationMessageRouter.route(message);
+                station.refreshStateView();
             } catch (InterruptedException e) {
                 log.error("Received interrupt signal to terminate execution", e);
                 Thread.currentThread().interrupt();

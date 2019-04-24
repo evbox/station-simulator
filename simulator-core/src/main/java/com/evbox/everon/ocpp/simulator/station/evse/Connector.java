@@ -3,7 +3,6 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import net.jcip.annotations.ThreadSafe;
 
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus;
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
@@ -15,12 +14,11 @@ import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationReques
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@ThreadSafe
 public class Connector {
 
     private final Integer id;
-    private volatile CableStatus cableStatus;
-    private volatile ConnectorStatus connectorStatus;
+    private CableStatus cableStatus;
+    private ConnectorStatus connectorStatus;
 
     /**
      * Change the cable status to {@code CableStatus.PLUGGED}. If status is not {@code CableStatus.UNPLUGGED}
@@ -28,7 +26,7 @@ public class Connector {
      *
      * @return identity of the connector
      */
-    public synchronized Integer plug() {
+    public Integer plug() {
         if (cableStatus != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %s=%s", id, cableStatus));
         }
@@ -43,7 +41,7 @@ public class Connector {
      *
      * @return identity of the connector
      */
-    public synchronized Integer unplug() {
+    public Integer unplug() {
         if (cableStatus == CableStatus.LOCKED) {
             throw new IllegalStateException(String.format("Connector is locked: %s", id));
         }
@@ -58,7 +56,7 @@ public class Connector {
      *
      * @return identity of the connector
      */
-    public synchronized Integer lock() {
+    public Integer lock() {
         if (cableStatus != CableStatus.PLUGGED) {
             throw new IllegalStateException(String.format("Connector cannot be locked: %s=%s", id, cableStatus));
         }
