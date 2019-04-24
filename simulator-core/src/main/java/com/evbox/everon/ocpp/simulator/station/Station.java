@@ -171,8 +171,7 @@ public class Station {
     }
 
     /**
-     * Refreshes state view. Allowed to be called only by 'station-consumer' thread for thread-safety reasons.
-     * @see StationMessageConsumer
+     * Refresh state view.
      */
     void refreshStateView() {
         this.stationStateView = state.createView();
