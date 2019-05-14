@@ -33,7 +33,7 @@ public class StationSimulatorSetUp  {
             .port(StationConstants.PORT)
             .path(StationConstants.PATH)
             .ocppServerClient(ocppServerClient)
-            .username(BASIC_AUTH_USERNAME)
+            .username(STATION_ID)
             .password(BASIC_AUTH_PASSWORD)
             .build();
 

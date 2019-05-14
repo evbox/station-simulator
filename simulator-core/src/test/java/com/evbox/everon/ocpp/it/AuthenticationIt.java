@@ -12,16 +12,14 @@ import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createSi
 import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createStationConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class AuthenticationIt extends StationSimulatorSetUp {
 
-    void setUp(String username, String password) {
+    void setUp(String password) {
         SimulatorConfiguration.StationConfiguration stationConfiguration = createStationConfiguration(
                 STATION_ID,
                 EVSE_COUNT_TWO,
                 EVSE_CONNECTORS_TWO,
-                username,
                 password
         );
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(stationConfiguration);
@@ -31,7 +29,8 @@ public class AuthenticationIt extends StationSimulatorSetUp {
     @Test
     void expectToFailAuth() {
 
-        setUp("invalid-username", "invalid-password");
+        String invalidPassword = "invalid-password";
+        setUp(invalidPassword);
 
         stationSimulatorRunner.run();
 
@@ -41,14 +40,15 @@ public class AuthenticationIt extends StationSimulatorSetUp {
 
         assertAll(
                 () -> assertThat(receivedCredentials).hasSize(1),
-                () -> assertNull(receivedCredentials.get(BASIC_AUTH_USERNAME))
+                () -> assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(invalidPassword),
+                () -> assertThat(ocppServerClient.isConnected()).isFalse()
         );
     }
 
     @Test
     void expectSuccessfulAuth() {
 
-        setUp(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+        setUp(BASIC_AUTH_PASSWORD);
 
         stationSimulatorRunner.run();
 
@@ -58,7 +58,8 @@ public class AuthenticationIt extends StationSimulatorSetUp {
 
         assertAll(
                 () -> assertThat(receivedCredentials).hasSize(1),
-                () -> assertThat(receivedCredentials.get(BASIC_AUTH_USERNAME)).isEqualTo(BASIC_AUTH_PASSWORD)
+                () -> assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(BASIC_AUTH_PASSWORD),
+                () -> assertThat(ocppServerClient.isConnected()).isTrue()
         );
     }
 }

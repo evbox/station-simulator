@@ -28,7 +28,7 @@ public class OkHttpWebSocketClient {
 
     public void connect(String url) {
 
-        String plainCredentials = stationConfiguration.getUsername() + COLON + stationConfiguration.getPassword();
+        String plainCredentials = stationConfiguration.getId() + COLON + stationConfiguration.getPassword();
 
         Request request = new Request.Builder().url(url)
                 .addHeader("Sec-WebSocket-Protocol", "ocpp2.0")
