@@ -1,19 +1,25 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import okhttp3.*;
 import okio.ByteString;
 
 import javax.annotation.Nullable;
+import java.util.Base64;
 import java.util.Optional;
 
 public class OkHttpWebSocketClient {
 
+    private static final String COLON = ":";
+
     private final OkHttpClient client;
+    private final SimulatorConfiguration.StationConfiguration stationConfiguration;
     private WebSocket webSocket;
     private ChannelListener listener;
 
-    public OkHttpWebSocketClient(OkHttpClient client) {
+    public OkHttpWebSocketClient(OkHttpClient client, SimulatorConfiguration.StationConfiguration stationConfiguration) {
         this.client = client;
+        this.stationConfiguration = stationConfiguration;
     }
 
     public void setListener(ChannelListener listener) {
@@ -21,7 +27,13 @@ public class OkHttpWebSocketClient {
     }
 
     public void connect(String url) {
-        Request request = new Request.Builder().url(url).addHeader("Sec-WebSocket-Protocol", "ocpp2.0").build();
+
+        String plainCredentials = stationConfiguration.getUsername() + COLON + stationConfiguration.getPassword();
+
+        Request request = new Request.Builder().url(url)
+                .addHeader("Sec-WebSocket-Protocol", "ocpp2.0")
+                .addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(plainCredentials.getBytes()))
+                .build();
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override

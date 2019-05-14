@@ -4,8 +4,19 @@ import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import io.undertow.Undertow;
+import io.undertow.security.api.AuthenticationMechanism;
+import io.undertow.security.api.AuthenticationMode;
+import io.undertow.security.handlers.AuthenticationCallHandler;
+import io.undertow.security.handlers.AuthenticationMechanismsHandler;
+import io.undertow.security.handlers.SecurityInitialHandler;
+import io.undertow.security.impl.BasicAuthenticationMechanism;
+import io.undertow.server.HttpHandler;
+import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -30,6 +41,7 @@ public class OcppMockServer {
     private final String hostname;
     private final int port;
     private final String path;
+    private final OcppIdentityManager identityManager;
 
     private OcppMockServer(OcppServerMockBuilder builder) {
         Objects.requireNonNull(builder.hostname);
@@ -40,7 +52,7 @@ public class OcppMockServer {
         this.hostname = builder.hostname;
         this.port = builder.port;
         this.path = builder.path;
-
+        this.identityManager = new OcppIdentityManager(builder.username, builder.password);
     }
 
     /**
@@ -52,14 +64,14 @@ public class OcppMockServer {
         server = Undertow.builder()
                 .addHttpListener(port, hostname)
                 .setHandler(
-                        path().addPrefixPath(path, websocket((exchange, channel) -> {
+                        path().addPrefixPath(path, authentication(websocket((exchange, channel) -> {
                             String stationId = channel.getUrl().replace(targetUrl, "");
                             channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, ocppServerClient, requestResponseSynchronizer));
                             channel.resumeReceives();
 
                             ocppServerClient.putIfAbsent(stationId, new WebSocketSender(channel, requestResponseSynchronizer));
 
-                        })))
+                        }))))
                 .build();
 
         server.start();
@@ -123,6 +135,29 @@ public class OcppMockServer {
     }
 
     /**
+     * Block thread until ocpp server receives http basic authorization header.
+     */
+    public void waitUntilAuthorized() {
+        await().untilAsserted(() -> assertThat(identityManager.hasCredentials()).isEqualTo(true));
+    }
+
+    /**
+     * Getter for received credentials.
+     *
+     * @return map of received credentials
+     */
+    public Map<String, String> getReceivedCredentials() {
+        return identityManager.getReceivedCredentials();
+    }
+
+    private HttpHandler authentication(WebSocketProtocolHandshakeHandler handshakeHandler) {
+        List<AuthenticationMechanism> mechanisms = Collections.singletonList(new BasicAuthenticationMechanism("OCPP Realm"));
+
+        return new SecurityInitialHandler(AuthenticationMode.PRO_ACTIVE, identityManager, new AuthenticationMechanismsHandler(
+                new AuthenticationCallHandler(handshakeHandler), mechanisms));
+    }
+
+    /**
      * Create a builder class in order to configure ocpp mock server.
      *
      * @return {@link OcppServerMockBuilder} instance
@@ -140,6 +175,8 @@ public class OcppMockServer {
         private int port;
         private String path;
         private OcppServerClient ocppServerClient;
+        private String username;
+        private String password;
 
         public OcppServerMockBuilder hostname(String hostname) {
             this.hostname = hostname;
@@ -158,6 +195,16 @@ public class OcppMockServer {
 
         public OcppServerMockBuilder ocppServerClient(OcppServerClient ocppServerClient) {
             this.ocppServerClient = ocppServerClient;
+            return this;
+        }
+
+        public OcppServerMockBuilder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public OcppServerMockBuilder password(String password) {
+            this.password = password;
             return this;
         }
 

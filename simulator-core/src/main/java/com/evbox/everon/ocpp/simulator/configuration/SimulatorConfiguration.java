@@ -15,7 +15,8 @@ public class SimulatorConfiguration {
     public static class StationConfiguration {
         private String id;
         private Evse evse;
-
+        private String username;
+        private String password;
     }
 
     @Data

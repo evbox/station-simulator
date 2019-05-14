@@ -69,7 +69,7 @@ public class Station {
         this.configuration = configuration;
         this.state = new StationState(configuration);
 
-        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(okHttpClient));
+        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(okHttpClient, configuration));
 
         this.callRegistry = new SubscriptionRegistry();
         this.stationMessageSender = new StationMessageSender(callRegistry, state, webSocketClient);
