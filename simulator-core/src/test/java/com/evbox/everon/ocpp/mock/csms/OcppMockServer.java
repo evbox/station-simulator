@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.once;
@@ -36,6 +37,8 @@ public class OcppMockServer {
 
     private final RequestExpectationManager requestExpectationManager = new RequestExpectationManager();
     private final RequestResponseSynchronizer requestResponseSynchronizer = new RequestResponseSynchronizer();
+
+    private final AtomicInteger connectionAttempts = new AtomicInteger();
 
     private final OcppServerClient ocppServerClient;
     private final String hostname;
@@ -65,6 +68,7 @@ public class OcppMockServer {
                 .addHttpListener(port, hostname)
                 .setHandler(
                         path().addPrefixPath(path, authentication(websocket((exchange, channel) -> {
+                            connectionAttempts.incrementAndGet();
                             String stationId = channel.getUrl().replace(targetUrl, "");
                             channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, ocppServerClient, requestResponseSynchronizer));
                             channel.resumeReceives();
@@ -148,6 +152,24 @@ public class OcppMockServer {
      */
     public Map<String, String> getReceivedCredentials() {
         return identityManager.getReceivedCredentials();
+    }
+
+    /**
+     * Web-socket connection attempts.
+     *
+     * @return connection attempts
+     */
+    public int connectionAttempts() {
+        return connectionAttempts.get();
+    }
+
+    /**
+     * Setter for password.
+     *
+     * @param password
+     */
+    public void setNewPassword(String password) {
+        this.identityManager.setPassword(password);
     }
 
     private HttpHandler authentication(WebSocketProtocolHandshakeHandler handshakeHandler) {

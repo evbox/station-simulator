@@ -171,6 +171,13 @@ public class Station {
     }
 
     /**
+     * Reconnect station to the OCPP server.
+     */
+    public void reconnect() {
+        webSocketClient.reconnect();
+    }
+
+    /**
      * Refresh state view.
      */
     void refreshStateView() {

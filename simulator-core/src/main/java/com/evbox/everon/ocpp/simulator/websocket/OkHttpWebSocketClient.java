@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okio.ByteString;
 
@@ -8,6 +9,7 @@ import javax.annotation.Nullable;
 import java.util.Base64;
 import java.util.Optional;
 
+@Slf4j
 public class OkHttpWebSocketClient {
 
     private static final String COLON = ":";
@@ -70,6 +72,12 @@ public class OkHttpWebSocketClient {
 
     public void disconnect() {
         webSocket.close(1000, "Simulator goes offline");
+    }
+
+    public void reconnect(String url) {
+        log.info("Trying to reconnect to {}", url);
+        disconnect();
+        connect(url);
     }
 
     public boolean sendMessage(String message) {

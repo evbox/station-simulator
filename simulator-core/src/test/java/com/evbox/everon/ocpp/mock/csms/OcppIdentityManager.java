@@ -14,9 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class OcppIdentityManager implements IdentityManager {
 
-    private final String username;
-    private final String password;
     private final Map<String, String> receivedCredentials = new ConcurrentHashMap<>();
+
+    private final String username;
+    private String password;
 
     OcppIdentityManager(String username, String password) {
         this.username = username;
@@ -71,6 +72,15 @@ public class OcppIdentityManager implements IdentityManager {
      */
     public Map<String, String> getReceivedCredentials() {
         return receivedCredentials;
+    }
+
+    /**
+     * Setter for password.
+     *
+     * @param password
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     private Optional<Account> getAccount(String username, Credential credential) {

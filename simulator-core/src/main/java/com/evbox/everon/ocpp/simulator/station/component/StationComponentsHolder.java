@@ -6,6 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.component.chargingstation.Chargin
 import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComponent;
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
+import com.evbox.everon.ocpp.simulator.station.component.securityctrlr.SecurityCtrlrComponent;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -34,6 +35,7 @@ public class StationComponentsHolder {
                 .add(new ChargingStationComponent(station, stationState))
                 .add(new EVSEComponent(station, stationState))
                 .add(new ConnectorComponent(station, stationState))
+                .add(new SecurityCtrlrComponent(station, stationState))
                 .build();
 
         components = ImmutableMap.copyOf(componentsList.stream().collect(Collectors.toMap(StationComponent::getComponentName, identity())));
