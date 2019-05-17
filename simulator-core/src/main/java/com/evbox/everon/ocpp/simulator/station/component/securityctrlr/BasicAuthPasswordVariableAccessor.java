@@ -97,11 +97,25 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
-        if (attributeValue.toString().length() > 40) {
+        if (invalidLength(attributeValue) || isNotHex(attributeValue)) {
             return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
-        } else {
-            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED);
         }
+
+        return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED);
+
+    }
+
+    private boolean isNotHex(CiString.CiString1000 attributeValue) {
+        try {
+            Long.parseLong(attributeValue.toString(), 16);
+            return false;
+        } catch (NumberFormatException e) {
+            return true;
+        }
+    }
+
+    private boolean invalidLength(CiString.CiString1000 attributeValue) {
+        return attributeValue.toString().length() > 40;
     }
 
     private void setActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
