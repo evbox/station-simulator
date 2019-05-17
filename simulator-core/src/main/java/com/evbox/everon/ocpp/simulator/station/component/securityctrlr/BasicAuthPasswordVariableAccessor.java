@@ -77,7 +77,7 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
     }
 
     private void setActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
-        getStation().getConfiguration().setPassword(attributeValue.toString());
+        getStation().getConfiguration().setBasicAuthPassword(attributeValue.toString());
         getStation().reconnect();
     }
 }

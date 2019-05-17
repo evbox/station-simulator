@@ -57,7 +57,7 @@ public class BasicAuthPasswordVariableAccessorTest {
 
         variableSetter.set(attributePath(), BASIC_AUTH_PASSWORD_ATTRIBUTE);
 
-        verify(stationMock.getConfiguration()).setPassword(eq(BASIC_AUTH_PASSWORD_VALUE));
+        verify(stationMock.getConfiguration()).setBasicAuthPassword(eq(BASIC_AUTH_PASSWORD_VALUE));
     }
 
     @Test

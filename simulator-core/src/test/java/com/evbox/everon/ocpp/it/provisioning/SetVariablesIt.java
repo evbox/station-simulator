@@ -95,7 +95,7 @@ public class SetVariablesIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> {
             StationConfiguration configuration = stationSimulatorRunner.getStation(STATION_ID).getConfiguration();
 
-            assertThat(configuration.getPassword()).isEqualTo(expectedPassword);
+            assertThat(configuration.getBasicAuthPassword()).isEqualTo(expectedPassword);
 
             ocppMockServer.verify();
         });

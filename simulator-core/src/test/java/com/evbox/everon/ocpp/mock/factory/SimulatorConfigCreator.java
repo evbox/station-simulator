@@ -22,7 +22,7 @@ public class SimulatorConfigCreator {
 
         stationConfiguration.setId(stationId);
         stationConfiguration.setEvse(evse);
-        stationConfiguration.setPassword(BASIC_AUTH_PASSWORD);
+        stationConfiguration.setBasicAuthPassword(BASIC_AUTH_PASSWORD);
         return stationConfiguration;
     }
 
@@ -38,7 +38,7 @@ public class SimulatorConfigCreator {
 
         stationConfiguration.setId(stationId);
         stationConfiguration.setEvse(evse);
-        stationConfiguration.setPassword(password);
+        stationConfiguration.setBasicAuthPassword(password);
         return stationConfiguration;
     }
 }
