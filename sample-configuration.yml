@@ -1,11 +1,11 @@
 stations:
   - id: EVB-P17390866
-    password: station_password
+    basicAuthPassword: station_password
     evse:
       count: 1
       connectors: 1
   - id: EVB-P18090564
-    password: station_password
+    basicAuthPassword: station_password
     evse:
       count: 2
       connectors: 1
