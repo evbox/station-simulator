@@ -9,13 +9,21 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v20.message.station.VariableAttribute;
+import com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.evbox.everon.ocpp.v20.message.station.VariableAttribute.Mutability.WRITE_ONLY;
+import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.STRING;
+import static java.util.Collections.singletonList;
 
 public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
 
@@ -55,12 +63,32 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
 
     @Override
     public List<ReportDatum> generateReportData(String componentName) {
-        return Collections.EMPTY_LIST;
+        Component component = new Component()
+                .withName(new CiString.CiString50(componentName));
+
+        // basicAuthPassword must not be exposed
+        VariableAttribute variableAttribute = new VariableAttribute()
+                .withValue(new CiString.CiString1000(""))
+                .withPersistence(true)
+                .withConstant(true)
+                .withMutability(WRITE_ONLY);
+
+        VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                .withDataType(STRING)
+                .withSupportsMonitoring(false);
+
+        ReportDatum reportDatum = new ReportDatum()
+                .withComponent(component)
+                .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
+                .withVariableCharacteristics(variableCharacteristics)
+                .withVariableAttribute(singletonList(variableAttribute));
+
+        return singletonList(reportDatum);
     }
 
     @Override
     public boolean isMutable() {
-        return false;
+        return true;
     }
 
     private SetVariableResult validateActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {

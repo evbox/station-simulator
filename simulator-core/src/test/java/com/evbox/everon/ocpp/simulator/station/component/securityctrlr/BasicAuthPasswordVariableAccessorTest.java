@@ -14,6 +14,7 @@ import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v20.message.station.VariableAttribute;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.BASIC_AUTH_PASSWORD_VARIABLE_NAME;
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.SECURITY_COMPONENT_NAME;
+import static com.evbox.everon.ocpp.v20.message.station.VariableAttribute.Mutability.WRITE_ONLY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -72,10 +74,26 @@ public class BasicAuthPasswordVariableAccessorTest {
     }
 
     @Test
-    void expectEmptyReportData() {
+    void expectWriteOnlyReportData() {
         List<ReportDatum> reportData = basicAuthPasswordVariableAccessor.generateReportData(SECURITY_COMPONENT_NAME);
 
-        assertThat(reportData).isEmpty();
+        ReportDatum reportDatum = reportData.get(0);
+
+        assertThat(reportDatum.getComponent().getName().toString()).isEqualTo(SECURITY_COMPONENT_NAME);
+        assertThat(reportDatum.getVariable().getName().toString()).isEqualTo(BASIC_AUTH_PASSWORD_VARIABLE_NAME);
+
+        VariableAttribute variableAttribute = reportDatum.getVariableAttribute().get(0);
+        assertThat(variableAttribute.getMutability()).isEqualTo(WRITE_ONLY);
+    }
+
+    @Test
+    void expectEmptyPasswordInReportData() {
+        List<ReportDatum> reportData = basicAuthPasswordVariableAccessor.generateReportData(SECURITY_COMPONENT_NAME);
+
+        ReportDatum reportDatum = reportData.get(0);
+
+        VariableAttribute variableAttribute = reportDatum.getVariableAttribute().get(0);
+        assertThat(variableAttribute.getValue().toString()).isEmpty();
     }
 
     @Test
