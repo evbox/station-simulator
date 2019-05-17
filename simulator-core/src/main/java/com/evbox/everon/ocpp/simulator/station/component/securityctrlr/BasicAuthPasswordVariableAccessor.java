@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.evbox.everon.ocpp.simulator.station.support.HexUtils.isNotHex;
 import static com.evbox.everon.ocpp.v20.message.station.VariableAttribute.Mutability.WRITE_ONLY;
 import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.STRING;
 import static java.util.Collections.singletonList;
@@ -97,7 +98,7 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
-        if (invalidLength(attributeValue) || isNotHex(attributeValue)) {
+        if (invalidLength(attributeValue) || isNotHex(attributeValue.toString())) {
             return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
         }
 
@@ -105,14 +106,6 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
 
     }
 
-    private boolean isNotHex(CiString.CiString1000 attributeValue) {
-        try {
-            Long.parseLong(attributeValue.toString(), 16);
-            return false;
-        } catch (NumberFormatException e) {
-            return true;
-        }
-    }
 
     private boolean invalidLength(CiString.CiString1000 attributeValue) {
         return attributeValue.toString().length() > 40;

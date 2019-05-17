@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class BasicAuthPasswordVariableAccessorTest {
 
-    private static final String BASIC_AUTH_PASSWORD_VALUE = "0123456789abcdef";
+    private static final String BASIC_AUTH_PASSWORD_VALUE = "0123456789abcdefABCDEF";
 
     private static final CiString1000 BASIC_AUTH_PASSWORD_ATTRIBUTE = new CiString1000(BASIC_AUTH_PASSWORD_VALUE);
 
@@ -129,7 +129,7 @@ public class BasicAuthPasswordVariableAccessorTest {
     void expectValidationToFailOnInvalidHex() {
         SetVariableValidator setVariableValidator = basicAuthPasswordVariableAccessor.getVariableValidators().get(AttributeType.ACTUAL);
 
-        CiString1000 invalidPassword = new CiString1000("123456789!");
+        CiString1000 invalidPassword = new CiString1000("0123456789abcdefABCDEF!");
 
         SetVariableResult result = setVariableValidator.validate(attributePath(), invalidPassword);
 
