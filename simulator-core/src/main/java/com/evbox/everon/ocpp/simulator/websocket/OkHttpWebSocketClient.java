@@ -9,6 +9,9 @@ import javax.annotation.Nullable;
 import java.util.Base64;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 @Slf4j
 public class OkHttpWebSocketClient {
 
@@ -30,14 +33,16 @@ public class OkHttpWebSocketClient {
 
     public void connect(String url) {
 
-        String plainCredentials = stationConfiguration.getId() + COLON + stationConfiguration.getBasicAuthPassword();
+        Request.Builder requestBuilder = new Request.Builder().url(url)
+                .addHeader("Sec-WebSocket-Protocol", "ocpp2.0");
 
-        Request request = new Request.Builder().url(url)
-                .addHeader("Sec-WebSocket-Protocol", "ocpp2.0")
-                .addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(plainCredentials.getBytes()))
-                .build();
+        if (nonNull(stationConfiguration.getBasicAuthPassword())) {
+            String plainCredentials = stationConfiguration.getId() + COLON + stationConfiguration.getBasicAuthPassword();
 
-        webSocket = client.newWebSocket(request, new WebSocketListener() {
+            requestBuilder.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(plainCredentials.getBytes()));
+        }
+
+        webSocket = client.newWebSocket(requestBuilder.build(), new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 listener.onOpen(response.toString());
