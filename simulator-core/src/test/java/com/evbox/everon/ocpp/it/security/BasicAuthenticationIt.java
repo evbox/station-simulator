@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.it;
+package com.evbox.everon.ocpp.it.security;
 
 import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class AuthenticationIt extends StationSimulatorSetUp {
+public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
     void setUp(String password) {
         SimulatorConfiguration.StationConfiguration stationConfiguration = createStationConfiguration(
