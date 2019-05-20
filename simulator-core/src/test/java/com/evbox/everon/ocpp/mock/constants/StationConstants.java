@@ -8,6 +8,7 @@ public class StationConstants {
     public static final int PORT = 8085;
     public static final String PATH = "/ocpp";
     public static final String OCPP_SERVER_URL = "ws://" + HOST + ":" + PORT + PATH;
+    public static final String BASIC_AUTH_PASSWORD = "0123456789abcdefABCDEF";
 
     public static final String STATION_ID = "EVB-P18090564";
     public static final String ADDITIONAL_STATION_ID = "EVB-P18090564";

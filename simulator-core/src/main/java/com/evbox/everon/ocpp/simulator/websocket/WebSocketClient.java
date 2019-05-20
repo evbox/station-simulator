@@ -48,6 +48,10 @@ public class WebSocketClient implements ChannelListener {
         getInbox().offer(new WebSocketClientInboxMessage.Connect());
     }
 
+    public void reconnect() {
+        webSocketClientAdapter.reconnect(webSocketConnectionUrl);
+    }
+
     public void startAcceptingMessages() {
 
         WebSocketMessageRouter webSocketMessageRouter = new WebSocketMessageRouter(this);

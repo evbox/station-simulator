@@ -1,17 +1,18 @@
 package com.evbox.everon.ocpp.it.provisioning;
 
-import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesResponse;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
-import static java.util.Collections.singletonList;
+import static com.evbox.everon.ocpp.mock.factory.SetVariablesCreator.createSetVariablesRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -69,13 +70,4 @@ public class SetVariablesIt extends StationSimulatorSetUp {
         });
     }
 
-    SetVariablesRequest createSetVariablesRequest(String component, String variable, String value, SetVariableDatum.AttributeType type) {
-        SetVariableDatum setVariableDatum = new SetVariableDatum()
-                .withComponent(new Component().withName(new CiString.CiString50(component)))
-                .withVariable(new Variable().withName(new CiString.CiString50(variable)))
-                .withAttributeType(type)
-                .withAttributeValue(new CiString.CiString1000(value));
-
-        return new SetVariablesRequest().withSetVariableData(singletonList(setVariableDatum));
-    }
 }

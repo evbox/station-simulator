@@ -8,6 +8,7 @@ import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.StationConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
 import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
 import org.awaitility.Awaitility;
@@ -32,6 +33,8 @@ public class StationSimulatorSetUp  {
             .port(StationConstants.PORT)
             .path(StationConstants.PATH)
             .ocppServerClient(ocppServerClient)
+            .username(STATION_ID)
+            .password(BASIC_AUTH_PASSWORD)
             .build();
 
     protected StationSimulatorRunner stationSimulatorRunner;
@@ -42,7 +45,7 @@ public class StationSimulatorSetUp  {
 
         ocppMockServer.start();
 
-        SimulatorConfiguration.StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS);
+        StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS);
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);

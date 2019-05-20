@@ -5,7 +5,6 @@ import com.evbox.everon.ocpp.mock.csms.exchange.StatusNotification;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
@@ -33,7 +32,6 @@ public class ChangeAvailabilityChargingStationIt extends StationSimulatorSetUp {
     void changeStationAvailabilitySetUp() {
         SimulatorConfiguration.StationConfiguration stationConfiguration = createStationConfiguration(STATION_ID, EVSE_COUNT_TWO, EVSE_CONNECTORS_TWO);
         SimulatorConfiguration simulatorConfiguration = createSimulatorConfiguration(stationConfiguration);
-
         stationSimulatorRunner = new StationSimulatorRunner(OCPP_SERVER_URL, simulatorConfiguration);
     }
 

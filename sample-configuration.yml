@@ -1,9 +1,11 @@
 stations:
   - id: EVB-P17390866
+    basicAuthPassword: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     evse:
       count: 1
       connectors: 1
   - id: EVB-P18090564
+    basicAuthPassword: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     evse:
       count: 2
       connectors: 1
