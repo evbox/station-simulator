@@ -4,18 +4,9 @@ import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.expect.RequestExpectationManager;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import io.undertow.Undertow;
-import io.undertow.security.api.AuthenticationMechanism;
-import io.undertow.security.api.AuthenticationMode;
-import io.undertow.security.handlers.AuthenticationCallHandler;
-import io.undertow.security.handlers.AuthenticationMechanismsHandler;
-import io.undertow.security.handlers.SecurityInitialHandler;
-import io.undertow.security.impl.BasicAuthenticationMechanism;
-import io.undertow.server.HttpHandler;
-import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +15,7 @@ import java.util.function.Predicate;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.once;
 import static io.undertow.Handlers.path;
 import static io.undertow.Handlers.websocket;
+import static io.undertow.util.Headers.AUTHORIZATION_STRING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -44,6 +36,7 @@ public class OcppMockServer {
     private final String hostname;
     private final int port;
     private final String path;
+
     private final OcppIdentityManager identityManager;
 
     private OcppMockServer(OcppServerMockBuilder builder) {
@@ -67,15 +60,28 @@ public class OcppMockServer {
         server = Undertow.builder()
                 .addHttpListener(port, hostname)
                 .setHandler(
-                        path().addPrefixPath(path, authentication(websocket((exchange, channel) -> {
-                            connectionAttempts.incrementAndGet();
-                            String stationId = channel.getUrl().replace(targetUrl, "");
-                            channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, ocppServerClient, requestResponseSynchronizer));
-                            channel.resumeReceives();
+                        path().addPrefixPath(path, websocket((exchange, channel) -> {
 
-                            ocppServerClient.putIfAbsent(stationId, new WebSocketSender(channel, requestResponseSynchronizer));
+                            String authorizationHeader = exchange.getRequestHeader(AUTHORIZATION_STRING);
 
-                        }))))
+                            if (authorizationHeader != null && identityManager.verify(authorizationHeader)) {
+                                connectionAttempts.incrementAndGet();
+                                String stationId = channel.getUrl().replace(targetUrl, "");
+                                channel.getReceiveSetter().set(new OcppReceiveListener(requestExpectationManager, ocppServerClient, requestResponseSynchronizer));
+                                channel.resumeReceives();
+
+                                ocppServerClient.putIfAbsent(stationId, new WebSocketSender(channel, requestResponseSynchronizer));
+                            } else {
+
+                                try {
+                                    channel.close();
+                                } catch (IOException e) {
+                                    log.error(e.getMessage(), e);
+                                }
+
+                            }
+
+                        })))
                 .build();
 
         server.start();
@@ -170,13 +176,6 @@ public class OcppMockServer {
      */
     public void setNewPassword(String password) {
         this.identityManager.setPassword(password);
-    }
-
-    private HttpHandler authentication(WebSocketProtocolHandshakeHandler handshakeHandler) {
-        List<AuthenticationMechanism> mechanisms = Collections.singletonList(new BasicAuthenticationMechanism("OCPP Realm"));
-
-        return new SecurityInitialHandler(AuthenticationMode.PRO_ACTIVE, identityManager, new AuthenticationMechanismsHandler(
-                new AuthenticationCallHandler(handshakeHandler), mechanisms));
     }
 
     /**

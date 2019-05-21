@@ -4,8 +4,11 @@ import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okio.ByteString;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -37,9 +40,14 @@ public class OkHttpWebSocketClient {
                 .addHeader("Sec-WebSocket-Protocol", "ocpp2.0");
 
         if (nonNull(stationConfiguration.getBasicAuthPassword())) {
-            String plainCredentials = stationConfiguration.getId() + COLON + stationConfiguration.getBasicAuthPassword();
 
-            requestBuilder.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(plainCredentials.getBytes()));
+            try {
+                byte[] plainCredentials = prepareAuthPassword();
+                requestBuilder.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(plainCredentials));
+            } catch (DecoderException e) {
+                log.error(e.getMessage(), e);
+            }
+
         }
 
         webSocket = client.newWebSocket(requestBuilder.build(), new WebSocketListener() {
@@ -88,4 +96,20 @@ public class OkHttpWebSocketClient {
     public boolean sendMessage(String message) {
         return webSocket.send(message);
     }
+
+    private byte[] prepareAuthPassword() throws DecoderException {
+
+        byte[] decodedPassword = Hex.decodeHex(stationConfiguration.getBasicAuthPassword());
+
+        byte[] username = stationConfiguration.getId().getBytes();
+
+        int size = username.length + decodedPassword.length + 1;
+
+        return ByteBuffer.allocate(size)
+                .put(username)
+                .put(COLON.getBytes())
+                .put(decodedPassword)
+                .array();
+    }
+
 }
