@@ -98,7 +98,7 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
-        if (invalidLength(attributeValue) || isNotHex(attributeValue.toString()) || isEven(attributeValue)) {
+        if (invalidLength(attributeValue) || isNotHex(attributeValue.toString()) || isOdd(attributeValue)) {
             return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
         }
 
@@ -106,7 +106,7 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
 
     }
 
-    private boolean isEven(CiString.CiString1000 attributeValue) {
+    private boolean isOdd(CiString.CiString1000 attributeValue) {
         return (attributeValue.toString().length() & 0x1) == 1;
     }
 

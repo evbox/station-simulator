@@ -126,7 +126,7 @@ public class BasicAuthPasswordVariableAccessorTest {
     }
 
     @Test
-    void expectValidationToFailOnEvenNumberOfChars() {
+    void expectValidationToFailOnOddNumberOfChars() {
         SetVariableValidator setVariableValidator = basicAuthPasswordVariableAccessor.getVariableValidators().get(AttributeType.ACTUAL);
 
         CiString1000 invalidPassword = new CiString1000("12345");
