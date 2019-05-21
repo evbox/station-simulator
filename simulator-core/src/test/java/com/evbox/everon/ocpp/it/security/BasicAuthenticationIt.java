@@ -37,7 +37,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
     @Test
     void expectToFailAuth() {
 
-        String invalidPassword = "invalid-password";
+        String invalidPassword = "0000";
         setUp(invalidPassword);
 
         stationSimulatorRunner.run();
@@ -80,7 +80,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
         ocppMockServer.waitUntilConnected();
 
-        String newPassword = "abc";
+        String newPassword = "aabbcc";
 
         SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
                 SECURITY_COMPONENT_NAME,

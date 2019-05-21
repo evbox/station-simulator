@@ -1,18 +1,24 @@
 package com.evbox.everon.ocpp.mock.csms;
 
-import io.undertow.security.idm.Account;
-import io.undertow.security.idm.Credential;
-import io.undertow.security.idm.IdentityManager;
-import io.undertow.security.idm.PasswordCredential;
+import org.apache.commons.codec.binary.Hex;
 
-import java.security.Principal;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static io.undertow.util.Headers.BASIC;
 
 /**
  * Ocpp user authentication manager
  */
-public class OcppIdentityManager implements IdentityManager {
+public class OcppIdentityManager {
+
+    private static final String BASIC_PREFIX = BASIC + " ";
+    private static final int PREFIX_LENGTH = BASIC_PREFIX.length();
+    private static final String COLON = ":";
 
     private final Map<String, String> receivedCredentials = new ConcurrentHashMap<>();
 
@@ -24,36 +30,22 @@ public class OcppIdentityManager implements IdentityManager {
         this.password = password;
     }
 
-    /**
-     * {@inheritDoc}
-     * @param account {@link Account}
-     * @return {@link Account}
-     */
-    @Override
-    public Account verify(Account account) {
-        throw new UnsupportedOperationException();
-    }
+    public boolean verify(final String authorizationHeader) {
 
-    /**
-     * Verify username and password.
-     *
-     * @param username
-     * @param credential
-     * @return {@link Account} if authentication was successful otherwise null
-     */
-    @Override
-    public Account verify(String username, Credential credential) {
-        return getAccount(username, credential).orElse(null);
-    }
+        byte[] decodedBase64 = Base64.getDecoder().decode(authorizationHeader.substring(PREFIX_LENGTH));
+        String plainBase64 = new String(decodedBase64, StandardCharsets.UTF_8);
 
-    /**
-     * {@inheritDoc}
-     * @param credential {@link Credential}
-     * @return {@link Account}
-     */
-    @Override
-    public Account verify(Credential credential) {
-        throw new UnsupportedOperationException();
+        int colIndex = plainBase64.indexOf(COLON);
+
+        byte[] passwordBytes = Arrays.copyOfRange(decodedBase64, colIndex + 1, decodedBase64.length);
+
+        String password = Hex.encodeHexString(passwordBytes);
+
+        String username = plainBase64.substring(0, colIndex);
+        receivedCredentials.put(username, password);
+
+        return this.username.equals(username) && this.password.equals(password);
+
     }
 
     /**
@@ -81,38 +73,6 @@ public class OcppIdentityManager implements IdentityManager {
      */
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    private Optional<Account> getAccount(String username, Credential credential) {
-        String password = getPassword(credential);
-
-        receivedCredentials.put(username, password);
-
-        if (this.username.equals(username) && this.password.equals(password)) {
-
-            return Optional.of(new Account() {
-
-                @Override
-                public Principal getPrincipal() {
-                    return () -> username;
-                }
-
-                @Override
-                public Set<String> getRoles() {
-                    return Collections.emptySet();
-                }
-
-            });
-        }
-
-        return Optional.empty();
-    }
-
-    private String getPassword(Credential credential) {
-        if (credential instanceof PasswordCredential) {
-            return new String(((PasswordCredential) credential).getPassword());
-        }
-        throw new IllegalArgumentException("No password received");
     }
 
 }

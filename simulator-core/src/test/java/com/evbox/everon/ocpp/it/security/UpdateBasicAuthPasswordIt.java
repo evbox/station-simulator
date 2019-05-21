@@ -21,7 +21,7 @@ public class UpdateBasicAuthPasswordIt extends StationSimulatorSetUp {
     @Test
     void shouldSetBasicAuthPassword() {
 
-        String expectedPassword = "abc";
+        String expectedPassword = "aabbcc";
 
         stationSimulatorRunner.run();
 

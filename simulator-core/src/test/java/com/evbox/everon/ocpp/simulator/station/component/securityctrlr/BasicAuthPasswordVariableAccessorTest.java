@@ -126,6 +126,17 @@ public class BasicAuthPasswordVariableAccessorTest {
     }
 
     @Test
+    void expectValidationToFailOnEvenNumberOfChars() {
+        SetVariableValidator setVariableValidator = basicAuthPasswordVariableAccessor.getVariableValidators().get(AttributeType.ACTUAL);
+
+        CiString1000 invalidPassword = new CiString1000("12345");
+
+        SetVariableResult result = setVariableValidator.validate(attributePath(), invalidPassword);
+
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableResult.AttributeStatus.INVALID_VALUE);
+    }
+
+    @Test
     void expectValidationToFailOnInvalidHex() {
         SetVariableValidator setVariableValidator = basicAuthPasswordVariableAccessor.getVariableValidators().get(AttributeType.ACTUAL);
 
