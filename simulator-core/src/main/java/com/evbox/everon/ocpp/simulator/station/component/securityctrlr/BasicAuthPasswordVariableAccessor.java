@@ -30,7 +30,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
 
     private static final String NAME = "BasicAuthPassword";
-    private static final long RECONNECT_TIMEOUT = 2;
+    private static final long RECONNECT_TIMEOUT = 5;
 
     private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
             .put(AttributeType.ACTUAL, this::validateActualValue)
