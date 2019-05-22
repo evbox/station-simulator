@@ -25,10 +25,12 @@ import static com.evbox.everon.ocpp.simulator.station.support.HexUtils.isNotHex;
 import static com.evbox.everon.ocpp.v20.message.station.VariableAttribute.Mutability.WRITE_ONLY;
 import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.STRING;
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
 
     private static final String NAME = "BasicAuthPassword";
+    private static final long RECONNECT_TIMEOUT = 2;
 
     private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
             .put(AttributeType.ACTUAL, this::validateActualValue)
@@ -117,6 +119,6 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
 
     private void setActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         getStation().getConfiguration().setBasicAuthPassword(attributeValue.toString());
-        getStation().reconnect();
+        getStation().reconnect(RECONNECT_TIMEOUT, SECONDS);
     }
 }
