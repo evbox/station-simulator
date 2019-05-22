@@ -40,7 +40,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 ## Supported OCPP 2.0 use cases
 | Subject                           | Use Case                                                                    | Supported | Comments                                      |
 | :--------------------------------:| :--------------------------------------------------------------------------:| :--------:| :--------------------------------------------:|
-| Security                          | A01 - Update Charging Station Password for HTTP Basic Authentication        |           |                                               |
+| Security                          | A01 - Update Charging Station Password for HTTP Basic Authentication        | Yes          |                                               |
 | Security                          | A02 - Update Charging Station Certificate by request of CSMS                |           |                                               |
 | Security                          | A03 - Update Charging Station Certificate initiated by the Charging Station |           |                                               |
 | Security                          | A04 - Security Event Notification                                           |           |                                               |
@@ -210,6 +210,30 @@ stations:
       count: 1
       connectors: 1
   - id: EVB-P18090564
+    evse:
+      count: 1
+      connectors: 2
+      
+```
+
+### Secure connection
+
+You can use secure web-sockets to connect to CSMS. Basic authentication password must provided in HEX format. Sample:
+
+```bash
+./gradlew run -Parguments="wss://${ocpp_endpoint_url} --configuration {configuration_body}"
+```
+
+**Configuration file sample**
+```YAML
+stations:
+  - id: EVB-P17390866
+    basicAuthPassword: 0123ab
+    evse:
+      count: 1
+      connectors: 1
+  - id: EVB-P18090564
+    basicAuthPassword: 6789cd
     evse:
       count: 1
       connectors: 2
