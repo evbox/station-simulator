@@ -171,10 +171,24 @@ public class Station {
     }
 
     /**
-     * Reconnect station to the OCPP server.
+     * Reconnect station to the OCPP server, instantly.
      */
     public void reconnect() {
         webSocketClient.reconnect();
+    }
+
+    /**
+     * Reconnect station to the OCCP server, at most before timeout expires.
+     * @param timeout timeout before reconnecting
+     * @param unit unit of the timeout
+     */
+    public void reconnect(long timeout, TimeUnit unit) {
+        try {
+            unit.sleep(timeout);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        reconnect();
     }
 
     /**

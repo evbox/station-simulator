@@ -40,7 +40,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 ## Supported OCPP 2.0 use cases
 | Subject                           | Use Case                                                                    | Supported | Comments                                      |
 | :--------------------------------:| :--------------------------------------------------------------------------:| :--------:| :--------------------------------------------:|
-| Security                          | A01 - Update Charging Station Password for HTTP Basic Authentication        | Yes          |                                               |
+| Security                          | A01 - Update Charging Station Password for HTTP Basic Authentication        | Yes       |                                               |
 | Security                          | A02 - Update Charging Station Certificate by request of CSMS                |           |                                               |
 | Security                          | A03 - Update Charging Station Certificate initiated by the Charging Station |           |                                               |
 | Security                          | A04 - Security Event Notification                                           |           |                                               |
