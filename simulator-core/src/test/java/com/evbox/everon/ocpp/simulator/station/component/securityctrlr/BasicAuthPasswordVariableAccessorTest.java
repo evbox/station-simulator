@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.BASIC_AUTH_PASSWORD_VARIABLE_NAME;
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.SECURITY_COMPONENT_NAME;
@@ -70,7 +71,7 @@ public class BasicAuthPasswordVariableAccessorTest {
 
         variableSetter.set(attributePath(), BASIC_AUTH_PASSWORD_ATTRIBUTE);
 
-        verify(stationMock).reconnect();
+        verify(stationMock).reconnect(anyLong(), any(TimeUnit.class));
     }
 
     @Test
