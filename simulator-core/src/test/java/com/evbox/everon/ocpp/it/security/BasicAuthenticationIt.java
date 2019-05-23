@@ -114,5 +114,4 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
         });
 
     }
-
 }
