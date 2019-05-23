@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.simulator.message.CallError;
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
@@ -306,6 +307,19 @@ public class StationMessageSender {
     public void sendCallResult(String callId, Object payload) {
         CallResult callResult = new CallResult(callId, payload);
         String callStr = callResult.toJson();
+        sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
+    }
+
+    /**
+     * Send {@link CallError} to ocpp server.
+     *
+     * @param callId  identity of the message
+     * @param errorCode the error code
+     * @param payload body of the message
+     */
+    public void sendCallError(String callId, CallError.Code errorCode, Object payload) {
+        CallError callError = new CallError(callId, errorCode, payload);
+        String callStr = callError.toJson();
         sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
     }
 

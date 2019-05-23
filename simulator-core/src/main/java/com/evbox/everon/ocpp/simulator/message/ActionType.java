@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.message;
 
+import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
@@ -45,6 +46,6 @@ public enum ActionType {
         return Arrays.stream(values())
                 .filter(type -> type.getType().equals(actionType))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Incorrect action type: " + actionType));
+                .orElseThrow(() -> new UnknownActionException("Incorrect action type: " + actionType));
     }
 }

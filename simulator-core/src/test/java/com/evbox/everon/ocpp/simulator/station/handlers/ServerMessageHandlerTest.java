@@ -7,6 +7,7 @@ import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
+import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
@@ -262,13 +263,12 @@ public class ServerMessageHandlerTest {
 
 
     @Test
-    void verifyInvalidAction() throws JsonProcessingException {
+    void verifyInvalidAction()  {
 
         String callJson = createCall()
                 .withAction("Invalid action")
                 .toJson();
 
-        assertThrows(IllegalArgumentException.class, () -> serverMessageHandler.handle(callJson));
-
+        assertThrows(UnknownActionException.class, () -> serverMessageHandler.handle(callJson));
     }
 }

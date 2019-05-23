@@ -30,7 +30,7 @@ public class WebSocketMessageRouter {
                 .put(OCPP_MESSAGE, new OcppMessageHandler(webSocketClient))
                 .put(CONNECT, new ConnectMessageHandler(webSocketClient))
                 .put(DISCONNECT, new DisconnectMessageHandler(webSocketClient))
-                .build();;
+                .build();
     }
 
     /**
