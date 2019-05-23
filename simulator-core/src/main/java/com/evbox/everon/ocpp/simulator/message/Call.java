@@ -20,7 +20,7 @@ public class Call {
         return Call.from(RawCall.fromJson(json));
     }
 
-    private static Call from(RawCall rawCall) {
+    public static Call from(RawCall rawCall) {
         if (rawCall.getMessageType() != MessageType.CALL) {
             throw new IllegalArgumentException("Expected CALL message type: " + rawCall.getMessageType());
         }

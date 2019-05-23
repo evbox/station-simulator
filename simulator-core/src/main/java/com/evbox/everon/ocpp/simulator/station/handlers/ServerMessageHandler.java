@@ -6,6 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
+import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
@@ -67,9 +68,22 @@ public class ServerMessageHandler implements MessageHandler<String> {
         RawCall rawCall = RawCall.fromJson(serverMessage);
 
         if (rawCall.getMessageType() == MessageType.CALL) {
-            onRequest(Call.fromJson(serverMessage));
+            onRequest(serverMessage);
         } else {
             onResponse(rawCall);
+        }
+    }
+
+    private void onRequest(String serverMessage) {
+        RawCall rawCall = RawCall.fromJson(serverMessage);
+        try {
+            onRequest(Call.from(rawCall));
+        } catch (UnknownActionException e) {
+            stationMessageSender.sendCallError(rawCall.getMessageId(), CallError.Code.NOT_IMPLEMENTED, e);
+            throw e;
+        } catch (Exception e) {
+            stationMessageSender.sendCallError(rawCall.getMessageId(), CallError.Code.INTERNAL_ERROR, e);
+            throw e;
         }
     }
 
@@ -99,6 +113,4 @@ public class ServerMessageHandler implements MessageHandler<String> {
             throw new BadServerResponseException("Station '" + stationId + "' did not offer call with messageId: " + messageId);
         }
     }
-
-
 }
