@@ -23,7 +23,6 @@ public class CallError {
 
     public enum Code {
         FORMAT_VIOLATION("FormatViolation"),
-        FORMATION_VIOLATION("FormationViolation"),
         GENERIC_ERROR("GenericError"),
         INTERNAL_ERROR("InternalError"),
         MESSAGE_TYPE_NOT_SUPPORTED("MessageTypeNotSupported"),
