@@ -10,10 +10,12 @@ buildscript {
 plugins {
     id 'io.franzbecker.gradle-lombok'   version '2.0'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'jacoco'
 }
 
 apply plugin: 'application'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'jacoco'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
