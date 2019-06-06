@@ -8,6 +8,17 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.sonarqube' version '2.6'
+}
+
+sonarqube.properties {
+    property 'sonar.host.url', 'https://sonarcloud.io'
+    property 'sonar.organization', 'evb'
+    property 'sonar.projectKey', 'station-simulator'
+    property 'sonar.exclusions', 'payload/**/*.java'
+}
+
 ext {
     guavaVersion = '27.0.1-jre'
     jacksonVersion = '2.9.8'
