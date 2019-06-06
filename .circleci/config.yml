@@ -38,4 +38,4 @@ workflows:
   default:
     jobs:
     - build
-    - sonar-static-analysis 
+    - sonar-static-analysis
