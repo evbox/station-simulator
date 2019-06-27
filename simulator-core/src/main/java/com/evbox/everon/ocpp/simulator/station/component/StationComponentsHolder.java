@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.chargingstation.ChargingStationComponent;
@@ -9,11 +10,11 @@ import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommC
 import com.evbox.everon.ocpp.simulator.station.component.securityctrlr.SecurityCtrlrComponent;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -27,7 +28,7 @@ public class StationComponentsHolder {
     /**
      * Maps component name to its implementation where each of them has variables
      */
-    private final Map<String, StationComponent> components;
+    private final Map<CiString.CiString50, StationComponent> components;
 
     public StationComponentsHolder(Station station, StationState stationState) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
@@ -38,14 +39,11 @@ public class StationComponentsHolder {
                 .add(new SecurityCtrlrComponent(station, stationState))
                 .build();
 
-        components = componentsList.stream()
-                .collect(Collectors.toMap(StationComponent::getComponentName,
-                        identity(),
-                        (e1, e2) -> e1,
-                        () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
+        components = ImmutableMap.copyOf(componentsList.stream().collect(
+                Collectors.toMap(sc -> new CiString.CiString50(sc.getComponentName()), identity())));
     }
 
-    public Optional<StationComponent> getComponent(String componentName) {
+    public Optional<StationComponent> getComponent(CiString.CiString50 componentName) {
         return Optional.ofNullable(components.get(componentName));
     }
 

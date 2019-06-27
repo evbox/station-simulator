@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
@@ -54,16 +55,16 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
                 .filter(SetVariableValidationResult::isAccepted)
                 .map(SetVariableValidationResult::getSetVariableDatum)
                 .forEach(data -> {
-                    String componentName = data.getComponent().getName().toString();
-                    Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
-                    StationComponent component = optionalComponent.orElseThrow(() -> new UnknownComponentException(componentName));
+                    CiString.CiString50 componentName = data.getComponent().getName();
+                    Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(data.getComponent().getName());
+                    StationComponent component = optionalComponent.orElseThrow(() -> new UnknownComponentException(componentName.toString()));
                     component.setVariable(data);
                 });
     }
 
     private List<SetVariableValidationResult> validate(List<SetVariableDatum> setVariableData) {
         return setVariableData.stream().map(data -> {
-            String componentName = data.getComponent().getName().toString();
+            CiString.CiString50 componentName = data.getComponent().getName();
             Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
 
             return optionalComponent.map(component -> component.validate(data))
