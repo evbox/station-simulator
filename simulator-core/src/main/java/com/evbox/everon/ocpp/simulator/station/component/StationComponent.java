@@ -6,12 +6,8 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccess
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
-import com.google.common.collect.ImmutableMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 import static java.util.function.Function.identity;
@@ -31,7 +27,11 @@ public abstract class StationComponent {
     private final Map<String, VariableAccessor> variableAccessors;
 
     public StationComponent(List<VariableAccessor> variableAccessors) {
-        this.variableAccessors = ImmutableMap.copyOf(variableAccessors.stream().collect(toMap(VariableAccessor::getVariableName, identity())));
+        this.variableAccessors = variableAccessors.stream()
+                .collect(toMap(VariableAccessor::getVariableName,
+                        identity(),
+                        (e1, e2) -> e1,
+                        () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
     }
 
     public abstract String getComponentName();

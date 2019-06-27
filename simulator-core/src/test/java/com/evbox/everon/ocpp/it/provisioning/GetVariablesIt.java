@@ -15,7 +15,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-public class GetVariablesIt extends StationSimulatorSetUp {
+class GetVariablesIt extends StationSimulatorSetUp {
 
     @Test
     void shouldReplyToGetVariablesRequest() {
@@ -44,12 +44,30 @@ public class GetVariablesIt extends StationSimulatorSetUp {
     @Test
     void shouldGetHeartbeatIntervalWithGetVariablesRequest() {
 
+        GetVariablesRequest getVariablesRequest =
+                createGetVariablesRequest(OCPPCommCtrlrComponent.NAME,
+                        HeartbeatIntervalVariableAccessor.NAME,
+                        GetVariableDatum.AttributeType.ACTUAL);
+
+        shouldGetHeartbeatIntervalWithGetVariablesRequestImpl(getVariablesRequest);
+    }
+
+    @Test
+    void shouldGetHeartbeatIntervalWithGetVariablesRequestUpperCase() {
+
+        GetVariablesRequest getVariablesRequest =
+                createGetVariablesRequest(OCPPCommCtrlrComponent.NAME.toUpperCase(),
+                        HeartbeatIntervalVariableAccessor.NAME.toUpperCase(),
+                        GetVariableDatum.AttributeType.ACTUAL);
+
+        shouldGetHeartbeatIntervalWithGetVariablesRequestImpl(getVariablesRequest);
+    }
+
+    private void shouldGetHeartbeatIntervalWithGetVariablesRequestImpl(GetVariablesRequest getVariablesRequest) {
+
         int expectedHeartbeatInterval = 100;
 
         stationSimulatorRunner.run();
-
-        GetVariablesRequest getVariablesRequest =
-                createGetVariablesRequest(OCPPCommCtrlrComponent.NAME, HeartbeatIntervalVariableAccessor.NAME, GetVariableDatum.AttributeType.ACTUAL);
 
         Call call = new Call(DEFAULT_CALL_ID, ActionType.GET_VARIABLES, getVariablesRequest);
 

@@ -9,11 +9,11 @@ import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommC
 import com.evbox.everon.ocpp.simulator.station.component.securityctrlr.SecurityCtrlrComponent;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -38,7 +38,11 @@ public class StationComponentsHolder {
                 .add(new SecurityCtrlrComponent(station, stationState))
                 .build();
 
-        components = ImmutableMap.copyOf(componentsList.stream().collect(Collectors.toMap(StationComponent::getComponentName, identity())));
+        components = componentsList.stream()
+                .collect(Collectors.toMap(StationComponent::getComponentName,
+                        identity(),
+                        (e1, e2) -> e1,
+                        () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)));
     }
 
     public Optional<StationComponent> getComponent(String componentName) {
