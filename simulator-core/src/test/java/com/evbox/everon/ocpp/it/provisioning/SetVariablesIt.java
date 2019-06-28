@@ -16,7 +16,7 @@ import static com.evbox.everon.ocpp.mock.factory.SetVariablesCreator.createSetVa
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-public class SetVariablesIt extends StationSimulatorSetUp {
+class SetVariablesIt extends StationSimulatorSetUp {
 
     @Test
     void shouldReplyToSetVariablesRequest() {
@@ -49,13 +49,33 @@ public class SetVariablesIt extends StationSimulatorSetUp {
 
         int newHeartbeatInterval = 120;
 
-        stationSimulatorRunner.run();
-
         SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
                 OCPPCommCtrlrComponent.NAME,
                 HeartbeatIntervalVariableAccessor.NAME,
                 String.valueOf(newHeartbeatInterval),
                 SetVariableDatum.AttributeType.ACTUAL);
+
+        shouldSetHeartbeatIntervalWithSetVariablesRequestImpl(setVariablesRequest, newHeartbeatInterval);
+    }
+
+    @Test
+    void shouldSetHeartbeatIntervalWithSetVariablesRequestUpperCase() {
+
+        int newHeartbeatInterval = 120;
+
+        SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
+                OCPPCommCtrlrComponent.NAME.toUpperCase(),
+                HeartbeatIntervalVariableAccessor.NAME.toUpperCase(),
+                String.valueOf(newHeartbeatInterval),
+                SetVariableDatum.AttributeType.ACTUAL);
+
+        shouldSetHeartbeatIntervalWithSetVariablesRequestImpl(setVariablesRequest, newHeartbeatInterval);
+    }
+
+    private void shouldSetHeartbeatIntervalWithSetVariablesRequestImpl(SetVariablesRequest setVariablesRequest,
+                                                                       int newHeartbeatInterval) {
+
+        stationSimulatorRunner.run();
 
         Call call = new Call(DEFAULT_CALL_ID, ActionType.SET_VARIABLES, setVariablesRequest);
 
@@ -69,5 +89,4 @@ public class SetVariablesIt extends StationSimulatorSetUp {
             ocppMockServer.verify();
         });
     }
-
 }

@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.component.chargingstation.ChargingStationComponent;
@@ -27,7 +28,7 @@ public class StationComponentsHolder {
     /**
      * Maps component name to its implementation where each of them has variables
      */
-    private final Map<String, StationComponent> components;
+    private final Map<CiString.CiString50, StationComponent> components;
 
     public StationComponentsHolder(Station station, StationState stationState) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
@@ -38,10 +39,11 @@ public class StationComponentsHolder {
                 .add(new SecurityCtrlrComponent(station, stationState))
                 .build();
 
-        components = ImmutableMap.copyOf(componentsList.stream().collect(Collectors.toMap(StationComponent::getComponentName, identity())));
+        components = ImmutableMap.copyOf(componentsList.stream().collect(
+                Collectors.toMap(sc -> new CiString.CiString50(sc.getComponentName()), identity())));
     }
 
-    public Optional<StationComponent> getComponent(String componentName) {
+    public Optional<StationComponent> getComponent(CiString.CiString50 componentName) {
         return Optional.ofNullable(components.get(componentName));
     }
 

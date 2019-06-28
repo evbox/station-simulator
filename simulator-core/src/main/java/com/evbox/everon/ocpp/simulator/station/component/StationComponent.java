@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableNotSupportedException;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
@@ -28,10 +29,11 @@ public abstract class StationComponent {
     /**
      * Map of variable names and accessors for each of them.
      */
-    private final Map<String, VariableAccessor> variableAccessors;
+    private final Map<CiString.CiString50, VariableAccessor> variableAccessors;
 
     public StationComponent(List<VariableAccessor> variableAccessors) {
-        this.variableAccessors = ImmutableMap.copyOf(variableAccessors.stream().collect(toMap(VariableAccessor::getVariableName, identity())));
+        this.variableAccessors = ImmutableMap.copyOf(variableAccessors.stream().collect(
+                toMap(va -> new CiString.CiString50(va.getVariableName()), identity())));
     }
 
     public abstract String getComponentName();
@@ -48,7 +50,7 @@ public abstract class StationComponent {
         GetVariableDatum.AttributeType attributeType = getVariableDatum.getAttributeType();
         Variable variable = getVariableDatum.getVariable();
 
-        VariableAccessor accessor = variableAccessors.get(variable.getName().toString());
+        VariableAccessor accessor = variableAccessors.get(variable.getName());
 
         if (isNull(accessor)) {
             return UNKNOWN_VARIABLE;
@@ -66,9 +68,8 @@ public abstract class StationComponent {
     public void setVariable(SetVariableDatum setVariableDatum) {
         Component component = setVariableDatum.getComponent();
         Variable variable = setVariableDatum.getVariable();
-        String variableName = variable.getName().toString();
 
-        VariableAccessor accessor = variableAccessors.get(variableName);
+        VariableAccessor accessor = variableAccessors.get(variable.getName());
 
         accessor.set(new AttributePath(component, variable, setVariableDatum.getAttributeType()), setVariableDatum.getAttributeValue());
     }
@@ -82,7 +83,7 @@ public abstract class StationComponent {
      * @return result which contains status of variable modification
      */
     public SetVariableValidationResult validate(SetVariableDatum setVariableDatum) {
-        Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getVariable().getName().toString()));
+        Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableDatum.getVariable().getName()));
 
         SetVariableResult validationResult = optionalVariableAccessor
                 .map(accessor -> accessor.validate(new AttributePath(setVariableDatum.getComponent(), setVariableDatum.getVariable(), setVariableDatum.getAttributeType()), setVariableDatum.getAttributeValue()))

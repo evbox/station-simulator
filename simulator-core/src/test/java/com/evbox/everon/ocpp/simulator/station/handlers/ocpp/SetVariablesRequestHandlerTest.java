@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
@@ -81,7 +82,7 @@ class SetVariablesRequestHandlerTest {
     @Test
     void shouldFailIfComponentNotExists() throws Exception {
         //given
-        given(componentsHolder.getComponent(UNKNOWN_COMPONENT_NAME)).willReturn(Optional.empty());
+        given(componentsHolder.getComponent(new CiString.CiString50(UNKNOWN_COMPONENT_NAME))).willReturn(Optional.empty());
 
         SetVariablesRequest setVariablesRequest = createSetVariablesRequest()
                 .withComponent(UNKNOWN_COMPONENT_NAME)
@@ -139,7 +140,7 @@ class SetVariablesRequestHandlerTest {
     }
 
     private void initOCPPCommCtrlComponentMock(SetVariableResult.AttributeStatus attributeStatus) {
-        given(componentsHolder.getComponent(OCPPCommCtrlrComponent.NAME)).willReturn(Optional.of(ocppCommCtrlrComponentMock));
+        given(componentsHolder.getComponent(new CiString.CiString50(OCPPCommCtrlrComponent.NAME))).willReturn(Optional.of(ocppCommCtrlrComponentMock));
         given(ocppCommCtrlrComponentMock.validate(any()))
                 .willAnswer(invocation -> {
                     SetVariableDatum data = invocation.getArgument(0);

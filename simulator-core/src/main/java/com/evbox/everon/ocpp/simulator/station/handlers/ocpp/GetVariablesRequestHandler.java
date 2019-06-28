@@ -35,13 +35,10 @@ public class GetVariablesRequestHandler implements OcppRequestHandler<GetVariabl
      */
     @Override
     public void handle(String callId, GetVariablesRequest request) {
-        List<GetVariableResult> results = request.getGetVariableData().stream().map(data -> {
-            String componentName = data.getComponent().getName().toString();
-
-            return stationComponentsHolder.getComponent(componentName)
-                    .map(stationComponent -> stationComponent.getVariable(data))
-                    .orElse(UNKNOWN_COMPONENT);
-        }).collect(toList());
+        List<GetVariableResult> results = request.getGetVariableData().stream().map(data ->
+                stationComponentsHolder.getComponent(data.getComponent().getName())
+                .map(stationComponent -> stationComponent.getVariable(data))
+                .orElse(UNKNOWN_COMPONENT)).collect(toList());
 
         stationMessageSender.sendCallResult(callId, new GetVariablesResponse().withGetVariableResult(results));
     }
