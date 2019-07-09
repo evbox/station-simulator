@@ -208,7 +208,6 @@ public class Evse {
      * Plug connector.
      *
      * @param connectorId connector identity
-     * @return true if succeeded otherwise false
      */
     public void plug(Integer connectorId) {
 
@@ -220,7 +219,6 @@ public class Evse {
      * Unplug connector.
      *
      * @param connectorId connector identity
-     * @return true if succeeded otherwise false
      */
     public void unplug(Integer connectorId) {
 

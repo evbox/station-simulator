@@ -52,6 +52,10 @@ public class WebSocketClient implements ChannelListener {
         webSocketClientAdapter.reconnect(webSocketConnectionUrl);
     }
 
+    public void disconnect() {
+        webSocketClientAdapter.disconnect();
+    }
+
     public void startAcceptingMessages() {
 
         WebSocketMessageRouter webSocketMessageRouter = new WebSocketMessageRouter(this);
