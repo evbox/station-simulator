@@ -50,6 +50,17 @@ public class StationSimulatorRunner {
         });
     }
 
+    /**
+     * Stops OCPP-compliant stations.
+     */
+    public void stop() {
+        stations.values().forEach(station -> {
+            station.stop();
+        });
+
+        stations.clear();
+    }
+
     public Station getStation(String stationId) {
         return stations.get(stationId);
     }

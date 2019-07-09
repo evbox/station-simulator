@@ -34,3 +34,5 @@ build-cache
 # Out  
 payload/ocpp20/out*
 simulator-core/out*
+
+*.DS_Store

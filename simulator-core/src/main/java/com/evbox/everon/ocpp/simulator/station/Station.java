@@ -126,6 +126,13 @@ public class Station {
     }
 
     /**
+     * Stops simulating a station
+     */
+    public void stop() {
+        webSocketClient.disconnect();
+    }
+
+    /**
      * Sends message to the station directly.
      *
      * @param stationMessage {@link StationMessage}
