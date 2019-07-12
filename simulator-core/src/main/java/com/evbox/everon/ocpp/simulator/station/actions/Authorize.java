@@ -78,7 +78,7 @@ public class Authorize implements UserMessage {
         authorizedEvses.forEach(evse -> {
             Integer connectorId = evse.lockPluggedConnector();
             evse.startCharging();
-            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, TransactionData.ChargingState.CHARGING);
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, TransactionData.ChargingState.CHARGING);
         });
     }
 
