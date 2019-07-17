@@ -19,7 +19,7 @@ public class EvseTransaction {
      */
     public static final EvseTransaction NONE = new EvseTransaction(EvseTransactionStatus.NONE);
 
-    private int transactionId;
+    private String transactionId;
     private EvseTransactionStatus status;
 
     /**
@@ -28,7 +28,7 @@ public class EvseTransaction {
      *
      * @param transactionId transaction identity
      */
-    public EvseTransaction(int transactionId) {
+    public EvseTransaction(String transactionId) {
         Objects.requireNonNull(transactionId);
 
         this.transactionId = transactionId;
@@ -37,7 +37,7 @@ public class EvseTransaction {
 
     @Override
     public String toString() {
-        return Integer.toString(transactionId);
+        return transactionId;
     }
 
     /**
@@ -59,7 +59,7 @@ public class EvseTransaction {
     @AllArgsConstructor
     public class EvseTransactionView {
 
-        private final int transactionId;
+        private final String transactionId;
         private final EvseTransactionStatus status;
     }
 }

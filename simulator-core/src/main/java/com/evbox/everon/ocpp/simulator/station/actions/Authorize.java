@@ -49,7 +49,7 @@ public class Authorize implements UserMessage {
                 boolean haveOngoingTransaction = authorizedEvses.stream().allMatch(Evse::hasOngoingTransaction);
 
                 if (!haveOngoingTransaction) {
-                    Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
+                    String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                     authorizedEvses.forEach(evse -> evse.createTransaction(transactionId));
                 }
 

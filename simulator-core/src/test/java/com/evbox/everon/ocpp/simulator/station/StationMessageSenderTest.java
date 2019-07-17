@@ -38,7 +38,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StationMessageSenderTest {
+class StationMessageSenderTest {
 
     @Mock
     StationState stationStateMock;
@@ -248,7 +248,7 @@ public class StationMessageSenderTest {
 
     private void mockStationState() {
         Evse evse = createEvse()
-                .withTransaction(new EvseTransaction(DEFAULT_INT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS))
+                .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS))
                 .withId(DEFAULT_EVSE_ID)
                 .build();
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);

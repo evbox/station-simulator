@@ -27,10 +27,10 @@ public final class TransactionIdGenerator {
      *
      * @return current transaction id value
      */
-    public Integer getAndIncrement() {
+    public String getAndIncrement() {
         Integer value = transactionId.get();
         transactionId.set(value + 1);
-        return value;
+        return String.format("T_%08d", value);
     }
 
     private static final class TransactionIdGeneratorHolder {
