@@ -32,7 +32,6 @@ public class StationConstants {
     public static final String DEFAULT_MESSAGE_ID = "1";
 
     public static final String DEFAULT_TRANSACTION_ID = "T_00000001";
-    public static final int DEFAULT_INT_TRANSACTION_ID = 1;
 
     public static final int DEFAULT_SEQ_NUMBER = 0;
 

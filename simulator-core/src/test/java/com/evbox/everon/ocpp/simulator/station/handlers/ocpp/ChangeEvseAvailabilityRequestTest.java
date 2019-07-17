@@ -136,7 +136,7 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withConnectorId(DEFAULT_CONNECTOR_ID)
                 .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
                 .withCableStatus(CableStatus.UNPLUGGED)
-                .withTransaction(new EvseTransaction("T_" + DEFAULT_INT_TRANSACTION_ID, IN_PROGRESS))
+                .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, IN_PROGRESS))
                 .build();
 
         when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);

@@ -14,7 +14,7 @@ public class EvseCreator {
             .withConnectorId(StationConstants.DEFAULT_CONNECTOR_ID)
             .withCableStatus(CableStatus.UNPLUGGED)
             .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
-            .withTransaction(new EvseTransaction("T_" + StationConstants.DEFAULT_INT_TRANSACTION_ID))
+            .withTransaction(new EvseTransaction(StationConstants.DEFAULT_TRANSACTION_ID))
             .build();
 
     public static EvseBuilder createEvse() {
