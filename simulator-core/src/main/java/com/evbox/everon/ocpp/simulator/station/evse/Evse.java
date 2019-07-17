@@ -193,7 +193,7 @@ public class Evse {
      *
      * @param transactionId transaction identity
      */
-    public void createTransaction(int transactionId) {
+    public void createTransaction(String transactionId) {
         transaction = new EvseTransaction(transactionId);
     }
 

@@ -109,7 +109,7 @@ public class ChangeStationAvailabilityTest {
                 .withConnectorId(DEFAULT_CONNECTOR_ID)
                 .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
                 .withCableStatus(CableStatus.UNPLUGGED)
-                .withTransaction(new EvseTransaction(DEFAULT_INT_TRANSACTION_ID, IN_PROGRESS))
+                .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, IN_PROGRESS))
                 .build();
         Evse evse2 = createEvse()
                 .withId(DEFAULT_EVSE_ID)
@@ -144,7 +144,7 @@ public class ChangeStationAvailabilityTest {
                 .withConnectorId(DEFAULT_CONNECTOR_ID)
                 .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
                 .withCableStatus(CableStatus.UNPLUGGED)
-                .withTransaction(new EvseTransaction(DEFAULT_INT_TRANSACTION_ID, IN_PROGRESS))
+                .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, IN_PROGRESS))
                 .build();
         Evse evse2 = createEvse()
                 .withId(DEFAULT_EVSE_ID)

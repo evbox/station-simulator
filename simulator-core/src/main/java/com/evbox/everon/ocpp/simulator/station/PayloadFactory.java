@@ -96,7 +96,7 @@ public class PayloadFactory {
                                                          TransactionData.ChargingState chargingState, Instant currentDateTime) {
 
         TransactionData transactionData = new TransactionData()
-                .withId(new CiString.CiString36(Integer.toString(evse.getTransaction().getTransactionId())))
+                .withId(new CiString.CiString36(evse.getTransaction().getTransactionId()))
                 .withChargingState(chargingState);
 
         TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.UPDATED, currentDateTime, evse.getSeqNoAndIncrement());

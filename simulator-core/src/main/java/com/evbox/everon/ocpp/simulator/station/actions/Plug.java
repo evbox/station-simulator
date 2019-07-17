@@ -37,7 +37,7 @@ public class Plug implements UserMessage {
         }
 
         if (!evse.hasOngoingTransaction()) {
-            Integer transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
+            String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
             evse.createTransaction(transactionId);
         }
 
