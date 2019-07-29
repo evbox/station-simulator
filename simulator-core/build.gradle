@@ -44,7 +44,7 @@ dependencies {
     compile 'ch.qos.logback:logback-core:1.2.3'
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
-    compile 'org.apache.commons:commons-lang3:3.8.1'
+    compile 'org.apache.commons:commons-lang3:3.9'
     compile "com.google.guava:guava:${guavaVersion}"
 
     compile group: 'commons-codec', name: 'commons-codec', version: '1.12'
