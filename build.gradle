@@ -20,7 +20,7 @@ sonarqube.properties {
 }
 
 ext {
-    guavaVersion = '27.0.1-jre'
+    guavaVersion = '28.0-jre'
     jacksonVersion = '2.9.8'
     junit5Version = '5.4.0'
 }
