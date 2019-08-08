@@ -32,9 +32,7 @@ class StationTest {
         evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
         stationConfiguration.setEvse(evse);
 
-        SimulatorConfiguration.WebSocketConfiguration socketConfiguration = new SimulatorConfiguration.WebSocketConfiguration();
-
-        station = new Station(stationConfiguration, socketConfiguration);
+        station = new Station(stationConfiguration);
 
         injectMock(station, "webSocketClient", webSocketClientMock);
     }
