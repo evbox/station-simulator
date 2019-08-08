@@ -37,10 +37,10 @@ public class StationSimulatorRunner {
      * Runs OCPP-compliant stations.
      */
     public void run() {
-
+        SimulatorConfiguration.WebSocketConfiguration socketConfiguration = simulatorConfiguration.getSocketConfiguration();
         simulatorConfiguration.getStations().forEach(stationConfiguration -> {
 
-            Station station = new Station(stationConfiguration);
+            Station station = new Station(stationConfiguration, socketConfiguration);
 
             station.connectToServer(serverWebSocketUrl);
 
@@ -54,9 +54,7 @@ public class StationSimulatorRunner {
      * Stops OCPP-compliant stations.
      */
     public void stop() {
-        stations.values().forEach(station -> {
-            station.stop();
-        });
+        stations.values().forEach(Station::stop);
 
         stations.clear();
     }
