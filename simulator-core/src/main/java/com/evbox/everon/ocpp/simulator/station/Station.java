@@ -44,6 +44,15 @@ public class Station {
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
 
     /**
+     * Create a station using {@link SimulatorConfiguration.StationConfiguration} and defaultHeartBeatIntervalSec.
+     *
+     * @param stationConfiguration station configuration
+     */
+    public Station(SimulatorConfiguration.StationConfiguration stationConfiguration) {
+        this(stationConfiguration, SimulatorConfiguration.WebSocketConfiguration.builder().build());
+    }
+
+    /**
      * Create a station using {@link SimulatorConfiguration.StationConfiguration}, {@link SimulatorConfiguration.WebSocketConfiguration} and defaultHeartBeatIntervalSec.
      *
      * @param stationConfiguration station configuration
@@ -52,26 +61,18 @@ public class Station {
     public Station(SimulatorConfiguration.StationConfiguration stationConfiguration, SimulatorConfiguration.WebSocketConfiguration socketConfiguration) {
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new LoggingInterceptor())
-                .addNetworkInterceptor(new LoggingInterceptor())
-                .pingInterval(10, TimeUnit.SECONDS);
+                .addNetworkInterceptor(new LoggingInterceptor());
 
-        if (socketConfiguration != null) {
-            if (socketConfiguration.getCallTimeout() != null ) {
-                httpClientBuilder.callTimeout(socketConfiguration.getCallTimeout(), TimeUnit.MILLISECONDS);
-            }
-
-            if (socketConfiguration.getConnectTimeout() != null ) {
-                httpClientBuilder.connectTimeout(socketConfiguration.getConnectTimeout(), TimeUnit.MILLISECONDS);
-            }
-
-            if (socketConfiguration.getReadTimeout() != null) {
-                httpClientBuilder.readTimeout(socketConfiguration.getReadTimeout(), TimeUnit.MILLISECONDS);
-            }
-
-            if (socketConfiguration.getWriteTimeout() != null) {
-                httpClientBuilder.readTimeout(socketConfiguration.getWriteTimeout(), TimeUnit.MILLISECONDS);
-            }
+        if (socketConfiguration == null) {
+            socketConfiguration = SimulatorConfiguration.WebSocketConfiguration.builder().build();
         }
+
+        httpClientBuilder.callTimeout(socketConfiguration.getCallTimeoutMs(), TimeUnit.MILLISECONDS);
+        httpClientBuilder.connectTimeout(socketConfiguration.getConnectTimeoutMs(), TimeUnit.MILLISECONDS);
+        httpClientBuilder.readTimeout(socketConfiguration.getReadTimeoutMs(), TimeUnit.MILLISECONDS);
+        httpClientBuilder.writeTimeout(socketConfiguration.getWriteTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        httpClientBuilder.pingInterval(socketConfiguration.getPingIntervalMs(), TimeUnit.MILLISECONDS);
 
         DEFAULT_HTTP_CLIENT = httpClientBuilder.build();
 

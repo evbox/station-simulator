@@ -1,6 +1,9 @@
 package com.evbox.everon.ocpp.simulator.configuration;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -8,6 +11,13 @@ import java.util.List;
 public class SimulatorConfiguration {
 
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
+
+    private static final long DEFAULT_CALL_TIMEOUT = 10_000;
+    private static final long DEFAULT_CONNECT_TIMEOUT = 10_000;
+    private static final long DEFAULT_READ_TIMEOUT = 10_000;
+    private static final long DEFAULT_WRITE_TIMEOUT = 10_000;
+
+    private static final long DEFAULT_PING_INTERVAL = 10_000;
 
     private WebSocketConfiguration socketConfiguration;
     private List<StationConfiguration> stations;
@@ -33,25 +43,38 @@ public class SimulatorConfiguration {
     }
 
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class WebSocketConfiguration {
         /**
          * Call timeout in milliseconds
          */
-        private Long callTimeout;
+        @Builder.Default
+        private long callTimeoutMs = DEFAULT_CALL_TIMEOUT;
 
         /**
          * Connection timeout in milliseconds
          */
-        private Long connectTimeout;
+        @Builder.Default
+        private long connectTimeoutMs = DEFAULT_CONNECT_TIMEOUT;
 
         /**
          * Read timeout in milliseconds
          */
-        private Long readTimeout;
+        @Builder.Default
+        private long readTimeoutMs = DEFAULT_READ_TIMEOUT;
 
         /**
          * Write timeout in milliseconds
          */
-        private Long writeTimeout;
+        @Builder.Default
+        private long writeTimeoutMs = DEFAULT_WRITE_TIMEOUT;
+
+        /**
+         * Ping interval in milliseconds
+         */
+        @Builder.Default
+        private long pingIntervalMs = DEFAULT_PING_INTERVAL;
     }
 }
