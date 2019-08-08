@@ -9,6 +9,7 @@ public class SimulatorConfiguration {
 
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
+    private WebSocketConfiguration socketConfiguration;
     private List<StationConfiguration> stations;
 
     @Data
@@ -29,5 +30,28 @@ public class SimulatorConfiguration {
          * Amount of connectors per each EVSE
          */
         private int connectors;
+    }
+
+    @Data
+    public static class WebSocketConfiguration {
+        /**
+         * Call timeout in milliseconds
+         */
+        private Long callTimeout;
+
+        /**
+         * Connection timeout in milliseconds
+         */
+        private Long connectTimeout;
+
+        /**
+         * Read timeout in milliseconds
+         */
+        private Long readTimeout;
+
+        /**
+         * Write timeout in milliseconds
+         */
+        private Long writeTimeout;
     }
 }

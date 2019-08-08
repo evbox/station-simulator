@@ -27,11 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Station {
 
-    private static final OkHttpClient DEFAULT_HTTP_CLIENT = new OkHttpClient.Builder()
-            .addInterceptor(new LoggingInterceptor())
-            .addNetworkInterceptor(new LoggingInterceptor())
-            .pingInterval(10, TimeUnit.SECONDS)
-            .build();
+    private final OkHttpClient DEFAULT_HTTP_CLIENT;
 
     private final SimulatorConfiguration.StationConfiguration configuration;
 
@@ -48,28 +44,41 @@ public class Station {
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
 
     /**
-     * Create a station using {@link SimulatorConfiguration.StationConfiguration} and defaultHeartBeatIntervalSec.
+     * Create a station using {@link SimulatorConfiguration.StationConfiguration}, {@link SimulatorConfiguration.WebSocketConfiguration} and defaultHeartBeatIntervalSec.
      *
-     * @param configuration station configuration
+     * @param stationConfiguration station configuration
+     * @param socketConfiguration socket configuration
      */
-    public Station(SimulatorConfiguration.StationConfiguration configuration) {
-        this(configuration, DEFAULT_HTTP_CLIENT);
-    }
+    public Station(SimulatorConfiguration.StationConfiguration stationConfiguration, SimulatorConfiguration.WebSocketConfiguration socketConfiguration) {
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+                .addInterceptor(new LoggingInterceptor())
+                .addNetworkInterceptor(new LoggingInterceptor())
+                .pingInterval(10, TimeUnit.SECONDS);
 
-    /**
-     * Create a station using {@link SimulatorConfiguration.StationConfiguration}, defaultHeartBeatIntervalSec and {@link OkHttpClient}.
-     *
-     * {@link OkHttpClient} is used for connecting and communicating with OCPP server.
-     *
-     * @param configuration station configuration
-     * @param okHttpClient http client
-     */
-    public Station(SimulatorConfiguration.StationConfiguration configuration, OkHttpClient okHttpClient) {
+        if (socketConfiguration != null) {
+            if (socketConfiguration.getCallTimeout() != null ) {
+                httpClientBuilder.callTimeout(socketConfiguration.getCallTimeout(), TimeUnit.MILLISECONDS);
+            }
 
-        this.configuration = configuration;
+            if (socketConfiguration.getConnectTimeout() != null ) {
+                httpClientBuilder.connectTimeout(socketConfiguration.getConnectTimeout(), TimeUnit.MILLISECONDS);
+            }
+
+            if (socketConfiguration.getReadTimeout() != null) {
+                httpClientBuilder.readTimeout(socketConfiguration.getReadTimeout(), TimeUnit.MILLISECONDS);
+            }
+
+            if (socketConfiguration.getWriteTimeout() != null) {
+                httpClientBuilder.readTimeout(socketConfiguration.getWriteTimeout(), TimeUnit.MILLISECONDS);
+            }
+        }
+
+        DEFAULT_HTTP_CLIENT = httpClientBuilder.build();
+
+        this.configuration = stationConfiguration;
         this.state = new StationState(configuration);
 
-        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(okHttpClient, configuration));
+        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(DEFAULT_HTTP_CLIENT, configuration));
 
         this.callRegistry = new SubscriptionRegistry();
         this.stationMessageSender = new StationMessageSender(callRegistry, state, webSocketClient);
