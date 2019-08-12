@@ -108,6 +108,22 @@ public class PayloadFactory {
         return payload;
     }
 
+    TransactionEventRequest createTransactionEventUpdate(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
+                                                         TransactionData.ChargingState chargingState, Instant currentDateTime, long powerConsumed) {
+
+        TransactionData transactionData = new TransactionData()
+                .withId(new CiString.CiString36(evse.getTransaction().getTransactionId()))
+                .withChargingState(chargingState);
+
+        TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.UPDATED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
+
+        if (tokenId != null) {
+            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443));
+        }
+
+        return payload;
+    }
+
     TransactionEventRequest createTransactionEventEnded(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
                                                         TransactionData.StoppedReason stoppedReason, Instant currentDateTime) {
 
@@ -132,6 +148,20 @@ public class PayloadFactory {
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo) {
+        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now()).withSampledValue(
+                Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal("1010")))));
+        return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
+    }
+
+    private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
+                                                           TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, long powerConsumed) {
+        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now()).withSampledValue(
+                Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed)))));
+        return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
+    }
+
+    private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
+                                                           TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, List<MeterValue> meterValues) {
         TransactionEventRequest transaction = new TransactionEventRequest();
         transaction.setEventType(eventType);
         transaction.setTimestamp(currentDateTime.atZone(ZoneOffset.UTC));
@@ -140,8 +170,7 @@ public class PayloadFactory {
         transaction.setTransactionData(transactionData);
         transaction.setEvse(new com.evbox.everon.ocpp.v20.message.common.Evse().withId(evseId).withConnectorId(connectorId));
 
-        transaction.setMeterValue(Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now()).withSampledValue(
-                Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal("1010"))))));
+        transaction.setMeterValue(meterValues);
         return transaction;
     }
 }

@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Send station messages to the OCPP server.
@@ -108,7 +109,20 @@ public class StationMessageSender {
      * @param chargingState charging state of the station
      */
     public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.ChargingState chargingState) {
-        sendTransactionEventUpdate(evseId, connectorId, reason, null, chargingState);
+        sendTransactionEventUpdate(evseId, connectorId, reason, chargingState, null);
+    }
+
+    /**
+     * Send TransactionEventUpdate event.
+     *
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
+     * @param chargingState charging state of the station
+     * @param powerConsumed power consumed by the evse
+     */
+    public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.ChargingState chargingState, Long powerConsumed) {
+        sendTransactionEventUpdate(evseId, connectorId, reason, null, chargingState, powerConsumed);
     }
 
     /**
@@ -121,9 +135,23 @@ public class StationMessageSender {
      * @param chargingState charging state of the station
      */
     public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
+        sendTransactionEventUpdate(evseId, connectorId, reason, tokenId, chargingState, null);
+    }
+
+    /**
+     * Send TransactionEventUpdate event.
+     *
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
+     * @param tokenId       token identity
+     * @param chargingState charging state of the station
+     * @param powerConsumed power consumed by the evse
+     */
+    public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState, Long powerConsumed) {
 
         TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventUpdate(stationState.findEvse(evseId),
-                connectorId, reason, tokenId, chargingState, stationState.getCurrentTime());
+                connectorId, reason, tokenId, chargingState, stationState.getCurrentTime(), Optional.ofNullable(powerConsumed).orElse(0L));
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 

@@ -9,6 +9,7 @@ import com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.StationConfiguration;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.MeterValuesConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
 import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
 import org.awaitility.Awaitility;
@@ -45,7 +46,11 @@ public class StationSimulatorSetUp  {
 
         ocppMockServer.start();
 
-        StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS);
+        MeterValuesConfiguration meterValuesConfiguration = SimulatorConfiguration.MeterValuesConfiguration.builder()
+                                                                                                            .meterValuesIntervalMs(getMeterValuesInterval())
+                                                                                                            .powerConsumptionPerInterval(getPowerConsumptionPerInterval())
+                                                                                                            .build();
+        StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS, meterValuesConfiguration);
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);
@@ -64,5 +69,13 @@ public class StationSimulatorSetUp  {
 
     protected void triggerUserAction(String stationId, UserMessage action) {
         stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
+    }
+
+    protected long getMeterValuesInterval() {
+        return 0;
+    }
+
+    protected long getPowerConsumptionPerInterval() {
+        return 100;
     }
 }

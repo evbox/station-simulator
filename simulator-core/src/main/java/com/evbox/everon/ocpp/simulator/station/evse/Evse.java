@@ -46,6 +46,11 @@ public class Evse {
     private EvseStatus scheduledNewEvseStatus;
 
     /**
+     *  Total power consumed by the evse
+     */
+    private long powerConsumed;
+
+    /**
      * Create Evse instance. By default evse is in the status AVAILABLE.
      *
      * @param id         evse identity
@@ -287,6 +292,23 @@ public class Evse {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
     }
 
+    /**
+     * Increases the power consumed by the value specified.
+     * If the new value exceeds MAX_VALUE then it will restart from 0.
+     *
+     * @param incrementValue amount of power to add to the consumed power
+     * @return updated value of consumed power
+     */
+    public long incrementPowerConsumed(long incrementValue) {
+        long diff = Long.MAX_VALUE - powerConsumed;
+        if (incrementValue > diff) {
+            powerConsumed = incrementValue - diff;
+        } else {
+            powerConsumed += incrementValue;
+        }
+        return powerConsumed;
+    }
+
     @Override
     public String toString() {
         return "Evse{" +
@@ -297,6 +319,7 @@ public class Evse {
                 ", seqNo=" + seqNo +
                 ", transaction=" + transaction +
                 ", evseStatus=" + evseStatus +
+                ", powerConsumed=" + powerConsumed +
                 '}';
     }
 
@@ -313,6 +336,7 @@ public class Evse {
                 .evseStatus(evseStatus)
                 .transaction(transaction.createView())
                 .scheduledNewEvseStatus(scheduledNewEvseStatus)
+                .powerConsumed(powerConsumed)
                 .build();
     }
 
@@ -336,6 +360,7 @@ public class Evse {
         private final EvseStatus evseStatus;
         private final EvseTransactionView transaction;
         private final EvseStatus scheduledNewEvseStatus;
+        private final long powerConsumed;
 
         /**
          * Checks whether EVSE has a token or not.

@@ -12,6 +12,9 @@ public class SimulatorConfiguration {
 
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
+    private static final long DEFAULT_METER_VALUES_INTERVAL = 1_000;
+    private static final long DEFAULT_POWER_CONSUMPTION_PER_INTERVAL = 100;
+
     private static final long DEFAULT_CALL_TIMEOUT = 10_000;
     private static final long DEFAULT_CONNECT_TIMEOUT = 10_000;
     private static final long DEFAULT_READ_TIMEOUT = 10_000;
@@ -27,6 +30,7 @@ public class SimulatorConfiguration {
         private String id;
         private Evse evse;
         private String basicAuthPassword;
+        private MeterValuesConfiguration meterValuesConfiguration;
     }
 
     @Data
@@ -40,6 +44,24 @@ public class SimulatorConfiguration {
          * Amount of connectors per each EVSE
          */
         private int connectors;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MeterValuesConfiguration {
+        /**
+         * How often send meter values in milliseconds
+         */
+        @Builder.Default
+        private long meterValuesIntervalMs = DEFAULT_METER_VALUES_INTERVAL;
+
+        /**
+         * Power consumed for each power consumption interval
+         */
+        @Builder.Default
+        private long powerConsumptionPerInterval = DEFAULT_POWER_CONSUMPTION_PER_INTERVAL;
     }
 
     @Data

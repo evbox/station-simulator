@@ -37,6 +37,7 @@ public class Station {
     private final WebSocketClient webSocketClient;
 
     private final HeartbeatScheduler heartbeatScheduler;
+    private final MeterValuesScheduler meterValuesScheduler;
 
     private final SubscriptionRegistry callRegistry;
     private final StationMessageSender stationMessageSender;
@@ -84,6 +85,12 @@ public class Station {
         this.callRegistry = new SubscriptionRegistry();
         this.stationMessageSender = new StationMessageSender(callRegistry, state, webSocketClient);
         this.heartbeatScheduler = new HeartbeatScheduler(state, stationMessageSender);
+
+        SimulatorConfiguration.MeterValuesConfiguration meterValuesConfiguration = stationConfiguration.getMeterValuesConfiguration();
+        if (meterValuesConfiguration == null) {
+            meterValuesConfiguration = SimulatorConfiguration.MeterValuesConfiguration.builder().build();
+        }
+        this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getMeterValuesIntervalMs(), meterValuesConfiguration.getPowerConsumptionPerInterval());
     }
 
     /**
