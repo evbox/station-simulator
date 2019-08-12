@@ -44,16 +44,16 @@ dependencies {
     compile 'ch.qos.logback:logback-core:1.2.3'
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
-    compile 'org.apache.commons:commons-lang3:3.8.1'
+    compile 'org.apache.commons:commons-lang3:3.9'
     compile "com.google.guava:guava:${guavaVersion}"
 
     compile group: 'commons-codec', name: 'commons-codec', version: '1.12'
 
-    testCompile 'org.assertj:assertj-core:3.11.1'
+    testCompile 'org.assertj:assertj-core:3.13.0'
     testCompile 'io.undertow:undertow-core:2.0.17.Final'
     testCompile 'org.awaitility:awaitility:3.1.5'
 
-    testCompile 'org.mockito:mockito-junit-jupiter:2.24.0'
+    testCompile 'org.mockito:mockito-junit-jupiter:3.0.0'
     testCompile 'org.mockito:mockito-core:2.23.0'
     testCompile("org.junit.jupiter:junit-jupiter-api:${junit5Version}")
     testCompile("org.junit.jupiter:junit-jupiter-params:${junit5Version}")
