@@ -78,7 +78,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
     @Test
     void shouldReconnectWithNewPassword() {
-
+        System.out.println("+++++++++ Starting second test");
         setUp(BASIC_AUTH_PASSWORD);
 
         stationSimulatorRunner.run();
@@ -111,6 +111,6 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
             ocppMockServer.verify();
         });
-
+        System.out.println("++++++ Ended second test");
     }
 }
