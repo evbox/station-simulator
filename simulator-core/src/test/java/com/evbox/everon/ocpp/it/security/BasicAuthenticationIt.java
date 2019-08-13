@@ -102,12 +102,11 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> {
 
             Map<String, String> receivedCredentials = ocppMockServer.getReceivedCredentials();
+            receivedCredentials.forEach((k, v) -> System.out.println("++++++++++++ Entry " + k + " : " + v));
 
-            assertAll(
-                    () -> assertThat(receivedCredentials).hasSize(1),
-                    () -> assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(newPassword),
-                    () -> assertThat(ocppMockServer.connectionAttempts()).isEqualTo(2)
-            );
+            assertThat(receivedCredentials).hasSize(1);
+            assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(newPassword);
+            assertThat(ocppMockServer.connectionAttempts()).isEqualTo(2);
 
             ocppMockServer.verify();
         });
