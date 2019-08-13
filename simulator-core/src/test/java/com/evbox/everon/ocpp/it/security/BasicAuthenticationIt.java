@@ -58,7 +58,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
     @Test
     void expectSuccessfulAuth() {
-
+        System.out.println("--------- Starting");
         setUp(BASIC_AUTH_PASSWORD);
 
         stationSimulatorRunner.run();
@@ -68,11 +68,12 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
         await().untilAsserted(() -> {
             Map<String, String> receivedCredentials = ocppMockServer.getReceivedCredentials();
-
+            receivedCredentials.forEach((k, v) -> System.out.println("------------- Entry " + k + " : " + v));
             assertThat(receivedCredentials).hasSize(1);
             assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(BASIC_AUTH_PASSWORD);
             assertThat(ocppServerClient.isConnected()).isTrue();
         });
+        System.out.println("--------- Ended");
     }
 
     @Test
