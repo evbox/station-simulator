@@ -68,7 +68,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
 
         await().untilAsserted(() -> {
-            Map<String, String> receivedCredentials = new HashMap<>(ocppMockServer.getReceivedCredentials());
+            Map<String, String> receivedCredentials = ocppMockServer.getReceivedCredentials();
 
             assertAll(
                     () -> assertThat(receivedCredentials).hasSize(1),

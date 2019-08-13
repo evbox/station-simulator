@@ -7,6 +7,7 @@ import io.undertow.Undertow;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -157,7 +158,7 @@ public class OcppMockServer {
      * @return map of received credentials
      */
     public Map<String, String> getReceivedCredentials() {
-        return identityManager.getReceivedCredentials();
+        return new HashMap<>(identityManager.getReceivedCredentials());
     }
 
     /**
