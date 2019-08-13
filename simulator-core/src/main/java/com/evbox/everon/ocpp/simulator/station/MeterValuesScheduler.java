@@ -15,8 +15,8 @@ public class MeterValuesScheduler {
 
     private MeterValuesSenderTask meterValuesSenderTask;
 
-    public MeterValuesScheduler(StationState stationState, StationMessageSender stationMessageSender, long meterValuesInterval, long powerConsumption) {
-        this.meterValuesSenderTask = new MeterValuesSenderTask(stationState, stationMessageSender, meterValuesInterval, powerConsumption);
+    public MeterValuesScheduler(StationState stationState, StationMessageSender stationMessageSender, long sendMeterValuesInterval, long powerConsumption) {
+        this.meterValuesSenderTask = new MeterValuesSenderTask(stationState, stationMessageSender, sendMeterValuesInterval, powerConsumption);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
                 meterValuesSenderTask, INITIAL_TASK_DELAY_IN_SECONDS, TASK_PERIOD_IN_SECONDS, TimeUnit.MILLISECONDS);
     }

@@ -90,7 +90,7 @@ public class Station {
         if (meterValuesConfiguration == null) {
             meterValuesConfiguration = SimulatorConfiguration.MeterValuesConfiguration.builder().build();
         }
-        this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getMeterValuesIntervalMs(), meterValuesConfiguration.getPowerConsumptionPerInterval());
+        this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
     }
 
     /**

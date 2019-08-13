@@ -12,8 +12,8 @@ public class SimulatorConfiguration {
 
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
-    private static final long DEFAULT_METER_VALUES_INTERVAL = 1_000;
-    private static final long DEFAULT_POWER_CONSUMPTION_PER_INTERVAL = 100;
+    private static final long DEFAULT_SEND_METER_VALUES_INTERVAL_SEC = 10;
+    private static final long DEFAULT_CONSUMPTION_WATT_HOUR = 100;
 
     private static final long DEFAULT_CALL_TIMEOUT = 10_000;
     private static final long DEFAULT_CONNECT_TIMEOUT = 10_000;
@@ -52,16 +52,17 @@ public class SimulatorConfiguration {
     @AllArgsConstructor
     public static class MeterValuesConfiguration {
         /**
-         * How often send meter values in milliseconds
+         * How often send meter values in seconds.
+         * If set to 0 then meter values are never sent.
          */
         @Builder.Default
-        private long meterValuesIntervalMs = DEFAULT_METER_VALUES_INTERVAL;
+        private long sendMeterValuesIntervalSec = DEFAULT_SEND_METER_VALUES_INTERVAL_SEC;
 
         /**
          * Power consumed for each power consumption interval
          */
         @Builder.Default
-        private long powerConsumptionPerInterval = DEFAULT_POWER_CONSUMPTION_PER_INTERVAL;
+        private long consumptionWattHour = DEFAULT_CONSUMPTION_WATT_HOUR;
     }
 
     @Data

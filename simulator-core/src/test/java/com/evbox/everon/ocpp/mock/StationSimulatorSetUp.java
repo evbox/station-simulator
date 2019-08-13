@@ -46,11 +46,7 @@ public class StationSimulatorSetUp  {
 
         ocppMockServer.start();
 
-        MeterValuesConfiguration meterValuesConfiguration = SimulatorConfiguration.MeterValuesConfiguration.builder()
-                                                                                                            .meterValuesIntervalMs(getMeterValuesInterval())
-                                                                                                            .powerConsumptionPerInterval(getPowerConsumptionPerInterval())
-                                                                                                            .build();
-        StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS, meterValuesConfiguration);
+        StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS, getMeterValuesConfiguration());
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);
@@ -71,11 +67,11 @@ public class StationSimulatorSetUp  {
         stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
     }
 
-    protected long getMeterValuesInterval() {
-        return 0;
+    protected MeterValuesConfiguration getMeterValuesConfiguration() {
+        return MeterValuesConfiguration.builder()
+                                        .sendMeterValuesIntervalSec(0)
+                                        .consumptionWattHour(100)
+                                        .build();
     }
 
-    protected long getPowerConsumptionPerInterval() {
-        return 100;
-    }
 }

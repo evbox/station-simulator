@@ -46,9 +46,9 @@ public class Evse {
     private EvseStatus scheduledNewEvseStatus;
 
     /**
-     *  Total power consumed by the evse
+     *  Total power consumed by the evse in watt hour
      */
-    private long powerConsumed;
+    private long totalConsumedWattHours;
 
     /**
      * Create Evse instance. By default evse is in the status AVAILABLE.
@@ -300,13 +300,13 @@ public class Evse {
      * @return updated value of consumed power
      */
     public long incrementPowerConsumed(long incrementValue) {
-        long diff = Long.MAX_VALUE - powerConsumed;
+        long diff = Long.MAX_VALUE - totalConsumedWattHours;
         if (incrementValue > diff) {
-            powerConsumed = incrementValue - diff;
+            totalConsumedWattHours = incrementValue - diff - 1;
         } else {
-            powerConsumed += incrementValue;
+            totalConsumedWattHours += incrementValue;
         }
-        return powerConsumed;
+        return totalConsumedWattHours;
     }
 
     @Override
@@ -319,7 +319,7 @@ public class Evse {
                 ", seqNo=" + seqNo +
                 ", transaction=" + transaction +
                 ", evseStatus=" + evseStatus +
-                ", powerConsumed=" + powerConsumed +
+                ", totalConsumedWattHours=" + totalConsumedWattHours +
                 '}';
     }
 
@@ -336,7 +336,7 @@ public class Evse {
                 .evseStatus(evseStatus)
                 .transaction(transaction.createView())
                 .scheduledNewEvseStatus(scheduledNewEvseStatus)
-                .powerConsumed(powerConsumed)
+                .totalConsumedWattHours(totalConsumedWattHours)
                 .build();
     }
 
@@ -360,7 +360,7 @@ public class Evse {
         private final EvseStatus evseStatus;
         private final EvseTransactionView transaction;
         private final EvseStatus scheduledNewEvseStatus;
-        private final long powerConsumed;
+        private final long totalConsumedWattHours;
 
         /**
          * Checks whether EVSE has a token or not.

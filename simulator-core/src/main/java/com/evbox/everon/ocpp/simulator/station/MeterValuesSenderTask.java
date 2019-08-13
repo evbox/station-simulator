@@ -19,16 +19,16 @@ public class MeterValuesSenderTask implements Runnable {
     private final StationState stationState;
     private final StationMessageSender stationMessageSender;
 
-    private long meterValuesInterval;
-    private long powerConsumption;
+    private long sendMeterValuesIntervalSec;
+    private long powerIncreasedPerInterval;
     private Map<Integer, LocalDateTime> timeOfLastMeterValuePerEVSE;
 
-    public MeterValuesSenderTask(StationState stationState, StationMessageSender stationMessageSender, long meterValuesInterval, long powerConsumption) {
+    public MeterValuesSenderTask(StationState stationState, StationMessageSender stationMessageSender, long sendMeterValuesIntervalSec, long consumptionWattHour) {
         this.stationState = stationState;
         this.stationMessageSender = stationMessageSender;
-        this.meterValuesInterval = meterValuesInterval;
-        this.powerConsumption = powerConsumption;
+        this.sendMeterValuesIntervalSec = sendMeterValuesIntervalSec;
         this.timeOfLastMeterValuePerEVSE = new HashMap<>();
+        this.powerIncreasedPerInterval = sendMeterValuesIntervalSec * consumptionWattHour / 3600;
     }
 
     @Override
@@ -40,9 +40,9 @@ public class MeterValuesSenderTask implements Runnable {
                 if (shouldSendMeterValue(now, evse.getId())) {
                     long powerUsed;
                     if (stationStateView.isCharging(evse.getId())) {
-                        powerUsed = evse.incrementPowerConsumed(powerConsumption);
+                        powerUsed = evse.incrementPowerConsumed(powerIncreasedPerInterval);
                     } else {
-                        powerUsed = evse.getPowerConsumed();
+                        powerUsed = evse.getTotalConsumedWattHours();
                     }
                     stationMessageSender.sendTransactionEventUpdate(evse.getId(), null, TransactionEventRequest.TriggerReason.METER_VALUE_PERIODIC, TransactionData.ChargingState.CHARGING, powerUsed);
                     timeOfLastMeterValuePerEVSE.put(evse.getId(), now);
@@ -54,6 +54,6 @@ public class MeterValuesSenderTask implements Runnable {
     }
 
     private boolean shouldSendMeterValue(LocalDateTime now, int evseId) {
-        return meterValuesInterval > 0 && stationState.hasOngoingTransaction(evseId) && timeOfLastMeterValuePerEVSE.getOrDefault(evseId, LocalDateTime.MIN).plus(meterValuesInterval, ChronoUnit.MILLIS).isBefore(now);
+        return sendMeterValuesIntervalSec > 0 && stationState.hasOngoingTransaction(evseId) && timeOfLastMeterValuePerEVSE.getOrDefault(evseId, LocalDateTime.MIN).plus(sendMeterValuesIntervalSec, ChronoUnit.SECONDS).isBefore(now);
     }
 }
