@@ -9,6 +9,7 @@ import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
@@ -67,7 +68,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
 
         await().untilAsserted(() -> {
-            Map<String, String> receivedCredentials = ocppMockServer.getReceivedCredentials();
+            Map<String, String> receivedCredentials = new HashMap<>(ocppMockServer.getReceivedCredentials());
 
             assertAll(
                     () -> assertThat(receivedCredentials).hasSize(1),
