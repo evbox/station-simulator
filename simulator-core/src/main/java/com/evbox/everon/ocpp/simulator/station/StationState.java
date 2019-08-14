@@ -3,9 +3,13 @@ package com.evbox.everon.ocpp.simulator.station;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector.ConnectorView;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -159,6 +163,7 @@ public class StationState {
     @AllArgsConstructor
     public class StationStateView {
 
+        @JsonIgnore
         private final Clock clock;
         private final int heartbeatInterval;
         private final List<EvseView> evses;
@@ -178,10 +183,12 @@ public class StationState {
             return findEvse(evseId).hasOngoingTransaction();
         }
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
         public Instant getCurrentTime() {
             return clock.instant();
         }
 
+        @JsonIgnore
         public EvseView getDefaultEvse() {
             return evses.get(0);
         }
@@ -213,5 +220,16 @@ public class StationState {
                     .findAny();
         }
 
+        @Override
+        public String toString() {
+            ObjectWriter prettyJSONWriter = new ObjectMapper()
+                                                    .findAndRegisterModules()
+                                                    .writerWithDefaultPrettyPrinter();
+            try {
+                return prettyJSONWriter.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                return "Error while serializing StationStateView: " + e.getMessage();
+            }
+        }
     }
 }

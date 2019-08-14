@@ -111,7 +111,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | TariffAndCost                     | I05 - Show Fallback Total Cost Message                                      |           |                                               |
 | TariffAndCost                     | I06 - Update Tariff Information During Transaction                          |           |                                               |
 | MeterValues                       | J01 - Sending Meter Values not related to a transaction                     |           |                                               |
-| MeterValues                       | J02 - Sending transaction related Meter Values                              |           |                                               |
+| MeterValues                       | J02 - Sending transaction related Meter Values                              | Yes       |                                               |
 | MeterValues                       | J03 - Charging Loop with metering information exchange                      |           |                                               |
 | SmartCharging                     | K01 - SetChargingProfile                                                    |           |                                               |
 | SmartCharging                     | K02 - Central Smart Charging                                                |           |                                               |
@@ -204,15 +204,27 @@ Starts the simulator with one station, which has a single EVSE and a single conn
 ### File-based configuration
 **Configuration file sample**
 ```YAML
+socketConfiguration:
+  callTimeoutMs: 1000
+  connectTimeoutMs: 1000
+  readTimeoutMs: 1000
+  writeTimeoutMs: 1000
+  pingIntervalMs: 1000
 stations:
   - id: EVB-P17390866
     evse:
       count: 1
       connectors: 1
+    meterValuesConfiguration:
+      sendMeterValuesIntervalSec: 10
+      consumptionWattHour: 100
   - id: EVB-P18090564
     evse:
       count: 1
       connectors: 2
+    meterValuesConfiguration:
+      sendMeterValuesIntervalSec: 20
+      consumptionWattHour: 150
       
 ```
 
