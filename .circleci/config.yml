@@ -56,6 +56,3 @@ workflows:
     - publish:
         requires:
             - publish-approval
-        filters:
-          branches:
-            only: approval
