@@ -59,7 +59,7 @@ public class SimulatorConfiguration {
         private long sendMeterValuesIntervalSec = DEFAULT_SEND_METER_VALUES_INTERVAL_SEC;
 
         /**
-         * Power consumed for each power consumption interval
+         * Power consumption
          */
         @Builder.Default
         private long consumptionWattHour = DEFAULT_CONSUMPTION_WATT_HOUR;
