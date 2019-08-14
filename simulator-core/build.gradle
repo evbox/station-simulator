@@ -83,7 +83,7 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.3.2.1'
+version '0.3.2'
 publishing {
     publications {
         StationSimulator(MavenPublication) {
