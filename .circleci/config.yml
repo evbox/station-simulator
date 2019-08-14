@@ -42,7 +42,7 @@ jobs:
     - checkout
     - run:
         name: publish artifact
-        command: pwd
+        command: ./gradlew bintrayUpload
 
 workflows:
   default:
@@ -51,3 +51,5 @@ workflows:
     - sonar-static-analysis
     - publish:
         type: approval
+        requires:
+          - build
