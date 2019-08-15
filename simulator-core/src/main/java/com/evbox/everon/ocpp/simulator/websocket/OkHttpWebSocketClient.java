@@ -20,9 +20,9 @@ public class OkHttpWebSocketClient {
     private static final String COLON = ":";
 
     private final OkHttpClient client;
+    private final SimulatorConfiguration.StationConfiguration stationConfiguration;
     private WebSocket webSocket;
     private ChannelListener listener;
-    private SimulatorConfiguration.StationConfiguration stationConfiguration;
 
     public OkHttpWebSocketClient(OkHttpClient client, SimulatorConfiguration.StationConfiguration stationConfiguration) {
         this.client = client;

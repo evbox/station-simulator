@@ -58,6 +58,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
     @Test
     void expectSuccessfulAuth() {
+
         setUp(BASIC_AUTH_PASSWORD);
 
         stationSimulatorRunner.run();
@@ -65,17 +66,19 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
         ocppMockServer.waitUntilAuthorized();
 
         await().untilAsserted(() -> {
-
             Map<String, String> receivedCredentials = ocppMockServer.getReceivedCredentials();
 
-            assertThat(receivedCredentials).hasSize(1);
-            assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(BASIC_AUTH_PASSWORD);
-            assertThat(ocppServerClient.isConnected()).isTrue();
+            assertAll(
+                    () -> assertThat(receivedCredentials).hasSize(1),
+                    () -> assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(BASIC_AUTH_PASSWORD),
+                    () -> assertThat(ocppServerClient.isConnected()).isTrue()
+            );
         });
     }
 
     @Test
     void shouldReconnectWithNewPassword() {
+
         setUp(BASIC_AUTH_PASSWORD);
 
         stationSimulatorRunner.run();
@@ -100,11 +103,14 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
             Map<String, String> receivedCredentials = ocppMockServer.getReceivedCredentials();
 
-            assertThat(receivedCredentials).hasSize(1);
-            assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(newPassword);
-            assertThat(ocppMockServer.connectionAttempts()).isEqualTo(2);
+            assertAll(
+                    () -> assertThat(receivedCredentials).hasSize(1),
+                    () -> assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(newPassword),
+                    () -> assertThat(ocppMockServer.connectionAttempts()).isEqualTo(2)
+            );
 
             ocppMockServer.verify();
         });
+
     }
 }
