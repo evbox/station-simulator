@@ -52,6 +52,7 @@ workflows:
     - publish-approval:
         requires:
           - build
+          - sonar-static-analysis
         type: approval
     - publish:
         requires:
