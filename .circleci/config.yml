@@ -34,8 +34,26 @@ jobs:
         name: sonarqube static analysis
         command: ./gradlew sonarqube -Dsonar.login=$SONAR_TOKEN -Dsonar.branch.name=$CIRCLE_BRANCH
 
+  publish-to-jcenter:
+    docker:
+    - image: circleci/openjdk:8-jdk-browsers
+
+    steps:
+    - checkout
+    - run:
+        name: publish artifact
+        command: ./gradlew bintrayUpload
+
 workflows:
   default:
     jobs:
     - build
     - sonar-static-analysis
+    - publish-to-jcenter-approval:
+        requires:
+          - build
+          - sonar-static-analysis
+        type: approval
+    - publish-to-jcenter:
+        requires:
+            - publish-to-jcenter-approval

@@ -82,6 +82,7 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
+version '0.3.4'
 
 publishing {
     publications {
@@ -97,8 +98,8 @@ publishing {
 }
 
 bintray {
-    user = project.hasProperty('user') ? project.property('user') : null
-    key = project.hasProperty('key') ? project.property('key') : null
+    user = System.getenv('BINTRAY_USERNAME')
+    key = System.getenv('BINTRAY_API_KEY')
     publications = ['StationSimulator']
 
     pkg {
