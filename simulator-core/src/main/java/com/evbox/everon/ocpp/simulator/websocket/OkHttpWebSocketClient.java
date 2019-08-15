@@ -12,22 +12,21 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
 public class OkHttpWebSocketClient {
 
     private static final String COLON = ":";
+    private static SimulatorConfiguration.StationConfiguration STATION_CONFIGURATION;
 
     private final OkHttpClient client;
-    private final SimulatorConfiguration.StationConfiguration stationConfiguration;
     private WebSocket webSocket;
     private ChannelListener listener;
 
     public OkHttpWebSocketClient(OkHttpClient client, SimulatorConfiguration.StationConfiguration stationConfiguration) {
         this.client = client;
-        this.stationConfiguration = stationConfiguration;
+        STATION_CONFIGURATION = stationConfiguration;
     }
 
     public void setListener(ChannelListener listener) {
@@ -39,7 +38,7 @@ public class OkHttpWebSocketClient {
         Request.Builder requestBuilder = new Request.Builder().url(url)
                 .addHeader("Sec-WebSocket-Protocol", "ocpp2.0");
 
-        if (nonNull(stationConfiguration.getBasicAuthPassword())) {
+        if (nonNull(STATION_CONFIGURATION.getBasicAuthPassword())) {
 
             try {
                 byte[] plainCredentials = prepareAuthPassword();
@@ -99,9 +98,9 @@ public class OkHttpWebSocketClient {
 
     private byte[] prepareAuthPassword() throws DecoderException {
 
-        byte[] decodedPassword = Hex.decodeHex(stationConfiguration.getBasicAuthPassword());
+        byte[] decodedPassword = Hex.decodeHex(STATION_CONFIGURATION.getBasicAuthPassword());
 
-        byte[] username = stationConfiguration.getId().getBytes();
+        byte[] username = STATION_CONFIGURATION.getId().getBytes();
 
         int size = username.length + decodedPassword.length + 1;
 
