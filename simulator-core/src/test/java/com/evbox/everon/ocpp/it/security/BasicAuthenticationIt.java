@@ -80,7 +80,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
         stationSimulatorRunner.run();
 
-        ocppMockServer.waitUntilAuthorized();
+        ocppMockServer.waitUntilConnected();
 
         String newPassword = "aabbcc";
 
