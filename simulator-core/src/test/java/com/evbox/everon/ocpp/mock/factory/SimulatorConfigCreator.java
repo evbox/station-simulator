@@ -14,6 +14,10 @@ public class SimulatorConfigCreator {
     }
 
     public static SimulatorConfiguration.StationConfiguration createStationConfiguration(String stationId, int evseCount, int connectorsPerEvse) {
+        return createStationConfiguration(stationId, evseCount, connectorsPerEvse, SimulatorConfiguration.MeterValuesConfiguration.builder().build());
+    }
+
+    public static SimulatorConfiguration.StationConfiguration createStationConfiguration(String stationId, int evseCount, int connectorsPerEvse, SimulatorConfiguration.MeterValuesConfiguration meterValuesConfiguration) {
         SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
 
         SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
@@ -23,6 +27,7 @@ public class SimulatorConfigCreator {
         stationConfiguration.setId(stationId);
         stationConfiguration.setEvse(evse);
         stationConfiguration.setBasicAuthPassword(BASIC_AUTH_PASSWORD);
+        stationConfiguration.setMeterValuesConfiguration(meterValuesConfiguration);
         return stationConfiguration;
     }
 
