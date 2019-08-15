@@ -18,15 +18,15 @@ import static java.util.Objects.nonNull;
 public class OkHttpWebSocketClient {
 
     private static final String COLON = ":";
-    private static SimulatorConfiguration.StationConfiguration STATION_CONFIGURATION;
 
     private final OkHttpClient client;
     private WebSocket webSocket;
     private ChannelListener listener;
+    private SimulatorConfiguration.StationConfiguration stationConfiguration;
 
     public OkHttpWebSocketClient(OkHttpClient client, SimulatorConfiguration.StationConfiguration stationConfiguration) {
         this.client = client;
-        STATION_CONFIGURATION = stationConfiguration;
+        this.stationConfiguration = stationConfiguration;
     }
 
     public void setListener(ChannelListener listener) {
@@ -38,7 +38,7 @@ public class OkHttpWebSocketClient {
         Request.Builder requestBuilder = new Request.Builder().url(url)
                 .addHeader("Sec-WebSocket-Protocol", "ocpp2.0");
 
-        if (nonNull(STATION_CONFIGURATION.getBasicAuthPassword())) {
+        if (nonNull(stationConfiguration.getBasicAuthPassword())) {
 
             try {
                 byte[] plainCredentials = prepareAuthPassword();
@@ -98,9 +98,9 @@ public class OkHttpWebSocketClient {
 
     private byte[] prepareAuthPassword() throws DecoderException {
 
-        byte[] decodedPassword = Hex.decodeHex(STATION_CONFIGURATION.getBasicAuthPassword());
+        byte[] decodedPassword = Hex.decodeHex(stationConfiguration.getBasicAuthPassword());
 
-        byte[] username = STATION_CONFIGURATION.getId().getBytes();
+        byte[] username = stationConfiguration.getId().getBytes();
 
         int size = username.length + decodedPassword.length + 1;
 
