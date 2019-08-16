@@ -41,8 +41,6 @@ public class OcppIdentityManager {
 
         String password = Hex.encodeHexString(passwordBytes);
 
-        System.out.println("@@@@@@@@@ Received password " + password);
-
         String username = plainBase64.substring(0, colIndex);
         receivedCredentials.put(username, password);
 

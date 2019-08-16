@@ -5,12 +5,10 @@ import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
@@ -60,7 +58,6 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
     @Test
     void expectSuccessfulAuth() {
-        System.out.println(">>>>>>>>>>> First test starts at " + System.currentTimeMillis());
 
         setUp(BASIC_AUTH_PASSWORD);
 
@@ -68,30 +65,21 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
         ocppMockServer.waitUntilAuthorized();
 
-        System.out.println("------- Instances " + StationSimulatorRunner.instances.size());
-        System.out.println("------- Instances " + Arrays.toString(StationSimulatorRunner.instances.toArray()));
-        for (StationSimulatorRunner o : StationSimulatorRunner.instances) {
-            if (o.getStation(STATION_ID) != null) {
-                System.out.println("--------- ----  " + o.getStation(STATION_ID).getConfiguration().getBasicAuthPassword());
-            } else {
-                System.out.println("++++++++++++++++ No station found here");
-            }
-        }
 
         await().untilAsserted(() -> {
             Map<String, String> receivedCredentials = ocppMockServer.getReceivedCredentials();
 
-            assertThat(receivedCredentials).hasSize(1);
-            receivedCredentials.forEach((k,v) -> System.out.println("------ Entry " + k + " " + v));
-            assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(BASIC_AUTH_PASSWORD);
-            assertThat(ocppServerClient.isConnected()).isTrue();
+            assertAll(
+                    () -> assertThat(receivedCredentials).hasSize(1),
+                    () -> assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(BASIC_AUTH_PASSWORD),
+                    () -> assertThat(ocppServerClient.isConnected()).isTrue()
+            );
         });
-        System.out.println(">>>>>>>>>>> first test ends at " + System.currentTimeMillis());
     }
 
     @Test
     void shouldReconnectWithNewPassword() {
-        System.out.println(">>>>>>>>>>> Second test starts at " + System.currentTimeMillis());
+
         setUp(BASIC_AUTH_PASSWORD);
 
         stationSimulatorRunner.run();
@@ -124,7 +112,6 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
             ocppMockServer.verify();
         });
-        System.out.println(">>>>>>>>>>> Second test ends at " + System.currentTimeMillis());
 
     }
 }
