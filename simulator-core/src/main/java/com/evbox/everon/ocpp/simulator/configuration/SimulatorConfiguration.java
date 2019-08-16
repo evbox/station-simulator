@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class SimulatorConfiguration {
 
-    private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
+    private static final int DEFAULT_HEARTBEAT_INTERVAL = 5;
 
     private static final long DEFAULT_SEND_METER_VALUES_INTERVAL_SEC = 10;
     private static final long DEFAULT_CONSUMPTION_WATT_HOUR = 100;

@@ -18,31 +18,31 @@ import static org.awaitility.Awaitility.await;
 
 public class UpdateBasicAuthPasswordIt extends StationSimulatorSetUp {
 
-//    @Test
-//    void shouldSetBasicAuthPassword() {
-//
-//        String expectedPassword = "aabbcc";
-//
-//        stationSimulatorRunner.run();
-//
-//        SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
-//                SECURITY_COMPONENT_NAME,
-//                BASIC_AUTH_PASSWORD_VARIABLE_NAME,
-//                expectedPassword,
-//                SetVariableDatum.AttributeType.ACTUAL);
-//
-//        Call call = new Call(DEFAULT_CALL_ID, ActionType.SET_VARIABLES, setVariablesRequest);
-//
-//        ocppMockServer.waitUntilConnected();
-//
-//        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
-//
-//        await().untilAsserted(() -> {
-//            SimulatorConfiguration.StationConfiguration configuration = stationSimulatorRunner.getStation(STATION_ID).getConfiguration();
-//
-//            assertThat(configuration.getBasicAuthPassword()).isEqualTo(expectedPassword);
-//
-//            ocppMockServer.verify();
-//        });
-//    }
+    @Test
+    void shouldSetBasicAuthPassword() {
+
+        String expectedPassword = "aabbcc";
+
+        stationSimulatorRunner.run();
+
+        SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
+                SECURITY_COMPONENT_NAME,
+                BASIC_AUTH_PASSWORD_VARIABLE_NAME,
+                expectedPassword,
+                SetVariableDatum.AttributeType.ACTUAL);
+
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.SET_VARIABLES, setVariablesRequest);
+
+        ocppMockServer.waitUntilConnected();
+
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
+
+        await().untilAsserted(() -> {
+            SimulatorConfiguration.StationConfiguration configuration = stationSimulatorRunner.getStation(STATION_ID).getConfiguration();
+
+            assertThat(configuration.getBasicAuthPassword()).isEqualTo(expectedPassword);
+
+            ocppMockServer.verify();
+        });
+    }
 }
