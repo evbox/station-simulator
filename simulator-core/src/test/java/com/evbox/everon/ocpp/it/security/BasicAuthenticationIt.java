@@ -60,6 +60,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
     @Test
     void expectSuccessfulAuth() {
+        System.out.println(">>>>>>>>>>> First test starts at " + System.currentTimeMillis());
 
         setUp(BASIC_AUTH_PASSWORD);
 
@@ -85,11 +86,12 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
             assertThat(receivedCredentials.get(STATION_ID)).isEqualTo(BASIC_AUTH_PASSWORD);
             assertThat(ocppServerClient.isConnected()).isTrue();
         });
+        System.out.println(">>>>>>>>>>> first test ends at " + System.currentTimeMillis());
     }
 
     @Test
     void shouldReconnectWithNewPassword() {
-
+        System.out.println(">>>>>>>>>>> Second test starts at " + System.currentTimeMillis());
         setUp(BASIC_AUTH_PASSWORD);
 
         stationSimulatorRunner.run();
@@ -122,6 +124,7 @@ public class BasicAuthenticationIt extends StationSimulatorSetUp {
 
             ocppMockServer.verify();
         });
+        System.out.println(">>>>>>>>>>> Second test ends at " + System.currentTimeMillis());
 
     }
 }
