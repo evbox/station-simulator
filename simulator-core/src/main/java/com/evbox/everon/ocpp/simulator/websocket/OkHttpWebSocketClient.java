@@ -83,6 +83,7 @@ public class OkHttpWebSocketClient {
     }
 
     public void disconnect() {
+        log.error("±±±±±±±±±± Disconnecting web socket " + webSocket.queueSize());
         webSocket.close(1000, "Simulator goes offline");
     }
 
