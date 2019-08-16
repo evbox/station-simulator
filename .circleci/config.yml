@@ -48,7 +48,9 @@ workflows:
   default:
     jobs:
     - build
-    - sonar-static-analysis
+    - sonar-static-analysis:
+        requires:
+          - build
     - publish-to-jcenter-approval:
         requires:
           - build
