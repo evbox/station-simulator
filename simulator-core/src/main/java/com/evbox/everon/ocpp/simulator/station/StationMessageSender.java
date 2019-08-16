@@ -322,6 +322,7 @@ public class StationMessageSender {
      * @param message {@link WebSocketClientInboxMessage}
      */
     public void sendMessage(WebSocketClientInboxMessage message) {
+        System.out.println("----------- SENDING " + message);
         webSocketClient.getInbox().offer(message);
         timeOfLastMessageSent = LocalDateTime.now();
     }

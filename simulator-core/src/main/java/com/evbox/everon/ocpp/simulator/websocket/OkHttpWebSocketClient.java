@@ -43,7 +43,7 @@ public class OkHttpWebSocketClient {
             try {
                 byte[] plainCredentials = prepareAuthPassword();
                 requestBuilder.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(plainCredentials));
-                System.out.println("@@@@@@@@@ Sending from " + Thread.currentThread().getId() + " pass " + stationConfiguration.getBasicAuthPassword());
+                System.out.println("@@@@@@@@@ Sending from " + Thread.currentThread().getId() + " pass " + stationConfiguration.getBasicAuthPassword() + " for " + stationConfiguration.getId());
             } catch (DecoderException e) {
                 log.error(e.getMessage(), e);
             }
