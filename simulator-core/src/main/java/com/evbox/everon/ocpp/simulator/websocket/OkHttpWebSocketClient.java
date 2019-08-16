@@ -43,6 +43,7 @@ public class OkHttpWebSocketClient {
             try {
                 byte[] plainCredentials = prepareAuthPassword();
                 requestBuilder.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString(plainCredentials));
+                System.out.println("@@@@@@@@@ Sending from " + Thread.currentThread().getId() + " pass " + stationConfiguration.getBasicAuthPassword());
             } catch (DecoderException e) {
                 log.error(e.getMessage(), e);
             }
@@ -83,7 +84,6 @@ public class OkHttpWebSocketClient {
     }
 
     public void disconnect() {
-        log.error("±±±±±±±±±± Disconnecting web socket " + webSocket.queueSize());
         webSocket.close(1000, "Simulator goes offline");
     }
 
