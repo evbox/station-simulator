@@ -147,7 +147,7 @@ public class Station {
      */
     public void stop() {
         webSocketClient.disconnect();
-        DEFAULT_HTTP_CLIENT.dispatcher().executorService().shutdown();
+        DEFAULT_HTTP_CLIENT.dispatcher().executorService().shutdownNow();
     }
 
     /**
