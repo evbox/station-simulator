@@ -48,9 +48,7 @@ public class MeterValuesSenderTask implements Runnable {
     }
 
     private boolean shouldSendMeterValue(LocalDateTime now, int evseId, StationState.StationStateView stationStateView) {
-        return sendMeterValuesIntervalSec > 0 &&
-                stationState.hasOngoingTransaction(evseId) &&
-                stationStateView.isCharging(evseId) &&
-                timeOfLastMeterValuePerEVSE.getOrDefault(evseId, LocalDateTime.MIN).plus(sendMeterValuesIntervalSec, ChronoUnit.SECONDS).isBefore(now);
+        LocalDateTime timeToSendMeterValues = timeOfLastMeterValuePerEVSE.getOrDefault(evseId, LocalDateTime.MIN).plus(sendMeterValuesIntervalSec, ChronoUnit.SECONDS);
+        return sendMeterValuesIntervalSec > 0 && stationStateView.isCharging(evseId) && timeToSendMeterValues.isBefore(now);
     }
 }
