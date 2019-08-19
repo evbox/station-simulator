@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j

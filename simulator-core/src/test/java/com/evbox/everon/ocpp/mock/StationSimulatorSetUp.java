@@ -59,6 +59,7 @@ public class StationSimulatorSetUp  {
 
     @AfterEach
     void tearDown() {
+        stationSimulatorRunner.stop();
         ocppMockServer.stop();
         ocppMockServer.reset();
     }

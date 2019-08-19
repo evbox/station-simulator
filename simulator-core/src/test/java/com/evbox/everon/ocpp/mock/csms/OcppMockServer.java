@@ -158,7 +158,7 @@ public class OcppMockServer {
      * @return map of received credentials
      */
     public Map<String, String> getReceivedCredentials() {
-        return new HashMap<>(identityManager.getReceivedCredentials());
+        return identityManager.getReceivedCredentials();
     }
 
     /**
