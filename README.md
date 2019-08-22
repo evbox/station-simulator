@@ -91,7 +91,7 @@ System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [her
 | Transactions                      | E15 - End of charging process                                               |           |                                               |
 | RemoteControl                     | F01 - Remote Start Transaction - Cable Plugin First                         |           |                                               |
 | RemoteControl                     | F02 - Remote Start Transaction - Remote Start First                         |           |                                               |
-| RemoteControl                     | F03 - Remote Stop Transaction                                               |           |                                               |
+| RemoteControl                     | F03 - Remote Stop Transaction                                               | Yes       |                                               |
 | RemoteControl                     | F04 - Remote Stop ISO 15118 Charging from CSMS                              |           |                                               |
 | RemoteControl                     | F05 - Remotely Unlock Connector                                             |           |                                               |
 | RemoteControl                     | F06 - Trigger Message                                                       |           |                                               |
