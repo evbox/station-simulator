@@ -11,11 +11,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
@@ -29,13 +32,13 @@ public class StationState {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
-    private List<Evse> evses;
+    private Map<Integer, Evse> evses;
 
     public StationState(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
     }
 
-    public StationState(Clock clock, int heartbeatInterval, List<Evse> evses) {
+    public StationState(Clock clock, int heartbeatInterval, Map<Integer, Evse> evses) {
         this.clock = clock;
         this.heartbeatInterval = heartbeatInterval;
         this.evses = evses;
@@ -69,23 +72,23 @@ public class StationState {
     }
 
     public Evse getDefaultEvse() {
-        return evses.get(0);
+        return evses.values().stream().findFirst().orElse(null);
     }
 
     public void clearTokens() {
-        evses.forEach(Evse::clearToken);
+        evses.values().forEach(Evse::clearToken);
     }
 
     public void clearTransactions() {
-        evses.forEach(Evse::stopTransaction);
+        evses.values().forEach(Evse::stopTransaction);
     }
 
     public List<Integer> getEvseIds() {
-        return evses.stream().map(Evse::getId).collect(toList());
+        return new ArrayList<>(evses.keySet());
     }
 
     public List<Evse> getEvses() {
-        return evses;
+        return new ArrayList<>(evses.values());
     }
 
     public boolean hasOngoingTransaction(Integer evseId) {
@@ -99,7 +102,7 @@ public class StationState {
      * @return TRUE if station has EVSE with given identity, FALSE if it does not exist
      */
     public boolean hasEvse(int evseId) {
-        return tryFindEvse(evseId).isPresent();
+        return evses.containsKey(evseId);
     }
 
     /**
@@ -109,9 +112,7 @@ public class StationState {
      * @return optional with instance of {@link Evse} or Optional.empty()
      */
     public Optional<Evse> tryFindEvse(int evseId) {
-        return evses.stream()
-                .filter(evse -> evse.getId() == evseId)
-                .findAny();
+        return Optional.ofNullable(evses.get(evseId));
     }
 
     /**
@@ -125,6 +126,30 @@ public class StationState {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("EVSE %s is not present", evseId)));
     }
 
+    /**
+     * Try to find EVSE by given TRANSACTION ID or return empty result.
+     *
+     * @param transactionId Transaction identity
+     * @return optional with instance of {@link Evse} or Optional.empty()
+     */
+    public Optional<Evse> tryFindEvseByTransactionId(String transactionId) {
+        return evses.values()
+                    .stream()
+                    .filter(evse -> evse.hasOngoingTransaction() && evse.getTransaction().getTransactionId().equalsIgnoreCase(transactionId))
+                    .findAny();
+    }
+
+    /**
+     * Find an instance of {@link Evse} by transactionid. If not found then throw {@link IllegalArgumentException}.
+     *
+     * @param transactionId Transaction identity
+     * @return an instance of {@link Evse}
+     */
+    public Evse findEvseByTransactionId(String transactionId) {
+        return tryFindEvseByTransactionId(transactionId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Transaction %s is not present", transactionId)));
+    }
+
     public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
         return tryFindEvse(evseId)
                 .flatMap(evse -> evse.getConnectors().stream()
@@ -134,12 +159,12 @@ public class StationState {
 
     @Override
     public String toString() {
-        return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses + '}';
+        return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses.values() + '}';
     }
 
-    private List<Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
+    private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
 
-        ImmutableList.Builder<Evse> evseListBuilder = ImmutableList.builder();
+        ImmutableMap.Builder<Integer, Evse> evseMapBuilder = ImmutableMap.builder();
 
         for (int evseId = 1; evseId <= evseCount; evseId++) {
             ImmutableList.Builder<Connector> connectorListBuilder = ImmutableList.builder();
@@ -147,14 +172,14 @@ public class StationState {
                 connectorListBuilder.add(new Connector(connectorId, CableStatus.UNPLUGGED, AVAILABLE));
             }
 
-            evseListBuilder.add(new Evse(evseId, connectorListBuilder.build()));
+            evseMapBuilder.put(evseId, new Evse(evseId, connectorListBuilder.build()));
         }
 
-        return evseListBuilder.build();
+        return evseMapBuilder.build();
     }
 
     StationStateView createView() {
-        List<EvseView> evsesCopy = evses.stream().map(Evse::createView).collect(toList());
+        List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
         return new StationStateView(clock, heartbeatInterval, evsesCopy);
     }

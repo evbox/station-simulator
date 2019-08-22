@@ -41,7 +41,10 @@ public class Unplug implements UserMessage {
             evse.stopTransaction();
 
             stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (request, response) ->
-                    stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.EV_DISCONNECTED));
+            {
+                TransactionData.StoppedReason stoppedReason = evse.getChargingStatus().isRemotelyStopped() ? TransactionData.StoppedReason.REMOTE : TransactionData.StoppedReason.EV_DISCONNECTED;
+                stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, stoppedReason);
+            });
         }
     }
 }

@@ -10,8 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -35,9 +34,9 @@ public class Evse {
     private final List<Connector> connectors;
 
     private String tokenId;
-    private boolean charging;
     private long seqNo;
 
+    private ChargingStatus chargingStatus;
     private EvseStatus evseStatus;
     private EvseTransaction transaction;
     /**
@@ -84,6 +83,7 @@ public class Evse {
         this.evseStatus = evseStatus;
         this.transaction = transaction;
         this.connectors = connectors;
+        this.chargingStatus = ChargingStatus.NOT_CHARGING;
     }
 
     /**
@@ -97,15 +97,31 @@ public class Evse {
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
 
-        charging = true;
+        chargingStatus = ChargingStatus.CHARGING;
         return lockedConnector.getId();
+    }
+
+    /**
+     * Check if the evse is charging
+     *
+     * @return true if the evse is charging otherwise false
+     */
+    public boolean isCharging() {
+        return chargingStatus.isCharging();
     }
 
     /**
      * Switch to non-charging state.
      */
     public void stopCharging() {
-        charging = false;
+        chargingStatus = ChargingStatus.NOT_CHARGING;
+    }
+
+    /**
+     * Remotely stop charging.
+     */
+    public void remotelyStopCharging() {
+        chargingStatus = ChargingStatus.REMOTELY_STOPPED;
     }
 
     /**
@@ -315,7 +331,7 @@ public class Evse {
                 "id=" + id +
                 ", connectors=" + connectors +
                 ", tokenId='" + tokenId + '\'' +
-                ", charging=" + charging +
+                ", chargingStatus=" + chargingStatus +
                 ", seqNo=" + seqNo +
                 ", transaction=" + transaction +
                 ", evseStatus=" + evseStatus +
@@ -331,7 +347,7 @@ public class Evse {
                 .id(id)
                 .connectors(connectorViews)
                 .tokenId(tokenId)
-                .charging(charging)
+                .charging(chargingStatus.isCharging())
                 .seqNo(seqNo)
                 .evseStatus(evseStatus)
                 .transaction(transaction.createView())
