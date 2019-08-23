@@ -34,9 +34,10 @@ public class Evse {
     private final List<Connector> connectors;
 
     private String tokenId;
+    private boolean charging;
     private long seqNo;
 
-    private ChargingStatus chargingStatus;
+    private ChargingStopReason stopReason;
     private EvseStatus evseStatus;
     private EvseTransaction transaction;
     /**
@@ -83,7 +84,6 @@ public class Evse {
         this.evseStatus = evseStatus;
         this.transaction = transaction;
         this.connectors = connectors;
-        this.chargingStatus = ChargingStatus.NOT_CHARGING;
     }
 
     /**
@@ -97,31 +97,24 @@ public class Evse {
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
 
-        chargingStatus = ChargingStatus.CHARGING;
+        charging = true;
         return lockedConnector.getId();
-    }
-
-    /**
-     * Check if the evse is charging
-     *
-     * @return true if the evse is charging otherwise false
-     */
-    public boolean isCharging() {
-        return chargingStatus.isCharging();
     }
 
     /**
      * Switch to non-charging state.
      */
     public void stopCharging() {
-        chargingStatus = ChargingStatus.NOT_CHARGING;
+        charging = false;
+        stopReason = ChargingStopReason.LOCALLY_STOPPED;
     }
 
     /**
      * Remotely stop charging.
      */
     public void remotelyStopCharging() {
-        chargingStatus = ChargingStatus.REMOTELY_STOPPED;
+        charging = false;
+        stopReason = ChargingStopReason.REMOTELY_STOPPED;
     }
 
     /**
@@ -331,7 +324,7 @@ public class Evse {
                 "id=" + id +
                 ", connectors=" + connectors +
                 ", tokenId='" + tokenId + '\'' +
-                ", chargingStatus=" + chargingStatus +
+                ", charging=" + charging +
                 ", seqNo=" + seqNo +
                 ", transaction=" + transaction +
                 ", evseStatus=" + evseStatus +
@@ -347,7 +340,7 @@ public class Evse {
                 .id(id)
                 .connectors(connectorViews)
                 .tokenId(tokenId)
-                .charging(chargingStatus.isCharging())
+                .charging(charging)
                 .seqNo(seqNo)
                 .evseStatus(evseStatus)
                 .transaction(transaction.createView())

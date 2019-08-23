@@ -5,6 +5,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
+import com.evbox.everon.ocpp.simulator.station.exceptions.StationException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,7 +73,7 @@ public class StationState {
     }
 
     public Evse getDefaultEvse() {
-        return evses.values().stream().findFirst().orElse(null);
+        return evses.values().stream().findFirst().orElseThrow(() -> new StationException("Default evse not found"));
     }
 
     public void clearTokens() {

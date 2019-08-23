@@ -32,13 +32,21 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
      */
     @Override
     public void handle(String callId, RequestStopTransactionRequest request) {
-        stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.ACCEPTED));
 
-        stopCharging(request.getTransactionId().toString());
+        String transactionId = request.getTransactionId().toString();
+        try {
+            Evse evse = stationState.findEvseByTransactionId(transactionId);
+
+            stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.ACCEPTED));
+
+            stopCharging(evse);
+        } catch (IllegalArgumentException e) {
+            log.debug("Received RequestStopTransactionRequest with invalid transactionID: " + e.getMessage());
+            stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.REJECTED));
+        }
     }
 
-    private void stopCharging(String transactionId) {
-        Evse evse = stationState.findEvseByTransactionId(transactionId);
+    private void stopCharging(Evse evse) {
         evse.remotelyStopCharging();
         Integer connectorId = evse.unlockConnector();
         stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, REMOTE_STOP, TransactionData.ChargingState.EV_DETECTED);
