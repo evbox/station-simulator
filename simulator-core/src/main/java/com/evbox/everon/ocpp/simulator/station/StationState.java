@@ -73,7 +73,7 @@ public class StationState {
     }
 
     public Evse getDefaultEvse() {
-        return evses.values().stream().findFirst().orElseThrow(() -> new StationException("Default evse not found"));
+        return evses.values().stream().findFirst().orElseThrow(() -> new StationException("No evse was found"));
     }
 
     public void clearTokens() {

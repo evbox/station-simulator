@@ -4,7 +4,6 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationState;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,13 +40,7 @@ public class Unplug implements UserMessage {
             evse.stopTransaction();
 
             stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (request, response) ->
-            {
-                TransactionData.StoppedReason stoppedReason = TransactionData.StoppedReason.EV_DISCONNECTED;
-                if (evse.getStopReason() != null && evse.getStopReason().isRemotelyStopped()) {
-                    stoppedReason = TransactionData.StoppedReason.REMOTE;
-                }
-                stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, stoppedReason);
-            });
+                    stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, evse.getStopReason().getStoppedReason()));
         }
     }
 }

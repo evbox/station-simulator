@@ -37,7 +37,7 @@ public class Evse {
     private boolean charging;
     private long seqNo;
 
-    private ChargingStopReason stopReason;
+    private ChargingStopReason stopReason = ChargingStopReason.NONE;
     private EvseStatus evseStatus;
     private EvseTransaction transaction;
     /**

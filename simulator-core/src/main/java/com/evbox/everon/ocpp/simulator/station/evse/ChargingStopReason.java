@@ -1,5 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
+import com.evbox.everon.ocpp.v20.message.station.TransactionData;
+
 /**
  * Reason why charging in EVSE stopped.
  *
@@ -7,10 +9,17 @@ package com.evbox.everon.ocpp.simulator.station.evse;
  * REMOTELY_STOPPED corresponds to charge stopped remotely
  */
 public enum ChargingStopReason {
-    LOCALLY_STOPPED,
-    REMOTELY_STOPPED;
+    NONE(null),
+    LOCALLY_STOPPED(TransactionData.StoppedReason.EV_DISCONNECTED),
+    REMOTELY_STOPPED(TransactionData.StoppedReason.REMOTE);
 
-    public boolean isRemotelyStopped() {
-        return this == REMOTELY_STOPPED;
+    TransactionData.StoppedReason stoppedReason;
+
+    ChargingStopReason(TransactionData.StoppedReason stoppedReason) {
+        this.stoppedReason = stoppedReason;
+    }
+
+    public TransactionData.StoppedReason getStoppedReason() {
+        return stoppedReason;
     }
 }
