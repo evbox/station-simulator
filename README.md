@@ -13,6 +13,7 @@ The simulator tool is dedicated for simulation of charging station. It implement
 System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [here](https://www.openchargealliance.org/protocols/ocpp-20/)) is supported.
 
 # Usage
+In order to run the simulator you should have JRE 8+ installed on your machine.
 
 For the release notes and version numbers check the  [CHANGELOG.md](https://github.com/evbox/station-simulator/blob/master/CHANGELOG.md) page
 
