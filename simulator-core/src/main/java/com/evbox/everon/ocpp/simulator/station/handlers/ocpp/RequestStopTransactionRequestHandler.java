@@ -8,6 +8,8 @@ import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionResponse;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_STOP;
 
 /**
@@ -34,14 +36,12 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
     public void handle(String callId, RequestStopTransactionRequest request) {
 
         String transactionId = request.getTransactionId().toString();
-        try {
-            Evse evse = stationState.findEvseByTransactionId(transactionId);
-
+        Optional<Evse> evse = stationState.tryFindEvseByTransactionId(transactionId);
+        if (evse.isPresent()) {
             stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.ACCEPTED));
-
-            stopCharging(evse);
-        } catch (IllegalArgumentException e) {
-            log.debug("Received RequestStopTransactionRequest with invalid transactionID: " + e.getMessage());
+            stopCharging(evse.get());
+        } else {
+            log.debug("Received RequestStopTransactionRequest with invalid transactionID: " + transactionId);
             stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.REJECTED));
         }
     }
