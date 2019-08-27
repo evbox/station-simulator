@@ -113,6 +113,7 @@ bintray {
     version {
         name = 'ocpp-station-simulator'
         desc = 'OCPP 2.0 Station Simulator'
+        vcsTag = project.version
     }
 
     publish = true
