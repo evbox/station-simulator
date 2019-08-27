@@ -18,7 +18,8 @@ public enum ActionType {
     SET_VARIABLES("SetVariables", SetVariablesRequest.class, SetVariablesResponse.class),
     CHANGE_AVAILABILITY("ChangeAvailability", ChangeAvailabilityRequest.class, ChangeAvailabilityResponse.class),
     NOTIFY_REPORT("NotifyReport", NotifyReportRequest.class, NotifyReportResponse.class),
-    GET_BASE_REPORT("GetBaseReport", GetBaseReportRequest.class, GetBaseReportResponse.class);
+    GET_BASE_REPORT("GetBaseReport", GetBaseReportRequest.class, GetBaseReportResponse.class),
+    REQUEST_STOP_TRANSACTION("RequestStopTransaction", RequestStopTransactionRequest.class, RequestStopTransactionResponse.class);
 
     private final String actionType;
     private final Class requestClazz;

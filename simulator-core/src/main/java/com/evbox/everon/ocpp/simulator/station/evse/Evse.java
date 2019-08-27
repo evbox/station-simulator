@@ -10,8 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -38,6 +37,7 @@ public class Evse {
     private boolean charging;
     private long seqNo;
 
+    private ChargingStopReason stopReason = ChargingStopReason.NONE;
     private EvseStatus evseStatus;
     private EvseTransaction transaction;
     /**
@@ -106,6 +106,15 @@ public class Evse {
      */
     public void stopCharging() {
         charging = false;
+        stopReason = ChargingStopReason.LOCALLY_STOPPED;
+    }
+
+    /**
+     * Remotely stop charging.
+     */
+    public void remotelyStopCharging() {
+        charging = false;
+        stopReason = ChargingStopReason.REMOTELY_STOPPED;
     }
 
     /**

@@ -36,6 +36,36 @@ public class TransactionEvent {
      * Transaction event with given configuration.
      *
      * @param type          transaction type
+     * @param stoppedReason stopped reason
+     * @return checks whether an incoming request is TrasanctionEvent or not.
+     */
+    public static Predicate<Call> request(TransactionEventRequest.EventType type, TransactionData.StoppedReason stoppedReason) {
+        return request -> equalsType(request, TRANSACTION_EVENT) &&
+                equalsEventType(request, type) &&
+                equalsStoppedReason(request, stoppedReason);
+    }
+
+    /**
+     * Transaction event with given configuration.
+     *
+     * @param type          transaction type
+     * @param chargingState charging state
+     * @param transactionId id of the transaction
+     * @param triggerReason trigger reason
+     * @return checks whether an incoming request is TransactionEvent or not.
+     */
+    public static Predicate<Call> request(TransactionEventRequest.EventType type, TransactionData.ChargingState chargingState, String transactionId, TransactionEventRequest.TriggerReason triggerReason) {
+        return request -> equalsType(request, TRANSACTION_EVENT) &&
+                equalsEventType(request, type) &&
+                equalsChargingState(request, chargingState) &&
+                equalsTransactionId(request, transactionId) &&
+                equalsTriggerReason(request, triggerReason);
+    }
+
+    /**
+     * Transaction event with given configuration.
+     *
+     * @param type          transaction type
      * @param seqNo         sequence number
      * @param transactionId id of the transaction
      * @param evseId        evse id
@@ -134,6 +164,10 @@ public class TransactionEvent {
 
     private static boolean equalsTriggerReason(Call request, TransactionEventRequest.TriggerReason triggerReason) {
         return ((TransactionEventRequest) request.getPayload()).getTriggerReason() == triggerReason;
+    }
+
+    private static boolean equalsStoppedReason(Call request, TransactionData.StoppedReason stoppedReason) {
+        return ((TransactionEventRequest) request.getPayload()).getTransactionData().getStoppedReason() == stoppedReason;
     }
 }
 
