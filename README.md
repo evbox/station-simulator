@@ -50,7 +50,7 @@ Starts the simulator with one station, which has a single EVSE and a single conn
 
 `./gradlew run -Parguments="ws://{ocpp_endpoint_url} --configuration {'stations':[{'id':'EVB-P17390866','evse':{'count':1,'connectors':1}}]}"`
 
-For the complete documentation refer tot the wiki.
+For the complete documentation refer to the wiki.
 
 ## Full Documentation
 See the [Wiki](https://github.com/evbox/station-simulator/wiki) for full documentation, examples, operational details and other information.
