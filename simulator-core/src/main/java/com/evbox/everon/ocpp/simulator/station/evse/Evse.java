@@ -266,6 +266,7 @@ public class Evse {
      * Find any LOCKED connector and switch to PLUGGED status.
      *
      * @return identity of the connector.
+     *
      */
     public Integer unlockConnector() {
 
@@ -277,6 +278,26 @@ public class Evse {
         lockedConnector.unlock();
 
         return lockedConnector.getId();
+    }
+
+    /**
+     * TRIES to find any LOCKED connector and switch to PLUGGED status.
+     *
+     * @return identity of the connector or zero.
+     */
+    public Integer tryUnlockConnector() {
+
+        Connector lockedConnector = connectors.stream()
+                .filter(Connector::isCableLocked)
+                .findAny()
+                .orElse(null);
+
+        if (lockedConnector != null) {
+            lockedConnector.unlock();
+            return lockedConnector.getId();
+        }
+
+        return 0;
     }
 
     /**

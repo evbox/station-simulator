@@ -48,7 +48,7 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
 
     private void stopCharging(Evse evse) {
         evse.remotelyStopCharging();
-        Integer connectorId = evse.unlockConnector();
+        Integer connectorId = evse.tryUnlockConnector();
         stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, REMOTE_STOP, TransactionData.ChargingState.EV_DETECTED);
     }
 }
