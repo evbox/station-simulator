@@ -1,11 +1,13 @@
 stations:
   - id: EVB-P17390866
     basicAuthPassword: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    evConnectionTimeOutSec: 120
     evse:
       count: 1
       connectors: 1
   - id: EVB-P18090564
     basicAuthPassword: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    evConnectionTimeOutSec: 60
     evse:
       count: 2
       connectors: 1
