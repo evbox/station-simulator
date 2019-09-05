@@ -76,13 +76,13 @@ public class SimulatorConfiguration {
          * Security controller component
          */
         @Builder.Default
-        private SecurityComponentConfiguration security = SecurityComponentConfiguration.builder().build();
+        private SecurityComponentConfiguration securityCtrlr = SecurityComponentConfiguration.builder().build();
 
         /**
          * Transactions controller component
          */
         @Builder.Default
-        private TransactionComponentConfiguration tx = TransactionComponentConfiguration.builder().build();
+        private TransactionComponentConfiguration txCtrlr = TransactionComponentConfiguration.builder().build();
     }
 
     @Data

@@ -88,8 +88,8 @@ class StationTest {
         evse.setCount(DEFAULT_EVSE_COUNT);
         evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
         stationConfiguration.setEvse(evse);
-        stationConfiguration.getComponentsConfiguration().getTx().setEvConnectionTimeOutSec(evConnectionTimeOut);
-        stationConfiguration.getComponentsConfiguration().getSecurity().setBasicAuthPassword(basicPassword);
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setEvConnectionTimeOutSec(evConnectionTimeOut);
+        stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().setBasicAuthPassword(basicPassword);
 
         station = new Station(stationConfiguration);
         station.refreshStateView();
@@ -98,7 +98,7 @@ class StationTest {
         assertThat(station.getStateView().getEvses().size()).isEqualTo(DEFAULT_EVSE_COUNT);
         station.getStateView().getEvses().forEach(e -> assertThat(e.getConnectors().size()).isEqualTo(DEFAULT_EVSE_CONNECTORS));
         assertThat(station.getId()).isEqualTo(STATION_ID);
-        assertThat(station.getConfiguration().getComponentsConfiguration().getSecurity().getBasicAuthPassword()).isEqualTo(basicPassword);
+        assertThat(station.getConfiguration().getComponentsConfiguration().getSecurityCtrlr().getBasicAuthPassword()).isEqualTo(basicPassword);
     }
 
 }

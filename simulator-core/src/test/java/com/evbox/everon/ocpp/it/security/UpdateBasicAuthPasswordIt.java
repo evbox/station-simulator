@@ -40,7 +40,7 @@ public class UpdateBasicAuthPasswordIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> {
             SimulatorConfiguration.StationConfiguration configuration = stationSimulatorRunner.getStation(STATION_ID).getConfiguration();
 
-            assertThat(configuration.getComponentsConfiguration().getSecurity().getBasicAuthPassword()).isEqualTo(expectedPassword);
+            assertThat(configuration.getComponentsConfiguration().getSecurityCtrlr().getBasicAuthPassword()).isEqualTo(expectedPassword);
 
             ocppMockServer.verify();
         });

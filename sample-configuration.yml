@@ -4,16 +4,16 @@ stations:
       count: 1
       connectors: 1
     componentsConfiguration:
-      security:
+      securityCtrlr:
         basicAuthPassword: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-      tx:
+      txCtrlr:
         evConnectionTimeOutSec: 120
   - id: EVB-P18090564
     evse:
       count: 2
       connectors: 1
     componentsConfiguration:
-      security:
+      securityCtrlr:
         basicAuthPassword: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-      tx:
+      txCtrlr:
         evConnectionTimeOutSec: 60

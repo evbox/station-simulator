@@ -26,7 +26,7 @@ public class SimulatorConfigCreator {
 
         stationConfiguration.setId(stationId);
         stationConfiguration.setEvse(evse);
-        stationConfiguration.getComponentsConfiguration().getSecurity().setBasicAuthPassword(BASIC_AUTH_PASSWORD);
+        stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().setBasicAuthPassword(BASIC_AUTH_PASSWORD);
         stationConfiguration.setMeterValuesConfiguration(meterValuesConfiguration);
         return stationConfiguration;
     }
@@ -43,7 +43,7 @@ public class SimulatorConfigCreator {
 
         stationConfiguration.setId(stationId);
         stationConfiguration.setEvse(evse);
-        stationConfiguration.getComponentsConfiguration().getSecurity().setBasicAuthPassword(password);
+        stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().setBasicAuthPassword(password);
         return stationConfiguration;
     }
 }

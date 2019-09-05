@@ -63,7 +63,7 @@ public class BasicAuthPasswordVariableAccessorTest {
     void shouldUpdateBasicAuthPassword() {
         when(stationMock.getConfiguration()).thenReturn(stationConfigurationMock);
         when(stationConfigurationMock.getComponentsConfiguration()).thenReturn(componentsConfigurationMock);
-        when(componentsConfigurationMock.getSecurity()).thenReturn(securityComponentConfigurationMock);
+        when(componentsConfigurationMock.getSecurityCtrlr()).thenReturn(securityComponentConfigurationMock);
 
         VariableSetter variableSetter = basicAuthPasswordVariableAccessor.getVariableSetters().get(AttributeType.ACTUAL);
 
@@ -76,7 +76,7 @@ public class BasicAuthPasswordVariableAccessorTest {
     void shouldCallStationReconnect() {
         when(stationMock.getConfiguration()).thenReturn(stationConfigurationMock);
         when(stationConfigurationMock.getComponentsConfiguration()).thenReturn(componentsConfigurationMock);
-        when(componentsConfigurationMock.getSecurity()).thenReturn(securityComponentConfigurationMock);
+        when(componentsConfigurationMock.getSecurityCtrlr()).thenReturn(securityComponentConfigurationMock);
 
         VariableSetter variableSetter = basicAuthPasswordVariableAccessor.getVariableSetters().get(AttributeType.ACTUAL);
 
