@@ -8,6 +8,7 @@ import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComp
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.securityctrlr.SecurityCtrlrComponent;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxCtrlrComponent;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -37,6 +38,7 @@ public class StationComponentsHolder {
                 .add(new EVSEComponent(station, stationState))
                 .add(new ConnectorComponent(station, stationState))
                 .add(new SecurityCtrlrComponent(station, stationState))
+                .add(new TxCtrlrComponent(station, stationState))
                 .build();
 
         components = ImmutableMap.copyOf(componentsList.stream().collect(
