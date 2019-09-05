@@ -1,7 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,6 +74,28 @@ class StationTest {
 
         assertEquals(expectedUrl, urlCapture.getValue());
 
+    }
+
+    @Test
+    void testStationConfigurationParameters() {
+
+        final int evConnectionTimeOut = 200;
+
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        stationConfiguration.setEvConnectionTimeOutSec(evConnectionTimeOut);
+
+        station = new Station(stationConfiguration);
+        station.refreshStateView();
+
+        assertThat(station.getStateView().getEvConnectionTimeOut()).isEqualTo(evConnectionTimeOut);
+        assertThat(station.getStateView().getEvses().size()).isEqualTo(DEFAULT_EVSE_COUNT);
+        station.getStateView().getEvses().forEach(e -> assertThat(e.getConnectors().size()).isEqualTo(DEFAULT_EVSE_CONNECTORS));
+        assertThat(station.getId()).isEqualTo(STATION_ID);
     }
 
 }
