@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * Represents the state of the station.
  */
+@ToString
 public class StationState {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
@@ -156,16 +158,6 @@ public class StationState {
                 .flatMap(evse -> evse.getConnectors().stream()
                         .filter(connector -> connector.getId().equals(connectorId))
                         .findAny());
-    }
-
-    @Override
-    public String toString() {
-        return "StationState{" +
-                "clock=" + clock +
-                ", heartbeatInterval=" + heartbeatInterval +
-                ", evConnectionTimeOut=" + evConnectionTimeOut +
-                ", evses=" + evses +
-                '}';
     }
 
     private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {

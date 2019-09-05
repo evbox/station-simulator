@@ -6,11 +6,11 @@ import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Representation of Transaction component according to OCPP 2.0 (3.2.30. EVSE)
+ * Representation of Transaction component according to OCPP 2.0 (3.1.15. TxCtrlr)
  */
 public class TxCtrlrComponent extends StationComponent {
 
-    public static final String NAME = "Tx";
+    public static final String NAME = "TxCtrlr";
 
     public TxCtrlrComponent(Station station, StationState stationState) {
         super(ImmutableList.of(
