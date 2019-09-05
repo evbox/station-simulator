@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.securityctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.common.CiString.CiString1000;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.StationConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationState;
@@ -45,6 +46,12 @@ public class BasicAuthPasswordVariableAccessorTest {
     @Mock
     Station stationMock;
 
+    @Mock
+    SimulatorConfiguration.ComponentsConfiguration componentsConfigurationMock;
+
+    @Mock
+    SimulatorConfiguration.SecurityComponentConfiguration securityComponentConfigurationMock;
+
     @SuppressWarnings("unused")
     @Mock
     StationState stationStateMock;
@@ -55,17 +62,21 @@ public class BasicAuthPasswordVariableAccessorTest {
     @Test
     void shouldUpdateBasicAuthPassword() {
         when(stationMock.getConfiguration()).thenReturn(stationConfigurationMock);
+        when(stationConfigurationMock.getComponentsConfiguration()).thenReturn(componentsConfigurationMock);
+        when(componentsConfigurationMock.getSecurity()).thenReturn(securityComponentConfigurationMock);
 
         VariableSetter variableSetter = basicAuthPasswordVariableAccessor.getVariableSetters().get(AttributeType.ACTUAL);
 
         variableSetter.set(attributePath(), BASIC_AUTH_PASSWORD_ATTRIBUTE);
 
-        verify(stationMock.getConfiguration()).setBasicAuthPassword(eq(BASIC_AUTH_PASSWORD_VALUE));
+        verify(securityComponentConfigurationMock).setBasicAuthPassword(eq(BASIC_AUTH_PASSWORD_VALUE));
     }
 
     @Test
     void shouldCallStationReconnect() {
         when(stationMock.getConfiguration()).thenReturn(stationConfigurationMock);
+        when(stationConfigurationMock.getComponentsConfiguration()).thenReturn(componentsConfigurationMock);
+        when(componentsConfigurationMock.getSecurity()).thenReturn(securityComponentConfigurationMock);
 
         VariableSetter variableSetter = basicAuthPasswordVariableAccessor.getVariableSetters().get(AttributeType.ACTUAL);
 

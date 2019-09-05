@@ -31,9 +31,8 @@ public class SimulatorConfiguration {
     public static class StationConfiguration {
         private String id;
         private Evse evse;
-        private String basicAuthPassword;
-        private int evConnectionTimeOutSec = DEFAULT_EV_CONNECTION_TIMEOUT;
         private MeterValuesConfiguration meterValuesConfiguration;
+        private ComponentsConfiguration componentsConfiguration = ComponentsConfiguration.builder().build();
     }
 
     @Data
@@ -66,6 +65,48 @@ public class SimulatorConfiguration {
          */
         @Builder.Default
         private long consumptionWattHour = DEFAULT_CONSUMPTION_WATT_HOUR;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ComponentsConfiguration {
+        /**
+         * Security controller component
+         */
+        @Builder.Default
+        private SecurityComponentConfiguration security = SecurityComponentConfiguration.builder().build();
+
+        /**
+         * Transactions controller component
+         */
+        @Builder.Default
+        private TransactionComponentConfiguration tx = TransactionComponentConfiguration.builder().build();
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SecurityComponentConfiguration {
+        /**
+         * Authentication password used for HTTP basic authentication
+         */
+        private String basicAuthPassword;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionComponentConfiguration {
+        /**
+         * Interval timeout in seconds between the start of the transaction
+         * an the plugging of the cable
+         */
+        @Builder.Default
+        private int evConnectionTimeOutSec = DEFAULT_EV_CONNECTION_TIMEOUT;
     }
 
     @Data
