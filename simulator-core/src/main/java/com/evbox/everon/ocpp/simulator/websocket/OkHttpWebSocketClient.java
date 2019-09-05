@@ -38,7 +38,7 @@ public class OkHttpWebSocketClient {
         Request.Builder requestBuilder = new Request.Builder().url(url)
                 .addHeader("Sec-WebSocket-Protocol", "ocpp2.0");
 
-        if (nonNull(stationConfiguration.getBasicAuthPassword())) {
+        if (nonNull(stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().getBasicAuthPassword())) {
 
             try {
                 byte[] plainCredentials = prepareAuthPassword();
@@ -98,7 +98,7 @@ public class OkHttpWebSocketClient {
 
     private byte[] prepareAuthPassword() throws DecoderException {
 
-        byte[] decodedPassword = Hex.decodeHex(stationConfiguration.getBasicAuthPassword());
+        byte[] decodedPassword = Hex.decodeHex(stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().getBasicAuthPassword());
 
         byte[] username = stationConfiguration.getId().getBytes();
 

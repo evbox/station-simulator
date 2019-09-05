@@ -40,7 +40,7 @@ public class StationState {
 
     public StationState(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
-        this.evConnectionTimeOut = configuration.getEvConnectionTimeOutSec();
+        this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
     }
 
     public StationState(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
