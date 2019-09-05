@@ -187,6 +187,14 @@ public class Station {
     }
 
     /**
+     * Updates station connection timeout interval
+     * @param newEVConnectionTimeOut ev connection timeout interval in seconds
+     */
+    public void updateEVConnectionTimeOut(int newEVConnectionTimeOut) {
+        state.setEVConnectionTimeOut(newEVConnectionTimeOut);
+    }
+
+    /**
      * Getter for station identity.
      *
      * @return station id

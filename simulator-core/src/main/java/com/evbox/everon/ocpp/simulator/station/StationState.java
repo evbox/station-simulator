@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -29,19 +30,23 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * Represents the state of the station.
  */
+@ToString
 public class StationState {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
+    private int evConnectionTimeOut;
     private Map<Integer, Evse> evses;
 
     public StationState(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
+        this.evConnectionTimeOut = configuration.getEvConnectionTimeOutSec();
     }
 
-    public StationState(Clock clock, int heartbeatInterval, Map<Integer, Evse> evses) {
+    public StationState(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
         this.clock = clock;
         this.heartbeatInterval = heartbeatInterval;
+        this.evConnectionTimeOut = evConnectionTimeOut;
         this.evses = evses;
     }
 
@@ -62,6 +67,14 @@ public class StationState {
 
     public void setHeartbeatInterval(int heartbeatInterval) {
         this.heartbeatInterval = heartbeatInterval;
+    }
+
+    public int getEVConnectionTimeOut() {
+        return evConnectionTimeOut;
+    }
+
+    public void setEVConnectionTimeOut(int evConnectionTimeOut) {
+        this.evConnectionTimeOut = evConnectionTimeOut;
     }
 
     public Integer unlockConnector(int evseId) {
@@ -140,27 +153,11 @@ public class StationState {
                     .findAny();
     }
 
-    /**
-     * Find an instance of {@link Evse} by transactionid. If not found then throw {@link IllegalArgumentException}.
-     *
-     * @param transactionId Transaction identity
-     * @return an instance of {@link Evse}
-     */
-    public Evse findEvseByTransactionId(String transactionId) {
-        return tryFindEvseByTransactionId(transactionId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Transaction %s is not present", transactionId)));
-    }
-
     public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
         return tryFindEvse(evseId)
                 .flatMap(evse -> evse.getConnectors().stream()
                         .filter(connector -> connector.getId().equals(connectorId))
                         .findAny());
-    }
-
-    @Override
-    public String toString() {
-        return "StationState{" + "clock=" + clock + ", heartbeatInterval=" + heartbeatInterval + ", evses=" + evses.values() + '}';
     }
 
     private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
@@ -182,7 +179,7 @@ public class StationState {
     StationStateView createView() {
         List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
-        return new StationStateView(clock, heartbeatInterval, evsesCopy);
+        return new StationStateView(clock, heartbeatInterval, evConnectionTimeOut, evsesCopy);
     }
 
     @Getter
@@ -192,6 +189,7 @@ public class StationState {
         @JsonIgnore
         private final Clock clock;
         private final int heartbeatInterval;
+        private final int evConnectionTimeOut;
         private final List<EvseView> evses;
 
         public boolean hasAuthorizedToken() {

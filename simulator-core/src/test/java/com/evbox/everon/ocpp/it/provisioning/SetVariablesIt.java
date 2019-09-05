@@ -5,6 +5,8 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.EVConnectionTimeOutVariableAccessor;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxCtrlrComponent;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesResponse;
@@ -70,6 +72,31 @@ class SetVariablesIt extends StationSimulatorSetUp {
                 SetVariableDatum.AttributeType.ACTUAL);
 
         shouldSetHeartbeatIntervalWithSetVariablesRequestImpl(setVariablesRequest, newHeartbeatInterval);
+    }
+
+    @Test
+    void shouldSetEVConnectionTimeOutWithSetVariablesRequest() {
+
+        int evConnectionTimeout = 10;
+        stationSimulatorRunner.run();
+
+        SetVariablesRequest setVariablesRequest = createSetVariablesRequest(
+                TxCtrlrComponent.NAME,
+                EVConnectionTimeOutVariableAccessor.NAME,
+                String.valueOf(evConnectionTimeout),
+                SetVariableDatum.AttributeType.ACTUAL);
+
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.SET_VARIABLES, setVariablesRequest);
+
+        ocppMockServer.waitUntilConnected();
+
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
+
+        await().untilAsserted(() -> {
+            int connectionTimeout = stationSimulatorRunner.getStation(STATION_ID).getStateView().getEvConnectionTimeOut();
+            assertThat(connectionTimeout).isEqualTo(evConnectionTimeout);
+            ocppMockServer.verify();
+        });
     }
 
     private void shouldSetHeartbeatIntervalWithSetVariablesRequestImpl(SetVariablesRequest setVariablesRequest,

@@ -12,6 +12,8 @@ public class SimulatorConfiguration {
 
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
+    private static final int DEFAULT_EV_CONNECTION_TIMEOUT = 60;
+
     private static final long DEFAULT_SEND_METER_VALUES_INTERVAL_SEC = 10;
     private static final long DEFAULT_CONSUMPTION_WATT_HOUR = 100;
 
@@ -30,6 +32,7 @@ public class SimulatorConfiguration {
         private String id;
         private Evse evse;
         private String basicAuthPassword;
+        private int evConnectionTimeOutSec = DEFAULT_EV_CONNECTION_TIMEOUT;
         private MeterValuesConfiguration meterValuesConfiguration;
     }
 
