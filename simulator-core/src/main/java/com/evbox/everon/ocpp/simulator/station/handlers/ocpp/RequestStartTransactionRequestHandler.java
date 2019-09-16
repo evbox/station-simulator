@@ -63,19 +63,22 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
             stationMessageSender.sendStatusNotification(evse.getId(), connector.getId(), StatusNotificationRequest.ConnectorStatus.OCCUPIED);
             stationMessageSender.sendTransactionEventStart(evse.getId(), connector.getId(), request.getRemoteStartId(), REMOTE_START);
 
-            startTimeOut(evse.getId(), connector.getId());
+            awaitCablePlugged(evse.getId(), connector.getId());
         } else {
             log.debug("No available evse to start a new transaction");
             stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
         }
     }
 
-    private void startTimeOut(int evseId, int connectorId) {
-        stationState.saveConnectionTimeOutFuture(evseId, Executors.newSingleThreadScheduledExecutor(). schedule(() -> {
-            stationMessageSender.sendStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
-            stationState.findEvse(evseId).stopTransaction();
-            stationMessageSender.sendTransactionEventEnded(evseId, connectorId, null, TransactionData.StoppedReason.TIMEOUT);
-        }, stationState.getEVConnectionTimeOut(), TimeUnit.SECONDS));
+    private void awaitCablePlugged(int evseId, int connectorId) {
+        if (!stationState.isAwaitingForPlug(evseId)) {
+            stationState.saveConnectionTimeOutFuture(evseId, Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+                stationState.removeConnectionTimeOutFuture(evseId);
+                stationMessageSender.sendStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
+                stationState.findEvse(evseId).stopTransaction();
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, null, TransactionData.StoppedReason.TIMEOUT);
+            }, stationState.getEVConnectionTimeOut(), TimeUnit.SECONDS));
+        }
     }
 
 }

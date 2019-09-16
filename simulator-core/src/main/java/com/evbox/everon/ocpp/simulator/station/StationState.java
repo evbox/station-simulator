@@ -182,6 +182,17 @@ public class StationState {
     }
 
     /**
+     * Returns true if the evse was remotely started and it is
+     * waiting for the cable to be plugged.
+     *
+     * @param evseId id of the evse
+     * @return true if the evse is waiting for the cable to be plugged
+     */
+    public boolean isAwaitingForPlug(int evseId) {
+        return connectionTimeOutFutures.containsKey(evseId);
+    }
+
+    /**
      * Stops the running future that will trigger the connection
      * timeout for transactions started remotely.
      *
@@ -195,8 +206,18 @@ public class StationState {
         }
 
         future.cancel(true);
-        connectionTimeOutFutures.remove(evseId);
+        removeConnectionTimeOutFuture(evseId);
         return true;
+    }
+
+    /**
+     * Deletes the evse from the map of evses waiting for the cable
+     * to be plugged.
+     *
+     * @param evseId id of the evse
+     */
+    public void removeConnectionTimeOutFuture(int evseId) {
+        connectionTimeOutFutures.remove(evseId);
     }
 
     private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {

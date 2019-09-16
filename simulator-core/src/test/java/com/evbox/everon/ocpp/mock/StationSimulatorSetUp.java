@@ -47,7 +47,7 @@ public class StationSimulatorSetUp  {
         ocppMockServer.start();
 
         StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS, getMeterValuesConfiguration());
-        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setEvConnectionTimeOutSec(getEVConnectionTimeOut());
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setEvConnectionTimeOutSec(getEVConnectionTimeOutSec());
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);
@@ -69,7 +69,7 @@ public class StationSimulatorSetUp  {
         stationSimulatorRunner.getStation(stationId).sendMessage(new StationMessage(stationId, StationMessage.Type.USER_ACTION, action));
     }
 
-    protected int getEVConnectionTimeOut() {
+    protected int getEVConnectionTimeOutSec() {
         return 10;
     }
 

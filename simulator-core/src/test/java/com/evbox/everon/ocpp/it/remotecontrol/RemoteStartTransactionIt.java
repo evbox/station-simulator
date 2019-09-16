@@ -106,7 +106,7 @@ public class RemoteStartTransactionIt extends StationSimulatorSetUp {
     }
 
     @Override
-    protected int getEVConnectionTimeOut() {
+    protected int getEVConnectionTimeOutSec() {
         return EV_CONNECTION_TIMEOUT;
     }
 }
