@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 
 import com.evbox.everon.ocpp.simulator.station.evse.Connector.ConnectorView;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction.EvseTransactionView;
+import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
 import static java.util.Objects.nonNull;
@@ -307,6 +309,17 @@ public class Evse {
      */
     public boolean isCablePlugged() {
         return getConnectors().stream().anyMatch(Connector::isCablePlugged);
+    }
+
+    /**
+     * Find an instance of an available {@link Connector}.
+     *
+     * @return optional {@link Connector} instance
+     */
+    public Optional<Connector> tryFindAvailableConnector() {
+        return connectors.stream()
+                .filter(connector -> StatusNotificationRequest.ConnectorStatus.AVAILABLE.equals(connector.getConnectorStatus()))
+                .findAny();
     }
 
     /**

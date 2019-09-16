@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,6 +70,17 @@ class EvseTest {
         for (int i = 0; i <= 10; i++) {
             assertThat(evse.incrementPowerConsumed(1)).isEqualTo(i);
         }
+    }
+
+    @Test
+    void testFindAvailableConnector() {
+        assertThat(evse.tryFindAvailableConnector().map(Connector::getId).orElse(0)).isEqualTo(1);
+        evse.findConnector(1).plug();
+
+        assertThat(evse.tryFindAvailableConnector().map(Connector::getId).orElse(0)).isEqualTo(2);
+        evse.findConnector(2).plug();
+
+        assertThat(evse.tryFindAvailableConnector()).isEqualTo(Optional.empty());
     }
 
 }

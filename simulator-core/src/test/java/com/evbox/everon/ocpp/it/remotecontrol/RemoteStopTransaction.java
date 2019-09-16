@@ -30,15 +30,15 @@ public class RemoteStopTransaction extends StationSimulatorSetUp {
 
         ocppMockServer
                 .when(TransactionEvent.request(TransactionEventRequest.EventType.UPDATED, TransactionData.ChargingState.EV_DETECTED, DEFAULT_TRANSACTION_ID, TransactionEventRequest.TriggerReason.REMOTE_STOP))
-                .thenReturn(Authorize.response());
+                .thenReturn(TransactionEvent.response());
 
         ocppMockServer
                 .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.AVAILABLE), times(2))
-                .thenReturn(Authorize.response());
+                .thenReturn(StatusNotification.response());
 
         ocppMockServer
                 .when(TransactionEvent.request(TransactionEventRequest.EventType.ENDED, TransactionData.StoppedReason.REMOTE))
-                .thenReturn(Authorize.response());
+                .thenReturn(TransactionEvent.response());
 
         stationSimulatorRunner.run();
         ocppMockServer.waitUntilConnected();

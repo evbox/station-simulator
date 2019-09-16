@@ -18,10 +18,8 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static java.util.stream.Collectors.toList;
@@ -37,6 +35,7 @@ public class StationState {
     private int heartbeatInterval;
     private int evConnectionTimeOut;
     private Map<Integer, Evse> evses;
+    private Map<Integer, ScheduledFuture> connectionTimeOutFutures = new HashMap<>();
 
     public StationState(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
@@ -153,11 +152,51 @@ public class StationState {
                     .findAny();
     }
 
+    /**
+     * Try to find an EVSE with no ongoing transaction.
+     *
+     * @return optional with instance of {@link Evse} or Optional.empty()
+     */
+    public Optional<Evse> tryFindAvailableEvse() {
+        return evses.values()
+                    .stream()
+                    .filter(evse -> !evse.hasOngoingTransaction())
+                    .findAny();
+    }
+
     public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
         return tryFindEvse(evseId)
                 .flatMap(evse -> evse.getConnectors().stream()
                         .filter(connector -> connector.getId().equals(connectorId))
                         .findAny());
+    }
+
+    /**
+     * Saves the future for a scheduled connection timeout.
+     *
+     * @param evseId id of the evse
+     * @param future future of the scheduled timeout
+     */
+    public void saveConnectionTimeOutFuture(int evseId, ScheduledFuture future) {
+        connectionTimeOutFutures.put(evseId, future);
+    }
+
+    /**
+     * Stops the running future that will trigger the connection
+     * timeout for transactions started remotely.
+     *
+     * @param evseId id of the evse
+     * @return true if the evse had a future running
+     */
+    public boolean stopConnectionTimeOut(int evseId) {
+        ScheduledFuture future = connectionTimeOutFutures.get(evseId);
+        if (future == null) {
+            return false;
+        }
+
+        future.cancel(true);
+        connectionTimeOutFutures.remove(evseId);
+        return true;
     }
 
     private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {

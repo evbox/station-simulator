@@ -43,23 +43,34 @@ public class Plug implements UserMessage {
 
         evse.plug(connectorId);
 
-        stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
-            if (evse.hasTokenId()) {
-                String tokenId = evse.getTokenId();
-                log.info("Station has authorised token {}", tokenId);
+        if (stationState.stopConnectionTimeOut(evse.getId())) {
+            startCharging(evse);
 
-                stationMessageSender.sendTransactionEventUpdateAndSubscribe(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, tokenId, TransactionData.ChargingState.EV_DETECTED,
-                        (transactionEventRequest, transactionEventResponse) -> {
-                            evse.lockPluggedConnector();
-                            evse.startCharging();
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CHARGING_STATE_CHANGED, TransactionData.ChargingState.CHARGING);
+        } else {
 
-                            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CHARGING_STATE_CHANGED, tokenId,
-                                    TransactionData.ChargingState.CHARGING);
-                        });
-            } else {
-                stationMessageSender.sendTransactionEventStart(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
-            }
-        });
+            stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
+                if (evse.hasTokenId()) {
+                    String tokenId = evse.getTokenId();
+                    log.info("Station has authorised token {}", tokenId);
+
+                    stationMessageSender.sendTransactionEventUpdateAndSubscribe(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, tokenId, TransactionData.ChargingState.EV_DETECTED,
+                            (transactionEventRequest, transactionEventResponse) -> {
+                                startCharging(evse);
+
+                                stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CHARGING_STATE_CHANGED, tokenId,
+                                        TransactionData.ChargingState.CHARGING);
+                            });
+                } else {
+                    stationMessageSender.sendTransactionEventStart(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+                }
+            });
+        }
+    }
+
+    private void startCharging(Evse evse) {
+        evse.lockPluggedConnector();
+        evse.startCharging();
     }
 
 }
