@@ -19,7 +19,8 @@ public enum ActionType {
     CHANGE_AVAILABILITY("ChangeAvailability", ChangeAvailabilityRequest.class, ChangeAvailabilityResponse.class),
     NOTIFY_REPORT("NotifyReport", NotifyReportRequest.class, NotifyReportResponse.class),
     GET_BASE_REPORT("GetBaseReport", GetBaseReportRequest.class, GetBaseReportResponse.class),
-    REQUEST_STOP_TRANSACTION("RequestStopTransaction", RequestStopTransactionRequest.class, RequestStopTransactionResponse.class);
+    REQUEST_STOP_TRANSACTION("RequestStopTransaction", RequestStopTransactionRequest.class, RequestStopTransactionResponse.class),
+    REQUEST_START_TRANSACTION("RequestStartTransaction", RequestStartTransactionRequest.class, RequestStartTransactionResponse.class);
 
     private final String actionType;
     private final Class requestClazz;

@@ -63,7 +63,19 @@ public class StationMessageSender {
      * @param tokenId token identity
      */
     public void sendTransactionEventStart(Integer evseId, TransactionEventRequest.TriggerReason reason, String tokenId) {
-        sendTransactionEventStart(evseId, null, reason, tokenId, null);
+        sendTransactionEventStart(evseId, null, null, reason, tokenId, null);
+    }
+
+    /**
+     * Send TransactionEventStart event.
+     *
+     * @param evseId            evse identity
+     * @param connectorId       connector identity
+     * @param remoteStartId     connector identity
+     * @param reason            reason why it was triggered
+     */
+    public void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TransactionEventRequest.TriggerReason reason) {
+        sendTransactionEventStart(evseId, connectorId, remoteStartId, reason, null, null);
     }
 
     /**
@@ -75,7 +87,7 @@ public class StationMessageSender {
      * @param chargingState charging state of the station
      */
     public void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.ChargingState chargingState) {
-        sendTransactionEventStart(evseId, connectorId, reason, null, chargingState);
+        sendTransactionEventStart(evseId, connectorId, null, reason, null, chargingState);
     }
 
     /**
@@ -184,12 +196,12 @@ public class StationMessageSender {
      *
      * @param evseId        evse identity
      * @param connectorId   connector identity
-     * @param reason        reason why it was triggered
+     * @param triggerReason reason why it was triggered
      * @param stoppedReason reason why transaction was stopped
      */
-    public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason) {
+    public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason triggerReason, TransactionData.StoppedReason stoppedReason) {
         TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationState.findEvse(evseId),
-                connectorId, reason, stoppedReason, stationState.getCurrentTime());
+                connectorId, triggerReason, stoppedReason, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
 
@@ -266,6 +278,22 @@ public class StationMessageSender {
     public void sendStatusNotification(int evseId, int connectorId) {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId,
                 stationState.findEvse(evseId).findConnector(connectorId).getCableStatus(), stationState.getCurrentTime());
+
+        Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
+
+        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+
+    }
+
+    /**
+     * Send StatusNotification event.
+     *
+     * @param evseId            evse identity
+     * @param connectorId       connector identity
+     * @param connectorStatus   status of the connector
+     */
+    public void sendStatusNotification(int evseId, int connectorId, StatusNotificationRequest.ConnectorStatus connectorStatus) {
+        StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, connectorStatus, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
@@ -367,9 +395,9 @@ public class StationMessageSender {
      */
     public LocalDateTime getTimeOfLastMessageSent() { return timeOfLastMessageSent; }
 
-    private void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
+    private void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
         TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationState.findEvse(evseId),
-                connectorId, reason, tokenId, chargingState, stationState.getCurrentTime());
+                connectorId, reason, tokenId, chargingState, remoteStartId, stationState.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 
