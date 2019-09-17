@@ -17,6 +17,7 @@ import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
 import com.evbox.everon.ocpp.v20.message.station.RequestStartTransactionRequest;
 import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionRequest;
+import com.evbox.everon.ocpp.v20.message.station.SetChargingProfileRequest;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,6 +60,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(Clock.systemUTC(), stationComponentsHolder, stationMessageSender))
                 .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationMessageSender, stationState))
                 .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationMessageSender, stationState))
+                .put(SetChargingProfileRequest.class, new SetChargingProfileRequestHandler(stationMessageSender))
                 .build();
     }
 
