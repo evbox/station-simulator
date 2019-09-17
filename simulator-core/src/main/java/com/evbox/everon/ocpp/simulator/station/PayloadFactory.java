@@ -35,18 +35,19 @@ public class PayloadFactory {
     }
 
     StatusNotificationRequest createStatusNotification(int evseId, int connectorId, CableStatus cableStatus, Instant currentTime) {
-        StatusNotificationRequest payload = new StatusNotificationRequest();
-        payload.setEvseId(evseId);
-        payload.setConnectorId(connectorId);
         if (cableStatus == CableStatus.UNPLUGGED) {
-            payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
-        } else {
-            payload.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.OCCUPIED);
+            return createStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE, currentTime);
         }
 
-        payload.setTimestamp(currentTime.atZone(ZoneOffset.UTC));
+        return createStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.OCCUPIED, currentTime);
+    }
 
-        return payload;
+    StatusNotificationRequest createStatusNotification(int evseId, int connectorId, StatusNotificationRequest.ConnectorStatus connectorStatus, Instant currentTime) {
+        return new StatusNotificationRequest()
+                    .withEvseId(evseId)
+                    .withConnectorId(connectorId)
+                    .withConnectorStatus(connectorStatus)
+                    .withTimestamp(currentTime.atZone(ZoneOffset.UTC));
     }
 
     StatusNotificationRequest createStatusNotification(Evse evse, Connector connector, Instant currentTime) {
@@ -78,10 +79,11 @@ public class PayloadFactory {
     }
 
     TransactionEventRequest createTransactionEventStart(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
-                                                        TransactionData.ChargingState chargingState, Instant currentDateTime) {
+                                                        TransactionData.ChargingState chargingState, Integer remoteStartId,  Instant currentDateTime) {
 
         TransactionData transactionData = new TransactionData()
                 .withId(new CiString.CiString36(evse.getTransaction().toString()))
+                .withRemoteStartId(remoteStartId)
                 .withChargingState(chargingState);
         TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, STARTED, currentDateTime, evse.getSeqNoAndIncrement());
 

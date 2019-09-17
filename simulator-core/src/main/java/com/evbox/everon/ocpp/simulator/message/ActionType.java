@@ -20,6 +20,7 @@ public enum ActionType {
     NOTIFY_REPORT("NotifyReport", NotifyReportRequest.class, NotifyReportResponse.class),
     GET_BASE_REPORT("GetBaseReport", GetBaseReportRequest.class, GetBaseReportResponse.class),
     REQUEST_STOP_TRANSACTION("RequestStopTransaction", RequestStopTransactionRequest.class, RequestStopTransactionResponse.class),
+    REQUEST_START_TRANSACTION("RequestStartTransaction", RequestStartTransactionRequest.class, RequestStartTransactionResponse.class),
     SET_CHARGING_PROFILE("SetChargingProfile", SetChargingProfileRequest.class, SetChargingProfileResponse.class);
 
     private final String actionType;
