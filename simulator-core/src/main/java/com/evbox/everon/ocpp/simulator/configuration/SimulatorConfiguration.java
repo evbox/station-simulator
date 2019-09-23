@@ -15,7 +15,7 @@ public class SimulatorConfiguration {
     private static final int DEFAULT_EV_CONNECTION_TIMEOUT = 60;
 
     private static final long DEFAULT_SEND_METER_VALUES_INTERVAL_SEC = 10;
-    private static final long DEFAULT_CONSUMPTION_WATT_HOUR = 100;
+    private static final long DEFAULT_CONSUMPTION_WATT_HOUR = 22_000;
 
     private static final long DEFAULT_CALL_TIMEOUT = 10_000;
     private static final long DEFAULT_CONNECT_TIMEOUT = 10_000;
