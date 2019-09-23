@@ -1,5 +1,10 @@
 # Station Simulator Releases #
 
+### Version 0.3.6
+
+- Upgraded Java to version 12
+- Minor improvements
+
 ### Version 0.3.5
 
 - Added support for Remote start transactions
