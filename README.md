@@ -3,8 +3,7 @@ OCPP Station Simulator
 
 [![CircleCI](https://circleci.com/gh/evbox/station-simulator.svg?style=svg)](https://circleci.com/gh/evbox/station-simulator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Bintray](https://img.shields.io/bintray/v/everon/maven/ocpp-station-simulator.svg?maxAge=2592000)](https://bintray.com/everon/maven/ocpp-station-simulator)
-
+[ ![Download](https://api.bintray.com/packages/everon/maven/ocpp-station-simulator/images/download.svg) ](https://bintray.com/everon/maven/ocpp-station-simulator/_latestVersion)
 
 
 ## Introduction
