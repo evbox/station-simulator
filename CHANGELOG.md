@@ -1,9 +1,12 @@
 # Station Simulator Releases #
 
+### Version 0.3.7
+
+- Improved simulator 
+
 ### Version 0.3.6
 
-- Upgraded Java to version 12
-- Minor improvements
+- Fixed bugs
 
 ### Version 0.3.5
 
