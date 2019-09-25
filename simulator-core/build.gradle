@@ -16,6 +16,7 @@ plugins {
 apply plugin: 'application'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'jacoco'
+apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
@@ -81,7 +82,7 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.3.6'
+version '0.3.7'
 
 publishing {
     publications {
