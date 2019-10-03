@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.connector;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -42,8 +42,8 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::validateActualValue)
             .build();
 
-    public ConnectorTypeVariableAccessor(Station station, StationState stationState) {
-        super(station, stationState);
+    public ConnectorTypeVariableAccessor(Station station, StationPersistenceLayer stationPersistenceLayer) {
+        super(station, stationPersistenceLayer);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
     public List<ReportDatum> generateReportData(String componentName) {
         List<ReportDatum> reportData = new ArrayList<>();
 
-        for (Evse evse : getStationState().getEvses()) {
+        for (Evse evse : getStationPersistenceLayer().getEvses()) {
             for (Connector connector : evse.getConnectors()) {
                 com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
                         .withConnectorId(connector.getId())
@@ -114,7 +114,7 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
         Integer evseId = attributePath.getComponent().getEvse().getId();
         Integer connectorId = attributePath.getComponent().getEvse().getConnectorId();
 
-        boolean connectorExists = getStationState().tryFindConnector(evseId, connectorId).isPresent();
+        boolean connectorExists = getStationPersistenceLayer().tryFindConnector(evseId, connectorId).isPresent();
 
         GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(attributePath.getComponent())

@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.mock;
 
+import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
 import com.evbox.everon.ocpp.mock.csms.OcppMockServer;
 import com.evbox.everon.ocpp.mock.csms.OcppServerClient;
@@ -11,11 +12,13 @@ import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.StationConfiguration;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.MeterValuesConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
-import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
@@ -48,6 +51,9 @@ public class StationSimulatorSetUp  {
 
         StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS, getMeterValuesConfiguration());
         stationConfiguration.getComponentsConfiguration().getTxCtrlr().setEvConnectionTimeOutSec(getEVConnectionTimeOutSec());
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStartPoint(getTxStartPoint());
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStopPoint(getTxStopPoint());
+
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
         stationSimulatorRunner = new StationSimulatorRunner(StationConstants.OCPP_SERVER_URL, simulatorConfiguration);
@@ -71,6 +77,14 @@ public class StationSimulatorSetUp  {
 
     protected int getEVConnectionTimeOutSec() {
         return 10;
+    }
+
+    protected OptionList<TxStartStopPointVariableValues> getTxStartPoint() {
+        return new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED));
+    }
+
+    protected OptionList<TxStartStopPointVariableValues> getTxStopPoint() {
+        return new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED));
     }
 
     protected MeterValuesConfiguration getMeterValuesConfiguration() {

@@ -1,17 +1,21 @@
 package com.evbox.everon.ocpp.it.remotecontrol;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.mock.csms.exchange.Authorize;
 import com.evbox.everon.ocpp.mock.csms.exchange.StatusNotification;
 import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.simulator.station.actions.Plug;
-import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Unplug;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.times;
@@ -44,7 +48,7 @@ public class RemoteStopTransaction extends StationSimulatorSetUp {
         ocppMockServer.waitUntilConnected();
 
         triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
-        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
+        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.user.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isTrue());
 
@@ -79,7 +83,7 @@ public class RemoteStopTransaction extends StationSimulatorSetUp {
         ocppMockServer.waitUntilConnected();
 
         triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
-        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
+        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.user.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isTrue());
 
@@ -93,5 +97,10 @@ public class RemoteStopTransaction extends StationSimulatorSetUp {
             ocppMockServer.verify();
         });
 
+    }
+
+    @Override
+    protected OptionList<TxStartStopPointVariableValues> getTxStopPoint() {
+        return new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED));
     }
 }

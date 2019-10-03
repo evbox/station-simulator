@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component.connector;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
@@ -58,7 +58,7 @@ class ConnectorTypeVariableAccessorTest {
     @Mock(lenient = true)
     Station stationMock;
     @Mock(lenient = true)
-    StationState stationStateMock;
+    StationPersistenceLayer stationPersistenceLayerMock;
     @Mock
     Connector connectorMock;
 
@@ -129,7 +129,7 @@ class ConnectorTypeVariableAccessorTest {
     }
 
     private void initConnectorMock(Integer evseId, Integer connectorId) {
-        given(stationStateMock.tryFindConnector(anyInt(), anyInt()))
+        given(stationPersistenceLayerMock.tryFindConnector(anyInt(), anyInt()))
                 .willAnswer(invocation -> equal(invocation.getArgument(0), evseId) && equal(invocation.getArgument(1), connectorId) ?
                         Optional.of(connectorMock) :
                         Optional.empty());

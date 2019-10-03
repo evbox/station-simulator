@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.component.evse;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.google.common.collect.ImmutableList;
 
@@ -12,10 +12,10 @@ public class EVSEComponent extends StationComponent {
 
     public static final String NAME = "EVSE";
 
-    public EVSEComponent(Station station, StationState stationState) {
+    public EVSEComponent(Station station, StationPersistenceLayer stationPersistenceLayer) {
         super(ImmutableList.of(
-                new AvailabilityStateVariableAccessor(station, stationState),
-                new EnabledVariableAccessor(station, stationState)
+                new AvailabilityStateVariableAccessor(station, stationPersistenceLayer),
+                new EnabledVariableAccessor(station, stationPersistenceLayer)
         ));
     }
 

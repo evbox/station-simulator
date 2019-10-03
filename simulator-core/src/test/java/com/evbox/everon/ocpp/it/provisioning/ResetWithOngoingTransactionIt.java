@@ -6,7 +6,7 @@ import com.evbox.everon.ocpp.mock.csms.exchange.BootNotification;
 import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.simulator.station.actions.Plug;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ public class ResetWithOngoingTransactionIt extends StationSimulatorSetUp {
         ocppMockServer.waitUntilConnected();
 
         triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
-        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
+        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.user.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(1)).isTrue());
 

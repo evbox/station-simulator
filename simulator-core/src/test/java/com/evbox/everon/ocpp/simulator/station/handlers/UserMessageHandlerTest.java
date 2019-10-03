@@ -1,8 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers;
 
-import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -11,16 +10,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class UserMessageHandlerTest {
 
     @Mock
-    StationState stationStateMock;
-    @Mock
-    StationMessageSender stationMessageSenderMock;
+    StationStateFlowManager stationStateFlowManagerMock;
     @Mock
     UserMessage userMessageMock;
     @InjectMocks
@@ -31,14 +27,10 @@ public class UserMessageHandlerTest {
 
         userMessageHandler.handle(userMessageMock);
 
-        ArgumentCaptor<StationState> stationStateCaptor = ArgumentCaptor.forClass(StationState.class);
-        ArgumentCaptor<StationMessageSender> stationMessageSenderCaptor = ArgumentCaptor.forClass(StationMessageSender.class);
+        ArgumentCaptor<StationStateFlowManager> stationTransactionsManagerCaptor = ArgumentCaptor.forClass(StationStateFlowManager.class);
 
-        verify(userMessageMock).perform(stationStateCaptor.capture(), stationMessageSenderCaptor.capture());
+        verify(userMessageMock).perform(stationTransactionsManagerCaptor.capture());
 
-        assertAll(
-                () -> assertThat(stationStateMock).isEqualTo(stationStateCaptor.getValue()),
-                () -> assertThat(stationMessageSenderMock).isEqualTo(stationMessageSenderCaptor.getValue())
-        );
+        assertThat(stationStateFlowManagerMock).isEqualTo(stationTransactionsManagerCaptor.getValue());
     }
 }

@@ -1,8 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers;
 
-import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -11,18 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserMessageHandler implements MessageHandler<UserMessage> {
 
-    private final StationState state;
-    private final StationMessageSender stationMessageSender;
+    private final StationStateFlowManager stationStateFlowManager;
 
     /**
      * Create an instance.
      *
-     * @param stationState state of the station
-     * @param stationMessageSender event sender of the station
+     * @param stationStateFlowManager manges state of the evse for station
      */
-    public UserMessageHandler(StationState stationState, StationMessageSender stationMessageSender) {
-        this.state = stationState;
-        this.stationMessageSender = stationMessageSender;
+    public UserMessageHandler(StationStateFlowManager stationStateFlowManager) {
+        this.stationStateFlowManager = stationStateFlowManager;
     }
 
     /**
@@ -32,7 +28,7 @@ public class UserMessageHandler implements MessageHandler<UserMessage> {
      */
     @Override
     public void handle(UserMessage userMessage) {
-        userMessage.perform(state, stationMessageSender);
+        userMessage.perform(stationStateFlowManager);
     }
 
 }

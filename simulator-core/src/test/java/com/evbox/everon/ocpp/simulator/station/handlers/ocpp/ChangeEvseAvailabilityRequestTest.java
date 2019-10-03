@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
 import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 public class ChangeEvseAvailabilityRequestTest {
 
     @Mock
-    StationState stationStateMock;
+    StationPersistenceLayer stationPersistenceLayerMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
     @InjectMocks
@@ -55,7 +55,7 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(stationPersistenceLayerMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
         // when
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
@@ -83,7 +83,7 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(stationPersistenceLayerMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(INOPERATIVE);
 
@@ -108,7 +108,7 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(stationPersistenceLayerMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
 
@@ -139,7 +139,7 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, IN_PROGRESS))
                 .build();
 
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(stationPersistenceLayerMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(INOPERATIVE);
 
@@ -160,7 +160,7 @@ public class ChangeEvseAvailabilityRequestTest {
     @DisplayName("Throw exception on invalid evseId")
     void shouldSendRejectedOnInvalidEvseId() {
 
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenThrow(new IllegalArgumentException());
+        when(stationPersistenceLayerMock.findEvse(eq(DEFAULT_EVSE_ID))).thenThrow(new IllegalArgumentException());
 
         ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
 

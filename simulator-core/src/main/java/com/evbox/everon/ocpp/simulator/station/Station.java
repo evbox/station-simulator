@@ -1,8 +1,11 @@
 package com.evbox.everon.ocpp.simulator.station;
 
+import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.simulator.station.StationState.StationStateView;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer.StationPersistenceLayerView;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
+import com.evbox.everon.ocpp.simulator.station.handlers.SystemMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.websocket.LoggingInterceptor;
@@ -31,8 +34,9 @@ public class Station {
 
     private final SimulatorConfiguration.StationConfiguration configuration;
 
-    private final StationState state;
-    private volatile StationStateView stationStateView;
+    private final StationDataHolder stationDataHolder;
+    private final StationPersistenceLayer state;
+    private volatile StationPersistenceLayerView stationPersistenceLayerView;
 
     private final WebSocketClient webSocketClient;
 
@@ -41,6 +45,7 @@ public class Station {
 
     private final SubscriptionRegistry callRegistry;
     private final StationMessageSender stationMessageSender;
+    private final StationStateFlowManager stationStateFlowManager;
 
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
 
@@ -78,7 +83,7 @@ public class Station {
         DEFAULT_HTTP_CLIENT = httpClientBuilder.build();
 
         this.configuration = stationConfiguration;
-        this.state = new StationState(configuration);
+        this.state = new StationPersistenceLayer(configuration);
 
         this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(DEFAULT_HTTP_CLIENT, configuration));
 
@@ -91,6 +96,9 @@ public class Station {
             meterValuesConfiguration = SimulatorConfiguration.MeterValuesConfiguration.builder().build();
         }
         this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
+
+        this.stationStateFlowManager = new StationStateFlowManager(new StationDataHolder(this, state, stationMessageSender, null));
+        this.stationDataHolder = new StationDataHolder(this, state, stationMessageSender, stationStateFlowManager);
     }
 
     /**
@@ -132,10 +140,11 @@ public class Station {
             }
         });
 
-        UserMessageHandler userMessageHandler = new UserMessageHandler(state, stationMessageSender);
-        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, state, stationMessageSender, configuration.getId(), callRegistry);
+        UserMessageHandler userMessageHandler = new UserMessageHandler(stationStateFlowManager);
+        SystemMessageHandler systemMessageHandler = new SystemMessageHandler(stationDataHolder);
+        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, stationDataHolder, configuration.getId(), callRegistry);
 
-        StationMessageRouter stationMessageRouter = new StationMessageRouter(serverMessageHandler, userMessageHandler);
+        StationMessageRouter stationMessageRouter = new StationMessageRouter(serverMessageHandler, userMessageHandler, systemMessageHandler);
 
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("station-consumer-" + getConfiguration().getId()).build();
 
@@ -162,10 +171,10 @@ public class Station {
     /**
      * Returns current state of the Station.
      *
-     * @return {@link StationState}
+     * @return {@link StationPersistenceLayer}
      */
-    public StationStateView getStateView() {
-        return stationStateView;
+    public StationPersistenceLayerView getStateView() {
+        return stationPersistenceLayerView;
     }
 
     /**
@@ -192,6 +201,22 @@ public class Station {
      */
     public void updateEVConnectionTimeOut(int newEVConnectionTimeOut) {
         state.setEVConnectionTimeOut(newEVConnectionTimeOut);
+    }
+
+    /**
+     * Updates station txStartPoint values
+     * @param txStartPointValues txStartPoint values to apply
+     */
+    public void updateTxStartPointValues(OptionList<TxStartStopPointVariableValues> txStartPointValues) {
+        state.setTxStartPointValues(txStartPointValues);
+    }
+
+    /**
+     * Updates station txStopPoint values
+     * @param txStopPointValues txStopPoint values to apply
+     */
+    public void updateTxStopPointValues(OptionList<TxStartStopPointVariableValues> txStopPointValues) {
+        state.setTxStopPointValues(txStopPointValues);
     }
 
     /**
@@ -228,7 +253,7 @@ public class Station {
      * Refresh state view.
      */
     void refreshStateView() {
-        this.stationStateView = state.createView();
+        this.stationPersistenceLayerView = state.createView();
     }
 
 }

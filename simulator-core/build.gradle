@@ -34,6 +34,8 @@ lombok {
 }
 
 dependencies {
+    compile project(":payload:ocpp-data-types")
+
     compile 'io.everon:ocpp-payload:2.0.0'
 
     compile 'info.picocli:picocli:3.9.2'

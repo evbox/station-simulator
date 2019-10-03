@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
@@ -37,7 +37,7 @@ public class ChangeStationAvailabilityTest {
 
 
     @Mock
-    StationState stationStateMock;
+    StationPersistenceLayer stationPersistenceLayerMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
     @InjectMocks
@@ -59,7 +59,7 @@ public class ChangeStationAvailabilityTest {
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
-        when(stationStateMock.getEvses()).thenReturn(Collections.singletonList(evse));
+        when(stationPersistenceLayerMock.getEvses()).thenReturn(Collections.singletonList(evse));
 
         // when
         availabilityManager.changeStationAvailability(DEFAULT_MESSAGE_ID, EvseStatus.AVAILABLE);
@@ -86,7 +86,7 @@ public class ChangeStationAvailabilityTest {
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
-        when(stationStateMock.getEvses()).thenReturn(Collections.singletonList(evse));
+        when(stationPersistenceLayerMock.getEvses()).thenReturn(Collections.singletonList(evse));
 
         // when
         availabilityManager.changeStationAvailability(DEFAULT_MESSAGE_ID, UNAVAILABLE);
@@ -120,7 +120,7 @@ public class ChangeStationAvailabilityTest {
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
-        when(stationStateMock.getEvses()).thenReturn(Arrays.asList(evse1, evse2));
+        when(stationPersistenceLayerMock.getEvses()).thenReturn(Arrays.asList(evse1, evse2));
 
         // when
         availabilityManager.changeStationAvailability(DEFAULT_MESSAGE_ID, UNAVAILABLE);
@@ -155,7 +155,7 @@ public class ChangeStationAvailabilityTest {
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
-        when(stationStateMock.getEvses()).thenReturn(Arrays.asList(evse1, evse2));
+        when(stationPersistenceLayerMock.getEvses()).thenReturn(Arrays.asList(evse1, evse2));
 
         // when
         availabilityManager.changeStationAvailability(DEFAULT_MESSAGE_ID, UNAVAILABLE);
@@ -173,7 +173,7 @@ public class ChangeStationAvailabilityTest {
     @DisplayName("Response should be send with REJECTED status when no EVSEs are present")
     void shouldSendRejectedStatus() {
         // given
-        when(stationStateMock.getEvses()).thenReturn(Collections.EMPTY_LIST);
+        when(stationPersistenceLayerMock.getEvses()).thenReturn(Collections.EMPTY_LIST);
 
         // when
         availabilityManager.changeStationAvailability(DEFAULT_MESSAGE_ID, UNAVAILABLE);

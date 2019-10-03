@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component.evse;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
@@ -52,7 +52,7 @@ class AvailabilityStateVariableAccessorTest {
     @Mock(lenient = true)
     Station stationMock;
     @Mock(lenient = true)
-    StationState stationStateMock;
+    StationPersistenceLayer stationPersistenceLayerMock;
     @SuppressWarnings("unused")
     @Mock
     Evse evseMock;
@@ -115,8 +115,8 @@ class AvailabilityStateVariableAccessorTest {
     }
 
     private void initEvseMock() {
-        given(stationStateMock.hasEvse(eq(EVSE_ID))).willReturn(true);
-        given(stationStateMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
+        given(stationPersistenceLayerMock.hasEvse(eq(EVSE_ID))).willReturn(true);
+        given(stationPersistenceLayerMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
     }
 
     static AttributePath.AttributePathBuilder attributePathBuilder(int evseId) {

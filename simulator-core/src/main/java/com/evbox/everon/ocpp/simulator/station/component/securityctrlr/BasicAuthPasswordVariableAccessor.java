@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.securityctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -40,8 +40,8 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::setActualValue)
             .build();
 
-    public BasicAuthPasswordVariableAccessor(Station station, StationState stationState) {
-        super(station, stationState);
+    public BasicAuthPasswordVariableAccessor(Station station, StationPersistenceLayer stationPersistenceLayer) {
+        super(station, stationPersistenceLayer);
     }
 
     @Override

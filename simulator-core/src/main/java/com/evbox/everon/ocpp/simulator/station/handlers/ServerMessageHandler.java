@@ -2,8 +2,9 @@ package com.evbox.everon.ocpp.simulator.station.handlers;
 
 import com.evbox.everon.ocpp.simulator.message.*;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationDataHolder;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
 import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
@@ -41,25 +42,26 @@ public class ServerMessageHandler implements MessageHandler<String> {
      * Create an instance.
      *
      * @param station reference to station which accepts the requests
-     * @param stationState state of the station
-     * @param stationMessageSender event sender of the station
+     * @param stationDataHolder contains reference to station's managers
      * @param stationId station identity
      * @param subscriptionRegistry station message type registry
      */
-    public ServerMessageHandler(Station station, StationState stationState, StationMessageSender stationMessageSender, String stationId, SubscriptionRegistry subscriptionRegistry) {
+    public ServerMessageHandler(Station station, StationDataHolder stationDataHolder, String stationId, SubscriptionRegistry subscriptionRegistry) {
 
-        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station, stationState);
+        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station, stationDataHolder.getStationPersistenceLayer());
         this.stationId = stationId;
         this.subscriptionRegistry = subscriptionRegistry;
-        this.stationMessageSender = stationMessageSender;
+        this.stationMessageSender = stationDataHolder.getStationMessageSender();
+
+        StationPersistenceLayer stationPersistenceLayer = stationDataHolder.getStationPersistenceLayer();
         this.requestHandlers = ImmutableMap.<Class, OcppRequestHandler>builder()
                 .put(GetVariablesRequest.class, new GetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
-                .put(ResetRequest.class, new ResetRequestHandler(stationState, stationMessageSender))
-                .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationState, stationMessageSender)))
+                .put(ResetRequest.class, new ResetRequestHandler(stationPersistenceLayer, stationMessageSender))
+                .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationPersistenceLayer, stationMessageSender)))
                 .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(Clock.systemUTC(), stationComponentsHolder, stationMessageSender))
-                .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationMessageSender, stationState))
-                .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationMessageSender, stationState))
+                .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationDataHolder))
+                .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationDataHolder))
                 .put(SetChargingProfileRequest.class, new SetChargingProfileRequestHandler(stationMessageSender))
                 .build();
     }

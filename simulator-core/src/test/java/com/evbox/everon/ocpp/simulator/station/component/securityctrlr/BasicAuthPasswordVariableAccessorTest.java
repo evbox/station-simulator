@@ -5,7 +5,7 @@ import com.evbox.everon.ocpp.common.CiString.CiString1000;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.StationConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
@@ -54,7 +54,7 @@ public class BasicAuthPasswordVariableAccessorTest {
 
     @SuppressWarnings("unused")
     @Mock
-    StationState stationStateMock;
+    StationPersistenceLayer stationPersistenceLayerMock;
 
     @InjectMocks
     BasicAuthPasswordVariableAccessor basicAuthPasswordVariableAccessor;

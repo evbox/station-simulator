@@ -7,7 +7,7 @@ import com.evbox.everon.ocpp.mock.csms.exchange.StatusNotification;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
-import com.evbox.everon.ocpp.simulator.station.actions.Plug;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
 import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.station.*;

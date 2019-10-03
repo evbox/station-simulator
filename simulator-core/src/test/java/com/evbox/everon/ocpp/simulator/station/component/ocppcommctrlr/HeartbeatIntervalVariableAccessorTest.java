@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
@@ -39,7 +39,7 @@ class HeartbeatIntervalVariableAccessorTest {
     @Mock(lenient = true)
     Station stationMock;
     @Mock(lenient = true)
-    StationState stationStateMock;
+    StationPersistenceLayer stationPersistenceLayerMock;
 
     @InjectMocks
     HeartbeatIntervalVariableAccessor variableAccessor;
@@ -109,7 +109,7 @@ class HeartbeatIntervalVariableAccessorTest {
     }
 
     private void initStationMockHeartbeat() {
-        given(stationStateMock.getHeartbeatInterval()).willReturn(DEFAULT_HEARTBEAT_INTERVAL);
+        given(stationPersistenceLayerMock.getHeartbeatInterval()).willReturn(DEFAULT_HEARTBEAT_INTERVAL);
     }
 
     static AttributePath.AttributePathBuilder attributePathBuilder() {

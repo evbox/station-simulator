@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.google.common.collect.ImmutableList;
 
@@ -12,9 +12,11 @@ public class TxCtrlrComponent extends StationComponent {
 
     public static final String NAME = "TxCtrlr";
 
-    public TxCtrlrComponent(Station station, StationState stationState) {
+    public TxCtrlrComponent(Station station, StationPersistenceLayer stationPersistenceLayer) {
         super(ImmutableList.of(
-                new EVConnectionTimeOutVariableAccessor(station, stationState)
+                new EVConnectionTimeOutVariableAccessor(station, stationPersistenceLayer),
+                new TxStartPointVariableAccessor(station, stationPersistenceLayer),
+                new TxStopPointVariableAccessor(station, stationPersistenceLayer)
         ));
     }
 
