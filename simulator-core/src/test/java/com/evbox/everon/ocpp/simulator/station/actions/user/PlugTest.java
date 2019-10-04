@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.actions.user;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 public class PlugTest {
 
     @Mock
-    StationPersistenceLayer stationPersistenceLayerMock;
+    StationStore stationStoreMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
     @Mock
@@ -49,14 +49,14 @@ public class PlugTest {
     @BeforeEach
     void setUp() {
         this.plug = new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
-        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationPersistenceLayerMock, stationMessageSenderMock);
+        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationStoreMock, stationMessageSenderMock);
         this.stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
     }
 
     @Test
     void shouldThrowExceptionOnIllegalState() {
 
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.LOCKED);
 
@@ -68,7 +68,7 @@ public class PlugTest {
     void verifyTransactionEventUpdate() {
 
         // given
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
@@ -94,8 +94,8 @@ public class PlugTest {
     void verifyTransactionEventStart() {
 
         // given
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
-        when(stationPersistenceLayerMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.EV_CONNECTED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.EV_CONNECTED)));
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 

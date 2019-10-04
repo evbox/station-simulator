@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.mock.factory.OcppMessageFactory;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
@@ -33,7 +33,7 @@ public class ResetRequestHandlerTest {
     @Mock
     StationMessageSender stationMessageSender;
     @Mock
-    StationPersistenceLayer stationPersistenceLayer;
+    StationStore stationStore;
 
     @InjectMocks
     ResetRequestHandler resetRequestHandler;
@@ -66,12 +66,12 @@ public class ResetRequestHandlerTest {
                 .withType(ResetRequest.Type.IMMEDIATE)
                 .build();
 
-        when(stationPersistenceLayer.getEvseIds()).thenReturn(Collections.singletonList(1));
-        when(stationPersistenceLayer.hasOngoingTransaction(anyInt())).thenReturn(true);
+        when(stationStore.getEvseIds()).thenReturn(Collections.singletonList(1));
+        when(stationStore.hasOngoingTransaction(anyInt())).thenReturn(true);
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        verify(stationPersistenceLayer).stopCharging(anyInt());
+        verify(stationStore).stopCharging(anyInt());
         verify(stationMessageSender).sendTransactionEventEndedAndSubscribe(anyInt(), anyInt(),
                 any(TransactionEventRequest.TriggerReason.class), any(TransactionData.StoppedReason.class), any(Subscriber.class));
 
@@ -83,13 +83,13 @@ public class ResetRequestHandlerTest {
                 .withType(ResetRequest.Type.IMMEDIATE)
                 .build();
 
-        when(stationPersistenceLayer.getEvseIds()).thenReturn(Collections.singletonList(1));
-        when(stationPersistenceLayer.hasOngoingTransaction(anyInt())).thenReturn(false);
+        when(stationStore.getEvseIds()).thenReturn(Collections.singletonList(1));
+        when(stationStore.hasOngoingTransaction(anyInt())).thenReturn(false);
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        verify(stationPersistenceLayer).clearTokens();
-        verify(stationPersistenceLayer).clearTransactions();
+        verify(stationStore).clearTokens();
+        verify(stationStore).clearTransactions();
         verify(stationMessageSender, times(3)).sendMessage(any(WebSocketClientInboxMessage.class));
         verify(stationMessageSender).sendBootNotification(any(BootNotificationRequest.Reason.class));
 

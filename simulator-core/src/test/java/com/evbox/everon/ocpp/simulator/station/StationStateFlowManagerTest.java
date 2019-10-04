@@ -27,7 +27,7 @@ class StationStateFlowManagerTest {
     Evse evseMock;
 
     @Mock
-    StationPersistenceLayer stationPersistenceLayerMock;
+    StationStore stationStoreMock;
 
     @Mock
     StationMessageSender stationMessageSenderMock;
@@ -37,13 +37,13 @@ class StationStateFlowManagerTest {
     @BeforeEach
     void setUp() {
 
-        this.stationStateFlowManager = new StationStateFlowManager(null, stationPersistenceLayerMock, stationMessageSenderMock);
+        this.stationStateFlowManager = new StationStateFlowManager(null, stationStoreMock, stationMessageSenderMock);
         checkStateIs(AvailableState.NAME);
     }
 
     @Test
     void verifyFullStateFlowPlugThenAuthorize() {
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
         stationStateFlowManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
@@ -61,7 +61,7 @@ class StationStateFlowManagerTest {
 
     @Test
     void verifyFullStateFlowAuthorizeThenPlug() {
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
         stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
@@ -79,7 +79,7 @@ class StationStateFlowManagerTest {
 
     @Test
     void verifyStopChargingAndRestart() {
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
         stationStateFlowManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
@@ -116,7 +116,7 @@ class StationStateFlowManagerTest {
 
     @Test
     void verifyPlugAndUnplug() {
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
         stationStateFlowManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);

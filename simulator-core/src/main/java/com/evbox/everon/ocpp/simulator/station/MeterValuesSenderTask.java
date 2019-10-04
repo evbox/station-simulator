@@ -16,15 +16,15 @@ import java.util.Map;
 @Slf4j
 public class MeterValuesSenderTask implements Runnable {
 
-    private final StationPersistenceLayer stationPersistenceLayer;
+    private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
 
     private long sendMeterValuesIntervalSec;
     private long powerIncreasedPerInterval;
     private Map<Integer, LocalDateTime> timeOfLastMeterValuePerEVSE;
 
-    public MeterValuesSenderTask(StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender, long sendMeterValuesIntervalSec, long consumptionWattHour) {
-        this.stationPersistenceLayer = stationPersistenceLayer;
+    public MeterValuesSenderTask(StationStore stationStore, StationMessageSender stationMessageSender, long sendMeterValuesIntervalSec, long consumptionWattHour) {
+        this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
         this.sendMeterValuesIntervalSec = sendMeterValuesIntervalSec;
         this.timeOfLastMeterValuePerEVSE = new HashMap<>();
@@ -35,8 +35,8 @@ public class MeterValuesSenderTask implements Runnable {
     public void run() {
         try {
             LocalDateTime now = LocalDateTime.now();
-            for (Evse evse : stationPersistenceLayer.getEvses()) {
-                if (shouldSendMeterValue(now, evse.getId(), stationPersistenceLayer.createView())) {
+            for (Evse evse : stationStore.getEvses()) {
+                if (shouldSendMeterValue(now, evse.getId(), stationStore.createView())) {
                     long powerUsed = evse.incrementPowerConsumed(powerIncreasedPerInterval);
                     stationMessageSender.sendTransactionEventUpdate(evse.getId(), null, TransactionEventRequest.TriggerReason.METER_VALUE_PERIODIC, TransactionData.ChargingState.CHARGING, powerUsed);
                     timeOfLastMeterValuePerEVSE.put(evse.getId(), now);
@@ -47,8 +47,8 @@ public class MeterValuesSenderTask implements Runnable {
         }
     }
 
-    private boolean shouldSendMeterValue(LocalDateTime now, int evseId, StationPersistenceLayer.StationPersistenceLayerView stationPersistenceLayerView) {
+    private boolean shouldSendMeterValue(LocalDateTime now, int evseId, StationStore.StationStoreView stationStoreView) {
         LocalDateTime timeToSendMeterValues = timeOfLastMeterValuePerEVSE.getOrDefault(evseId, LocalDateTime.MIN).plus(sendMeterValuesIntervalSec, ChronoUnit.SECONDS);
-        return sendMeterValuesIntervalSec > 0 && stationPersistenceLayerView.isCharging(evseId) && timeToSendMeterValues.isBefore(now);
+        return sendMeterValuesIntervalSec > 0 && stationStoreView.isCharging(evseId) && timeToSendMeterValues.isBefore(now);
     }
 }

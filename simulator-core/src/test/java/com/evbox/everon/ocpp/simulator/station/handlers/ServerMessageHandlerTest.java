@@ -6,7 +6,7 @@ import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallError;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
 import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
 public class ServerMessageHandlerTest {
 
     @Mock
-    StationPersistenceLayer stationPersistenceLayerMock;
+    StationStore stationStoreMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
     @Mock
@@ -63,7 +63,7 @@ public class ServerMessageHandlerTest {
 
     @BeforeEach
     void setUp() {
-        serverMessageHandler = new ServerMessageHandler(stationMock, stationPersistenceLayerMock, stationMessageSenderMock, null, STATION_ID, subscriptionRegistryMock);
+        serverMessageHandler = new ServerMessageHandler(stationMock, stationStoreMock, stationMessageSenderMock, null, STATION_ID, subscriptionRegistryMock);
 
         Map<Class, OcppRequestHandler> requestHandlers = ImmutableMap.<Class, OcppRequestHandler>builder()
                 .put(GetVariablesRequest.class, getVariablesRequestHandlerMock)

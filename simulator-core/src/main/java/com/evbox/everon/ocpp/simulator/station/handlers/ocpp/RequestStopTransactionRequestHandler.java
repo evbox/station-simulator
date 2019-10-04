@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionRequest;
@@ -16,12 +16,12 @@ import java.util.Optional;
 @Slf4j
 public class RequestStopTransactionRequestHandler implements OcppRequestHandler<RequestStopTransactionRequest> {
 
-    private final StationPersistenceLayer stationPersistenceLayer;
+    private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
     private final StationStateFlowManager stationStateFlowManager;
 
-    public RequestStopTransactionRequestHandler(StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
-        this.stationPersistenceLayer = stationPersistenceLayer;
+    public RequestStopTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
+        this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
         this.stationStateFlowManager = stationStateFlowManager;
     }
@@ -36,7 +36,7 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
     public void handle(String callId, RequestStopTransactionRequest request) {
 
         String transactionId = request.getTransactionId().toString();
-        Optional<Evse> evse = stationPersistenceLayer.tryFindEvseByTransactionId(transactionId);
+        Optional<Evse> evse = stationStore.tryFindEvseByTransactionId(transactionId);
         if (evse.isPresent()) {
             stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.ACCEPTED));
             stationStateFlowManager.remoteStop(evse.get().getId());

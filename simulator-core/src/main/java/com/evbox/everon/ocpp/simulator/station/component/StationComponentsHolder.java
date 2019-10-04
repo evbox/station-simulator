@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.chargingstation.ChargingStationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComponent;
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
@@ -31,14 +31,14 @@ public class StationComponentsHolder {
      */
     private final Map<CiString.CiString50, StationComponent> components;
 
-    public StationComponentsHolder(Station station, StationPersistenceLayer stationPersistenceLayer) {
+    public StationComponentsHolder(Station station, StationStore stationStore) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
-                .add(new OCPPCommCtrlrComponent(station, stationPersistenceLayer))
-                .add(new ChargingStationComponent(station, stationPersistenceLayer))
-                .add(new EVSEComponent(station, stationPersistenceLayer))
-                .add(new ConnectorComponent(station, stationPersistenceLayer))
-                .add(new SecurityCtrlrComponent(station, stationPersistenceLayer))
-                .add(new TxCtrlrComponent(station, stationPersistenceLayer))
+                .add(new OCPPCommCtrlrComponent(station, stationStore))
+                .add(new ChargingStationComponent(station, stationStore))
+                .add(new EVSEComponent(station, stationStore))
+                .add(new ConnectorComponent(station, stationStore))
+                .add(new SecurityCtrlrComponent(station, stationStore))
+                .add(new TxCtrlrComponent(station, stationStore))
                 .build();
 
         components = ImmutableMap.copyOf(componentsList.stream().collect(

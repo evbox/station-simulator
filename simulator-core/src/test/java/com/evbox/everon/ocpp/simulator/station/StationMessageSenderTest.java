@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 class StationMessageSenderTest {
 
     @Mock
-    StationPersistenceLayer stationPersistenceLayerMock;
+    StationStore stationStoreMock;
     @Mock
     SubscriptionRegistry subscriptionRegistryMock;
     @Mock
@@ -54,7 +54,7 @@ class StationMessageSenderTest {
     @BeforeEach
     void setUp() {
         when(webSocketClientMock.getInbox()).thenReturn(queue);
-        this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationPersistenceLayerMock, webSocketClientMock);
+        this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStoreMock, webSocketClientMock);
     }
 
     @Test
@@ -183,9 +183,9 @@ class StationMessageSenderTest {
     @Test
     void verifyStatusNotification() throws InterruptedException {
 
-        when(stationPersistenceLayerMock.getCurrentTime()).thenReturn(new Date().toInstant());
+        when(stationStoreMock.getCurrentTime()).thenReturn(new Date().toInstant());
         Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evse);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evse);
         when(evse.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
@@ -251,9 +251,9 @@ class StationMessageSenderTest {
                 .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS))
                 .withId(DEFAULT_EVSE_ID)
                 .build();
-        when(stationPersistenceLayerMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
-        when(stationPersistenceLayerMock.getCurrentTime()).thenReturn(new Date().toInstant());
+        when(stationStoreMock.getCurrentTime()).thenReturn(new Date().toInstant());
     }
 
 

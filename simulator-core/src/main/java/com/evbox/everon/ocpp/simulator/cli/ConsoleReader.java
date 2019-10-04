@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.joining;
 public class ConsoleReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleReader.class);
 
-    private static final String SHOW_STATION_PERSISTENCE_LAYER_CMD = "stat";
+    private static final String SHOW_STATION_STORE_CMD = "stat";
 
     private int selectedStation = 0;
 
@@ -63,7 +63,7 @@ public class ConsoleReader {
         String commandName = commandArgs.get(0);
 
         boolean selectStationCommand = commandArgs.size() == 1 && StringUtils.isNumeric(commandName);
-        boolean showStationPersistenceLayerCommand = commandArgs.size() == 1 && SHOW_STATION_PERSISTENCE_LAYER_CMD.equalsIgnoreCase(commandName);
+        boolean showStationStoreCommand = commandArgs.size() == 1 && SHOW_STATION_STORE_CMD.equalsIgnoreCase(commandName);
 
         if (selectStationCommand) {
             selectNewStation(Integer.valueOf(commandName));
@@ -74,12 +74,12 @@ public class ConsoleReader {
 
             station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.USER_ACTION, userMessage));
 
-        } else if (showStationPersistenceLayerCommand) {
-            showStationPersistenceLayer();
+        } else if (showStationStoreCommand) {
+            showStationStoreLayer();
         }
     }
 
-    private void showStationPersistenceLayer() {
+    private void showStationStoreLayer() {
         System.out.println(stations.get(selectedStation).getStateView());
     }
 

@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
 import com.evbox.everon.ocpp.simulator.station.evse.ChargingStopReason;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
@@ -39,7 +39,7 @@ public class TxStopPointTest {
     Evse evseMock;
 
     @Mock
-    StationPersistenceLayer stationPersistenceLayerMock;
+    StationStore stationStoreMock;
 
     @Mock
     StationMessageSender stationMessageSenderMock;
@@ -59,7 +59,7 @@ public class TxStopPointTest {
 
     @BeforeEach
     void setUp() {
-        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationPersistenceLayerMock, stationMessageSenderMock);
+        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationStoreMock, stationMessageSenderMock);
         stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new ChargingState());
     }
 
@@ -68,8 +68,8 @@ public class TxStopPointTest {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
@@ -84,8 +84,8 @@ public class TxStopPointTest {
         stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new StoppedState());
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
@@ -101,8 +101,8 @@ public class TxStopPointTest {
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
@@ -116,8 +116,8 @@ public class TxStopPointTest {
     void verifyStopOnlyOnEVConnectedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
@@ -133,8 +133,8 @@ public class TxStopPointTest {
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
@@ -148,8 +148,8 @@ public class TxStopPointTest {
     void verifyStopOnlyOnPowerPathClosedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED )));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED )));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
@@ -163,8 +163,8 @@ public class TxStopPointTest {
     void verifyStopOnlyOnPowerPathClosedAuthUnplugAction() {
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
@@ -188,8 +188,8 @@ public class TxStopPointTest {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
@@ -204,8 +204,8 @@ public class TxStopPointTest {
         stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new StoppedState());
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
@@ -219,8 +219,8 @@ public class TxStopPointTest {
     void verifyStartOnAuthorizedAndPowerPathClosedAuthUnplugAction() {
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
@@ -245,8 +245,8 @@ public class TxStopPointTest {
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
@@ -260,8 +260,8 @@ public class TxStopPointTest {
     void verifyStopOnAuthorizedAndEVConnectedAndPowerPathClosedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(stationPersistenceLayerMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stationStateFlowManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());

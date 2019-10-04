@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.states;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
@@ -37,14 +37,14 @@ public class StoppedState implements StationState {
 
     @Override
     public void onUnplug(int evseId, int connectorId) {
-        StationPersistenceLayer stationPersistenceLayer = stationStateFlowManager.getStationPersistenceLayer();
+        StationStore stationStore = stationStateFlowManager.getStationStore();
         StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
 
-        Evse evse = stationPersistenceLayer.findEvse(evseId);
+        Evse evse = stationStore.findEvse(evseId);
         evse.unplug(connectorId);
 
         stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (request, response) -> {
-            OptionList<TxStartStopPointVariableValues> stopPoints = stationPersistenceLayer.getTxStopPointValues();
+            OptionList<TxStartStopPointVariableValues> stopPoints = stationStore.getTxStopPointValues();
             if (!stopPoints.contains(TxStartStopPointVariableValues.AUTHORIZED) || stopPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                 evse.stopTransaction();
                 evse.clearToken();
@@ -58,9 +58,9 @@ public class StoppedState implements StationState {
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationPersistenceLayer stationPersistenceLayer = stationStateFlowManager.getStationPersistenceLayer();
+        StationStore stationStore = stationStateFlowManager.getStationStore();
         StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
-        Evse evse = stationPersistenceLayer.findEvse(evseId);
+        Evse evse = stationStore.findEvse(evseId);
 
         log.info("in authorizeToken {}", tokenId);
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {

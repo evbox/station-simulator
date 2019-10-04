@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer.StationPersistenceLayerView;
+import com.evbox.everon.ocpp.simulator.station.StationStore.StationStoreView;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.SystemMessageHandler;
@@ -34,8 +34,8 @@ public class Station {
 
     private final SimulatorConfiguration.StationConfiguration configuration;
 
-    private final StationPersistenceLayer state;
-    private volatile StationPersistenceLayerView stationPersistenceLayerView;
+    private final StationStore state;
+    private volatile StationStoreView stationStoreView;
 
     private final WebSocketClient webSocketClient;
 
@@ -82,7 +82,7 @@ public class Station {
         DEFAULT_HTTP_CLIENT = httpClientBuilder.build();
 
         this.configuration = stationConfiguration;
-        this.state = new StationPersistenceLayer(configuration);
+        this.state = new StationStore(configuration);
 
         this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(DEFAULT_HTTP_CLIENT, configuration));
 
@@ -169,10 +169,10 @@ public class Station {
     /**
      * Returns current state of the Station.
      *
-     * @return {@link StationPersistenceLayer}
+     * @return {@link StationStore}
      */
-    public StationPersistenceLayerView getStateView() {
-        return stationPersistenceLayerView;
+    public StationStoreView getStateView() {
+        return stationStoreView;
     }
 
     /**
@@ -251,7 +251,7 @@ public class Station {
      * Refresh state view.
      */
     void refreshStateView() {
-        this.stationPersistenceLayerView = state.createView();
+        this.stationStoreView = state.createView();
     }
 
 }

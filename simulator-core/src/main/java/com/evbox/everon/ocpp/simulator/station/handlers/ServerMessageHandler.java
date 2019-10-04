@@ -39,15 +39,15 @@ public class ServerMessageHandler implements MessageHandler<String> {
      * Create an instance.
      *
      * @param station reference to station which accepts the requests
-     * @param stationPersistenceLayer store station data
+     * @param stationStore store station data
      * @param stationMessageSender station message sender
      * @param stationStateFlowManager states flow manager for evses
      * @param stationId station identity
      * @param subscriptionRegistry station message type registry
      */
-    public ServerMessageHandler(Station station, StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager, String stationId, SubscriptionRegistry subscriptionRegistry) {
+    public ServerMessageHandler(Station station, StationStore stationStore, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager, String stationId, SubscriptionRegistry subscriptionRegistry) {
 
-        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station, stationPersistenceLayer);
+        StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station, stationStore);
         this.stationId = stationId;
         this.subscriptionRegistry = subscriptionRegistry;
         this.stationMessageSender = stationMessageSender;
@@ -55,11 +55,11 @@ public class ServerMessageHandler implements MessageHandler<String> {
         this.requestHandlers = ImmutableMap.<Class, OcppRequestHandler>builder()
                 .put(GetVariablesRequest.class, new GetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
-                .put(ResetRequest.class, new ResetRequestHandler(stationPersistenceLayer, stationMessageSender))
-                .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationPersistenceLayer, stationMessageSender)))
+                .put(ResetRequest.class, new ResetRequestHandler(stationStore, stationMessageSender))
+                .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationStore, stationMessageSender)))
                 .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(Clock.systemUTC(), stationComponentsHolder, stationMessageSender))
-                .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationPersistenceLayer, stationMessageSender, stationStateFlowManager))
-                .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationPersistenceLayer, stationMessageSender, stationStateFlowManager))
+                .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationStore, stationMessageSender, stationStateFlowManager))
+                .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationStore, stationMessageSender, stationStateFlowManager))
                 .put(SetChargingProfileRequest.class, new SetChargingProfileRequestHandler(stationMessageSender))
                 .build();
     }

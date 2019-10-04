@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.actions.system;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.states.*;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 public class CancelRemoteStartTransactionTest {
 
     @Mock
-    StationPersistenceLayer stationPersistenceLayerMock;
+    StationStore stationStoreMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
     @Mock
@@ -35,7 +35,7 @@ public class CancelRemoteStartTransactionTest {
     @BeforeEach
     void setUp() {
         this.cancelRemoteStartTransaction = new CancelRemoteStartTransaction(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
-        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationPersistenceLayerMock, stationMessageSenderMock);
+        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationStoreMock, stationMessageSenderMock);
         this.stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
     }
 
@@ -45,9 +45,9 @@ public class CancelRemoteStartTransactionTest {
         stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new WaitingForPlugState());
 
         Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
-        when(stationPersistenceLayerMock.findEvse(anyInt())).thenReturn(evse);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evse);
 
-        cancelRemoteStartTransaction.perform(stationPersistenceLayerMock, stationMessageSenderMock, stationStateFlowManagerMock);
+        cancelRemoteStartTransaction.perform(stationStoreMock, stationMessageSenderMock, stationStateFlowManagerMock);
 
         verify(stationMessageSenderMock).sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
         verify(evse).stopTransaction();
@@ -61,7 +61,7 @@ public class CancelRemoteStartTransactionTest {
 
         stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new ChargingState());
 
-        cancelRemoteStartTransaction.perform(stationPersistenceLayerMock, stationMessageSenderMock, stationStateFlowManagerMock);
+        cancelRemoteStartTransaction.perform(stationStoreMock, stationMessageSenderMock, stationStateFlowManagerMock);
         verify(stationMessageSenderMock, times(0)).sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
 
     }

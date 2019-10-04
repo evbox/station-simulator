@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -40,8 +40,8 @@ public class TxStartPointVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::setActualValue)
             .build();
 
-    public TxStartPointVariableAccessor(Station station, StationPersistenceLayer stationPersistenceLayer) {
-        super(station, stationPersistenceLayer);
+    public TxStartPointVariableAccessor(Station station, StationStore stationStore) {
+        super(station, stationStore);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class TxStartPointVariableAccessor extends VariableAccessor {
                 .withName(new CiString.CiString50(componentName));
 
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString1000(String.valueOf(getStationPersistenceLayer().getTxStartPointValues())))
+                .withValue(new CiString.CiString1000(String.valueOf(getStationStore().getTxStartPointValues())))
                 .withPersistence(false)
                 .withConstant(false);
 
@@ -108,6 +108,6 @@ public class TxStartPointVariableAccessor extends VariableAccessor {
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeValue(new CiString.CiString1000(String.valueOf(getStationPersistenceLayer().getTxStartPointValues())));
+                .withAttributeValue(new CiString.CiString1000(String.valueOf(getStationStore().getTxStartPointValues())));
     }
 }

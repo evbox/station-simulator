@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.google.common.collect.ImmutableList;
 
@@ -12,13 +12,13 @@ public class ChargingStationComponent extends StationComponent {
 
     public static final String NAME = "ChargingStation";
 
-    public ChargingStationComponent(Station station, StationPersistenceLayer stationPersistenceLayer) {
+    public ChargingStationComponent(Station station, StationStore stationStore) {
         super(ImmutableList.of(
-                new IdentityVariableAccessor(station, stationPersistenceLayer),
-                new ManufacturerVariableAccessor(station, stationPersistenceLayer),
-                new ModelVariableAccessor(station, stationPersistenceLayer),
-                new SerialNumberVariableAccessor(station, stationPersistenceLayer),
-                new ChargeProtocolVariableAccessor(station, stationPersistenceLayer)
+                new IdentityVariableAccessor(station, stationStore),
+                new ManufacturerVariableAccessor(station, stationStore),
+                new ModelVariableAccessor(station, stationStore),
+                new SerialNumberVariableAccessor(station, stationStore),
+                new ChargeProtocolVariableAccessor(station, stationStore)
         ));
     }
 

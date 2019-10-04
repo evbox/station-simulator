@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
@@ -18,12 +18,12 @@ import java.util.Optional;
 @Slf4j
 public class RequestStartTransactionRequestHandler implements OcppRequestHandler<RequestStartTransactionRequest> {
 
-    private final StationPersistenceLayer stationPersistenceLayer;
+    private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
     private final StationStateFlowManager stationStateFlowManager;
 
-    public RequestStartTransactionRequestHandler(StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
-        this.stationPersistenceLayer = stationPersistenceLayer;
+    public RequestStartTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
+        this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
         this.stationStateFlowManager = stationStateFlowManager;
     }
@@ -38,8 +38,8 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
     public void handle(String callId, RequestStartTransactionRequest request) {
 
         Optional<Evse> optionalEvse = Optional.ofNullable(request.getEvseId())
-                                        .map(stationPersistenceLayer::tryFindEvse)
-                                        .orElseGet(stationPersistenceLayer::tryFindAvailableEvse);
+                                        .map(stationStore::tryFindEvse)
+                                        .orElseGet(stationStore::tryFindAvailableEvse);
 
         if (optionalEvse.isPresent()) {
             Evse evse = optionalEvse.get();

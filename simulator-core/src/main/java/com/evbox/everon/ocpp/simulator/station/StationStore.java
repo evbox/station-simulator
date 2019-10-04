@@ -30,7 +30,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * Represents the state of the station.
  */
 @ToString
-public class StationPersistenceLayer {
+public class StationStore {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
@@ -40,14 +40,14 @@ public class StationPersistenceLayer {
     private OptionList<TxStartStopPointVariableValues> txStopPointValues;
 
 
-    public StationPersistenceLayer(SimulatorConfiguration.StationConfiguration configuration) {
+    public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoint()));
         this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoint()));
     }
 
-    public StationPersistenceLayer(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
+    public StationStore(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
         this.clock = clock;
         this.heartbeatInterval = heartbeatInterval;
         this.evConnectionTimeOut = evConnectionTimeOut;
@@ -208,15 +208,15 @@ public class StationPersistenceLayer {
         return evseMapBuilder.build();
     }
 
-    StationPersistenceLayerView createView() {
+    StationStoreView createView() {
         List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
-        return new StationPersistenceLayerView(clock, heartbeatInterval, evConnectionTimeOut, evsesCopy);
+        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, evsesCopy);
     }
 
     @Getter
     @AllArgsConstructor
-    public class StationPersistenceLayerView {
+    public class StationStoreView {
 
         @JsonIgnore
         private final Clock clock;
@@ -284,7 +284,7 @@ public class StationPersistenceLayer {
             try {
                 return prettyJSONWriter.writeValueAsString(this);
             } catch (JsonProcessingException e) {
-                return "Error while serializing StationPersistenceLayerView: " + e.getMessage();
+                return "Error while serializing StationStoreView: " + e.getMessage();
             }
         }
     }

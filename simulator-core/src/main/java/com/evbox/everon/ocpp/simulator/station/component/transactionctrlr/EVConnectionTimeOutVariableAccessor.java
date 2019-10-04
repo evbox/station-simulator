@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -40,8 +40,8 @@ public class EVConnectionTimeOutVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::setActualValue)
             .build();
 
-    public EVConnectionTimeOutVariableAccessor(Station station, StationPersistenceLayer stationPersistenceLayer) {
-        super(station, stationPersistenceLayer);
+    public EVConnectionTimeOutVariableAccessor(Station station, StationStore stationStore) {
+        super(station, stationStore);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class EVConnectionTimeOutVariableAccessor extends VariableAccessor {
         Component component = new Component()
                 .withName(new CiString.CiString50(componentName));
 
-        int evConnectionTimeOut = getStationPersistenceLayer().getEVConnectionTimeOut();
+        int evConnectionTimeOut = getStationStore().getEVConnectionTimeOut();
         VariableAttribute variableAttribute = new VariableAttribute()
                 .withValue(new CiString.CiString1000(String.valueOf(evConnectionTimeOut)))
                 .withPersistence(false)
@@ -110,7 +110,7 @@ public class EVConnectionTimeOutVariableAccessor extends VariableAccessor {
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
-        int evConnectionTimeOut = getStationPersistenceLayer().getEVConnectionTimeOut();
+        int evConnectionTimeOut = getStationStore().getEVConnectionTimeOut();
 
         return new GetVariableResult()
                 .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED)

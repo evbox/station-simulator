@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -40,8 +40,8 @@ public class TxStopPointVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::setActualValue)
             .build();
 
-    public TxStopPointVariableAccessor(Station station, StationPersistenceLayer stationPersistenceLayer) {
-        super(station, stationPersistenceLayer);
+    public TxStopPointVariableAccessor(Station station, StationStore stationStore) {
+        super(station, stationStore);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class TxStopPointVariableAccessor extends VariableAccessor {
                 .withName(new CiString.CiString50(componentName));
 
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString1000(String.valueOf(getStationPersistenceLayer().getTxStopPointValues())))
+                .withValue(new CiString.CiString1000(String.valueOf(getStationStore().getTxStopPointValues())))
                 .withPersistence(false)
                 .withConstant(false);
 
@@ -107,6 +107,6 @@ public class TxStopPointVariableAccessor extends VariableAccessor {
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeValue(new CiString.CiString1000(String.valueOf(getStationPersistenceLayer().getTxStopPointValues())));
+                .withAttributeValue(new CiString.CiString1000(String.valueOf(getStationStore().getTxStopPointValues())));
     }
 }

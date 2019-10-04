@@ -42,8 +42,8 @@ public class AvailableState implements StationState {
 
     @Override
     public void onPlug(int evseId, int connectorId) {
-        StationPersistenceLayer stationPersistenceLayer = stationStateFlowManager.getStationPersistenceLayer();
-        Evse evse = stationStateFlowManager.getStationPersistenceLayer().findEvse(evseId);
+        StationStore stationStore = stationStateFlowManager.getStationStore();
+        Evse evse = stationStateFlowManager.getStationStore().findEvse(evseId);
 
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %d %d", evseId, connectorId));
@@ -54,7 +54,7 @@ public class AvailableState implements StationState {
         evse.plug(connectorId);
         stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
 
-            OptionList<TxStartStopPointVariableValues> startPoints = stationPersistenceLayer.getTxStartPointValues();
+            OptionList<TxStartStopPointVariableValues> startPoints = stationStore.getTxStartPointValues();
             if (startPoints.contains(TxStartStopPointVariableValues.EV_CONNECTED) && !startPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                 evse.createTransaction(transactionId);
@@ -69,17 +69,17 @@ public class AvailableState implements StationState {
     @Override
     public void onAuthorize(int evseId, String tokenId) {
         StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
-        StationPersistenceLayer stationPersistenceLayer = stationStateFlowManager.getStationPersistenceLayer();
+        StationStore stationStore = stationStateFlowManager.getStationStore();
 
         log.info("in authorizeToken {}", tokenId);
 
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
             if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
-                List<Evse> authorizedEvses = hasEvses(response) ? getEvseList(response, stationPersistenceLayer) : singletonList(stationPersistenceLayer.getDefaultEvse());
+                List<Evse> authorizedEvses = hasEvses(response) ? getEvseList(response, stationStore) : singletonList(stationStore.getDefaultEvse());
 
                 authorizedEvses.forEach(evse -> evse.setToken(tokenId));
 
-                OptionList<TxStartStopPointVariableValues> startPoints = stationPersistenceLayer.getTxStartPointValues();
+                OptionList<TxStartStopPointVariableValues> startPoints = stationStore.getTxStartPointValues();
                 if (startPoints.contains(TxStartStopPointVariableValues.AUTHORIZED) && !startPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                     String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                     authorizedEvses.forEach(evse -> evse.createTransaction(transactionId));
@@ -95,10 +95,10 @@ public class AvailableState implements StationState {
     @Override
     public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
 
-        StationPersistenceLayer stationPersistenceLayer = stationStateFlowManager.getStationPersistenceLayer();
+        StationStore stationStore = stationStateFlowManager.getStationStore();
         StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
 
-        Evse evse = stationPersistenceLayer.findEvse(evseId);
+        Evse evse = stationStore.findEvse(evseId);
 
         String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
         evse.createTransaction(transactionId);
@@ -111,13 +111,13 @@ public class AvailableState implements StationState {
         Executors.newSingleThreadScheduledExecutor().schedule(() -> {
             Station station = stationStateFlowManager.getStation();
             station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.SYSTEM_ACTION, new CancelRemoteStartTransaction(evseId, connector.getId())));
-        }, stationPersistenceLayer.getEVConnectionTimeOut(), TimeUnit.SECONDS);
+        }, stationStore.getEVConnectionTimeOut(), TimeUnit.SECONDS);
 
         stationStateFlowManager.setStateForEvse(evseId, new WaitingForPlugState());
     }
 
-    private List<Evse> getEvseList(AuthorizeResponse response, StationPersistenceLayer stationPersistenceLayer) {
-        return response.getEvseId().stream().map(stationPersistenceLayer::findEvse).collect(toList());
+    private List<Evse> getEvseList(AuthorizeResponse response, StationStore stationStore) {
+        return response.getEvseId().stream().map(stationStore::findEvse).collect(toList());
     }
 
     private boolean hasEvses(AuthorizeResponse response) {
