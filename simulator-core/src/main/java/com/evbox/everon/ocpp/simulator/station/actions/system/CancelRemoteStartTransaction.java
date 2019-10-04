@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.actions.system;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import com.evbox.everon.ocpp.simulator.station.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
@@ -27,15 +27,15 @@ public class CancelRemoteStartTransaction implements SystemMessage {
      *
      * @param stationStore stores data of station
      * @param stationMessageSender station message sender
-     * @param stationStateFlowManager manage state flow for evse
+     * @param evseStateManager manage state flow for evse
      */
     @Override
-    public void perform(StationStore stationStore, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
-        if (WaitingForPlugState.NAME.equals(stationStateFlowManager.getStateForEvse(evseId).getStateName())) {
+    public void perform(StationStore stationStore, StationMessageSender stationMessageSender, EvseStateManager evseStateManager) {
+        if (WaitingForPlugState.NAME.equals(evseStateManager.getStateForEvse(evseId).getStateName())) {
             stationMessageSender.sendStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
             stationStore.findEvse(evseId).stopTransaction();
             stationMessageSender.sendTransactionEventEnded(evseId, connectorId, null, TransactionData.StoppedReason.TIMEOUT);
-            stationStateFlowManager.setStateForEvse(evseId, new AvailableState());
+            evseStateManager.setStateForEvse(evseId, new AvailableState());
         }
     }
 }

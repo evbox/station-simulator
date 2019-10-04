@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions.user;
 
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,10 +17,10 @@ public class Unplug implements UserMessage {
     /**
      * Perform unplug logic.
      *
-     * @param stationStateFlowManager manges state of the evse for station
+     * @param evseStateManager manges state of the evse for station
      */
     @Override
-    public void perform(StationStateFlowManager stationStateFlowManager) {
-        stationStateFlowManager.cableUnplugged(evseId, connectorId);
+    public void perform(EvseStateManager evseStateManager) {
+        evseStateManager.cableUnplugged(evseId, connectorId);
     }
 }

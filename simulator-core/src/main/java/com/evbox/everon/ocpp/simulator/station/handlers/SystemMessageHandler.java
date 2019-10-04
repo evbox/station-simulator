@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import com.evbox.everon.ocpp.simulator.station.actions.system.SystemMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,19 +14,19 @@ public class SystemMessageHandler implements MessageHandler<SystemMessage> {
 
     private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
-    private final StationStateFlowManager stationStateFlowManager;
+    private final EvseStateManager evseStateManager;
 
     /**
      * Create an instance.
      *
      * @param stationStore stores data of station
      * @param stationMessageSender station message sender
-     * @param stationStateFlowManager manage state flow for evse
+     * @param evseStateManager manage state flow for evse
      */
-    public SystemMessageHandler(StationStore stationStore, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
+    public SystemMessageHandler(StationStore stationStore, StationMessageSender stationMessageSender, EvseStateManager evseStateManager) {
         this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
-        this.stationStateFlowManager = stationStateFlowManager;
+        this.evseStateManager = evseStateManager;
     }
 
     /**
@@ -36,7 +36,7 @@ public class SystemMessageHandler implements MessageHandler<SystemMessage> {
      */
     @Override
     public void handle(SystemMessage systemMessage) {
-        systemMessage.perform(stationStore, stationMessageSender, stationStateFlowManager);
+        systemMessage.perform(stationStore, stationMessageSender, evseStateManager);
     }
 
 }

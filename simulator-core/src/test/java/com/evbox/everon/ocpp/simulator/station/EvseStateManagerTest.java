@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StationStateFlowManagerTest {
+class EvseStateManagerTest {
 
     @Mock
     Evse evseMock;
@@ -32,12 +32,12 @@ class StationStateFlowManagerTest {
     @Mock
     StationMessageSender stationMessageSenderMock;
 
-    private StationStateFlowManager stationStateFlowManager;
+    private EvseStateManager evseStateManager;
 
     @BeforeEach
     void setUp() {
 
-        this.stationStateFlowManager = new StationStateFlowManager(null, stationStoreMock, stationMessageSenderMock);
+        this.evseStateManager = new EvseStateManager(null, stationStoreMock, stationMessageSenderMock);
         checkStateIs(AvailableState.NAME);
     }
 
@@ -46,16 +46,16 @@ class StationStateFlowManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
-        stationStateFlowManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        evseStateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(ChargingState.NAME);
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(StoppedState.NAME);
 
-        stationStateFlowManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        evseStateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(AvailableState.NAME);
     }
 
@@ -64,16 +64,16 @@ class StationStateFlowManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(WaitingForPlugState.NAME);
 
-        stationStateFlowManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        evseStateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(ChargingState.NAME);
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(StoppedState.NAME);
 
-        stationStateFlowManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        evseStateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(AvailableState.NAME);
     }
 
@@ -82,16 +82,16 @@ class StationStateFlowManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
-        stationStateFlowManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        evseStateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(ChargingState.NAME);
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(StoppedState.NAME);
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
         verify(stationMessageSenderMock, times(3)).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
@@ -107,10 +107,10 @@ class StationStateFlowManagerTest {
 
     @Test
     void verifyAuthorizeAndAuthorize() {
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(WaitingForPlugState.NAME);
 
-        stationStateFlowManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        evseStateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         checkStateIs(AvailableState.NAME);
     }
 
@@ -119,15 +119,15 @@ class StationStateFlowManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
 
-        stationStateFlowManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        evseStateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
 
-        stationStateFlowManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        evseStateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(AvailableState.NAME);
     }
 
     private void checkStateIs(String name) {
-        assertThat(stationStateFlowManager.getStateForEvse(DEFAULT_EVSE_ID).getStateName()).isEqualTo(name);
+        assertThat(evseStateManager.getStateForEvse(DEFAULT_EVSE_ID).getStateName()).isEqualTo(name);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions.user;
 
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +19,11 @@ public class Authorize implements UserMessage {
     /**
      * Perform authorisation logic.
      *
-     * @param stationStateFlowManager manges state of the evse for station
+     * @param evseStateManager manges state of the evse for station
      */
     @Override
-    public void perform(StationStateFlowManager stationStateFlowManager) {
-        stationStateFlowManager.authorized(evseId, tokenId);
+    public void perform(EvseStateManager evseStateManager) {
+        evseStateManager.authorized(evseId, tokenId);
     }
 
 }

@@ -28,11 +28,11 @@ public class AvailableState implements StationState {
 
     public static final String NAME = "AVAILABLE";
 
-    private StationStateFlowManager stationStateFlowManager;
+    private EvseStateManager evseStateManager;
 
     @Override
-    public void setStationTransactionManager(StationStateFlowManager stationTransactionManager) {
-        this.stationStateFlowManager = stationTransactionManager;
+    public void setStationTransactionManager(EvseStateManager stationTransactionManager) {
+        this.evseStateManager = stationTransactionManager;
     }
 
     @Override
@@ -42,14 +42,14 @@ public class AvailableState implements StationState {
 
     @Override
     public void onPlug(int evseId, int connectorId) {
-        StationStore stationStore = stationStateFlowManager.getStationStore();
-        Evse evse = stationStateFlowManager.getStationStore().findEvse(evseId);
+        StationStore stationStore = evseStateManager.getStationStore();
+        Evse evse = evseStateManager.getStationStore().findEvse(evseId);
 
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %d %d", evseId, connectorId));
         }
 
-        StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
+        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
 
         evse.plug(connectorId);
         stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
@@ -63,13 +63,13 @@ public class AvailableState implements StationState {
             }
         });
 
-        stationStateFlowManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
+        evseStateManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
     }
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
-        StationStore stationStore = stationStateFlowManager.getStationStore();
+        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        StationStore stationStore = evseStateManager.getStationStore();
 
         log.info("in authorizeToken {}", tokenId);
 
@@ -89,14 +89,14 @@ public class AvailableState implements StationState {
             }
         });
 
-        stationStateFlowManager.setStateForEvse(evseId, new WaitingForPlugState());
+        evseStateManager.setStateForEvse(evseId, new WaitingForPlugState());
     }
 
     @Override
     public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
 
-        StationStore stationStore = stationStateFlowManager.getStationStore();
-        StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
+        StationStore stationStore = evseStateManager.getStationStore();
+        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
 
         Evse evse = stationStore.findEvse(evseId);
 
@@ -109,11 +109,11 @@ public class AvailableState implements StationState {
         stationMessageSender.sendTransactionEventStart(evse.getId(), connector.getId(), remoteStartId, REMOTE_START);
 
         Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            Station station = stationStateFlowManager.getStation();
+            Station station = evseStateManager.getStation();
             station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.SYSTEM_ACTION, new CancelRemoteStartTransaction(evseId, connector.getId())));
         }, stationStore.getEVConnectionTimeOut(), TimeUnit.SECONDS);
 
-        stationStateFlowManager.setStateForEvse(evseId, new WaitingForPlugState());
+        evseStateManager.setStateForEvse(evseId, new WaitingForPlugState());
     }
 
     private List<Evse> getEvseList(AuthorizeResponse response, StationStore stationStore) {

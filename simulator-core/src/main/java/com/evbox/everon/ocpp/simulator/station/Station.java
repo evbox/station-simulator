@@ -44,7 +44,7 @@ public class Station {
 
     private final SubscriptionRegistry callRegistry;
     private final StationMessageSender stationMessageSender;
-    private final StationStateFlowManager stationStateFlowManager;
+    private final EvseStateManager evseStateManager;
 
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
 
@@ -96,7 +96,7 @@ public class Station {
         }
         this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
 
-        this.stationStateFlowManager = new StationStateFlowManager(this, state, stationMessageSender);
+        this.evseStateManager = new EvseStateManager(this, state, stationMessageSender);
     }
 
     /**
@@ -138,9 +138,9 @@ public class Station {
             }
         });
 
-        UserMessageHandler userMessageHandler = new UserMessageHandler(stationStateFlowManager);
-        SystemMessageHandler systemMessageHandler = new SystemMessageHandler(state, stationMessageSender, stationStateFlowManager);
-        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, state, stationMessageSender, stationStateFlowManager, configuration.getId(), callRegistry);
+        UserMessageHandler userMessageHandler = new UserMessageHandler(evseStateManager);
+        SystemMessageHandler systemMessageHandler = new SystemMessageHandler(state, stationMessageSender, evseStateManager);
+        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, state, stationMessageSender, evseStateManager, configuration.getId(), callRegistry);
 
         StationMessageRouter stationMessageRouter = new StationMessageRouter(serverMessageHandler, userMessageHandler, systemMessageHandler);
 

@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.actions.user;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
@@ -38,7 +38,7 @@ public class PlugTest {
     @Mock
     StationMessageSender stationMessageSenderMock;
     @Mock
-    StationStateFlowManager stationStateFlowManagerMock;
+    EvseStateManager evseStateManagerMock;
     @Mock
     Evse evseMock;
     @Mock
@@ -49,8 +49,8 @@ public class PlugTest {
     @BeforeEach
     void setUp() {
         this.plug = new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
-        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationStoreMock, stationMessageSenderMock);
-        this.stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
+        this.evseStateManagerMock = new EvseStateManager(null, stationStoreMock, stationMessageSenderMock);
+        this.evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class PlugTest {
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.LOCKED);
 
-        assertThrows(IllegalStateException.class, () -> plug.perform(stationStateFlowManagerMock));
+        assertThrows(IllegalStateException.class, () -> plug.perform(evseStateManagerMock));
 
     }
 
@@ -73,10 +73,10 @@ public class PlugTest {
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
-        stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new WaitingForPlugState());
+        evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new WaitingForPlugState());
 
         // when
-        plug.perform(stationStateFlowManagerMock);
+        plug.perform(evseStateManagerMock);
 
         // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
@@ -100,7 +100,7 @@ public class PlugTest {
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
         // when
-        plug.perform(stationStateFlowManagerMock);
+        plug.perform(evseStateManagerMock);
 
         // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);

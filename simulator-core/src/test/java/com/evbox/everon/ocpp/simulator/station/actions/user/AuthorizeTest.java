@@ -35,7 +35,7 @@ public class AuthorizeTest {
     @Mock
     StationMessageSender stationMessageSenderMock;
     @Mock
-    StationStateFlowManager stationStateFlowManagerMock;
+    EvseStateManager evseStateManagerMock;
     @Mock
     Evse evseMock;
 
@@ -44,8 +44,8 @@ public class AuthorizeTest {
     @BeforeEach
     void setUp() {
         this.authorize = new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID);
-        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationStoreMock, stationMessageSenderMock);
-        this.stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
+        this.evseStateManagerMock = new EvseStateManager(null, stationStoreMock, stationMessageSenderMock);
+        this.evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class AuthorizeTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        authorize.perform(stationStateFlowManagerMock);
+        authorize.perform(evseStateManagerMock);
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
@@ -74,7 +74,7 @@ public class AuthorizeTest {
     void shouldSetTransactionId() {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        authorize.perform(stationStateFlowManagerMock);
+        authorize.perform(evseStateManagerMock);
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
@@ -95,9 +95,9 @@ public class AuthorizeTest {
     @Test
     void shouldSetStateToStartCharging_WhenPlugged() {
 
-        stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new WaitingForAuthorizationState());
+        evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new WaitingForAuthorizationState());
 
-        authorize.perform(stationStateFlowManagerMock);
+        authorize.perform(evseStateManagerMock);
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
@@ -121,9 +121,9 @@ public class AuthorizeTest {
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
 
-        stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new ChargingState());
+        evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new ChargingState());
 
-        authorize.perform(stationStateFlowManagerMock);
+        authorize.perform(evseStateManagerMock);
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
@@ -145,7 +145,7 @@ public class AuthorizeTest {
     void shouldNotSetState_WhenIsNotPlugged_AndStateIsNotCharging_AndHasNoOngoingTransaction() {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        authorize.perform(stationStateFlowManagerMock);
+        authorize.perform(evseStateManagerMock);
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 

@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.states;
 
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 
 /**
@@ -10,7 +10,7 @@ public interface StationState {
 
     String getStateName();
 
-    void setStationTransactionManager(StationStateFlowManager stationTransactionManager);
+    void setStationTransactionManager(EvseStateManager stationTransactionManager);
 
     default void onPlug(int evseId, int connectorId) { }
 

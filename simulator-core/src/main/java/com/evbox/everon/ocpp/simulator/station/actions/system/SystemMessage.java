@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.actions.system;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 
 /**
  * Represents a message that comes from the system.
@@ -14,7 +14,7 @@ public interface SystemMessage {
      *
      * @param stationStore stores data of station
      * @param stationMessageSender station message sender
-     * @param stationStateFlowManager manage state flow for evse
+     * @param evseStateManager manage state flow for evse
      */
-    void perform(StationStore stationStore, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager);
+    void perform(StationStore stationStore, StationMessageSender stationMessageSender, EvseStateManager evseStateManager);
 }

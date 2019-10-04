@@ -7,7 +7,10 @@ import com.evbox.everon.ocpp.simulator.station.states.StationState;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationStateFlowManager {
+/**
+ * Manages the state for the evses of a station.
+ */
+public class EvseStateManager {
 
     private final Map<Integer, StationState> evsesStates = new HashMap<>();
 
@@ -15,7 +18,7 @@ public class StationStateFlowManager {
     private StationStore stationStore;
     private StationMessageSender stationMessageSender;
 
-    public StationStateFlowManager(Station station, StationStore stationStore, StationMessageSender stationMessageSender) {
+    public EvseStateManager(Station station, StationStore stationStore, StationMessageSender stationMessageSender) {
         this.station = station;
         this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;

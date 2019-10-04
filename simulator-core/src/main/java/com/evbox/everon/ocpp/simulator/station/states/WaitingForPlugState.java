@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.states;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
+import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
@@ -22,11 +22,11 @@ public class WaitingForPlugState implements StationState {
 
     public static final String NAME = "WAITING_FOR_PLUG";
 
-    private StationStateFlowManager stationStateFlowManager;
+    private EvseStateManager evseStateManager;
 
     @Override
-    public void setStationTransactionManager(StationStateFlowManager stationTransactionManager) {
-        this.stationStateFlowManager = stationTransactionManager;
+    public void setStationTransactionManager(EvseStateManager stationTransactionManager) {
+        this.evseStateManager = stationTransactionManager;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class WaitingForPlugState implements StationState {
 
     @Override
     public void onPlug(int evseId, int connectorId) {
-        StationStore stationStore = stationStateFlowManager.getStationStore();
-        StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
+        StationStore stationStore = evseStateManager.getStationStore();
+        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
 
         Evse evse = stationStore.findEvse(evseId);
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
@@ -65,13 +65,13 @@ public class WaitingForPlugState implements StationState {
                     TransactionData.ChargingState.CHARGING);
         });
 
-        stationStateFlowManager.setStateForEvse(evseId, new ChargingState());
+        evseStateManager.setStateForEvse(evseId, new ChargingState());
     }
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationMessageSender stationMessageSender = stationStateFlowManager.getStationMessageSender();
-        StationStore stationStore = stationStateFlowManager.getStationStore();
+        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        StationStore stationStore = evseStateManager.getStationStore();
 
         log.info("in authorizeToken {}", tokenId);
 
@@ -89,7 +89,7 @@ public class WaitingForPlugState implements StationState {
             }
         });
 
-        stationStateFlowManager.setStateForEvse(evseId, new AvailableState());
+        evseStateManager.setStateForEvse(evseId, new AvailableState());
     }
 
     private void startCharging(Evse evse) {
