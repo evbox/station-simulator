@@ -1,6 +1,5 @@
 package com.evbox.everon.ocpp.mock;
 
-import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
 import com.evbox.everon.ocpp.mock.csms.OcppMockServer;
 import com.evbox.everon.ocpp.mock.csms.OcppServerClient;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
@@ -79,12 +79,12 @@ public class StationSimulatorSetUp  {
         return 10;
     }
 
-    protected OptionList<TxStartStopPointVariableValues> getTxStartPoint() {
-        return new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED));
+    protected List<String> getTxStartPoint() {
+        return Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
     }
 
-    protected OptionList<TxStartStopPointVariableValues> getTxStopPoint() {
-        return new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED));
+    protected List<String> getTxStopPoint() {
+        return Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
     }
 
     protected MeterValuesConfiguration getMeterValuesConfiguration() {

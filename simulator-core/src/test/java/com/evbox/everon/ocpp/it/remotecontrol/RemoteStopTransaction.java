@@ -1,7 +1,6 @@
 package com.evbox.everon.ocpp.it.remotecontrol;
 
 import com.evbox.everon.ocpp.common.CiString;
-import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.mock.csms.exchange.Authorize;
 import com.evbox.everon.ocpp.mock.csms.exchange.StatusNotification;
@@ -16,6 +15,7 @@ import com.evbox.everon.ocpp.v20.message.station.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.times;
@@ -100,7 +100,7 @@ public class RemoteStopTransaction extends StationSimulatorSetUp {
     }
 
     @Override
-    protected OptionList<TxStartStopPointVariableValues> getTxStopPoint() {
-        return new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED));
+    protected List<String> getTxStopPoint() {
+        return Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED.toString());
     }
 }

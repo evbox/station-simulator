@@ -43,8 +43,8 @@ public class StationPersistenceLayer {
     public StationPersistenceLayer(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
-        this.txStartPointValues = configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoint();
-        this.txStopPointValues = configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoint();
+        this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoint()));
+        this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoint()));
     }
 
     public StationPersistenceLayer(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {

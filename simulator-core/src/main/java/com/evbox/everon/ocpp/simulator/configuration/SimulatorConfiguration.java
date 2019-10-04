@@ -1,6 +1,5 @@
 package com.evbox.everon.ocpp.simulator.configuration;
 
-import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +15,8 @@ public class SimulatorConfiguration {
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
     private static final int DEFAULT_EV_CONNECTION_TIMEOUT = 60;
-    private static final OptionList<TxStartStopPointVariableValues> DEFAULT_TX_START_POINT = new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED));
-    private static final OptionList<TxStartStopPointVariableValues> DEFAULT_TX_STOP_POINT = new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED));
+    private static final List<String> DEFAULT_TX_START_POINT = Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
+    private static final List<String> DEFAULT_TX_STOP_POINT = Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
 
     private static final long DEFAULT_SEND_METER_VALUES_INTERVAL_SEC = 10;
     private static final long DEFAULT_CONSUMPTION_WATT_HOUR = 22_000;
@@ -117,13 +116,13 @@ public class SimulatorConfiguration {
          * List of events that defines when a new transaction should start.
          */
         @Builder.Default
-        private OptionList<TxStartStopPointVariableValues> txStartPoint = DEFAULT_TX_START_POINT;
+        private List<String> txStartPoint = DEFAULT_TX_START_POINT;
 
         /**
          * List of events that when no longer valid, the transaction should be ended.
          */
         @Builder.Default
-        private OptionList<TxStartStopPointVariableValues> txStopPoint = DEFAULT_TX_STOP_POINT;
+        private List<String> txStopPoint = DEFAULT_TX_STOP_POINT;
     }
 
     @Data

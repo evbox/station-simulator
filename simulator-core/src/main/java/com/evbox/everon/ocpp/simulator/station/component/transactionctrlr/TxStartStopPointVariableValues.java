@@ -2,7 +2,9 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum TxStartStopPointVariableValues {
@@ -38,6 +40,16 @@ public enum TxStartStopPointVariableValues {
         } else {
             return constant;
         }
+    }
+
+    public static List<TxStartStopPointVariableValues> fromValues(List<String> values) {
+        List<TxStartStopPointVariableValues> result = new ArrayList<>();
+        for (String value : values) {
+            if (CONSTANTS.get(value) != null) {
+                result.add(CONSTANTS.get(value));
+            }
+        }
+        return result;
     }
 
     public static boolean validateStringOfValues(String txPoints) {
