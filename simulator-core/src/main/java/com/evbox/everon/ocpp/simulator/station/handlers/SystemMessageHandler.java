@@ -1,6 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.handlers;
 
-import com.evbox.everon.ocpp.simulator.station.StationDataHolder;
+import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
+import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
+import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
 import com.evbox.everon.ocpp.simulator.station.actions.system.SystemMessage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,15 +12,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SystemMessageHandler implements MessageHandler<SystemMessage> {
 
-    private final StationDataHolder stationDataHolder;
+    private final StationPersistenceLayer stationPersistenceLayer;
+    private final StationMessageSender stationMessageSender;
+    private final StationStateFlowManager stationStateFlowManager;
 
     /**
      * Create an instance.
      *
-     * @param stationDataHolder contains reference to station's managers
+     * @param stationPersistenceLayer stores data of station
+     * @param stationMessageSender station message sender
+     * @param stationStateFlowManager manage state flow for evse
      */
-    public SystemMessageHandler(StationDataHolder stationDataHolder) {
-        this.stationDataHolder = stationDataHolder;
+    public SystemMessageHandler(StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
+        this.stationPersistenceLayer = stationPersistenceLayer;
+        this.stationMessageSender = stationMessageSender;
+        this.stationStateFlowManager = stationStateFlowManager;
     }
 
     /**
@@ -28,7 +36,7 @@ public class SystemMessageHandler implements MessageHandler<SystemMessage> {
      */
     @Override
     public void handle(SystemMessage systemMessage) {
-        systemMessage.perform(stationDataHolder);
+        systemMessage.perform(stationPersistenceLayer, stationMessageSender, stationStateFlowManager);
     }
 
 }

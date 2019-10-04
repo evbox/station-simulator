@@ -2,7 +2,6 @@ package com.evbox.everon.ocpp.simulator.station.actions.user;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.mock.factory.EvseCreator;
-import com.evbox.everon.ocpp.simulator.station.StationDataHolder;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
@@ -49,7 +48,7 @@ public class UnplugTest {
     @BeforeEach
     void setUp() {
         this.unplug = new Unplug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
-        this.stationStateFlowManagerMock = new StationStateFlowManager(new StationDataHolder(null, stationPersistenceLayerMock, stationMessageSenderMock, null));
+        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationPersistenceLayerMock, stationMessageSenderMock);
         this.stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
     }
 

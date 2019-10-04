@@ -1,6 +1,5 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
-import com.evbox.everon.ocpp.simulator.station.StationDataHolder;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
@@ -21,10 +20,10 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
     private final StationMessageSender stationMessageSender;
     private final StationStateFlowManager stationStateFlowManager;
 
-    public RequestStopTransactionRequestHandler(StationDataHolder stationDataHolder) {
-        this.stationPersistenceLayer = stationDataHolder.getStationPersistenceLayer();
-        this.stationMessageSender = stationDataHolder.getStationMessageSender();
-        this.stationStateFlowManager = stationDataHolder.getStationStateFlowManager();
+    public RequestStopTransactionRequestHandler(StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
+        this.stationPersistenceLayer = stationPersistenceLayer;
+        this.stationMessageSender = stationMessageSender;
+        this.stationStateFlowManager = stationStateFlowManager;
     }
 
     /**

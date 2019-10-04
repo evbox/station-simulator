@@ -34,7 +34,6 @@ public class Station {
 
     private final SimulatorConfiguration.StationConfiguration configuration;
 
-    private final StationDataHolder stationDataHolder;
     private final StationPersistenceLayer state;
     private volatile StationPersistenceLayerView stationPersistenceLayerView;
 
@@ -97,8 +96,7 @@ public class Station {
         }
         this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
 
-        this.stationStateFlowManager = new StationStateFlowManager(new StationDataHolder(this, state, stationMessageSender, null));
-        this.stationDataHolder = new StationDataHolder(this, state, stationMessageSender, stationStateFlowManager);
+        this.stationStateFlowManager = new StationStateFlowManager(this, state, stationMessageSender);
     }
 
     /**
@@ -141,8 +139,8 @@ public class Station {
         });
 
         UserMessageHandler userMessageHandler = new UserMessageHandler(stationStateFlowManager);
-        SystemMessageHandler systemMessageHandler = new SystemMessageHandler(stationDataHolder);
-        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, stationDataHolder, configuration.getId(), callRegistry);
+        SystemMessageHandler systemMessageHandler = new SystemMessageHandler(state, stationMessageSender, stationStateFlowManager);
+        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, state, stationMessageSender, stationStateFlowManager, configuration.getId(), callRegistry);
 
         StationMessageRouter stationMessageRouter = new StationMessageRouter(serverMessageHandler, userMessageHandler, systemMessageHandler);
 

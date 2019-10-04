@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.states;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.*;
-import com.evbox.everon.ocpp.simulator.station.actions.system.ReleaseConnector;
+import com.evbox.everon.ocpp.simulator.station.actions.system.CancelRemoteStartTransaction;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
@@ -110,7 +110,7 @@ public class AvailableState implements StationState {
 
         Executors.newSingleThreadScheduledExecutor().schedule(() -> {
             Station station = stationStateFlowManager.getStation();
-            station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.SYSTEM_ACTION, new ReleaseConnector(evseId, connector.getId())));
+            station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.SYSTEM_ACTION, new CancelRemoteStartTransaction(evseId, connector.getId())));
         }, stationPersistenceLayer.getEVConnectionTimeOut(), TimeUnit.SECONDS);
 
         stationStateFlowManager.setStateForEvse(evseId, new WaitingForPlugState());

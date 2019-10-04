@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -33,15 +32,12 @@ class StationStateFlowManagerTest {
     @Mock
     StationMessageSender stationMessageSenderMock;
 
-    @InjectMocks
-    StationDataHolder stationDataHolder;
-
     private StationStateFlowManager stationStateFlowManager;
 
     @BeforeEach
     void setUp() {
 
-        this.stationStateFlowManager = new StationStateFlowManager(stationDataHolder);
+        this.stationStateFlowManager = new StationStateFlowManager(null, stationPersistenceLayerMock, stationMessageSenderMock);
         checkStateIs(AvailableState.NAME);
     }
 

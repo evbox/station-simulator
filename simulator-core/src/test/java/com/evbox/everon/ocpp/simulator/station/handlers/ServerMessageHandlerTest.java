@@ -5,7 +5,6 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallError;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationDataHolder;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
@@ -64,7 +63,7 @@ public class ServerMessageHandlerTest {
 
     @BeforeEach
     void setUp() {
-        serverMessageHandler = new ServerMessageHandler(stationMock, new StationDataHolder(null, stationPersistenceLayerMock, stationMessageSenderMock, null), STATION_ID, subscriptionRegistryMock);
+        serverMessageHandler = new ServerMessageHandler(stationMock, stationPersistenceLayerMock, stationMessageSenderMock, null, STATION_ID, subscriptionRegistryMock);
 
         Map<Class, OcppRequestHandler> requestHandlers = ImmutableMap.<Class, OcppRequestHandler>builder()
                 .put(GetVariablesRequest.class, getVariablesRequestHandlerMock)

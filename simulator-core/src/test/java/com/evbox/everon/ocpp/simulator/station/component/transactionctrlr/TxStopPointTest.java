@@ -1,7 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.evbox.everon.ocpp.common.OptionList;
-import com.evbox.everon.ocpp.simulator.station.StationDataHolder;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
@@ -60,8 +59,7 @@ public class TxStopPointTest {
 
     @BeforeEach
     void setUp() {
-        this.stationStateFlowManagerMock = new StationStateFlowManager(
-                new StationDataHolder(null, stationPersistenceLayerMock, stationMessageSenderMock, null));
+        this.stationStateFlowManagerMock = new StationStateFlowManager(null, stationPersistenceLayerMock, stationMessageSenderMock);
         stationStateFlowManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new ChargingState());
     }
 

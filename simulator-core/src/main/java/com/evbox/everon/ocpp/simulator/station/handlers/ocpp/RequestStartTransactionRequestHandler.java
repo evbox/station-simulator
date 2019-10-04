@@ -1,6 +1,5 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
-import com.evbox.everon.ocpp.simulator.station.StationDataHolder;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationPersistenceLayer;
 import com.evbox.everon.ocpp.simulator.station.StationStateFlowManager;
@@ -23,10 +22,10 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
     private final StationMessageSender stationMessageSender;
     private final StationStateFlowManager stationStateFlowManager;
 
-    public RequestStartTransactionRequestHandler(StationDataHolder stationDataHolder) {
-        this.stationPersistenceLayer = stationDataHolder.getStationPersistenceLayer();
-        this.stationMessageSender = stationDataHolder.getStationMessageSender();
-        this.stationStateFlowManager = stationDataHolder.getStationStateFlowManager();
+    public RequestStartTransactionRequestHandler(StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender, StationStateFlowManager stationStateFlowManager) {
+        this.stationPersistenceLayer = stationPersistenceLayer;
+        this.stationMessageSender = stationMessageSender;
+        this.stationStateFlowManager = stationStateFlowManager;
     }
 
     /**

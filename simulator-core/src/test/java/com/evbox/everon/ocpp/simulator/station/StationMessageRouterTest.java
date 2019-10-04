@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station;
 
-import com.evbox.everon.ocpp.simulator.station.actions.system.ReleaseConnector;
+import com.evbox.everon.ocpp.simulator.station.actions.system.CancelRemoteStartTransaction;
 import com.evbox.everon.ocpp.simulator.station.actions.system.SystemMessage;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Authorize;
 import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
@@ -72,7 +72,7 @@ public class StationMessageRouterTest {
     @Test
     void verifySystemMessageRouting() {
 
-        SystemMessage systemMessage = new ReleaseConnector(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        SystemMessage systemMessage = new CancelRemoteStartTransaction(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
 
         StationMessage stationMessage = new StationMessage(STATION_ID, StationMessage.Type.SYSTEM_ACTION, systemMessage);
 

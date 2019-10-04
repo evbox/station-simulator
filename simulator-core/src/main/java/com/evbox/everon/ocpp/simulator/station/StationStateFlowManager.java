@@ -11,10 +11,14 @@ public class StationStateFlowManager {
 
     private final Map<Integer, StationState> evsesStates = new HashMap<>();
 
-    private StationDataHolder stationDataHolder;
+    private Station station;
+    private StationPersistenceLayer stationPersistenceLayer;
+    private StationMessageSender stationMessageSender;
 
-    public StationStateFlowManager(StationDataHolder stationDataHolder) {
-        this.stationDataHolder = stationDataHolder;
+    public StationStateFlowManager(Station station, StationPersistenceLayer stationPersistenceLayer, StationMessageSender stationMessageSender) {
+        this.station = station;
+        this.stationPersistenceLayer = stationPersistenceLayer;
+        this.stationMessageSender = stationMessageSender;
     }
 
     public void setStateForEvse(int evseId, StationState state) {
@@ -46,15 +50,15 @@ public class StationStateFlowManager {
     }
 
     public Station getStation() {
-        return stationDataHolder.getStation();
+        return station;
     }
 
     public StationMessageSender getStationMessageSender() {
-        return stationDataHolder.getStationMessageSender();
+        return stationMessageSender;
     }
 
     public StationPersistenceLayer getStationPersistenceLayer() {
-        return stationDataHolder.getStationPersistenceLayer();
+        return stationPersistenceLayer;
     }
 
     private StationState getState(int evseId) {
