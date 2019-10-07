@@ -4,9 +4,9 @@ import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 
 /**
- * Interface represents the state of a specific evse/station.
+ * Interface represents the state of a specific evse.
  */
-public interface StationState {
+public interface EvseState {
 
     String getStateName();
 

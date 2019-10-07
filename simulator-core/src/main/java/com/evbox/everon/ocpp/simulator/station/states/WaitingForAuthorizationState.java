@@ -18,7 +18,7 @@ import static java.util.Collections.singletonList;
  * When the cable has been plugged but the user is not authorized yet.
  */
 @Slf4j
-public class WaitingForAuthorizationState implements StationState {
+public class WaitingForAuthorizationState implements EvseState {
 
     public static final String NAME = "WAITING_FOR_AUTHORIZATION";
 

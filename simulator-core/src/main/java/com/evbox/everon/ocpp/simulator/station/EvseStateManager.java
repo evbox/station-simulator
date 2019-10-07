@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.states.AvailableState;
-import com.evbox.everon.ocpp.simulator.station.states.StationState;
+import com.evbox.everon.ocpp.simulator.station.states.EvseState;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class EvseStateManager {
 
-    private final Map<Integer, StationState> evsesStates = new HashMap<>();
+    private final Map<Integer, EvseState> evsesStates = new HashMap<>();
 
     private Station station;
     private StationStore stationStore;
@@ -24,11 +24,11 @@ public class EvseStateManager {
         this.stationMessageSender = stationMessageSender;
     }
 
-    public void setStateForEvse(int evseId, StationState state) {
+    public void setStateForEvse(int evseId, EvseState state) {
         evsesStates.put(evseId, state);
     }
 
-    public StationState getStateForEvse(int eveseId) {
+    public EvseState getStateForEvse(int eveseId) {
         return evsesStates.getOrDefault(eveseId, new AvailableState());
     }
 
@@ -64,8 +64,8 @@ public class EvseStateManager {
         return stationStore;
     }
 
-    private StationState getState(int evseId) {
-        StationState state = evsesStates.getOrDefault(evseId, new AvailableState());
+    private EvseState getState(int evseId) {
+        EvseState state = evsesStates.getOrDefault(evseId, new AvailableState());
         state.setStationTransactionManager(this);
         return state;
     }

@@ -19,7 +19,7 @@ import static java.util.Collections.singletonList;
  * When the evse has been stopped from charging, remotely or locally
  */
 @Slf4j
-public class StoppedState implements StationState {
+public class StoppedState implements EvseState {
 
     public static final String NAME = "STOPPED";
 

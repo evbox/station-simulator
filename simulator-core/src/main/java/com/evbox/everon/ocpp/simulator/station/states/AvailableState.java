@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
  * When the station is ready for an authorize or a plug
  */
 @Slf4j
-public class AvailableState implements StationState {
+public class AvailableState implements EvseState {
 
     public static final String NAME = "AVAILABLE";
 

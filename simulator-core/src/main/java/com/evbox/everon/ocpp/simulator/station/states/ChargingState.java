@@ -18,7 +18,7 @@ import static java.util.Collections.singletonList;
  *  When the transaction is ongoing and the evse is charging.
  */
 @Slf4j
-public class ChargingState implements StationState {
+public class ChargingState implements EvseState {
 
     public static final String NAME =  "CHARGING";
 
