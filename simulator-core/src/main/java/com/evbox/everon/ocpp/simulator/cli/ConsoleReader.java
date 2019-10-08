@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Reads user input from the console
@@ -76,6 +77,8 @@ public class ConsoleReader {
 
         } else if (showStationStoreCommand) {
             showStationStoreLayer();
+        } else if (isNotBlank(commandName)) {
+            System.out.println("Unknown command: " + commandName);
         }
     }
 

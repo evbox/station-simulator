@@ -1,11 +1,35 @@
 <configuration>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>station-simulator-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+            <!-- Max history in days -->
+            <maxHistory>10</maxHistory>
+            <maxFileSize>5MB</maxFileSize>
+            <totalSizeCap>500MB</totalSizeCap>
+
+        </rollingPolicy>
+
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="debug">
-        <appender-ref ref="STDOUT" />
+    <root level="DEBUG">
+        <appender-ref ref="ROLLING" />
+         <appender-ref ref="STDOUT" />
     </root>
+
 </configuration>
