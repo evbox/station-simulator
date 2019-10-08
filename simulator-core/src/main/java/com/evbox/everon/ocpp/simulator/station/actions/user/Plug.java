@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions.user;
 
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ public class Plug implements UserMessage {
     /**
      * Perform Plug-in logic.
      *
-     * @param evseStateManager manges state of the evse for station
+     * @param stateManager manges state of the evse for station
      */
     @Override
-    public void perform(EvseStateManager evseStateManager) {
-        evseStateManager.cablePlugged(evseId, connectorId);
+    public void perform(StateManager stateManager) {
+        stateManager.cablePlugged(evseId, connectorId);
     }
 }

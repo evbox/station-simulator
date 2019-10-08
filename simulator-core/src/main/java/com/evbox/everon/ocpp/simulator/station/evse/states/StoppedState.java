@@ -1,9 +1,9 @@
-package com.evbox.everon.ocpp.simulator.station.states;
+package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
@@ -23,11 +23,11 @@ public class StoppedState implements EvseState {
 
     public static final String NAME = "STOPPED";
 
-    private EvseStateManager evseStateManager;
+    private StateManager stateManager;
 
     @Override
-    public void setStationTransactionManager(EvseStateManager stationTransactionManager) {
-        this.evseStateManager = stationTransactionManager;
+    public void setStationTransactionManager(StateManager stationTransactionManager) {
+        this.stateManager = stationTransactionManager;
     }
 
     @Override
@@ -37,8 +37,8 @@ public class StoppedState implements EvseState {
 
     @Override
     public void onUnplug(int evseId, int connectorId) {
-        StationStore stationStore = evseStateManager.getStationStore();
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
         Evse evse = stationStore.findEvse(evseId);
         evse.unplug(connectorId);
@@ -53,13 +53,13 @@ public class StoppedState implements EvseState {
             }
         });
 
-        evseStateManager.setStateForEvse(evseId, new AvailableState());
+        stateManager.setStateForEvse(evseId, new AvailableState());
     }
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationStore stationStore = evseStateManager.getStationStore();
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         Evse evse = stationStore.findEvse(evseId);
 
         log.info("in authorizeToken {}", tokenId);
@@ -75,7 +75,7 @@ public class StoppedState implements EvseState {
 
                 startCharging(stationMessageSender, evse, tokenId);
 
-                evseStateManager.setStateForEvse(evseId, new ChargingState());
+                stateManager.setStateForEvse(evseId, new ChargingState());
             }
         });
     }

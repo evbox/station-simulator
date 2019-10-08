@@ -1,9 +1,9 @@
-package com.evbox.everon.ocpp.simulator.station.states;
+package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
@@ -22,11 +22,11 @@ public class ChargingState implements EvseState {
 
     public static final String NAME =  "CHARGING";
 
-    private EvseStateManager evseStateManager;
+    private StateManager stateManager;
 
     @Override
-    public void setStationTransactionManager(EvseStateManager stationTransactionManager) {
-        this.evseStateManager = stationTransactionManager;
+    public void setStationTransactionManager(StateManager stationTransactionManager) {
+        this.stateManager = stationTransactionManager;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class ChargingState implements EvseState {
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationStore stationStore = evseStateManager.getStationStore();
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
         log.info("in authorizeToken {}", tokenId);
 
@@ -58,19 +58,19 @@ public class ChargingState implements EvseState {
             }
         });
 
-        evseStateManager.setStateForEvse(evseId, new StoppedState());
+        stateManager.setStateForEvse(evseId, new StoppedState());
     }
 
     @Override
     public void onRemoteStop(int evseId) {
-        Evse evse = evseStateManager.getStationStore().findEvse(evseId);
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        Evse evse = stateManager.getStationStore().findEvse(evseId);
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
         evse.remotelyStopCharging();
         Integer connectorId = evse.tryUnlockConnector();
         stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, REMOTE_STOP, TransactionData.ChargingState.EV_DETECTED);
 
-        evseStateManager.setStateForEvse(evseId, new StoppedState());
+        stateManager.setStateForEvse(evseId, new StoppedState());
     }
 
     private int stopCharging(StationMessageSender stationMessageSender, Evse evse) {

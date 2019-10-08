@@ -4,14 +4,11 @@ import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.mock.factory.EvseCreator;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
-import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.states.AvailableState;
-import com.evbox.everon.ocpp.simulator.station.states.StoppedState;
-import com.evbox.everon.ocpp.simulator.station.states.WaitingForAuthorizationState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.StoppedState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationResponse;
@@ -37,43 +34,46 @@ import static org.mockito.Mockito.*;
 public class UnplugTest {
 
     @Mock
+    Connector connectorMock;
+    @Mock
+    Evse evseMock;
+    @Mock
     StationStore stationStoreMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
     @Mock
-    EvseStateManager evseStateManagerMock;
+    StateManager stateManagerMock;
 
     Unplug unplug;
 
     @BeforeEach
     void setUp() {
         this.unplug = new Unplug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
-        this.evseStateManagerMock = new EvseStateManager(null, stationStoreMock, stationMessageSenderMock);
-        this.evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
+        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
+        when(evseMock.getEvseState()).thenReturn(new AvailableState());
+        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
     }
 
     @Test
     void shouldThrowExceptionWhenStateIsLocked() {
 
-        evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new WaitingForAuthorizationState());
+        when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(evseMock.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.LOCKED);
 
-        Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evse);
-        when(evse.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.LOCKED);
-
-        assertThrows(IllegalStateException.class, () -> unplug.perform(evseStateManagerMock));
+        assertThrows(IllegalStateException.class, () -> unplug.perform(stateManagerMock));
 
     }
 
     @Test
     void verifyTransactionStatusNotification() {
 
-        evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new StoppedState());
-
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(EvseCreator.DEFAULT_EVSE_INSTANCE);
+        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
 
-        unplug.perform(evseStateManagerMock);
+        unplug.perform(stateManagerMock);
 
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 

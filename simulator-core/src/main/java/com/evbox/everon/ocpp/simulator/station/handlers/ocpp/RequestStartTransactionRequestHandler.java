@@ -2,11 +2,11 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,12 +20,12 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
 
     private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
-    private final EvseStateManager evseStateManager;
+    private final StateManager stateManager;
 
-    public RequestStartTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, EvseStateManager evseStateManager) {
+    public RequestStartTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, StateManager stateManager) {
         this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
-        this.evseStateManager = evseStateManager;
+        this.stateManager = stateManager;
     }
 
     /**
@@ -45,7 +45,7 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
             Evse evse = optionalEvse.get();
             Connector connector = evse.tryFindAvailableConnector().orElse(null);
 
-            if (!AvailableState.NAME.equals(evseStateManager.getStateForEvse(evse.getId()).getStateName())) {
+            if (!AvailableState.NAME.equals(stateManager.getStateForEvse(evse.getId()).getStateName())) {
                 log.debug("Evse not available");
                 stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
                 return;
@@ -58,7 +58,7 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
             }
             stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.ACCEPTED));
 
-            evseStateManager.remoteStart(evse.getId(), request.getRemoteStartId(), request.getIdToken().getIdToken().toString(), connector);
+            stateManager.remoteStart(evse.getId(), request.getRemoteStartId(), request.getIdToken().getIdToken().toString(), connector);
         } else {
             log.debug("No available evse to start a new transaction");
             stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));

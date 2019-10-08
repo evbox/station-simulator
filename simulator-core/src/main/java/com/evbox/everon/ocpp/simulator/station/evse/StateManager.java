@@ -1,35 +1,31 @@
-package com.evbox.everon.ocpp.simulator.station;
+package com.evbox.everon.ocpp.simulator.station.evse;
 
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.states.AvailableState;
-import com.evbox.everon.ocpp.simulator.station.states.EvseState;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.states.EvseState;
 
 /**
  * Manages the state for the evses of a station.
  */
-public class EvseStateManager {
-
-    private final Map<Integer, EvseState> evsesStates = new HashMap<>();
+public class StateManager {
 
     private Station station;
     private StationStore stationStore;
     private StationMessageSender stationMessageSender;
 
-    public EvseStateManager(Station station, StationStore stationStore, StationMessageSender stationMessageSender) {
+    public StateManager(Station station, StationStore stationStore, StationMessageSender stationMessageSender) {
         this.station = station;
         this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
     }
 
     public void setStateForEvse(int evseId, EvseState state) {
-        evsesStates.put(evseId, state);
+        stationStore.findEvse(evseId).setEvseState(state);
     }
 
     public EvseState getStateForEvse(int eveseId) {
-        return evsesStates.getOrDefault(eveseId, new AvailableState());
+        return stationStore.findEvse(eveseId).getEvseState();
     }
 
     public void cablePlugged(int evseId, int connectorId) {
@@ -65,7 +61,7 @@ public class EvseStateManager {
     }
 
     private EvseState getState(int evseId) {
-        EvseState state = evsesStates.getOrDefault(evseId, new AvailableState());
+        EvseState state = stationStore.findEvse(evseId).getEvseState();
         state.setStationTransactionManager(this);
         return state;
     }

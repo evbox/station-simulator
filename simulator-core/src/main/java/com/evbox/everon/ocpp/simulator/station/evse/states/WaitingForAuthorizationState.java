@@ -1,8 +1,8 @@
-package com.evbox.everon.ocpp.simulator.station.states;
+package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
@@ -22,11 +22,11 @@ public class WaitingForAuthorizationState implements EvseState {
 
     public static final String NAME = "WAITING_FOR_AUTHORIZATION";
 
-    private EvseStateManager evseStateManager;
+    private StateManager stateManager;
 
     @Override
-    public void setStationTransactionManager(EvseStateManager stationTransactionManager) {
-        this.evseStateManager = stationTransactionManager;
+    public void setStationTransactionManager(StateManager stationTransactionManager) {
+        this.stateManager = stationTransactionManager;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class WaitingForAuthorizationState implements EvseState {
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
-        StationStore stationStore = evseStateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
 
         log.info("in authorizeToken {}", tokenId);
 
@@ -58,13 +58,13 @@ public class WaitingForAuthorizationState implements EvseState {
             }
         });
 
-        evseStateManager.setStateForEvse(evseId, new ChargingState());
+        stateManager.setStateForEvse(evseId, new ChargingState());
     }
 
     @Override
     public void onUnplug(int evseId, int connectorId) {
-        Evse evse = evseStateManager.getStationStore().findEvse(evseId);
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        Evse evse = stateManager.getStationStore().findEvse(evseId);
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         if (evse.findConnector(connectorId).getCableStatus() == CableStatus.LOCKED) {
             throw new IllegalStateException(String.format("Unable to unplug locked connector: %d %d", evseId, connectorId));
         }
@@ -79,7 +79,7 @@ public class WaitingForAuthorizationState implements EvseState {
                     stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, evse.getStopReason().getStoppedReason()));
         }
 
-        evseStateManager.setStateForEvse(evseId, new AvailableState());
+        stateManager.setStateForEvse(evseId, new AvailableState());
     }
 
     private void startCharging(StationMessageSender stationMessageSender, Evse evse, String tokenId) {

@@ -3,13 +3,13 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.states.AvailableState;
-import com.evbox.everon.ocpp.simulator.station.states.WaitingForAuthorizationState;
-import com.evbox.everon.ocpp.simulator.station.states.WaitingForPlugState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ public class TxStartPointTest {
     StationMessageSender stationMessageSenderMock;
 
     @Mock
-    EvseStateManager evseStateManagerMock;
+    StateManager stateManagerMock;
 
     @Captor
     ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> statusNotificationCaptor;
@@ -53,8 +53,8 @@ public class TxStartPointTest {
 
     @BeforeEach
     void setUp() {
-        this.evseStateManagerMock = new EvseStateManager(null, stationStoreMock, stationMessageSenderMock);
-        evseStateManagerMock.setStateForEvse(DEFAULT_EVSE_ID, new AvailableState());
+        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
+        when(evseMock.getEvseState()).thenReturn(new AvailableState());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -78,7 +78,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
@@ -93,7 +93,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -106,7 +106,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
@@ -121,7 +121,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -134,7 +134,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
@@ -149,16 +149,17 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(0)).createTransaction(anyString());
+        verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForPlugState.NAME)));
 
-        assertThat(evseStateManagerMock.getStateForEvse(DEFAULT_EVSE_ID).getStateName()).isEqualTo(WaitingForPlugState.NAME);
+        when(evseMock.getEvseState()).thenReturn(new WaitingForPlugState());
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -174,16 +175,17 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
         verify(evseMock, times(0)).createTransaction(anyString());
+        verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForAuthorizationState.NAME)));
 
-        assertThat(evseStateManagerMock.getStateForEvse(DEFAULT_EVSE_ID).getStateName()).isEqualTo(WaitingForAuthorizationState.NAME);
+        when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
@@ -198,7 +200,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
@@ -213,7 +215,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -228,16 +230,17 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(0)).createTransaction(anyString());
+        verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForPlugState.NAME)));
 
-        assertThat(evseStateManagerMock.getStateForEvse(DEFAULT_EVSE_ID).getStateName()).isEqualTo(WaitingForPlugState.NAME);
+        when(evseMock.getEvseState()).thenReturn(new WaitingForPlugState());
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -253,16 +256,17 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
         verify(evseMock, times(0)).createTransaction(anyString());
+        verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForAuthorizationState.NAME)));
 
-        assertThat(evseStateManagerMock.getStateForEvse(DEFAULT_EVSE_ID).getStateName()).isEqualTo(WaitingForAuthorizationState.NAME);
+        when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
@@ -278,7 +282,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManagerMock.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -291,7 +295,7 @@ public class TxStartPointTest {
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
-        evseStateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 

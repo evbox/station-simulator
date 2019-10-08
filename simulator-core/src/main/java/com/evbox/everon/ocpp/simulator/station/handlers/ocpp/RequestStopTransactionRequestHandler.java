@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionRequest;
 import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionResponse;
@@ -18,12 +18,12 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
 
     private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
-    private final EvseStateManager evseStateManager;
+    private final StateManager stateManager;
 
-    public RequestStopTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, EvseStateManager evseStateManager) {
+    public RequestStopTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, StateManager stateManager) {
         this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
-        this.evseStateManager = evseStateManager;
+        this.stateManager = stateManager;
     }
 
     /**
@@ -39,7 +39,7 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
         Optional<Evse> evse = stationStore.tryFindEvseByTransactionId(transactionId);
         if (evse.isPresent()) {
             stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.ACCEPTED));
-            evseStateManager.remoteStop(evse.get().getId());
+            stateManager.remoteStop(evse.get().getId());
         } else {
             log.debug("Received RequestStopTransactionRequest with invalid transactionID: " + transactionId);
             stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.REJECTED));

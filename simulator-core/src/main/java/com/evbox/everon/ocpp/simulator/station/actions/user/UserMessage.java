@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions.user;
 
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 
 /**
  * Represents a message that comes from the user. Usually message comes from the command-line.
@@ -10,8 +10,8 @@ public interface UserMessage {
     /**
      * Contains a logic related to this message.
      *
-     * @param evseStateManager manges state of the evse for station
+     * @param stateManager manges state of the evse for station
      */
-    void perform(EvseStateManager evseStateManager);
+    void perform(StateManager stateManager);
 
 }

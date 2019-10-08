@@ -76,13 +76,13 @@ public class ConsoleReader {
             station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.USER_ACTION, userMessage));
 
         } else if (showStationStoreCommand) {
-            showStationStoreLayer();
+            showStationStore();
         } else if (isNotBlank(commandName)) {
             System.out.println("Unknown command: " + commandName);
         }
     }
 
-    private void showStationStoreLayer() {
+    private void showStationStore() {
         System.out.println(stations.get(selectedStation).getStateView());
     }
 

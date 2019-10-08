@@ -2,9 +2,9 @@ package com.evbox.everon.ocpp.simulator.station.actions.system;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
-import com.evbox.everon.ocpp.simulator.station.states.AvailableState;
-import com.evbox.everon.ocpp.simulator.station.states.WaitingForPlugState;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
@@ -28,15 +28,15 @@ public class CancelRemoteStartTransaction implements SystemMessage {
      *
      * @param stationStore stores data of station
      * @param stationMessageSender station message sender
-     * @param evseStateManager manage state flow for evse
+     * @param stateManager manage state flow for evse
      */
     @Override
-    public void perform(StationStore stationStore, StationMessageSender stationMessageSender, EvseStateManager evseStateManager) {
-        if (WaitingForPlugState.NAME.equals(evseStateManager.getStateForEvse(evseId).getStateName())) {
+    public void perform(StationStore stationStore, StationMessageSender stationMessageSender, StateManager stateManager) {
+        if (WaitingForPlugState.NAME.equals(stateManager.getStateForEvse(evseId).getStateName())) {
             stationMessageSender.sendStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
             stationStore.findEvse(evseId).stopTransaction();
             stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_CONNECT_TIMEOUT, TransactionData.StoppedReason.TIMEOUT);
-            evseStateManager.setStateForEvse(evseId, new AvailableState());
+            stateManager.setStateForEvse(evseId, new AvailableState());
         }
     }
 }

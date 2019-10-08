@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.handlers;
 
-import com.evbox.everon.ocpp.simulator.station.EvseStateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 public class UserMessageHandlerTest {
 
     @Mock
-    EvseStateManager evseStateManagerMock;
+    StateManager stateManagerMock;
     @Mock
     UserMessage userMessageMock;
     @InjectMocks
@@ -27,10 +27,10 @@ public class UserMessageHandlerTest {
 
         userMessageHandler.handle(userMessageMock);
 
-        ArgumentCaptor<EvseStateManager> stationTransactionsManagerCaptor = ArgumentCaptor.forClass(EvseStateManager.class);
+        ArgumentCaptor<StateManager> stationTransactionsManagerCaptor = ArgumentCaptor.forClass(StateManager.class);
 
         verify(userMessageMock).perform(stationTransactionsManagerCaptor.capture());
 
-        assertThat(evseStateManagerMock).isEqualTo(stationTransactionsManagerCaptor.getValue());
+        assertThat(stateManagerMock).isEqualTo(stationTransactionsManagerCaptor.getValue());
     }
 }

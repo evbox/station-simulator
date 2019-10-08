@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers;
 import com.evbox.everon.ocpp.simulator.message.*;
 import com.evbox.everon.ocpp.simulator.station.*;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
 import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
@@ -41,11 +42,11 @@ public class ServerMessageHandler implements MessageHandler<String> {
      * @param station reference to station which accepts the requests
      * @param stationStore store station data
      * @param stationMessageSender station message sender
-     * @param evseStateManager states flow manager for evses
+     * @param stateManager states flow manager for evses
      * @param stationId station identity
      * @param subscriptionRegistry station message type registry
      */
-    public ServerMessageHandler(Station station, StationStore stationStore, StationMessageSender stationMessageSender, EvseStateManager evseStateManager, String stationId, SubscriptionRegistry subscriptionRegistry) {
+    public ServerMessageHandler(Station station, StationStore stationStore, StationMessageSender stationMessageSender, StateManager stateManager, String stationId, SubscriptionRegistry subscriptionRegistry) {
 
         StationComponentsHolder stationComponentsHolder = new StationComponentsHolder(station, stationStore);
         this.stationId = stationId;
@@ -58,8 +59,8 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(ResetRequest.class, new ResetRequestHandler(stationStore, stationMessageSender))
                 .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationStore, stationMessageSender)))
                 .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(Clock.systemUTC(), stationComponentsHolder, stationMessageSender))
-                .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationStore, stationMessageSender, evseStateManager))
-                .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationStore, stationMessageSender, evseStateManager))
+                .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationStore, stationMessageSender, stateManager))
+                .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationStore, stationMessageSender, stateManager))
                 .put(SetChargingProfileRequest.class, new SetChargingProfileRequestHandler(stationMessageSender))
                 .build();
     }

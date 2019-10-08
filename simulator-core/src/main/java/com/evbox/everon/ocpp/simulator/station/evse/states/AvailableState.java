@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.simulator.station.states;
+package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.*;
@@ -7,6 +7,7 @@ import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStar
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +29,11 @@ public class AvailableState implements EvseState {
 
     public static final String NAME = "AVAILABLE";
 
-    private EvseStateManager evseStateManager;
+    private StateManager stateManager;
 
     @Override
-    public void setStationTransactionManager(EvseStateManager stationTransactionManager) {
-        this.evseStateManager = stationTransactionManager;
+    public void setStationTransactionManager(StateManager stationTransactionManager) {
+        this.stateManager = stationTransactionManager;
     }
 
     @Override
@@ -42,14 +43,14 @@ public class AvailableState implements EvseState {
 
     @Override
     public void onPlug(int evseId, int connectorId) {
-        StationStore stationStore = evseStateManager.getStationStore();
-        Evse evse = evseStateManager.getStationStore().findEvse(evseId);
+        StationStore stationStore = stateManager.getStationStore();
+        Evse evse = stateManager.getStationStore().findEvse(evseId);
 
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
             throw new IllegalStateException(String.format("Connector is not available: %d %d", evseId, connectorId));
         }
 
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
         evse.plug(connectorId);
         stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
@@ -63,13 +64,13 @@ public class AvailableState implements EvseState {
             }
         });
 
-        evseStateManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
+        stateManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
     }
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
-        StationStore stationStore = evseStateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
 
         log.info("in authorizeToken {}", tokenId);
 
@@ -89,14 +90,14 @@ public class AvailableState implements EvseState {
             }
         });
 
-        evseStateManager.setStateForEvse(evseId, new WaitingForPlugState());
+        stateManager.setStateForEvse(evseId, new WaitingForPlugState());
     }
 
     @Override
     public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
 
-        StationStore stationStore = evseStateManager.getStationStore();
-        StationMessageSender stationMessageSender = evseStateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
         Evse evse = stationStore.findEvse(evseId);
 
@@ -109,11 +110,11 @@ public class AvailableState implements EvseState {
         stationMessageSender.sendTransactionEventStart(evse.getId(), connector.getId(), remoteStartId, REMOTE_START);
 
         Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            Station station = evseStateManager.getStation();
+            Station station = stateManager.getStation();
             station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.SYSTEM_ACTION, new CancelRemoteStartTransaction(evseId, connector.getId())));
         }, stationStore.getEVConnectionTimeOut(), TimeUnit.SECONDS);
 
-        evseStateManager.setStateForEvse(evseId, new WaitingForPlugState());
+        stateManager.setStateForEvse(evseId, new WaitingForPlugState());
     }
 
     private List<Evse> getEvseList(AuthorizeResponse response, StationStore stationStore) {

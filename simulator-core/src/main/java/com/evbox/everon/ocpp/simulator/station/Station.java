@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationStore.StationStoreView;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.SystemMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
@@ -44,7 +45,7 @@ public class Station {
 
     private final SubscriptionRegistry callRegistry;
     private final StationMessageSender stationMessageSender;
-    private final EvseStateManager evseStateManager;
+    private final StateManager stateManager;
 
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
 
@@ -96,7 +97,7 @@ public class Station {
         }
         this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
 
-        this.evseStateManager = new EvseStateManager(this, state, stationMessageSender);
+        this.stateManager = new StateManager(this, state, stationMessageSender);
     }
 
     /**
@@ -138,9 +139,9 @@ public class Station {
             }
         });
 
-        UserMessageHandler userMessageHandler = new UserMessageHandler(evseStateManager);
-        SystemMessageHandler systemMessageHandler = new SystemMessageHandler(state, stationMessageSender, evseStateManager);
-        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, state, stationMessageSender, evseStateManager, configuration.getId(), callRegistry);
+        UserMessageHandler userMessageHandler = new UserMessageHandler(stateManager);
+        SystemMessageHandler systemMessageHandler = new SystemMessageHandler(state, stationMessageSender, stateManager);
+        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(this, state, stationMessageSender, stateManager, configuration.getId(), callRegistry);
 
         StationMessageRouter stationMessageRouter = new StationMessageRouter(serverMessageHandler, userMessageHandler, systemMessageHandler);
 
