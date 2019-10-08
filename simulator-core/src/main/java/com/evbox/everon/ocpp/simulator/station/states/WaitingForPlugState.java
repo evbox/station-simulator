@@ -78,7 +78,6 @@ public class WaitingForPlugState implements EvseState {
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
             if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
                 Evse evse = stationStore.findEvse(evseId);
-                stopCharging(stationMessageSender, evse);
 
                 if (evse.hasOngoingTransaction()) {
                     evse.stopTransaction();
@@ -95,12 +94,6 @@ public class WaitingForPlugState implements EvseState {
     private void startCharging(Evse evse) {
         evse.lockPluggedConnector();
         evse.startCharging();
-    }
-
-    private void stopCharging(StationMessageSender stationMessageSender, Evse evse) {
-        evse.stopCharging();
-        Integer connectorId = evse.unlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, TransactionData.ChargingState.EV_DETECTED);
     }
 
 }
