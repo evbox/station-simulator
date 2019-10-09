@@ -21,7 +21,8 @@ public enum ActionType {
     GET_BASE_REPORT("GetBaseReport", GetBaseReportRequest.class, GetBaseReportResponse.class),
     REQUEST_STOP_TRANSACTION("RequestStopTransaction", RequestStopTransactionRequest.class, RequestStopTransactionResponse.class),
     REQUEST_START_TRANSACTION("RequestStartTransaction", RequestStartTransactionRequest.class, RequestStartTransactionResponse.class),
-    SET_CHARGING_PROFILE("SetChargingProfile", SetChargingProfileRequest.class, SetChargingProfileResponse.class);
+    SET_CHARGING_PROFILE("SetChargingProfile", SetChargingProfileRequest.class, SetChargingProfileResponse.class),
+    UNLOCK_CONNECTOR("UnlockConnector", UnlockConnectorRequest.class, UnlockConnectorResponse.class);
 
     private final String actionType;
     private final Class requestClazz;

@@ -12,11 +12,7 @@ import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
-import com.evbox.everon.ocpp.v20.message.station.RequestStartTransactionRequest;
-import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionRequest;
-import com.evbox.everon.ocpp.v20.message.station.SetChargingProfileRequest;
+import com.evbox.everon.ocpp.v20.message.station.*;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +58,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationStore, stationMessageSender, stateManager))
                 .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationStore, stationMessageSender, stateManager))
                 .put(SetChargingProfileRequest.class, new SetChargingProfileRequestHandler(stationMessageSender))
+                .put(UnlockConnectorRequest.class, new UnlockConnectorRequestHandler(stationStore, stationMessageSender))
                 .build();
     }
 
