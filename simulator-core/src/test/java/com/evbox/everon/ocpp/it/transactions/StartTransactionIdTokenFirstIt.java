@@ -4,7 +4,7 @@ import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.mock.csms.exchange.Authorize;
 import com.evbox.everon.ocpp.mock.csms.exchange.StatusNotification;
 import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
-import com.evbox.everon.ocpp.simulator.station.actions.Plug;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
@@ -48,7 +48,7 @@ public class StartTransactionIdTokenFirstIt extends StationSimulatorSetUp {
         stationSimulatorRunner.run();
         ocppMockServer.waitUntilConnected();
 
-        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
+        triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.user.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> stationSimulatorRunner.getStation(STATION_ID).getStateView().hasAuthorizedToken());
 

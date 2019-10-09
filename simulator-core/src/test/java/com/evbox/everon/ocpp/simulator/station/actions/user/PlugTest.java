@@ -1,10 +1,15 @@
-package com.evbox.everon.ocpp.simulator.station.actions;
+package com.evbox.everon.ocpp.simulator.station.actions.user;
 
+import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationResponse;
@@ -17,20 +22,23 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CONNECTOR_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PlugTest {
 
     @Mock
-    StationState stationStateMock;
+    StationStore stationStoreMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
+    @Mock
+    StateManager stateManagerMock;
     @Mock
     Evse evseMock;
     @Mock
@@ -41,16 +49,18 @@ public class PlugTest {
     @BeforeEach
     void setUp() {
         this.plug = new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
+        when(evseMock.getEvseState()).thenReturn(new AvailableState());
     }
 
     @Test
     void shouldThrowExceptionOnIllegalState() {
 
-        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.LOCKED);
 
-        assertThrows(IllegalStateException.class, () -> plug.perform(stationStateMock, stationMessageSenderMock));
+        assertThrows(IllegalStateException.class, () -> plug.perform(stateManagerMock));
 
     }
 
@@ -58,14 +68,15 @@ public class PlugTest {
     void verifyTransactionEventUpdate() {
 
         // given
-        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
-        when(evseMock.hasTokenId()).thenReturn(true);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
+        when(evseMock.getEvseState()).thenReturn(new WaitingForPlugState());
+
         // when
-        plug.perform(stationStateMock, stationMessageSenderMock);
+        plug.perform(stateManagerMock);
 
         // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
@@ -74,8 +85,8 @@ public class PlugTest {
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock).sendTransactionEventUpdateAndSubscribe(anyInt(), anyInt(), any(TransactionEventRequest.TriggerReason.class),
-                isNull(), any(TransactionData.ChargingState.class), any(Subscriber.class));
+        verify(stationMessageSenderMock, times(2)).sendTransactionEventUpdate(anyInt(), anyInt(), any(TransactionEventRequest.TriggerReason.class),
+                isNull(), any(TransactionData.ChargingState.class));
 
     }
 
@@ -83,14 +94,13 @@ public class PlugTest {
     void verifyTransactionEventStart() {
 
         // given
-        when(stationStateMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.EV_CONNECTED)));
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.hasOngoingTransaction()).thenReturn(true);
-        when(evseMock.hasTokenId()).thenReturn(false);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
         // when
-        plug.perform(stationStateMock, stationMessageSenderMock);
+        plug.perform(stateManagerMock);
 
         // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);

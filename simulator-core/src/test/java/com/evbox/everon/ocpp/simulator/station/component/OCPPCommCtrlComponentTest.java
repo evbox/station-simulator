@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
@@ -38,7 +38,7 @@ class OCPPCommCtrlComponentTest {
     @Mock
     Station stationMock;
     @Mock
-    StationState stationState;
+    StationStore stationStore;
     @Captor
     ArgumentCaptor<CiString.CiString1000> ciStringCaptor;
     @Captor
@@ -48,7 +48,7 @@ class OCPPCommCtrlComponentTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        ocppCommCtrlrComponent = new OCPPCommCtrlrComponent(stationMock, stationState);
+        ocppCommCtrlrComponent = new OCPPCommCtrlrComponent(stationMock, stationStore);
         Map<CiString.CiString50, VariableAccessor> variableAccessors
                 = ImmutableMap.of(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME), heartbeatIntervalVariableAccessorMock);
 

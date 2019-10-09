@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
@@ -16,7 +16,7 @@ import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRespon
 @AllArgsConstructor
 public class AvailabilityManager {
 
-    private final StationState stationState;
+    private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
 
     /**
@@ -36,7 +36,7 @@ public class AvailabilityManager {
     public void changeEvseAvailability(String callId, ChangeAvailabilityRequest request, EvseStatus requestedEvseStatus) {
 
         try {
-            Evse evse = stationState.findEvse(request.getEvseId());
+            Evse evse = stationStore.findEvse(request.getEvseId());
 
             ChangeAvailabilityResponse.Status evseStatus = determineEvseStatus(requestedEvseStatus, evse);
 
@@ -67,7 +67,7 @@ public class AvailabilityManager {
      */
     public void changeStationAvailability(String callId, EvseStatus requestedEvseStatus) {
 
-        if (stationState.getEvses().isEmpty()) {
+        if (stationStore.getEvses().isEmpty()) {
             sendResponseWithStatus(callId, REJECTED);
             return;
         }
@@ -76,7 +76,7 @@ public class AvailabilityManager {
 
         sendResponseWithStatus(callId, stationStatus);
 
-        stationState.getEvses().forEach(this::sendNotificationRequest);
+        stationStore.getEvses().forEach(this::sendNotificationRequest);
 
     }
 
@@ -85,7 +85,7 @@ public class AvailabilityManager {
 
         ChangeAvailabilityResponse.Status stationStatus = null;
 
-        for (Evse evse : stationState.getEvses()) {
+        for (Evse evse : stationStore.getEvses()) {
 
             ChangeAvailabilityResponse.Status evseStatus = determineEvseStatus(requestedEvseStatus, evse);
 

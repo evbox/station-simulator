@@ -1,16 +1,14 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionRequest;
 import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionResponse;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
-
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_STOP;
 
 /**
  * Handler for {@link RequestStopTransactionRequest} request.
@@ -18,12 +16,14 @@ import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.
 @Slf4j
 public class RequestStopTransactionRequestHandler implements OcppRequestHandler<RequestStopTransactionRequest> {
 
+    private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
-    private final StationState stationState;
+    private final StateManager stateManager;
 
-    public RequestStopTransactionRequestHandler(StationMessageSender stationMessageSender, StationState stationState) {
+    public RequestStopTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, StateManager stateManager) {
+        this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
-        this.stationState = stationState;
+        this.stateManager = stateManager;
     }
 
     /**
@@ -36,19 +36,13 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
     public void handle(String callId, RequestStopTransactionRequest request) {
 
         String transactionId = request.getTransactionId().toString();
-        Optional<Evse> evse = stationState.tryFindEvseByTransactionId(transactionId);
+        Optional<Evse> evse = stationStore.tryFindEvseByTransactionId(transactionId);
         if (evse.isPresent()) {
             stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.ACCEPTED));
-            stopCharging(evse.get());
+            stateManager.remoteStop(evse.get().getId());
         } else {
             log.debug("Received RequestStopTransactionRequest with invalid transactionID: " + transactionId);
             stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.REJECTED));
         }
-    }
-
-    private void stopCharging(Evse evse) {
-        evse.remotelyStopCharging();
-        Integer connectorId = evse.tryUnlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, REMOTE_STOP, TransactionData.ChargingState.EV_DETECTED);
     }
 }

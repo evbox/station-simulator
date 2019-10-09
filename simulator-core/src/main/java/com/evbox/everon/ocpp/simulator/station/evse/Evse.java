@@ -2,6 +2,8 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 
 import com.evbox.everon.ocpp.simulator.station.evse.Connector.ConnectorView;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction.EvseTransactionView;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.EvseState;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -52,6 +54,12 @@ public class Evse {
      */
     private long totalConsumedWattHours;
 
+
+    /**
+     *  Current state of the evse
+     */
+    private EvseState evseState;
+
     /**
      * Create Evse instance. By default evse is in the status AVAILABLE.
      *
@@ -86,6 +94,7 @@ public class Evse {
         this.evseStatus = evseStatus;
         this.transaction = transaction;
         this.connectors = connectors;
+        this.evseState = new AvailableState();
     }
 
     /**
@@ -144,6 +153,22 @@ public class Evse {
      */
     public String getTokenId() {
         return tokenId;
+    }
+
+    /**
+     * Getter for the current evse state.
+     * @return evseState
+     */
+    public EvseState getEvseState() {
+        return evseState;
+    }
+
+    /**
+     * Sets the current state of the evse.
+     * @param evseState new state fro the evse
+     */
+    public void setEvseState(EvseState evseState) {
+        this.evseState = evseState;
     }
 
     /**

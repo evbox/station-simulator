@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 class StationMessageSenderTest {
 
     @Mock
-    StationState stationStateMock;
+    StationStore stationStoreMock;
     @Mock
     SubscriptionRegistry subscriptionRegistryMock;
     @Mock
@@ -54,7 +54,7 @@ class StationMessageSenderTest {
     @BeforeEach
     void setUp() {
         when(webSocketClientMock.getInbox()).thenReturn(queue);
-        this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStateMock, webSocketClientMock);
+        this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStoreMock, webSocketClientMock);
     }
 
     @Test
@@ -77,7 +77,7 @@ class StationMessageSenderTest {
     @Test
     void verifyTransactionEventStart() throws InterruptedException {
 
-        mockStationState();
+        mockStationPersistenceLayer();
 
         stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
 
@@ -101,7 +101,7 @@ class StationMessageSenderTest {
     @Test
     void verifyTransactionEventUpdate() throws InterruptedException {
 
-        mockStationState();
+        mockStationPersistenceLayer();
 
         stationMessageSender.sendTransactionEventUpdate(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.CHARGING);
 
@@ -124,7 +124,7 @@ class StationMessageSenderTest {
     @Test
     void verifyTransactionEventEnded() throws InterruptedException {
 
-        mockStationState();
+        mockStationPersistenceLayer();
 
         stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV);
 
@@ -183,9 +183,9 @@ class StationMessageSenderTest {
     @Test
     void verifyStatusNotification() throws InterruptedException {
 
-        when(stationStateMock.getCurrentTime()).thenReturn(new Date().toInstant());
+        when(stationStoreMock.getCurrentTime()).thenReturn(new Date().toInstant());
         Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
-        when(stationStateMock.findEvse(anyInt())).thenReturn(evse);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evse);
         when(evse.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
@@ -246,14 +246,14 @@ class StationMessageSenderTest {
         assertThat(actualMessage.getData().get()).isEqualTo(expectedCall);
     }
 
-    private void mockStationState() {
+    private void mockStationPersistenceLayer() {
         Evse evse = createEvse()
                 .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS))
                 .withId(DEFAULT_EVSE_ID)
                 .build();
-        when(stationStateMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
-        when(stationStateMock.getCurrentTime()).thenReturn(new Date().toInstant());
+        when(stationStoreMock.getCurrentTime()).thenReturn(new Date().toInstant());
     }
 
 

@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -40,8 +40,8 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::setActualValue)
             .build();
 
-    public HeartbeatIntervalVariableAccessor(Station station, StationState stationState) {
-        super(station, stationState);
+    public HeartbeatIntervalVariableAccessor(Station station, StationStore stationStore) {
+        super(station, stationStore);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
         Component component = new Component()
                 .withName(new CiString.CiString50(componentName));
 
-        int heartbeatInterval = getStationState().getHeartbeatInterval();
+        int heartbeatInterval = getStationStore().getHeartbeatInterval();
         VariableAttribute variableAttribute = new VariableAttribute()
                 .withValue(new CiString.CiString1000(String.valueOf(heartbeatInterval)))
                 .withPersistence(false)
@@ -110,7 +110,7 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
-        int heartbeatInterval = getStationState().getHeartbeatInterval();
+        int heartbeatInterval = getStationStore().getHeartbeatInterval();
 
         return new GetVariableResult()
                 .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED)

@@ -15,8 +15,8 @@ public class HeartbeatScheduler {
 
     private HeartbeatSenderTask heartbeatTask;
 
-    public HeartbeatScheduler(StationState stationState, StationMessageSender stationMessageSender) {
-        this.heartbeatTask = new HeartbeatSenderTask(stationState, stationMessageSender);
+    public HeartbeatScheduler(StationStore stationStore, StationMessageSender stationMessageSender) {
+        this.heartbeatTask = new HeartbeatSenderTask(stationStore, stationMessageSender);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
                 heartbeatTask, INITIAL_TASK_DELAY_IN_SECONDS, TASK_PERIOD_IN_SECONDS, TimeUnit.SECONDS);
     }

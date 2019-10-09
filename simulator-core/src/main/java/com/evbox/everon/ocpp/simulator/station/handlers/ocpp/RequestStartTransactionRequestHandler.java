@@ -1,19 +1,16 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.*;
 
 /**
  * Handler for {@link RequestStartTransactionRequest} request.
@@ -21,12 +18,14 @@ import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.
 @Slf4j
 public class RequestStartTransactionRequestHandler implements OcppRequestHandler<RequestStartTransactionRequest> {
 
-    private final StationState stationState;
+    private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
+    private final StateManager stateManager;
 
-    public RequestStartTransactionRequestHandler(StationMessageSender stationMessageSender, StationState stationState) {
-        this.stationState = stationState;
+    public RequestStartTransactionRequestHandler(StationStore stationStore, StationMessageSender stationMessageSender, StateManager stateManager) {
+        this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
+        this.stateManager = stateManager;
     }
 
     /**
@@ -39,45 +38,30 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
     public void handle(String callId, RequestStartTransactionRequest request) {
 
         Optional<Evse> optionalEvse = Optional.ofNullable(request.getEvseId())
-                                        .map(stationState::tryFindEvse)
-                                        .orElseGet(stationState::tryFindAvailableEvse);
+                                        .map(stationStore::tryFindEvse)
+                                        .orElseGet(stationStore::tryFindAvailableEvse);
 
         if (optionalEvse.isPresent()) {
             Evse evse = optionalEvse.get();
             Connector connector = evse.tryFindAvailableConnector().orElse(null);
+
+            if (!AvailableState.NAME.equals(stateManager.getStateForEvse(evse.getId()).getStateName())) {
+                log.debug("Evse not available");
+                stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
+                return;
+            }
 
             if (connector == null || connector.getCableStatus() != CableStatus.UNPLUGGED) {
                 log.debug("Connector not available");
                 stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
                 return;
             }
-
-            if (!evse.hasOngoingTransaction()) {
-                String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                evse.createTransaction(transactionId);
-            }
-
-            evse.setToken(request.getIdToken().getIdToken().toString());
-
             stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.ACCEPTED));
-            stationMessageSender.sendStatusNotification(evse.getId(), connector.getId(), StatusNotificationRequest.ConnectorStatus.OCCUPIED);
-            stationMessageSender.sendTransactionEventStart(evse.getId(), connector.getId(), request.getRemoteStartId(), REMOTE_START);
 
-            awaitCablePlugged(evse.getId(), connector.getId());
+            stateManager.remoteStart(evse.getId(), request.getRemoteStartId(), request.getIdToken().getIdToken().toString(), connector);
         } else {
             log.debug("No available evse to start a new transaction");
             stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
-        }
-    }
-
-    private void awaitCablePlugged(int evseId, int connectorId) {
-        if (!stationState.isAwaitingForPlug(evseId)) {
-            stationState.saveConnectionTimeOutFuture(evseId, Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-                stationState.removeConnectionTimeOutFuture(evseId);
-                stationMessageSender.sendStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
-                stationState.findEvse(evseId).stopTransaction();
-                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, null, TransactionData.StoppedReason.TIMEOUT);
-            }, stationState.getEVConnectionTimeOut(), TimeUnit.SECONDS));
         }
     }
 

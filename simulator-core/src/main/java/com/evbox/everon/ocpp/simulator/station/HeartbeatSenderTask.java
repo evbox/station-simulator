@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 @Slf4j
 public final class HeartbeatSenderTask implements Runnable {
 
-    private final StationState stationState;
+    private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
 
     private int heartBeatInterval;
     private LocalDateTime timeOfLastHeartbeatSent;
 
-    public HeartbeatSenderTask(StationState stationState, StationMessageSender stationMessageSender) {
-        this.stationState = stationState;
+    public HeartbeatSenderTask(StationStore stationStore, StationMessageSender stationMessageSender) {
+        this.stationStore = stationStore;
         this.stationMessageSender = stationMessageSender;
         this.heartBeatInterval = 0;
         this.timeOfLastHeartbeatSent = LocalDateTime.MIN;
@@ -36,7 +36,7 @@ public final class HeartbeatSenderTask implements Runnable {
             LocalDateTime now = LocalDateTime.now();
             if (shouldSendHeartbeat(now, stationMessageSender.getTimeOfLastMessageSent())) {
                 HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
-                Subscriber<HeartbeatRequest, HeartbeatResponse> subscriber = (request, response) -> stationState.setCurrentTime(response.getCurrentTime());
+                Subscriber<HeartbeatRequest, HeartbeatResponse> subscriber = (request, response) -> stationStore.setCurrentTime(response.getCurrentTime());
                 stationMessageSender.sendHeartBeatAndSubscribe(heartbeatRequest, subscriber);
                 timeOfLastHeartbeatSent = now;
             }

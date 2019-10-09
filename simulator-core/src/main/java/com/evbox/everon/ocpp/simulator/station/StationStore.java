@@ -1,6 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station;
 
+import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
@@ -19,7 +21,6 @@ import lombok.ToString;
 
 import java.time.*;
 import java.util.*;
-import java.util.concurrent.ScheduledFuture;
 
 import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static java.util.stream.Collectors.toList;
@@ -29,20 +30,24 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * Represents the state of the station.
  */
 @ToString
-public class StationState {
+public class StationStore {
 
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private int evConnectionTimeOut;
     private Map<Integer, Evse> evses;
-    private Map<Integer, ScheduledFuture> connectionTimeOutFutures = new HashMap<>();
+    private OptionList<TxStartStopPointVariableValues> txStartPointValues;
+    private OptionList<TxStartStopPointVariableValues> txStopPointValues;
 
-    public StationState(SimulatorConfiguration.StationConfiguration configuration) {
+
+    public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
+        this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoint()));
+        this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoint()));
     }
 
-    public StationState(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
+    public StationStore(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
         this.clock = clock;
         this.heartbeatInterval = heartbeatInterval;
         this.evConnectionTimeOut = evConnectionTimeOut;
@@ -171,53 +176,20 @@ public class StationState {
                         .findAny());
     }
 
-    /**
-     * Saves the future for a scheduled connection timeout.
-     *
-     * @param evseId id of the evse
-     * @param future future of the scheduled timeout
-     */
-    public void saveConnectionTimeOutFuture(int evseId, ScheduledFuture future) {
-        connectionTimeOutFutures.put(evseId, future);
+    public OptionList<TxStartStopPointVariableValues> getTxStartPointValues() {
+        return txStartPointValues;
     }
 
-    /**
-     * Returns true if the evse was remotely started and it is
-     * waiting for the cable to be plugged.
-     *
-     * @param evseId id of the evse
-     * @return true if the evse is waiting for the cable to be plugged
-     */
-    public boolean isAwaitingForPlug(int evseId) {
-        return connectionTimeOutFutures.containsKey(evseId);
+    public void setTxStartPointValues(OptionList<TxStartStopPointVariableValues> txStartPointValues) {
+        this.txStartPointValues = txStartPointValues;
     }
 
-    /**
-     * Stops the running future that will trigger the connection
-     * timeout for transactions started remotely.
-     *
-     * @param evseId id of the evse
-     * @return true if the evse had a future running
-     */
-    public boolean stopConnectionTimeOut(int evseId) {
-        ScheduledFuture future = connectionTimeOutFutures.get(evseId);
-        if (future == null) {
-            return false;
-        }
-
-        future.cancel(true);
-        removeConnectionTimeOutFuture(evseId);
-        return true;
+    public OptionList<TxStartStopPointVariableValues> getTxStopPointValues() {
+        return txStopPointValues;
     }
 
-    /**
-     * Deletes the evse from the map of evses waiting for the cable
-     * to be plugged.
-     *
-     * @param evseId id of the evse
-     */
-    public void removeConnectionTimeOutFuture(int evseId) {
-        connectionTimeOutFutures.remove(evseId);
+    public void setTxStopPointValues(OptionList<TxStartStopPointVariableValues> txStopPointValues) {
+        this.txStopPointValues = txStopPointValues;
     }
 
     private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
@@ -236,15 +208,15 @@ public class StationState {
         return evseMapBuilder.build();
     }
 
-    StationStateView createView() {
+    StationStoreView createView() {
         List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
-        return new StationStateView(clock, heartbeatInterval, evConnectionTimeOut, evsesCopy);
+        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, evsesCopy);
     }
 
     @Getter
     @AllArgsConstructor
-    public class StationStateView {
+    public class StationStoreView {
 
         @JsonIgnore
         private final Clock clock;
@@ -312,7 +284,7 @@ public class StationState {
             try {
                 return prettyJSONWriter.writeValueAsString(this);
             } catch (JsonProcessingException e) {
-                return "Error while serializing StationStateView: " + e.getMessage();
+                return "Error while serializing StationStoreView: " + e.getMessage();
             }
         }
     }

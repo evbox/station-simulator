@@ -1,9 +1,9 @@
 package com.evbox.everon.ocpp.simulator.cli;
 
-import com.evbox.everon.ocpp.simulator.station.actions.Authorize;
-import com.evbox.everon.ocpp.simulator.station.actions.Plug;
-import com.evbox.everon.ocpp.simulator.station.actions.Unplug;
-import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Authorize;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Unplug;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;

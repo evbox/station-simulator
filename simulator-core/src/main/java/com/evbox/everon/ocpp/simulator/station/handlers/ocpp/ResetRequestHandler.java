@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetResponse;
@@ -22,7 +22,7 @@ import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.
 @AllArgsConstructor
 public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
 
-    private final StationState state;
+    private final StationStore state;
     private final StationMessageSender stationMessageSender;
 
     /**

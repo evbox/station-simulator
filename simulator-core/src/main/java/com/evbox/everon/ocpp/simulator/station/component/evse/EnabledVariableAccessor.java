@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component.evse;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationState;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
@@ -41,8 +41,8 @@ public class EnabledVariableAccessor extends VariableAccessor {
             .put(AttributeType.ACTUAL, this::rejectVariable)
             .build();
 
-    public EnabledVariableAccessor(Station station, StationState stationState) {
-        super(station, stationState);
+    public EnabledVariableAccessor(Station station, StationStore stationStore) {
+        super(station, stationStore);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class EnabledVariableAccessor extends VariableAccessor {
     public List<ReportDatum> generateReportData(String componentName) {
         List<ReportDatum> reportData = new ArrayList<>();
 
-        for (Evse evse : getStationState().getEvses()) {
+        for (Evse evse : getStationStore().getEvses()) {
             com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
                     .withId(evse.getId());
 
@@ -118,7 +118,7 @@ public class EnabledVariableAccessor extends VariableAccessor {
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
-        boolean evseExists = getStationState().hasEvse(evseId);
+        boolean evseExists = getStationStore().hasEvse(evseId);
 
         if (evseExists) {
             return getVariableResult

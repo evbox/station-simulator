@@ -1,8 +1,11 @@
 package com.evbox.everon.ocpp.simulator.station;
 
-import com.evbox.everon.ocpp.simulator.station.actions.Authorize;
-import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.system.CancelRemoteStartTransaction;
+import com.evbox.everon.ocpp.simulator.station.actions.system.SystemMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Authorize;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
+import com.evbox.everon.ocpp.simulator.station.handlers.SystemMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +26,8 @@ public class StationMessageRouterTest {
     UserMessageHandler userMessageHandlerMock;
     @Mock
     ServerMessageHandler serverMessageHandlerMock;
+    @Mock
+    SystemMessageHandler systemMessageHandlerMock;
 
     @InjectMocks
     StationMessageRouter stationMessageRouter;
@@ -31,6 +36,8 @@ public class StationMessageRouterTest {
     ArgumentCaptor<String> serverMessageCaptor;
     @Captor
     ArgumentCaptor<UserMessage> userMessageCaptor;
+    @Captor
+    ArgumentCaptor<SystemMessage> systemMessageCaptor;
 
     @Test
     void verifyServerMessageRouting() {
@@ -59,6 +66,21 @@ public class StationMessageRouterTest {
         verify(userMessageHandlerMock).handle(userMessageCaptor.capture());
 
         assertThat(userMessage).isEqualTo(userMessageCaptor.getValue());
+
+    }
+
+    @Test
+    void verifySystemMessageRouting() {
+
+        SystemMessage systemMessage = new CancelRemoteStartTransaction(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+
+        StationMessage stationMessage = new StationMessage(STATION_ID, StationMessage.Type.SYSTEM_ACTION, systemMessage);
+
+        stationMessageRouter.route(stationMessage);
+
+        verify(systemMessageHandlerMock).handle(systemMessageCaptor.capture());
+
+        assertThat(systemMessage).isEqualTo(systemMessageCaptor.getValue());
 
     }
 }

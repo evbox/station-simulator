@@ -2,7 +2,7 @@ package com.evbox.everon.ocpp.simulator.cli;
 
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
-import com.evbox.everon.ocpp.simulator.station.actions.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,12 +24,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class ConsoleReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleReader.class);
 
-    private static final String SHOW_STATION_STATE_CMD = "stat";
+    private static final String SHOW_STATION_STORE_CMD = "stat";
 
     private int selectedStation = 0;
 
     private final List<Station> stations;
-    private final ExecutorService consoleReaderExecutorService = Executors.newSingleThreadExecutor();;
+    private final ExecutorService consoleReaderExecutorService = Executors.newSingleThreadExecutor();
 
     public ConsoleReader(List<Station> stations) {
 
@@ -64,7 +64,7 @@ public class ConsoleReader {
         String commandName = commandArgs.get(0);
 
         boolean selectStationCommand = commandArgs.size() == 1 && StringUtils.isNumeric(commandName);
-        boolean showStationStateCommand = commandArgs.size() == 1 && SHOW_STATION_STATE_CMD.equalsIgnoreCase(commandName);
+        boolean showStationStoreCommand = commandArgs.size() == 1 && SHOW_STATION_STORE_CMD.equalsIgnoreCase(commandName);
 
         if (selectStationCommand) {
             selectNewStation(Integer.valueOf(commandName));
@@ -75,14 +75,14 @@ public class ConsoleReader {
 
             station.sendMessage(new StationMessage(station.getConfiguration().getId(), StationMessage.Type.USER_ACTION, userMessage));
 
-        } else if (showStationStateCommand) {
-            showStationState();
+        } else if (showStationStoreCommand) {
+            showStationStore();
         } else if (isNotBlank(commandName)) {
             System.out.println("Unknown command: " + commandName);
         }
     }
 
-    private void showStationState() {
+    private void showStationStore() {
         System.out.println(stations.get(selectedStation).getStateView());
     }
 

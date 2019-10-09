@@ -18,7 +18,7 @@ import static org.awaitility.Awaitility.await;
 
 public class GetBaseReportIt extends StationSimulatorSetUp {
 
-        private static final int NOTIFY_REPORT_VARIABLES_LESS_ONE = 10;
+        private static final int NOTIFY_REPORT_VARIABLES_LESS_ONE = 12;
 
     @Test
     void shouldReplyToGetBaseReportRequest() {

@@ -2,13 +2,13 @@ package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.simulator.station.handlers.MessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
+import com.evbox.everon.ocpp.simulator.station.handlers.SystemMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-import static com.evbox.everon.ocpp.simulator.station.StationMessage.Type.OCPP_MESSAGE;
-import static com.evbox.everon.ocpp.simulator.station.StationMessage.Type.USER_ACTION;
+import static com.evbox.everon.ocpp.simulator.station.StationMessage.Type.*;
 
 /**
  * Router that directs an incoming message to handler-class {@link MessageHandler}.
@@ -24,11 +24,13 @@ public class StationMessageRouter {
      *
      * @param serverMessageHandler an instance for handling server messages
      * @param userMessageHandler ans instance for handling user messages
+     * @param systemMessageHandler ans instance for handling system messages
      */
-    public StationMessageRouter(ServerMessageHandler serverMessageHandler, UserMessageHandler userMessageHandler) {
+    public StationMessageRouter(ServerMessageHandler serverMessageHandler, UserMessageHandler userMessageHandler, SystemMessageHandler systemMessageHandler) {
         this.messageHandlers = ImmutableMap.of(
                 USER_ACTION, userMessageHandler,
-                OCPP_MESSAGE, serverMessageHandler
+                OCPP_MESSAGE, serverMessageHandler,
+                SYSTEM_ACTION, systemMessageHandler
         );
     }
 

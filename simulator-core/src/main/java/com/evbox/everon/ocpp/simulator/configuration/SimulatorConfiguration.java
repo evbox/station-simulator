@@ -1,10 +1,12 @@
 package com.evbox.everon.ocpp.simulator.configuration;
 
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -13,6 +15,8 @@ public class SimulatorConfiguration {
     private static final int DEFAULT_HEARTBEAT_INTERVAL = 60;
 
     private static final int DEFAULT_EV_CONNECTION_TIMEOUT = 60;
+    private static final List<String> DEFAULT_TX_START_POINT = Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
+    private static final List<String> DEFAULT_TX_STOP_POINT = Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
 
     private static final long DEFAULT_SEND_METER_VALUES_INTERVAL_SEC = 10;
     private static final long DEFAULT_CONSUMPTION_WATT_HOUR = 22_000;
@@ -107,6 +111,18 @@ public class SimulatorConfiguration {
          */
         @Builder.Default
         private int evConnectionTimeOutSec = DEFAULT_EV_CONNECTION_TIMEOUT;
+
+        /**
+         * List of events that defines when a new transaction should start.
+         */
+        @Builder.Default
+        private List<String> txStartPoint = DEFAULT_TX_START_POINT;
+
+        /**
+         * List of events that when no longer valid, the transaction should be ended.
+         */
+        @Builder.Default
+        private List<String> txStopPoint = DEFAULT_TX_STOP_POINT;
     }
 
     @Data

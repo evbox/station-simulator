@@ -1,11 +1,14 @@
-package com.evbox.everon.ocpp.simulator.station.actions;
+package com.evbox.everon.ocpp.simulator.station.actions.user;
 
+import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.mock.factory.EvseCreator;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.simulator.station.StationState;
-import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.*;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.StoppedState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationResponse;
@@ -18,6 +21,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CONNECTOR_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,34 +34,46 @@ import static org.mockito.Mockito.*;
 public class UnplugTest {
 
     @Mock
-    StationState stationStateMock;
+    Connector connectorMock;
+    @Mock
+    Evse evseMock;
+    @Mock
+    StationStore stationStoreMock;
     @Mock
     StationMessageSender stationMessageSenderMock;
+    @Mock
+    StateManager stateManagerMock;
 
     Unplug unplug;
 
     @BeforeEach
     void setUp() {
         this.unplug = new Unplug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
+        when(evseMock.getEvseState()).thenReturn(new AvailableState());
+        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
     }
 
     @Test
     void shouldThrowExceptionWhenStateIsLocked() {
 
-        Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
-        when(stationStateMock.findEvse(anyInt())).thenReturn(evse);
-        when(evse.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.LOCKED);
+        when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(evseMock.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.LOCKED);
 
-        assertThrows(IllegalStateException.class, () -> unplug.perform(stationStateMock, stationMessageSenderMock));
+        assertThrows(IllegalStateException.class, () -> unplug.perform(stateManagerMock));
 
     }
 
     @Test
     void verifyTransactionStatusNotification() {
 
-        when(stationStateMock.findEvse(anyInt())).thenReturn(EvseCreator.DEFAULT_EVSE_INSTANCE);
+        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
 
-        unplug.perform(stationStateMock, stationMessageSenderMock);
+        unplug.perform(stateManagerMock);
 
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
@@ -68,4 +85,5 @@ public class UnplugTest {
                 nullable(TransactionData.StoppedReason.class));
 
     }
+
 }
