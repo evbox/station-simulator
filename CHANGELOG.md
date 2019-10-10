@@ -1,5 +1,10 @@
 # Station Simulator Releases #
 
+### Version 0.3.8
+
+- Added support for Remote unlock connector
+- Added TxStartPoint and TxStopPoint configurations
+
 ### Version 0.3.7
 
 - Improved simulator 
