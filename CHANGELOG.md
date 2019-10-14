@@ -1,5 +1,11 @@
 # Station Simulator Releases #
 
+### Version 0.3.8
+
+- Logging is moved from console to log file
+- Added support for Remote unlock connector
+- Added TxStartPoint and TxStopPoint configurations
+
 ### Version 0.3.7
 
 - Improved simulator 

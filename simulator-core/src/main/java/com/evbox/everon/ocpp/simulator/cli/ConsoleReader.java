@@ -78,12 +78,12 @@ public class ConsoleReader {
         } else if (showStationStoreCommand) {
             showStationStore();
         } else if (isNotBlank(commandName)) {
-            System.out.println("Unknown command: " + commandName);
+            System.out.println("Unknown command: " + commandName); //NOSONAR
         }
     }
 
     private void showStationStore() {
-        System.out.println(stations.get(selectedStation).getStateView());
+        System.out.println(stations.get(selectedStation).getStateView()); //NOSONAR
     }
 
     private void selectNewStation(int newStationIndex) {
@@ -94,8 +94,8 @@ public class ConsoleReader {
     }
 
     private void showStationsList() {
-        System.out.println();
-        System.out.println("List of stations:");
+        System.out.println(); //NOSONAR
+        System.out.println("List of stations:"); //NOSONAR
 
         String stationsList = IntStream.range(0, stations.size()).mapToObj(i -> {
             Station station = stations.get(i);
@@ -103,10 +103,10 @@ public class ConsoleReader {
             return (i == selectedStation ? "[SELECTED]: " : i + ": ") + stationId;
         }).collect(joining("\n"));
 
-        System.out.println(stationsList);
+        System.out.println(stationsList); //NOSONAR
         if (stations.size() > 1) {
-            System.out.println();
-            System.out.println("Select another station by typing its index [0-" + (stations.size() - 1) + "] and pressing ENTER");
+            System.out.println(); //NOSONAR
+            System.out.println("Select another station by typing its index [0-" + (stations.size() - 1) + "] and pressing ENTER"); //NOSONAR
         }
 
         String commands = "Available commands:\n";
@@ -115,7 +115,7 @@ public class ConsoleReader {
         commands += "\tauth {tokenId} {evseId} - authorize token at given EVSE\n";
         commands += "\tstat - show state of selected station";
 
-        System.out.println(commands);
+        System.out.println(commands); //NOSONAR
     }
 
 }
