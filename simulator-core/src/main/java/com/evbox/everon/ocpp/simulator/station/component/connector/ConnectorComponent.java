@@ -12,7 +12,8 @@ public class ConnectorComponent extends StationComponent {
     public ConnectorComponent(Station station, StationStore stationStore) {
         super(ImmutableList.of(
                 new EnabledVariableAccessor(station, stationStore),
-                new ConnectorTypeVariableAccessor(station, stationStore)
+                new ConnectorTypeVariableAccessor(station, stationStore),
+                new AvailabilityStateVariableAccessor(station, stationStore)
         ));
     }
 

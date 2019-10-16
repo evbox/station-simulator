@@ -21,7 +21,7 @@ public class GetBaseReportRequestHandler implements OcppRequestHandler<GetBaseRe
     public GetBaseReportRequestHandler(Clock clock, StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender) {
         reports = of(
                 FULL_INVENTORY, new FullInventoryReport(stationComponentsHolder, stationMessageSender, clock),
-                SUMMARY_INVENTORY, new SummaryInventoryReport(stationMessageSender, clock),
+                SUMMARY_INVENTORY, new SummaryInventoryReport(stationComponentsHolder, stationMessageSender, clock),
                 CONFIGURATION_INVENTORY, new ConfigurationInventoryReport(stationComponentsHolder, stationMessageSender, clock)
         );
     }

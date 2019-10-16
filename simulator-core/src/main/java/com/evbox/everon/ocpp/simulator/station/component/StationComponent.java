@@ -98,6 +98,16 @@ public abstract class StationComponent {
     }
 
     /**
+     * Retrieves the variable accessor by the name specified.
+     *
+     * @param name name of the Variable
+     * @return requested variable accessor
+     */
+    public VariableAccessor getVariableAccessorByName(CiString.CiString50 name) {
+        return variableAccessors.get(name);
+    }
+
+    /**
      * Generates report data for all variables in the component
      *
      * @param onlyMutableVariables if true, returns only those variables that can be set by the operator
