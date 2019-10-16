@@ -10,9 +10,6 @@ import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
 import com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.Clock;
 import java.util.ArrayList;
@@ -21,7 +18,6 @@ import java.util.Optional;
 
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 
-@Slf4j
 public class SummaryInventoryReport extends BaseReport {
 
     private static final String AVAILABILITY_STATE_NAME = "AvailabilityState";
@@ -42,11 +38,6 @@ public class SummaryInventoryReport extends BaseReport {
         reportData.addAll(getAvailabilityStateReport(EVSEComponent.NAME));
         reportData.addAll(getAvailabilityStateReport(ConnectorComponent.NAME));
 
-        try {
-            log.info("Summary inventory base report: \n {}", new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(reportData));
-        } catch (JsonProcessingException e) {
-            log.info("Error printing the summary inventory base report.", e);
-        }
         sendNotifyReportRequests(reportData, request);
     }
 
