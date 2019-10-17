@@ -75,8 +75,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
             com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
                     .withId(evse.getId());
             for (Connector connector : evse.getConnectors()) {
-                // The evse is always available, the state for connector should be sent if different that the EVSE one
-                if (connector.getConnectorStatus() != StatusNotificationRequest.ConnectorStatus.AVAILABLE) {
+                if (!connector.getConnectorStatus().value().equals(evse.getEvseStatus().toString())) {
                     Component component = new Component()
                             .withName(new CiString.CiString50(componentName))
                             .withEvse(componentEvse.withConnectorId(connector.getId()));

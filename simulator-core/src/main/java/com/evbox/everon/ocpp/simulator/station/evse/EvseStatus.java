@@ -12,18 +12,28 @@ import java.util.List;
  */
 public enum EvseStatus {
 
-    AVAILABLE {
+    AVAILABLE("Available") {
         @Override
         public void changeConnectorStatus(List<Connector> connectors) {
             connectors.forEach(connector -> connector.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE));
         }
     },
-    UNAVAILABLE {
+    UNAVAILABLE("Unavailable") {
         @Override
         public void changeConnectorStatus(List<Connector> connectors) {
             connectors.forEach(connector -> connector.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.UNAVAILABLE));
         }
     };
+    private final String value;
+
+    EvseStatus(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return this.value;
+    }
 
     public boolean isAvailable() {
         return this == AVAILABLE;
