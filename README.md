@@ -21,7 +21,7 @@ To use the simulator in Maven-based project, use the following dependency:
 <dependency>
   <groupId>io.everon</groupId>
   <artifactId>ocpp-station-simulator</artifactId>
-  <version>0.3.4</version>
+  <version>0.3.8</version>
   <type>pom</type>
 </dependency>
 ```
@@ -30,7 +30,7 @@ To use the simulator in Maven-based project, use the following dependency:
 
 For Gradle add this to your build file:
 ```
-compile 'io.everon:ocpp-station-simulator:0.3.4'
+compile 'io.everon:ocpp-station-simulator:0.3.8'
 ```
 
 ## Build
