@@ -36,7 +36,7 @@ public class Station {
     private final SimulatorConfiguration.StationConfiguration configuration;
 
     private final StationStore state;
-    private StationStoreView stationStoreView;
+    private volatile StationStoreView stationStoreView; // NOSONAR
 
     private final WebSocketClient webSocketClient;
 
