@@ -109,7 +109,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
         callRegistry.addSubscription(call.getMessageId(), transactionEvent, subscriber);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -168,7 +168,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -188,7 +188,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -205,7 +205,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -221,7 +221,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.AUTHORIZE, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -236,7 +236,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.BOOT_NOTIFICATION, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -249,7 +249,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.BOOT_NOTIFICATION, payload);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -265,7 +265,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
 
     }
 
@@ -281,7 +281,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
 
     }
 
@@ -297,7 +297,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
 
     }
 
@@ -312,7 +312,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -325,7 +325,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.HEARTBEAT, heartbeatRequest);
         callRegistry.addSubscription(call.getMessageId(), heartbeatRequest, subscriber);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -341,7 +341,7 @@ public class StationMessageSender {
                 payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, generatedAt, reportData);
 
         Call call = createAndRegisterCall(ActionType.NOTIFY_REPORT, payload);
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -363,7 +363,7 @@ public class StationMessageSender {
     public void sendCallResult(String callId, Object payload) {
         CallResult callResult = new CallResult(callId, payload);
         String callStr = callResult.toJson();
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(callStr));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(callStr));
     }
 
     /**
@@ -376,7 +376,7 @@ public class StationMessageSender {
     public void sendCallError(String callId, CallError.Code errorCode, Object payload) {
         CallError callError = new CallError(callId, errorCode, payload);
         String callStr = callError.toJson();
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(callStr));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(callStr));
     }
 
     /**
@@ -401,7 +401,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     private <T> Call createAndRegisterCall(ActionType actionType, T payload) {

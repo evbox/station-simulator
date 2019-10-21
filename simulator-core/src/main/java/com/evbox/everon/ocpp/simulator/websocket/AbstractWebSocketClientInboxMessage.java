@@ -64,9 +64,9 @@ public abstract class AbstractWebSocketClientInboxMessage {
         }
     }
 
-    public static final class OcppMessageAbstract extends AbstractWebSocketClientInboxMessage {
+    public static final class OcppMessage extends AbstractWebSocketClientInboxMessage {
 
-        public OcppMessageAbstract(Object data) {
+        public OcppMessage(Object data) {
             super(data);
         }
 

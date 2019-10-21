@@ -80,6 +80,6 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
     private void sendResponse(String callId, Object payload) {
         CallResult callResult = new CallResult(callId, payload);
         String callStr = callResult.toJson();
-        stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(callStr));
+        stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(callStr));
     }
 }

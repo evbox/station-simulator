@@ -19,9 +19,9 @@ public class WebSocketMessageInboxTest {
     @Test
     void shouldGivePriorityBasedOnMessageSequenceId() {
 
-        AbstractWebSocketClientInboxMessage.OcppMessageAbstract message1 = new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("1");
-        AbstractWebSocketClientInboxMessage.OcppMessageAbstract message2 = new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("2");
-        AbstractWebSocketClientInboxMessage.OcppMessageAbstract message3 = new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("3");
+        AbstractWebSocketClientInboxMessage.OcppMessage message1 = new AbstractWebSocketClientInboxMessage.OcppMessage("1");
+        AbstractWebSocketClientInboxMessage.OcppMessage message2 = new AbstractWebSocketClientInboxMessage.OcppMessage("2");
+        AbstractWebSocketClientInboxMessage.OcppMessage message3 = new AbstractWebSocketClientInboxMessage.OcppMessage("3");
 
         inbox.offer(message2);
         inbox.offer(message3);
@@ -38,9 +38,9 @@ public class WebSocketMessageInboxTest {
     @Test
     void shouldGiveHigherPriorityToConnectMessage() {
 
-        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessage("{}"));
         inbox.offer(new AbstractWebSocketClientInboxMessage.Connect());
-        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessage("{}"));
 
         assertAll(
                 () -> assertThat(inbox.take().getPriority()).isEqualTo(CONNECT.getPriority()),
@@ -53,9 +53,9 @@ public class WebSocketMessageInboxTest {
     @Test
     void shouldGiveHigherPriorityToDisconnectMessage() {
 
-        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessage("{}"));
         inbox.offer(new AbstractWebSocketClientInboxMessage.Disconnect());
-        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessage("{}"));
 
         assertAll(
                 () -> assertThat(inbox.take().getPriority()).isEqualTo(DISCONNECT.getPriority()),
