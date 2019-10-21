@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.simulator.station.component.evse;
+package com.evbox.everon.ocpp.simulator.station.component.connector;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
@@ -9,12 +9,14 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import com.evbox.everon.ocpp.v20.message.station.VariableAttribute;
 import com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics;
 import com.google.common.collect.ImmutableMap;
@@ -31,7 +33,7 @@ import static java.util.Collections.singletonList;
 public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "AvailabilityState";
-    public static final String EVSE_AVAILABILITY = "Available";
+    public static final String CONNECTOR_AVAILABILITY = "Available";
 
     private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
             .put(AttributeType.ACTUAL, this::getActualValue)
@@ -72,28 +74,31 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
         for (Evse evse : getStationStore().getEvses()) {
             com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
                     .withId(evse.getId());
+            for (Connector connector : evse.getConnectors()) {
+                if (!connector.getConnectorStatus().value().equals(evse.getEvseStatus().toString())) {
+                    Component component = new Component()
+                            .withName(new CiString.CiString50(componentName))
+                            .withEvse(componentEvse.withConnectorId(connector.getId()));
 
-            Component component = new Component()
-                    .withName(new CiString.CiString50(componentName))
-                    .withEvse(componentEvse);
+                    VariableAttribute variableAttribute = new VariableAttribute()
+                            .withValue(new CiString.CiString1000(connector.getConnectorStatus().value()))
+                            .withPersistence(true)
+                            .withConstant(true)
+                            .withMutability(READ_ONLY);
 
-            VariableAttribute variableAttribute = new VariableAttribute()
-                    .withValue(new CiString.CiString1000(evse.getEvseStatus().toString()))
-                    .withPersistence(true)
-                    .withConstant(true)
-                    .withMutability(READ_ONLY);
+                    VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                            .withDataType(SEQUENCE_LIST)
+                            .withSupportsMonitoring(false);
 
-            VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
-                    .withDataType(SEQUENCE_LIST)
-                    .withSupportsMonitoring(false);
+                    ReportDatum reportDatum = new ReportDatum()
+                            .withComponent(component)
+                            .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
+                            .withVariableCharacteristics(variableCharacteristics)
+                            .withVariableAttribute(singletonList(variableAttribute));
 
-            ReportDatum reportDatum = new ReportDatum()
-                    .withComponent(component)
-                    .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                    .withVariableCharacteristics(variableCharacteristics)
-                    .withVariableAttribute(singletonList(variableAttribute));
-
-            reportData.add(reportDatum);
+                    reportData.add(reportDatum);
+                }
+            }
         }
 
         return reportData;
@@ -104,21 +109,22 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
         Integer evseId = attributePath.getComponent().getEvse().getId();
+        Integer connectorId = attributePath.getComponent().getEvse().getConnectorId();
 
         GetVariableResult getVariableResult = new GetVariableResult()
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
 
-        boolean evseExists = getStationStore().hasEvse(evseId);
-
-        if (evseExists) {
-            return getVariableResult
-                    .withAttributeValue(new CiString.CiString1000(EVSE_AVAILABILITY))
-                    .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
-        } else {
-            return getVariableResult.withAttributeStatus(GetVariableResult.AttributeStatus.REJECTED);
+        if (getStationStore().hasEvse(evseId)) {
+            Connector connector = getStationStore().findEvse(evseId).getConnectors().stream().filter(c -> c.getId().equals(connectorId)).findAny().orElse(null);
+            if (connector != null) {
+                return getVariableResult
+                        .withAttributeValue(new CiString.CiString1000(connector.getConnectorStatus().value()))
+                        .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
+            }
         }
+        return getVariableResult.withAttributeStatus(GetVariableResult.AttributeStatus.REJECTED);
     }
 
     private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {

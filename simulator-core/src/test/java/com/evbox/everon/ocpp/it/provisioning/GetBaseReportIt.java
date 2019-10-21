@@ -10,15 +10,14 @@ import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.CONFIGURATION_INVENTORY;
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.FULL_INVENTORY;
+import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.*;
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 public class GetBaseReportIt extends StationSimulatorSetUp {
 
-        private static final int NOTIFY_REPORT_VARIABLES_LESS_ONE = 12;
+        private static final int NOTIFY_REPORT_VARIABLES_LESS_ONE = 13;
 
     @Test
     void shouldReplyToGetBaseReportRequest() {
@@ -27,6 +26,24 @@ public class GetBaseReportIt extends StationSimulatorSetUp {
         ocppMockServer.waitUntilConnected();
 
         GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(CONFIGURATION_INVENTORY);
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.GET_BASE_REPORT, request);
+
+        GetBaseReportResponse response =
+                ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson(), GetBaseReportResponse.class);
+
+        await().untilAsserted(() -> {
+            assertThat(response.getStatus()).isEqualTo(ACCEPTED);
+            ocppMockServer.verify();
+        });
+    }
+
+    @Test
+    void shouldReplyToGetBaseReportRequestSummary() {
+
+        stationSimulatorRunner.run();
+        ocppMockServer.waitUntilConnected();
+
+        GetBaseReportRequest request = new GetBaseReportRequest().withReportBase(SUMMARY_INVENTORY);
         Call call = new Call(DEFAULT_CALL_ID, ActionType.GET_BASE_REPORT, request);
 
         GetBaseReportResponse response =

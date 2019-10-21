@@ -64,7 +64,7 @@ public class GetBaseReportRequestHandlerTest {
         requestHandler.handle(DEFAULT_MESSAGE_ID, new GetBaseReportRequest().withReportBase(SUMMARY_INVENTORY));
 
         verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());
-        assertThat(messageCaptor.getValue().getStatus()).isEqualTo(NOT_SUPPORTED);
+        assertThat(messageCaptor.getValue().getStatus()).isEqualTo(ACCEPTED);
     }
 
     @Test

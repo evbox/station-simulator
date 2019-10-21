@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.simulator.station.component.evse;
+package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
@@ -9,7 +9,6 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.centralserver.Component;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
@@ -31,7 +30,7 @@ import static java.util.Collections.singletonList;
 public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "AvailabilityState";
-    public static final String EVSE_AVAILABILITY = "Available";
+    public static final String STATION_AVAILABILITY = "Available";
 
     private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
             .put(AttributeType.ACTUAL, this::getActualValue)
@@ -68,33 +67,25 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
     @Override
     public List<ReportDatum> generateReportData(String componentName) {
         List<ReportDatum> reportData = new ArrayList<>();
+        Component component = new Component().withName(new CiString.CiString50(componentName));
 
-        for (Evse evse : getStationStore().getEvses()) {
-            com.evbox.everon.ocpp.v20.message.common.Evse componentEvse = new com.evbox.everon.ocpp.v20.message.common.Evse()
-                    .withId(evse.getId());
+        VariableAttribute variableAttribute = new VariableAttribute()
+                .withValue(new CiString.CiString1000(STATION_AVAILABILITY))
+                .withPersistence(true)
+                .withConstant(true)
+                .withMutability(READ_ONLY);
 
-            Component component = new Component()
-                    .withName(new CiString.CiString50(componentName))
-                    .withEvse(componentEvse);
+        VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
+                .withDataType(SEQUENCE_LIST)
+                .withSupportsMonitoring(false);
 
-            VariableAttribute variableAttribute = new VariableAttribute()
-                    .withValue(new CiString.CiString1000(evse.getEvseStatus().toString()))
-                    .withPersistence(true)
-                    .withConstant(true)
-                    .withMutability(READ_ONLY);
+        ReportDatum reportDatum = new ReportDatum()
+                .withComponent(component)
+                .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
+                .withVariableCharacteristics(variableCharacteristics)
+                .withVariableAttribute(singletonList(variableAttribute));
 
-            VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
-                    .withDataType(SEQUENCE_LIST)
-                    .withSupportsMonitoring(false);
-
-            ReportDatum reportDatum = new ReportDatum()
-                    .withComponent(component)
-                    .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
-                    .withVariableCharacteristics(variableCharacteristics)
-                    .withVariableAttribute(singletonList(variableAttribute));
-
-            reportData.add(reportDatum);
-        }
+        reportData.add(reportDatum);
 
         return reportData;
     }
@@ -114,7 +105,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
         if (evseExists) {
             return getVariableResult
-                    .withAttributeValue(new CiString.CiString1000(EVSE_AVAILABILITY))
+                    .withAttributeValue(new CiString.CiString1000(STATION_AVAILABILITY))
                     .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED);
         } else {
             return getVariableResult.withAttributeStatus(GetVariableResult.AttributeStatus.REJECTED);
