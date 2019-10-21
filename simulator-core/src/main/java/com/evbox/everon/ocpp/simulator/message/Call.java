@@ -30,7 +30,7 @@ public class Call {
         Object typedPayload;
 
         try {
-            ObjectMapper objectMapper = ObjectMapperHolder.getJsonObjectMapper();
+            ObjectMapper objectMapper = ObjectMapperHolder.JSON_OBJECT_MAPPER;
             typedPayload = objectMapper.readValue(objectMapper.writeValueAsString(rawPayload), actionType.getRequestType());
         } catch (IOException e) {
             throw new ParseException("Unable to parse request call payload", e);

@@ -37,8 +37,8 @@ public class CallResult {
     public <T> T getPayload(Class<T> payloadType) {
         Object payload = rawCall.getPayload();
         try {
-            String payloadString = ObjectMapperHolder.getJsonObjectMapper().writeValueAsString(payload);
-            return ObjectMapperHolder.getJsonObjectMapper().readValue(payloadString, payloadType);
+            String payloadString = ObjectMapperHolder.JSON_OBJECT_MAPPER.writeValueAsString(payload);
+            return ObjectMapperHolder.JSON_OBJECT_MAPPER.readValue(payloadString, payloadType);
         } catch (IOException e) {
             throw new ParseException("Unable to parse payload of CallResult", e);
         }

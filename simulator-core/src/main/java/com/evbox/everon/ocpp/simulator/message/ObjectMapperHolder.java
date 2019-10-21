@@ -17,7 +17,7 @@ import static java.time.temporal.ChronoField.*;
 @FieldDefaults(makeFinal = true)
 public class ObjectMapperHolder {
 
-    private static DateTimeFormatter OCPP_ZONED_DATE_TIME_FORMATTER = new DateTimeFormatterBuilder().parseCaseInsensitive()
+    public static final DateTimeFormatter OCPP_ZONED_DATE_TIME_FORMATTER = new DateTimeFormatterBuilder().parseCaseInsensitive()
             .append(ISO_LOCAL_DATE)
             .appendLiteral('T')
             .append(new DateTimeFormatterBuilder().appendValue(HOUR_OF_DAY, 2)
@@ -32,22 +32,13 @@ public class ObjectMapperHolder {
             .appendOffsetId()
             .toFormatter();
 
-    private static ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper()
+    public static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper()
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .registerModules(getJavaTimeModule());
 
-    private static ObjectMapper YAML_OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
+    public static final ObjectMapper YAML_OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
 
-    public static ObjectMapper getJsonObjectMapper() {
-        return JSON_OBJECT_MAPPER;
-    }
-
-    public static ObjectMapper getYamlObjectMapper() {
-        return YAML_OBJECT_MAPPER;
-    }
-
-    private ObjectMapperHolder() {
-    }
+    private ObjectMapperHolder() { }
 
     private static JavaTimeModule getJavaTimeModule() {
         JavaTimeModule javaTimeModule = new JavaTimeModule();

@@ -72,7 +72,7 @@ public class ConfigurationPrinter {
 
     private static String toJsonString(SimulatorConfiguration configuration, boolean pretty) {
         try {
-            ObjectMapper objectMapper = ObjectMapperHolder.getJsonObjectMapper();
+            ObjectMapper objectMapper = ObjectMapperHolder.JSON_OBJECT_MAPPER;
             return pretty ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(configuration) : objectMapper.writeValueAsString(configuration);
         } catch (JsonProcessingException e) {
             throw new ConfigurationException("Unable to serialize configuration to JSON");
@@ -81,7 +81,7 @@ public class ConfigurationPrinter {
 
     private static String toYamlString(SimulatorConfiguration configuration) {
         try {
-            return ObjectMapperHolder.getYamlObjectMapper().writeValueAsString(configuration);
+            return ObjectMapperHolder.YAML_OBJECT_MAPPER.writeValueAsString(configuration);
         } catch (JsonProcessingException e) {
             throw new ConfigurationException("Unable to serialize configuration to YAML");
         }
