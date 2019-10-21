@@ -15,6 +15,10 @@ public class ConfigurationPrinter {
 
     private static final int DEFAULT_FRAME_WIDTH = 80;
 
+    private ConfigurationPrinter() {
+        throw new IllegalStateException("ConfigurationPrinter cannot be instantiated");
+    }
+
     /**
      * Prints configuration to console output.
      * For better readability data is put to a frame with given width.
@@ -39,7 +43,7 @@ public class ConfigurationPrinter {
         config += "\n" + "";
 
         config += makeBottomBorder(headerRelativeWidth);
-        System.out.println(config);
+        System.out.println(config); //NOSONAR
     }
 
     private static String makeHeader(String str, int width) {
