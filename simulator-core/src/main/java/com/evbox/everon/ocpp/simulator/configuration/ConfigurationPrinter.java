@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class ConfigurationPrinter {
+public final class ConfigurationPrinter {
 
     private static final int DEFAULT_FRAME_WIDTH = 80;
 

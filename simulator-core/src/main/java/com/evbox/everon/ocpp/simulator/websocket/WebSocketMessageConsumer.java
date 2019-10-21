@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadFactory;
  * Message consumer is responsible for receiving messages from {@link WebSocketMessageInbox} and forwarding it to the message handler.
  */
 @Slf4j
-public class WebSocketMessageConsumer implements Runnable {
+public final class WebSocketMessageConsumer implements Runnable {
 
     private final WebSocketMessageInbox webSocketMessageInbox;
     private final WebSocketMessageRouter webSocketMessageRouter;
@@ -48,7 +48,7 @@ public class WebSocketMessageConsumer implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
 
             try {
-                WebSocketClientInboxMessage message = webSocketMessageInbox.take();
+                AbstractWebSocketClientInboxMessage message = webSocketMessageInbox.take();
                 log.debug("RECEIVED MESSAGE:\n{}", message);
                 webSocketMessageRouter.route(message);
             } catch (InterruptedException e) {

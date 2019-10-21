@@ -45,7 +45,7 @@ public class WebSocketClient implements ChannelListener {
 
         this.webSocketConnectionUrl = webSocketUrl;
 
-        getInbox().offer(new WebSocketClientInboxMessage.Connect());
+        getInbox().offer(new AbstractWebSocketClientInboxMessage.Connect());
     }
 
     public void reconnect() {

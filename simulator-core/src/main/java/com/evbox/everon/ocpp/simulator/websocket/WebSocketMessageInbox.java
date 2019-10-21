@@ -8,11 +8,11 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 public class WebSocketMessageInbox {
 
-    private final BlockingQueue<WebSocketClientInboxMessage> webSocketMessageInbox;
+    private final BlockingQueue<AbstractWebSocketClientInboxMessage> webSocketMessageInboxQueue;
 
     public WebSocketMessageInbox() {
-        this.webSocketMessageInbox = new PriorityBlockingQueue<>(1,
-                Comparator.comparing(WebSocketClientInboxMessage::getPriority).thenComparing(WebSocketClientInboxMessage::getSequenceId));
+        this.webSocketMessageInboxQueue = new PriorityBlockingQueue<>(1,
+                Comparator.comparing(AbstractWebSocketClientInboxMessage::getPriority).thenComparing(AbstractWebSocketClientInboxMessage::getSequenceId));
     }
 
     /**
@@ -20,8 +20,8 @@ public class WebSocketMessageInbox {
      *
      * @param message station messages
      */
-    public void offer(WebSocketClientInboxMessage message) {
-        boolean success = webSocketMessageInbox.offer(message);
+    public void offer(AbstractWebSocketClientInboxMessage message) {
+        boolean success = webSocketMessageInboxQueue.offer(message);
 
         if (!success) {
             throw new StationException("Failed on adding message to the inbox");
@@ -34,8 +34,8 @@ public class WebSocketMessageInbox {
      * @return station message
      * @throws InterruptedException if current thread is interrupted.
      */
-    public WebSocketClientInboxMessage take() throws InterruptedException {
-        return webSocketMessageInbox.take();
+    public AbstractWebSocketClientInboxMessage take() throws InterruptedException {
+        return webSocketMessageInboxQueue.take();
     }
 
 }

@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.websocket;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage.Type.*;
+import static com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage.Type.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -19,9 +19,9 @@ public class WebSocketMessageInboxTest {
     @Test
     void shouldGivePriorityBasedOnMessageSequenceId() {
 
-        WebSocketClientInboxMessage.OcppMessage message1 = new WebSocketClientInboxMessage.OcppMessage("1");
-        WebSocketClientInboxMessage.OcppMessage message2 = new WebSocketClientInboxMessage.OcppMessage("2");
-        WebSocketClientInboxMessage.OcppMessage message3 = new WebSocketClientInboxMessage.OcppMessage("3");
+        AbstractWebSocketClientInboxMessage.OcppMessageAbstract message1 = new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("1");
+        AbstractWebSocketClientInboxMessage.OcppMessageAbstract message2 = new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("2");
+        AbstractWebSocketClientInboxMessage.OcppMessageAbstract message3 = new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("3");
 
         inbox.offer(message2);
         inbox.offer(message3);
@@ -38,9 +38,9 @@ public class WebSocketMessageInboxTest {
     @Test
     void shouldGiveHigherPriorityToConnectMessage() {
 
-        inbox.offer(new WebSocketClientInboxMessage.OcppMessage("{}"));
-        inbox.offer(new WebSocketClientInboxMessage.Connect());
-        inbox.offer(new WebSocketClientInboxMessage.OcppMessage("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.Connect());
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
 
         assertAll(
                 () -> assertThat(inbox.take().getPriority()).isEqualTo(CONNECT.getPriority()),
@@ -53,9 +53,9 @@ public class WebSocketMessageInboxTest {
     @Test
     void shouldGiveHigherPriorityToDisconnectMessage() {
 
-        inbox.offer(new WebSocketClientInboxMessage.OcppMessage("{}"));
-        inbox.offer(new WebSocketClientInboxMessage.Disconnect());
-        inbox.offer(new WebSocketClientInboxMessage.OcppMessage("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
+        inbox.offer(new AbstractWebSocketClientInboxMessage.Disconnect());
+        inbox.offer(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract("{}"));
 
         assertAll(
                 () -> assertThat(inbox.take().getPriority()).isEqualTo(DISCONNECT.getPriority()),

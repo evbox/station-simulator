@@ -7,7 +7,7 @@ import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.component.exception.UnknownComponentException;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
@@ -80,6 +80,6 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
     private void sendResponse(String callId, Object payload) {
         CallResult callResult = new CallResult(callId, payload);
         String callStr = callResult.toJson();
-        stationMessageSender.sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
+        stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(callStr));
     }
 }

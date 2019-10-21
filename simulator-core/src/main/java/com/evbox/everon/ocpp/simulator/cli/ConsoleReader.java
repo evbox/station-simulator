@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -40,7 +41,7 @@ public class ConsoleReader {
     public void startReading() {
 
         consoleReaderExecutorService.submit(() -> {
-            Scanner in = new Scanner(System.in, "UTF-8");
+            Scanner in = new Scanner(System.in, StandardCharsets.UTF_8.name());
 
             showStationsList();
 

@@ -8,7 +8,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketMessageInbox;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData.ChargingState;
@@ -81,7 +81,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -105,7 +105,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendTransactionEventUpdate(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.CHARGING);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -128,7 +128,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -148,7 +148,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -165,7 +165,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendBootNotification(BootNotificationRequest.Reason.POWER_UP);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -190,7 +190,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
@@ -211,7 +211,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendHeartBeatAndSubscribe(heartbeatRequest, DEFAULT_SUBSCRIBER);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         String expectedCall = createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)
@@ -235,7 +235,7 @@ class StationMessageSenderTest {
 
         stationMessageSender.sendNotifyReport(null, false, 0, now, reportData);
 
-        WebSocketClientInboxMessage actualMessage = queue.take();
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
         String expectedCall = createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)
