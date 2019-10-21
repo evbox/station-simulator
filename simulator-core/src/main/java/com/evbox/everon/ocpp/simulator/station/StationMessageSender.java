@@ -404,7 +404,7 @@ public class StationMessageSender {
         sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessageAbstract(call.toJson()));
     }
 
-    private <REQ> Call createAndRegisterCall(ActionType actionType, REQ payload) {
+    private <T> Call createAndRegisterCall(ActionType actionType, T payload) {
 
         String callId = callIdGenerator.generate();
 

@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.states.EvseState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AbstractEvseState;
 
 /**
  * Manages the state for the evses of a station.
@@ -20,11 +20,11 @@ public class StateManager {
         this.stationMessageSender = stationMessageSender;
     }
 
-    public void setStateForEvse(int evseId, EvseState state) {
+    public void setStateForEvse(int evseId, AbstractEvseState state) {
         stationStore.findEvse(evseId).setEvseState(state);
     }
 
-    public EvseState getStateForEvse(int eveseId) {
+    public AbstractEvseState getStateForEvse(int eveseId) {
         return stationStore.findEvse(eveseId).getEvseState();
     }
 
@@ -60,8 +60,8 @@ public class StateManager {
         return stationStore;
     }
 
-    private EvseState getState(int evseId) {
-        EvseState state = stationStore.findEvse(evseId).getEvseState();
+    private AbstractEvseState getState(int evseId) {
+        AbstractEvseState state = stationStore.findEvse(evseId).getEvseState();
         state.setStationTransactionManager(this);
         return state;
     }

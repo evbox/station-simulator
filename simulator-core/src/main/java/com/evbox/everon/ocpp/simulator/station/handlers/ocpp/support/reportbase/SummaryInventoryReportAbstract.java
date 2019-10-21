@@ -18,13 +18,13 @@ import java.util.Optional;
 
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 
-public class SummaryInventoryReport extends BaseReport {
+public class SummaryInventoryReportAbstract extends AbstractBaseReport {
 
     private static final String AVAILABILITY_STATE_NAME = "AvailabilityState";
 
     private final StationComponentsHolder stationComponentsHolder;
 
-    public SummaryInventoryReport(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender, Clock clock) {
+    public SummaryInventoryReportAbstract(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender, Clock clock) {
         super(stationMessageSender, clock);
         this.stationComponentsHolder = stationComponentsHolder;
     }

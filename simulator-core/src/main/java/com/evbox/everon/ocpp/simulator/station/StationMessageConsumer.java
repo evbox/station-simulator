@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadFactory;
  * Message consumer is responsible for receiving messages from {@link StationMessageInbox} and forwarding it to the message handler.
  */
 @Slf4j
-public class StationMessageConsumer implements Runnable {
+public final class StationMessageConsumer implements Runnable {
 
     private final StationMessageInbox stationMessageInbox;
     private final StationMessageRouter stationMessageRouter;

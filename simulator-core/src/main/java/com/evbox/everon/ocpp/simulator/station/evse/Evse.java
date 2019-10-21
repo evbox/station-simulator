@@ -2,8 +2,8 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 
 import com.evbox.everon.ocpp.simulator.station.evse.Connector.ConnectorView;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction.EvseTransactionView;
+import com.evbox.everon.ocpp.simulator.station.evse.states.AbstractEvseState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
-import com.evbox.everon.ocpp.simulator.station.evse.states.EvseState;
 import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -58,7 +58,7 @@ public class Evse {
     /**
      *  Current state of the evse
      */
-    private EvseState evseState;
+    private AbstractEvseState evseState;
 
     /**
      * Create Evse instance. By default evse is in the status AVAILABLE.
@@ -159,7 +159,7 @@ public class Evse {
      * Getter for the current evse state.
      * @return evseState
      */
-    public EvseState getEvseState() {
+    public AbstractEvseState getEvseState() {
         return evseState;
     }
 
@@ -167,7 +167,7 @@ public class Evse {
      * Sets the current state of the evse.
      * @param evseState new state fro the evse
      */
-    public void setEvseState(EvseState evseState) {
+    public void setEvseState(AbstractEvseState evseState) {
         this.evseState = evseState;
     }
 

@@ -3,8 +3,8 @@ package com.evbox.everon.ocpp.simulator.station.evse.states;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
@@ -19,20 +19,18 @@ import static java.util.Collections.singletonList;
  * When the evse has been stopped from charging, remotely or locally
  */
 @Slf4j
-public class StoppedState implements EvseState {
+public class StoppedState extends AbstractEvseState {
 
     public static final String NAME = "STOPPED";
-
-    private StateManager stateManager;
-
-    @Override
-    public void setStationTransactionManager(StateManager stationTransactionManager) {
-        this.stateManager = stationTransactionManager;
-    }
 
     @Override
     public String getStateName() {
         return NAME;
+    }
+
+    @Override
+    public void onPlug(int evseId, int connectorId) {
+        // NOP
     }
 
     @Override
@@ -54,6 +52,16 @@ public class StoppedState implements EvseState {
         });
 
         stateManager.setStateForEvse(evseId, new AvailableState());
+    }
+
+    @Override
+    public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
+        // NOP
+    }
+
+    @Override
+    public void onRemoteStop(int evseId) {
+        // NOP
     }
 
     @Override

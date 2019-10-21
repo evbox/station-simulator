@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.evse.states;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
@@ -18,20 +18,18 @@ import static java.util.Collections.singletonList;
  *  When the transaction is ongoing and the evse is charging.
  */
 @Slf4j
-public class ChargingState implements EvseState {
+public class ChargingState extends AbstractEvseState {
 
     public static final String NAME =  "CHARGING";
-
-    private StateManager stateManager;
-
-    @Override
-    public void setStationTransactionManager(StateManager stationTransactionManager) {
-        this.stateManager = stationTransactionManager;
-    }
 
     @Override
     public String getStateName() {
         return NAME;
+    }
+
+    @Override
+    public void onPlug(int evseId, int connectorId) {
+        // NOP
     }
 
     @Override
@@ -59,6 +57,16 @@ public class ChargingState implements EvseState {
         });
 
         stateManager.setStateForEvse(evseId, new StoppedState());
+    }
+
+    @Override
+    public void onUnplug(int evseId, int connectorId) {
+        // NOP
+    }
+
+    @Override
+    public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
+        // NOP
     }
 
     @Override

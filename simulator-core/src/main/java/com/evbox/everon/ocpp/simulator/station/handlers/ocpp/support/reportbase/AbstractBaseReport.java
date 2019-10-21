@@ -11,12 +11,12 @@ import java.util.List;
 import static java.time.ZonedDateTime.ofInstant;
 import static java.util.Collections.singletonList;
 
-public abstract class BaseReport {
+public abstract class AbstractBaseReport {
 
     protected final StationMessageSender stationMessageSender;
     protected final Clock clock;
 
-    public BaseReport(StationMessageSender stationMessageSender, Clock clock) {
+    public AbstractBaseReport(StationMessageSender stationMessageSender, Clock clock) {
         this.stationMessageSender = stationMessageSender;
         this.clock = clock;
     }

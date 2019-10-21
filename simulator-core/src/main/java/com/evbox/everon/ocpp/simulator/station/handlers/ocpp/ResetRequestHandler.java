@@ -53,9 +53,7 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
             if (state.hasOngoingTransaction(evseId)) {
                 state.stopCharging(evseId);
                 Integer connectorId = state.unlockConnector(evseId);
-                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, TransactionData.StoppedReason.IMMEDIATE_RESET, (request, response) -> {
-                    reboot();
-                });
+                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, TransactionData.StoppedReason.IMMEDIATE_RESET, (request, response) -> reboot());
             } else {
                 reboot();
             }
