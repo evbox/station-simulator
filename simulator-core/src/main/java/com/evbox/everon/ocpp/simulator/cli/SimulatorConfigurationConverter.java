@@ -15,7 +15,7 @@ public class SimulatorConfigurationConverter implements CommandLine.ITypeConvert
         // which requires this post-processing step
         String valueWithDoubleQuotes = value.replace("'", "\"");
         try {
-            return ObjectMapperHolder.getJsonObjectMapper().readValue(valueWithDoubleQuotes, SimulatorConfiguration.class);
+            return ObjectMapperHolder.JSON_OBJECT_MAPPER.readValue(valueWithDoubleQuotes, SimulatorConfiguration.class);
         } catch (IOException e) {
             throw new ConfigurationException(e);
         }

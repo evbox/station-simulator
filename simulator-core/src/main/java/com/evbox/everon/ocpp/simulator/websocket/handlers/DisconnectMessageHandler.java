@@ -2,9 +2,9 @@ package com.evbox.everon.ocpp.simulator.websocket.handlers;
 
 import com.evbox.everon.ocpp.simulator.station.handlers.MessageHandler;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 
-public class DisconnectMessageHandler implements MessageHandler<WebSocketClientInboxMessage.Disconnect> {
+public class DisconnectMessageHandler implements MessageHandler<AbstractWebSocketClientInboxMessage.Disconnect> {
 
     private final WebSocketClient webSocketClient;
 
@@ -13,7 +13,7 @@ public class DisconnectMessageHandler implements MessageHandler<WebSocketClientI
     }
 
     @Override
-    public void handle(WebSocketClientInboxMessage.Disconnect message) {
+    public void handle(AbstractWebSocketClientInboxMessage.Disconnect message) {
         webSocketClient.getWebSocketClientAdapter().disconnect();
     }
 }

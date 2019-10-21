@@ -5,7 +5,7 @@ import com.evbox.everon.ocpp.mock.factory.OcppMessageFactory;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetResponse;
 import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
@@ -48,7 +48,7 @@ public class ResetRequestHandlerTest {
 
         ResetResponse payload = new ResetResponse().withStatus(ResetResponse.Status.ACCEPTED);
 
-        ArgumentCaptor<WebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(WebSocketClientInboxMessage.class);
+        ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(AbstractWebSocketClientInboxMessage.class);
 
         verify(stationMessageSender).sendMessage(messageCaptor.capture());
 
@@ -90,7 +90,7 @@ public class ResetRequestHandlerTest {
 
         verify(stationStore).clearTokens();
         verify(stationStore).clearTransactions();
-        verify(stationMessageSender, times(3)).sendMessage(any(WebSocketClientInboxMessage.class));
+        verify(stationMessageSender, times(3)).sendMessage(any(AbstractWebSocketClientInboxMessage.class));
         verify(stationMessageSender).sendBootNotification(any(BootNotificationRequest.Reason.class));
 
     }
@@ -105,7 +105,7 @@ public class ResetRequestHandlerTest {
 
         ResetResponse payload = new ResetResponse().withStatus(ResetResponse.Status.REJECTED);
 
-        ArgumentCaptor<WebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(WebSocketClientInboxMessage.class);
+        ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(AbstractWebSocketClientInboxMessage.class);
 
         verify(stationMessageSender).sendMessage(messageCaptor.capture());
 

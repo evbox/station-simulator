@@ -31,17 +31,16 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Station {
 
-    private final OkHttpClient DEFAULT_HTTP_CLIENT;
+    private final OkHttpClient defaultHttpClient;
 
     private final SimulatorConfiguration.StationConfiguration configuration;
 
     private final StationStore state;
-    private volatile StationStoreView stationStoreView;
+    private volatile StationStoreView stationStoreView; // NOSONAR
 
     private final WebSocketClient webSocketClient;
 
     private final HeartbeatScheduler heartbeatScheduler;
-    private final MeterValuesScheduler meterValuesScheduler;
 
     private final SubscriptionRegistry callRegistry;
     private final StationMessageSender stationMessageSender;
@@ -80,12 +79,12 @@ public class Station {
 
         httpClientBuilder.pingInterval(socketConfiguration.getPingIntervalMs(), TimeUnit.MILLISECONDS);
 
-        DEFAULT_HTTP_CLIENT = httpClientBuilder.build();
+        defaultHttpClient = httpClientBuilder.build();
 
         this.configuration = stationConfiguration;
         this.state = new StationStore(configuration);
 
-        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(DEFAULT_HTTP_CLIENT, configuration));
+        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(defaultHttpClient, configuration));
 
         this.callRegistry = new SubscriptionRegistry();
         this.stationMessageSender = new StationMessageSender(callRegistry, state, webSocketClient);
@@ -95,7 +94,8 @@ public class Station {
         if (meterValuesConfiguration == null) {
             meterValuesConfiguration = SimulatorConfiguration.MeterValuesConfiguration.builder().build();
         }
-        this.meterValuesScheduler = new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
+
+        new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
 
         this.stateManager = new StateManager(this, state, stationMessageSender);
     }
@@ -155,7 +155,7 @@ public class Station {
      */
     public void stop() {
         webSocketClient.disconnect();
-        DEFAULT_HTTP_CLIENT.dispatcher().executorService().shutdownNow();
+        defaultHttpClient.dispatcher().executorService().shutdownNow();
     }
 
     /**

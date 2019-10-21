@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetResponse;
 import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
@@ -44,7 +44,7 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
     private void sendResponse(String callId, Object payload) {
         CallResult callResult = new CallResult(callId, payload);
         String callStr = callResult.toJson();
-        stationMessageSender.sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
+        stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(callStr));
     }
 
     void resetStation() {
@@ -53,9 +53,7 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
             if (state.hasOngoingTransaction(evseId)) {
                 state.stopCharging(evseId);
                 Integer connectorId = state.unlockConnector(evseId);
-                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, TransactionData.StoppedReason.IMMEDIATE_RESET, (request, response) -> {
-                    reboot();
-                });
+                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, TransactionData.StoppedReason.IMMEDIATE_RESET, (request, response) -> reboot());
             } else {
                 reboot();
             }
@@ -65,8 +63,8 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
     private void reboot() {
         state.clearTokens();
         state.clearTransactions();
-        stationMessageSender.sendMessage(new WebSocketClientInboxMessage.Disconnect());
-        stationMessageSender.sendMessage(new WebSocketClientInboxMessage.Connect());
+        stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.Disconnect());
+        stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.Connect());
         stationMessageSender.sendBootNotification(BootNotificationRequest.Reason.REMOTE_RESET);
     }
 }

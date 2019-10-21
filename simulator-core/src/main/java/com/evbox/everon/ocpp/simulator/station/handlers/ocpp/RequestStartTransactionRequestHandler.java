@@ -43,7 +43,6 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
 
         if (optionalEvse.isPresent()) {
             Evse evse = optionalEvse.get();
-            Connector connector = evse.tryFindAvailableConnector().orElse(null);
 
             if (!AvailableState.NAME.equals(stateManager.getStateForEvse(evse.getId()).getStateName())) {
                 log.debug("Evse not available");
@@ -51,6 +50,7 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
                 return;
             }
 
+            Connector connector = evse.tryFindAvailableConnector().orElse(null);
             if (connector == null || connector.getCableStatus() != CableStatus.UNPLUGGED) {
                 log.debug("Connector not available");
                 stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));

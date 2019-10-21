@@ -6,7 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
@@ -44,7 +44,7 @@ class SetVariablesRequestHandlerTest {
     @Mock
     OCPPCommCtrlrComponent ocppCommCtrlrComponentMock;
     @Captor
-    ArgumentCaptor<WebSocketClientInboxMessage> messageCaptor;
+    ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor;
     @InjectMocks
     SetVariablesRequestHandler setVariablesRequestHandler;
 

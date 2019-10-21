@@ -11,7 +11,7 @@ import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry
 import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
 import com.evbox.everon.ocpp.simulator.station.support.LRUCache;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,7 +109,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
         callRegistry.addSubscription(call.getMessageId(), transactionEvent, subscriber);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -168,7 +168,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -188,7 +188,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -205,7 +205,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -221,7 +221,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.AUTHORIZE, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -236,7 +236,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.BOOT_NOTIFICATION, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -249,7 +249,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.BOOT_NOTIFICATION, payload);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -265,7 +265,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
 
     }
 
@@ -281,7 +281,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
 
     }
 
@@ -297,7 +297,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
 
     }
 
@@ -312,7 +312,7 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -325,7 +325,7 @@ public class StationMessageSender {
         Call call = createAndRegisterCall(ActionType.HEARTBEAT, heartbeatRequest);
         callRegistry.addSubscription(call.getMessageId(), heartbeatRequest, subscriber);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -341,15 +341,15 @@ public class StationMessageSender {
                 payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, generatedAt, reportData);
 
         Call call = createAndRegisterCall(ActionType.NOTIFY_REPORT, payload);
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
-     * Send an incoming message {@link WebSocketClientInboxMessage} to ocpp server.
+     * Send an incoming message {@link AbstractWebSocketClientInboxMessage} to ocpp server.
      *
-     * @param message {@link WebSocketClientInboxMessage}
+     * @param message {@link AbstractWebSocketClientInboxMessage}
      */
-    public void sendMessage(WebSocketClientInboxMessage message) {
+    public void sendMessage(AbstractWebSocketClientInboxMessage message) {
         webSocketClient.getInbox().offer(message);
         timeOfLastMessageSent = LocalDateTime.now();
     }
@@ -363,7 +363,7 @@ public class StationMessageSender {
     public void sendCallResult(String callId, Object payload) {
         CallResult callResult = new CallResult(callId, payload);
         String callStr = callResult.toJson();
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(callStr));
     }
 
     /**
@@ -376,7 +376,7 @@ public class StationMessageSender {
     public void sendCallError(String callId, CallError.Code errorCode, Object payload) {
         CallError callError = new CallError(callId, errorCode, payload);
         String callStr = callError.toJson();
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(callStr));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(callStr));
     }
 
     /**
@@ -401,10 +401,10 @@ public class StationMessageSender {
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
 
-        sendMessage(new WebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
-    private <REQ> Call createAndRegisterCall(ActionType actionType, REQ payload) {
+    private <T> Call createAndRegisterCall(ActionType actionType, T payload) {
 
         String callId = callIdGenerator.generate();
 

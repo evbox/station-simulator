@@ -15,7 +15,7 @@ import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.St
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-public class GetBaseReportIt extends StationSimulatorSetUp {
+public class GetAbstractBaseReportIt extends StationSimulatorSetUp {
 
         private static final int NOTIFY_REPORT_VARIABLES_LESS_ONE = 13;
 

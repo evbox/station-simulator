@@ -9,6 +9,7 @@ import org.apache.commons.codec.binary.Hex;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -62,7 +63,7 @@ public class OkHttpWebSocketClient {
 
             @Override
             public void onMessage(WebSocket webSocket, ByteString bytes) {
-                listener.onMessage(new String(bytes.toByteArray()));
+                listener.onMessage(new String(bytes.toByteArray(), StandardCharsets.UTF_8));
             }
 
             @Override
@@ -100,13 +101,13 @@ public class OkHttpWebSocketClient {
 
         byte[] decodedPassword = Hex.decodeHex(stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().getBasicAuthPassword());
 
-        byte[] username = stationConfiguration.getId().getBytes();
+        byte[] username = stationConfiguration.getId().getBytes(StandardCharsets.UTF_8);
 
         int size = username.length + decodedPassword.length + 1;
 
         return ByteBuffer.allocate(size)
                 .put(username)
-                .put(COLON.getBytes())
+                .put(COLON.getBytes(StandardCharsets.UTF_8))
                 .put(decodedPassword)
                 .array();
     }

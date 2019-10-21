@@ -14,7 +14,7 @@ public class ConfigurationFileReader {
         }
 
         try {
-            return ObjectMapperHolder.getYamlObjectMapper().readValue(configurationFile, SimulatorConfiguration.class);
+            return ObjectMapperHolder.YAML_OBJECT_MAPPER.readValue(configurationFile, SimulatorConfiguration.class);
         } catch (IOException e) {
             throw new ConfigurationException("Unable to read configuration from file", e);
         }

@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ToString
-public abstract class WebSocketClientInboxMessage {
+public abstract class AbstractWebSocketClientInboxMessage {
     private static final AtomicInteger SEQUENCE = new AtomicInteger();
 
     public enum Type {
@@ -26,12 +26,12 @@ public abstract class WebSocketClientInboxMessage {
     final Object data;
     final int sequenceId;
 
-    public WebSocketClientInboxMessage() {
+    public AbstractWebSocketClientInboxMessage() {
         this.sequenceId = SEQUENCE.getAndIncrement();
         this.data = null;
     }
 
-    public WebSocketClientInboxMessage(Object data) {
+    public AbstractWebSocketClientInboxMessage(Object data) {
         this.sequenceId = SEQUENCE.getAndIncrement();
         this.data = data;
     }
@@ -50,21 +50,21 @@ public abstract class WebSocketClientInboxMessage {
         return Optional.empty();
     }
 
-    public final static class Connect extends WebSocketClientInboxMessage {
+    public static final class Connect extends AbstractWebSocketClientInboxMessage {
         @Override
         public Type getType() {
             return Type.CONNECT;
         }
     }
 
-    public final static class Disconnect extends WebSocketClientInboxMessage {
+    public static final class Disconnect extends AbstractWebSocketClientInboxMessage {
         @Override
         public Type getType() {
             return Type.DISCONNECT;
         }
     }
 
-    public final static class OcppMessage extends WebSocketClientInboxMessage {
+    public static final class OcppMessage extends AbstractWebSocketClientInboxMessage {
 
         public OcppMessage(Object data) {
             super(data);

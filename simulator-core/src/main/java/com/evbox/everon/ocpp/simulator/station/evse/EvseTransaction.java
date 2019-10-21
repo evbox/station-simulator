@@ -35,11 +35,6 @@ public class EvseTransaction {
         this.status = EvseTransactionStatus.IN_PROGRESS;
     }
 
-    @Override
-    public String toString() {
-        return transactionId;
-    }
-
     /**
      * Create transaction with the given status.
      *
@@ -49,6 +44,11 @@ public class EvseTransaction {
         Objects.requireNonNull(status);
 
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return transactionId;
     }
 
     EvseTransactionView createView() {

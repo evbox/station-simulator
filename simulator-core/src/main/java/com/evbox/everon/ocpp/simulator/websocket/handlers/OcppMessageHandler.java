@@ -2,11 +2,11 @@ package com.evbox.everon.ocpp.simulator.websocket.handlers;
 
 import com.evbox.everon.ocpp.simulator.station.handlers.MessageHandler;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class OcppMessageHandler implements MessageHandler<WebSocketClientInboxMessage.OcppMessage> {
+public class OcppMessageHandler implements MessageHandler<AbstractWebSocketClientInboxMessage.OcppMessage> {
 
     private final WebSocketClient webSocketClient;
 
@@ -15,7 +15,7 @@ public class OcppMessageHandler implements MessageHandler<WebSocketClientInboxMe
     }
 
     @Override
-    public void handle(WebSocketClientInboxMessage.OcppMessage message) {
+    public void handle(AbstractWebSocketClientInboxMessage.OcppMessage message) {
         String ocppMessage = (String) message.getData().orElseThrow(() -> new IllegalArgumentException("OCPP message is null"));
         webSocketClient.getMessageSender().send(ocppMessage);
         log.info("SENT: {}", ocppMessage);

@@ -2,8 +2,8 @@ package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
@@ -18,16 +18,9 @@ import static java.util.Collections.singletonList;
  * When the user has been authorized, but the cable is not plugged yet.
  */
 @Slf4j
-public class WaitingForPlugState implements EvseState {
+public class WaitingForPlugState extends AbstractEvseState {
 
     public static final String NAME = "WAITING_FOR_PLUG";
-
-    private StateManager stateManager;
-
-    @Override
-    public void setStationTransactionManager(StateManager stationTransactionManager) {
-        this.stateManager = stationTransactionManager;
-    }
 
     @Override
     public String getStateName() {
@@ -37,7 +30,6 @@ public class WaitingForPlugState implements EvseState {
     @Override
     public void onPlug(int evseId, int connectorId) {
         StationStore stationStore = stateManager.getStationStore();
-        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
         Evse evse = stationStore.findEvse(evseId);
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
@@ -46,6 +38,7 @@ public class WaitingForPlugState implements EvseState {
 
         evse.plug(connectorId);
 
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
             String tokenId = evse.getTokenId();
             log.info("Station has authorised token {}", tokenId);
@@ -89,6 +82,21 @@ public class WaitingForPlugState implements EvseState {
         });
 
         stateManager.setStateForEvse(evseId, new AvailableState());
+    }
+
+    @Override
+    public void onUnplug(int evseId, int connectorId) {
+        // NOP
+    }
+
+    @Override
+    public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
+        // NOP
+    }
+
+    @Override
+    public void onRemoteStop(int evseId) {
+        // NOP
     }
 
     private void startCharging(Evse evse) {

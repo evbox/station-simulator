@@ -58,10 +58,10 @@ public class RawCall {
 
     public static RawCall fromJson(String json) {
         try {
-            return new RawCall(ObjectMapperHolder.getJsonObjectMapper().readValue(json, new TypeReference<List<Object>>(){}));
+            return new RawCall(ObjectMapperHolder.JSON_OBJECT_MAPPER.readValue(json, new TypeReference<List<Object>>(){}));
         } catch (IOException e) {
             LOGGER.error("Unable to deserialize call", e);
-            throw new DeserializeException(e);
+            throw new DeserializeException("Unable to deserialize call: " + json, e);
         }
     }
 
@@ -102,10 +102,10 @@ public class RawCall {
 
     public String toJson() {
         try {
-            return ObjectMapperHolder.getJsonObjectMapper().writeValueAsString(fields);
+            return ObjectMapperHolder.JSON_OBJECT_MAPPER .writeValueAsString(fields);
         } catch (JsonProcessingException e) {
             LOGGER.error("Unable to serialize call", e);
-            throw new SerializeException(e);
+            throw new SerializeException("Cannot serialize fields: " + fields, e);
         }
     }
 
@@ -125,14 +125,14 @@ public class RawCall {
     }
 
     static class DeserializeException extends RuntimeException {
-        public DeserializeException(Exception e) {
-            super(e);
+        public DeserializeException(String msg, Throwable throwable) {
+            super(msg, throwable);
         }
     }
 
     static class SerializeException extends RuntimeException {
-        public SerializeException(Exception e) {
-            super(e);
+        public SerializeException(String msg, Throwable throwable) {
+            super(msg, throwable);
         }
     }
 }

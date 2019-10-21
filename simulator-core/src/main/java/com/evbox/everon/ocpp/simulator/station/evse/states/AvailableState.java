@@ -7,7 +7,6 @@ import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStar
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +24,9 @@ import static java.util.stream.Collectors.toList;
  * When the station is ready for an authorize or a plug
  */
 @Slf4j
-public class AvailableState implements EvseState {
+public class AvailableState extends AbstractEvseState {
 
     public static final String NAME = "AVAILABLE";
-
-    private StateManager stateManager;
-
-    @Override
-    public void setStationTransactionManager(StateManager stationTransactionManager) {
-        this.stateManager = stationTransactionManager;
-    }
 
     @Override
     public String getStateName() {
@@ -43,7 +35,6 @@ public class AvailableState implements EvseState {
 
     @Override
     public void onPlug(int evseId, int connectorId) {
-        StationStore stationStore = stateManager.getStationStore();
         Evse evse = stateManager.getStationStore().findEvse(evseId);
 
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
@@ -55,7 +46,7 @@ public class AvailableState implements EvseState {
         evse.plug(connectorId);
         stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
 
-            OptionList<TxStartStopPointVariableValues> startPoints = stationStore.getTxStartPointValues();
+            OptionList<TxStartStopPointVariableValues> startPoints = stateManager.getStationStore().getTxStartPointValues();
             if (startPoints.contains(TxStartStopPointVariableValues.EV_CONNECTED) && !startPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                 evse.createTransaction(transactionId);
@@ -94,6 +85,11 @@ public class AvailableState implements EvseState {
     }
 
     @Override
+    public void onUnplug(int evseId, int connectorId) {
+        // NOP
+    }
+
+    @Override
     public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
 
         StationStore stationStore = stateManager.getStationStore();
@@ -115,6 +111,11 @@ public class AvailableState implements EvseState {
         }, stationStore.getEVConnectionTimeOut(), TimeUnit.SECONDS);
 
         stateManager.setStateForEvse(evseId, new WaitingForPlugState());
+    }
+
+    @Override
+    public void onRemoteStop(int evseId) {
+        // NOP
     }
 
     private List<Evse> getEvseList(AuthorizeResponse response, StationStore stationStore) {

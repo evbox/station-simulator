@@ -16,10 +16,10 @@ public class SubscriptionRegistry {
      * @param callId key in the storage
      * @param payload body of the request
      * @param subscriber callback associated with the callId
-     * @param <REQ> server request
-     * @param <RES> server response
+     * @param <R> server request
+     * @param <S> server response
      */
-    public <REQ, RES> void addSubscription(String callId, REQ payload, Subscriber<REQ, RES> subscriber) {
+    public <R, S> void addSubscription(String callId, R payload, Subscriber<R, S> subscriber) {
 
         responseSubscriptions.put(callId, new SubscriptionContext<>(subscriber, payload));
 

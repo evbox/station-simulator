@@ -11,9 +11,13 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class ConfigurationPrinter {
+public final class ConfigurationPrinter {
 
     private static final int DEFAULT_FRAME_WIDTH = 80;
+
+    private ConfigurationPrinter() {
+        throw new IllegalStateException("ConfigurationPrinter cannot be instantiated");
+    }
 
     /**
      * Prints configuration to console output.
@@ -39,7 +43,7 @@ public class ConfigurationPrinter {
         config += "\n" + "";
 
         config += makeBottomBorder(headerRelativeWidth);
-        System.out.println(config);
+        System.out.println(config); //NOSONAR
     }
 
     private static String makeHeader(String str, int width) {
@@ -72,7 +76,7 @@ public class ConfigurationPrinter {
 
     private static String toJsonString(SimulatorConfiguration configuration, boolean pretty) {
         try {
-            ObjectMapper objectMapper = ObjectMapperHolder.getJsonObjectMapper();
+            ObjectMapper objectMapper = ObjectMapperHolder.JSON_OBJECT_MAPPER;
             return pretty ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(configuration) : objectMapper.writeValueAsString(configuration);
         } catch (JsonProcessingException e) {
             throw new ConfigurationException("Unable to serialize configuration to JSON");
@@ -81,7 +85,7 @@ public class ConfigurationPrinter {
 
     private static String toYamlString(SimulatorConfiguration configuration) {
         try {
-            return ObjectMapperHolder.getYamlObjectMapper().writeValueAsString(configuration);
+            return ObjectMapperHolder.YAML_OBJECT_MAPPER.writeValueAsString(configuration);
         } catch (JsonProcessingException e) {
             throw new ConfigurationException("Unable to serialize configuration to YAML");
         }

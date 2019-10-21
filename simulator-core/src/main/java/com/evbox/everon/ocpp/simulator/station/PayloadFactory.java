@@ -24,7 +24,7 @@ public class PayloadFactory {
 
     AuthorizeRequest createAuthorizeRequest(String tokenId, List<Integer> evseIds) {
         AuthorizeRequest payload = new AuthorizeRequest();
-        if (evseIds.size() > 0) {
+        if (!evseIds.isEmpty()) {
             payload.setEvseId(evseIds);
         }
 

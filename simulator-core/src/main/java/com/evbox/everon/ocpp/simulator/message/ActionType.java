@@ -24,18 +24,18 @@ public enum ActionType {
     SET_CHARGING_PROFILE("SetChargingProfile", SetChargingProfileRequest.class, SetChargingProfileResponse.class),
     UNLOCK_CONNECTOR("UnlockConnector", UnlockConnectorRequest.class, UnlockConnectorResponse.class);
 
-    private final String actionType;
+    private final String actionTypeName;
     private final Class requestClazz;
     private final Class responseClazz;
 
-    ActionType(String actionType, Class requestClazz, Class responseClazz) {
-        this.actionType = actionType;
+    ActionType(String actionTypeName, Class requestClazz, Class responseClazz) {
+        this.actionTypeName = actionTypeName;
         this.requestClazz = requestClazz;
         this.responseClazz = responseClazz;
     }
 
     public String getType() {
-        return actionType;
+        return actionTypeName;
     }
 
     public Class getRequestType() {

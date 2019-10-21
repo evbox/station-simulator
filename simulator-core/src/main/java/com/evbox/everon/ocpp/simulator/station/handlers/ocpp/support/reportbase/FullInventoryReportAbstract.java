@@ -11,11 +11,11 @@ import java.util.List;
 
 import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
 
-public class FullInventoryReport extends BaseReport {
+public class FullInventoryReportAbstract extends AbstractBaseReport {
 
     private final StationComponentsHolder stationComponentsHolder;
 
-    public FullInventoryReport(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender, Clock clock) {
+    public FullInventoryReportAbstract(StationComponentsHolder stationComponentsHolder, StationMessageSender stationMessageSender, Clock clock) {
         super(stationMessageSender, clock);
         this.stationComponentsHolder = stationComponentsHolder;
     }

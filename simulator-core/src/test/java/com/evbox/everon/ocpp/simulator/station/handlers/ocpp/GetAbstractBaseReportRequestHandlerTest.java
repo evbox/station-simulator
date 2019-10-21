@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT) // Remove once SummaryInventory is implemented
-public class GetBaseReportRequestHandlerTest {
+public class GetAbstractBaseReportRequestHandlerTest {
 
     private static final int REQUEST_ID = 300;
     private static final ReportDatum REPORT_DATUM = new ReportDatum();
