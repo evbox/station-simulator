@@ -26,7 +26,7 @@ public class ConsoleReader {
 
     private static final String SHOW_STATION_STORE_CMD = "stat";
 
-    private int selectedStation = 0;
+    private int selectedStation;
 
     private final List<Station> stations;
     private final ExecutorService consoleReaderExecutorService = Executors.newSingleThreadExecutor();
@@ -40,7 +40,7 @@ public class ConsoleReader {
     public void startReading() {
 
         consoleReaderExecutorService.submit(() -> {
-            Scanner in = new Scanner(System.in);
+            Scanner in = new Scanner(System.in, "UTF-8");
 
             showStationsList();
 
