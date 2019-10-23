@@ -84,12 +84,22 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.3.8.3'
+version '0.3.8.2'
+
+shadowJar {
+    baseName = 'myproject-shadow'
+    classifier = ''
+    manifest {
+        attributes(
+                'Main-Class': 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
+        )
+    }
+}
 
 publishing {
     publications {
-        StationSimulator(MavenPublication) { publication ->
-            project.shadow.component(publication)
+        shadow(MavenPublication) {
+            artifactId = 'myproject-shadow'
         }
     }
 }
@@ -97,7 +107,7 @@ publishing {
 bintray {
     user = System.getenv('BINTRAY_USERNAME')
     key = System.getenv('BINTRAY_API_KEY')
-    publications = ['StationSimulator']
+    publications = ['shadow']
 
     pkg {
         repo = 'maven'
