@@ -84,10 +84,11 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.3.8.5'
+version '0.3.8.6'
 
 shadowJar {
     baseName = 'ocpp-station-simulator'
+    classifier = null
     version = project.version
 }
 
