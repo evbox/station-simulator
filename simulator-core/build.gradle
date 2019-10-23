@@ -84,21 +84,11 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.3.8.5'
-
-shadowJar {
-    baseName = 'ocpp-station-simulator'
-    version = project.version
-}
+version '0.3.8.3'
 
 publishing {
     publications {
         StationSimulator(MavenPublication) { publication ->
-            publication.artifact(sourcesJar)
-            publication.artifact(javadocJar)
-            publication.groupId('io.everon')
-            publication.artifactId('ocpp-station-simulator')
-            publication.version(project.version)
             project.shadow.component(publication)
         }
     }
