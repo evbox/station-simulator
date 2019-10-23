@@ -84,14 +84,22 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.3.8.1'
+version '0.3.8.2'
+
+shadowJar {
+    baseName = 'myproject-shadow'
+    classifier = ''
+    manifest {
+        attributes(
+                'Main-Class': 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
+        )
+    }
+}
 
 publishing {
     publications {
         shadow(MavenPublication) {
-            groupId 'io.everon'
-            artifactId 'ocpp-station-simulator'
-            version project.version
+            artifactId = 'myproject-shadow'
         }
     }
 }
