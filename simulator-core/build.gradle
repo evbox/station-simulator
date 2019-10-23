@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
     id 'io.franzbecker.gradle-lombok'   version '2.0'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
     id 'jacoco'
 }
 
@@ -18,6 +18,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'jacoco'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
 
@@ -35,9 +36,7 @@ lombok {
 
 dependencies {
     compile project(":payload:ocpp-data-types")
-//    compile project(":payload:ocpp20")
-    compile 'io.everon:ocpp-payload:2.0.0'
-
+    compile project(":payload:ocpp20")
 
     compile 'info.picocli:picocli:3.9.2'
     compile 'com.squareup.okhttp3:okhttp:3.12.1'
@@ -85,14 +84,11 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.3.8'
+version '0.3.8.1'
 
 publishing {
     publications {
-        StationSimulator(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
+        shadow(MavenPublication) {
             groupId 'io.everon'
             artifactId 'ocpp-station-simulator'
             version project.version
@@ -103,7 +99,7 @@ publishing {
 bintray {
     user = System.getenv('BINTRAY_USERNAME')
     key = System.getenv('BINTRAY_API_KEY')
-    publications = ['StationSimulator']
+    publications = ['shadow']
 
     pkg {
         repo = 'maven'
