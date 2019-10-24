@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'maven-publish'
+}
+
 apply plugin: 'java'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
@@ -20,7 +24,7 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '2.0.2'
+version '2.0.3'
 
 publishing {
     publications {
