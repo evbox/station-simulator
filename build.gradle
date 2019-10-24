@@ -30,5 +30,3 @@ subprojects {
         jcenter()
     }
 }
-
-bintrayPublish { p -> p.skip = true}
