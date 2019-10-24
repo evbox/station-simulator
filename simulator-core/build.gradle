@@ -117,5 +117,5 @@ bintray {
         }
     }
 
-    publish = false
+    publish = true
 }
