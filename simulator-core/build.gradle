@@ -85,37 +85,37 @@ task javadocJar(type: Jar) {
 }
 version '0.3.8'
 
-//publishing {
-//    publications {
-//        StationSimulator(MavenPublication) {
-//            from components.java
-//            artifact sourcesJar
-//            artifact javadocJar
-//            groupId 'io.everon'
-//            artifactId 'ocpp-station-simulator'
-//            version project.version
-//        }
-//    }
-//}
-//
-//bintray {
-//    user = System.getenv('BINTRAY_USERNAME')
-//    key = System.getenv('BINTRAY_API_KEY')
-//    publications = ['StationSimulator']
-//
-//    pkg {
-//        repo = 'maven'
-//        name = 'ocpp-station-simulator'
-//        licenses = ['MIT']
-//        vcsUrl = 'https://github.com/evbox/station-simulator.git'
-//        publicDownloadNumbers = true
-//
-//        version {
-//            name = project.version
-//            desc = 'OCPP 2.0 Station Simulator'
-//            vcsTag = project.version
-//        }
-//    }
-//
-//    publish = true
-//}
+publishing {
+    publications {
+        StationSimulator(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'io.everon'
+            artifactId 'ocpp-station-simulator'
+            version project.version
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USERNAME')
+    key = System.getenv('BINTRAY_API_KEY')
+    publications = ['StationSimulator']
+
+    pkg {
+        repo = 'maven'
+        name = 'ocpp-station-simulator'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/evbox/station-simulator.git'
+        publicDownloadNumbers = true
+
+        version {
+            name = project.version
+            desc = 'OCPP 2.0 Station Simulator'
+            vcsTag = project.version
+        }
+    }
+
+    publish = false
+}
