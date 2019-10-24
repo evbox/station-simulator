@@ -3,7 +3,7 @@ OCPP Station Simulator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [ ![Download](https://api.bintray.com/packages/everon/maven/ocpp-station-simulator/images/download.svg) ](https://bintray.com/everon/maven/ocpp-station-simulator/_latestVersion)
-
+![Sonar Coverage](https://img.shields.io/sonar/coverage/station-simulator?server=https%3A%2F%2Fsonarcloud.io)
 
 ## Introduction
 The simulator tool is dedicated for simulation of charging station. It implements [OCPP protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol) and talks to Charging Station Management 
