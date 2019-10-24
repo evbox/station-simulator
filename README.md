@@ -3,10 +3,10 @@ OCPP Station Simulator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [ ![Download](https://api.bintray.com/packages/everon/maven/ocpp-station-simulator/images/download.svg) ](https://bintray.com/everon/maven/ocpp-station-simulator/_latestVersion)
-![Sonar Coverage](https://img.shields.io/sonar/coverage/station-simulator?server=https%3A%2F%2Fsonarcloud.io)
+[ ![Sonar Coverage](https://img.shields.io/sonar/coverage/station-simulator?server=https%3A%2F%2Fsonarcloud.io) ](https://sonarcloud.io/dashboard?id=station-simulator)
 
 ## Introduction
-The simulator tool is dedicated for simulation of charging station. It implements [OCPP protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol) and talks to Charging Station Management 
+The simulator tool is designed to simulate charging station. It implements [OCPP protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol) and talks to Charging Station Management 
 System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [here](https://www.openchargealliance.org/protocols/ocpp-20/)) is supported.
 
 # Usage
@@ -16,7 +16,7 @@ For the release notes and version numbers check the  [CHANGELOG.md](https://gith
 
 ## Maven
 
-To use the simulator in Maven-based project, use the following dependency:
+To include the simulator in Maven-based project, use the following dependency:
 ``` xml
 <dependency>
   <groupId>io.everon</groupId>
