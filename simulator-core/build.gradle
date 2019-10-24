@@ -34,8 +34,8 @@ lombok {
 }
 
 dependencies {
-    compile project(":payload:ocpp-data-types")
     compile project(":payload:ocpp20")
+    compile 'io.everon:ocpp-payload:2.0.0'
 
     compile 'info.picocli:picocli:3.9.2'
     compile 'com.squareup.okhttp3:okhttp:3.12.1'
@@ -117,5 +117,5 @@ bintray {
         }
     }
 
-    publish = true
+    publish = false
 }
