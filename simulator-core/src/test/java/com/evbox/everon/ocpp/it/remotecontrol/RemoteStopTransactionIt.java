@@ -23,7 +23,7 @@ import static com.evbox.everon.ocpp.v20.message.common.IdToken.Type.ISO_14443;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-public class RemoteStopTransaction extends StationSimulatorSetUp {
+public class RemoteStopTransactionIt extends StationSimulatorSetUp {
 
     @Test
     void shouldRemotelyStopTransaction() {
