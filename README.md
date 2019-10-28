@@ -1,9 +1,15 @@
 OCPP Station Simulator
 ======================
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [ ![Download](https://api.bintray.com/packages/everon/maven/ocpp-station-simulator/images/download.svg) ](https://bintray.com/everon/maven/ocpp-station-simulator/_latestVersion)
-[ ![Sonar Coverage](https://img.shields.io/sonar/coverage/station-simulator?server=https%3A%2F%2Fsonarcloud.io) ](https://sonarcloud.io/dashboard?id=station-simulator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=bugs)](https://sonarcloud.io/dashboard?id=station-simulator)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=station-simulator)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=coverage)](https://sonarcloud.io/dashboard?id=station-simulator)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=security_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
 
 ## Introduction
 The simulator tool is designed to simulate charging station. It implements [OCPP protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol) and talks to Charging Station Management 
