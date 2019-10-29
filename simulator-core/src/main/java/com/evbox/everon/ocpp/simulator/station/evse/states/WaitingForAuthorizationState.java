@@ -53,10 +53,9 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
                 }
 
                 startCharging(stationMessageSender, evse, tokenId);
+                stateManager.setStateForEvse(evseId, new ChargingState());
             }
         });
-
-        stateManager.setStateForEvse(evseId, new ChargingState());
     }
 
     @Override
