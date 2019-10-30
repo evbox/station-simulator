@@ -36,6 +36,9 @@ class StateManagerTest {
     private final AuthorizeResponse authorizeResponse = new AuthorizeResponse()
                                                             .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
                                                             .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
+    private final AuthorizeResponse notAuthorizeResponse = new AuthorizeResponse()
+                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.INVALID))
+                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
 
     @BeforeEach
     void setUp() {
@@ -106,6 +109,35 @@ class StateManagerTest {
     }
 
     @Test
+    void verifyNotAuthorizedInAvailableState() {
+        checkStateDidNotChangeAfterAuth();
+    }
+
+    @Test
+    void verifyNotAuthorizedInWaitingForAuthorizationState() {
+        when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
+        checkStateDidNotChangeAfterAuth();
+    }
+
+    @Test
+    void verifyNotAuthorizedInWaitingForPlugState() {
+        when(evseMock.getEvseState()).thenReturn(new WaitingForPlugState());
+        checkStateDidNotChangeAfterAuth();
+    }
+
+    @Test
+    void verifyNotAuthorizedInChargingState() {
+        when(evseMock.getEvseState()).thenReturn(new ChargingState());
+        checkStateDidNotChangeAfterAuth();
+    }
+
+    @Test
+    void verifyNotAuthorizedInStoppedState() {
+        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        checkStateDidNotChangeAfterAuth();
+    }
+
+    @Test
     void verifyStopChargingAndRestart() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
@@ -169,6 +201,16 @@ class StateManagerTest {
 
         stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(AvailableState.NAME);
+    }
+
+    private void checkStateDidNotChangeAfterAuth() {
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), notAuthorizeResponse);
+
+        // Verify that state did not change
+        verify(evseMock, times(0)).setEvseState(any());
     }
 
     private void checkStateIs(String name) {
