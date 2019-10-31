@@ -53,10 +53,10 @@ public class ChargingState extends AbstractEvseState {
 
                     stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, evse.getStopReason().getStoppedReason());
                 }
+                stateManager.setStateForEvse(evseId, new StoppedState());
             }
         });
 
-        stateManager.setStateForEvse(evseId, new StoppedState());
     }
 
     @Override

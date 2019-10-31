@@ -78,10 +78,9 @@ public class AvailableState extends AbstractEvseState {
 
                     authorizedEvses.forEach(evse -> stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId));
                 }
+                stateManager.setStateForEvse(evseId, new WaitingForPlugState());
             }
         });
-
-        stateManager.setStateForEvse(evseId, new WaitingForPlugState());
     }
 
     @Override

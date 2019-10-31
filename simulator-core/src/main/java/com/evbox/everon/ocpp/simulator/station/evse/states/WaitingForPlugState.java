@@ -78,10 +78,9 @@ public class WaitingForPlugState extends AbstractEvseState {
 
                     stationMessageSender.sendTransactionEventEnded(evse.getId(), null, TransactionEventRequest.TriggerReason.EV_DEPARTED, evse.getStopReason().getStoppedReason());
                 }
+                stateManager.setStateForEvse(evseId, new AvailableState());
             }
         });
-
-        stateManager.setStateForEvse(evseId, new AvailableState());
     }
 
     @Override

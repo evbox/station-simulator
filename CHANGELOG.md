@@ -1,5 +1,10 @@
 # Station Simulator Releases #
 
+### Version 0.3.9
+
+- Bug fixes
+- Small improvements
+
 ### Version 0.3.8
 
 - Logging is moved from console to log file
