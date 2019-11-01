@@ -43,6 +43,8 @@ public class StationSimulatorSetUp  {
 
     protected StationSimulatorRunner stationSimulatorRunner;
 
+    private final List<String> txStartStopPoints = Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
+
     @BeforeEach
     void setUp() {
         Awaitility.setDefaultTimeout(ASSERT_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
@@ -51,8 +53,8 @@ public class StationSimulatorSetUp  {
 
         StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS, getMeterValuesConfiguration());
         stationConfiguration.getComponentsConfiguration().getTxCtrlr().setEvConnectionTimeOutSec(getEVConnectionTimeOutSec());
-        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStartPoint(getTxStartPoint());
-        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStopPoint(getTxStopPoint());
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStartPoint(txStartStopPoints);
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStopPoint(txStartStopPoints);
 
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
@@ -77,14 +79,6 @@ public class StationSimulatorSetUp  {
 
     protected int getEVConnectionTimeOutSec() {
         return 10;
-    }
-
-    protected List<String> getTxStartPoint() {
-        return Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
-    }
-
-    protected List<String> getTxStopPoint() {
-        return Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED.toString(), TxStartStopPointVariableValues.EV_CONNECTED.toString());
     }
 
     protected MeterValuesConfiguration getMeterValuesConfiguration() {

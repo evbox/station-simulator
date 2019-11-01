@@ -68,7 +68,6 @@ public class TxStopPointTest {
     void verifyStopOnlyOnAuthorizedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -76,7 +75,7 @@ public class TxStopPointTest {
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.EV_DISCONNECTED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
         verify(evseMock, times(1)).stopTransaction();
     }
 
@@ -101,7 +100,6 @@ public class TxStopPointTest {
         when(evseMock.getEvseState()).thenReturn(new StoppedState());
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -134,7 +132,6 @@ public class TxStopPointTest {
 
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -164,7 +161,6 @@ public class TxStopPointTest {
     @Test
     void verifyStopOnlyOnPowerPathClosedAuthUnplugAction() {
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -190,7 +186,6 @@ public class TxStopPointTest {
     void verifyStopOnAuthorizedAndEVConnectedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -198,7 +193,7 @@ public class TxStopPointTest {
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.EV_DISCONNECTED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
         verify(evseMock, times(1)).stopTransaction();
     }
 
@@ -221,7 +216,6 @@ public class TxStopPointTest {
     @Test
     void verifyStartOnAuthorizedAndPowerPathClosedAuthUnplugAction() {
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -248,7 +242,6 @@ public class TxStopPointTest {
         when(evseMock.getEvseState()).thenReturn(new StoppedState());
 
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 

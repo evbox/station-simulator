@@ -9,13 +9,9 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Unplug;
-import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-import java.util.List;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.times;
@@ -97,10 +93,5 @@ public class RemoteStopTransactionIt extends StationSimulatorSetUp {
             ocppMockServer.verify();
         });
 
-    }
-
-    @Override
-    protected List<String> getTxStopPoint() {
-        return Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED.toString());
     }
 }

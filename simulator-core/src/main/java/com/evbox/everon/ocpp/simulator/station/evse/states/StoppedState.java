@@ -47,7 +47,7 @@ public class StoppedState extends AbstractEvseState {
                 evse.stopTransaction();
                 evse.clearToken();
 
-                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, evse.getStopReason().getStoppedReason());
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.EV_DISCONNECTED);
             }
         });
 

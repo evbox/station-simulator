@@ -3,7 +3,6 @@ package com.evbox.everon.ocpp.simulator.station.actions.user;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.*;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
-import com.evbox.everon.ocpp.simulator.station.evse.ChargingStopReason;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
@@ -120,7 +119,6 @@ public class AuthorizeTest {
     @Test
     void shouldSetStateToStopCharging_When_IsNotPlugged_AndStateIsCharging() {
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
 
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
 

@@ -74,7 +74,7 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
             StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
             stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (request, response) ->
-                    stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, evse.getStopReason().getStoppedReason()));
+                    stationMessageSender.sendTransactionEventEnded(evse.getId(), connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.EV_DISCONNECTED));
         }
 
         stateManager.setStateForEvse(evseId, new AvailableState());
