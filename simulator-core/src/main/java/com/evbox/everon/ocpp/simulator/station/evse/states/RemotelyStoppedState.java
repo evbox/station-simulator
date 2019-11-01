@@ -11,6 +11,11 @@ public class RemotelyStoppedState extends StoppedState {
     public static final String NAME = "REMOTELY_STOPPED";
 
     @Override
+    public String getStateName() {
+        return NAME;
+    }
+
+    @Override
     public void onUnplug(int evseId, int connectorId) {
         StationStore stationStore = stateManager.getStationStore();
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
