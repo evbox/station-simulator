@@ -41,7 +41,6 @@ public class Evse {
     private boolean charging;
     private long seqNo;
 
-    private ChargingStopReason stopReason = ChargingStopReason.NONE;
     private EvseStatus evseStatus;
     private EvseTransaction transaction;
     /**
@@ -117,15 +116,6 @@ public class Evse {
      */
     public void stopCharging() {
         charging = false;
-        stopReason = ChargingStopReason.LOCALLY_STOPPED;
-    }
-
-    /**
-     * Remotely stop charging.
-     */
-    public void remotelyStopCharging() {
-        charging = false;
-        stopReason = ChargingStopReason.REMOTELY_STOPPED;
     }
 
     /**

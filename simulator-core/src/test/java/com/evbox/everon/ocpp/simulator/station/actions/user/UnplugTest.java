@@ -1,7 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions.user;
 
 import com.evbox.everon.ocpp.common.OptionList;
-import com.evbox.everon.ocpp.mock.factory.EvseCreator;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.*;
@@ -70,7 +69,6 @@ public class UnplugTest {
     void verifyTransactionStatusNotification() {
 
         when(evseMock.getEvseState()).thenReturn(new StoppedState());
-        when(evseMock.getStopReason()).thenReturn(ChargingStopReason.LOCALLY_STOPPED);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
 
         unplug.perform(stateManagerMock);
