@@ -116,13 +116,13 @@ public class SimulatorConfiguration {
          * List of events that defines when a new transaction should start.
          */
         @Builder.Default
-        private List<String> txStartPoint = DEFAULT_TX_START_POINTS;
+        private List<String> txStartPoints = DEFAULT_TX_START_POINTS;
 
         /**
          * List of events that when no longer valid, the transaction should be ended.
          */
         @Builder.Default
-        private List<String> txStopPoint = DEFAULT_TX_STOP_POINTS;
+        private List<String> txStopPoints = DEFAULT_TX_STOP_POINTS;
     }
 
     @Data

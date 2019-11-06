@@ -53,8 +53,8 @@ public class StationSimulatorSetUp  {
 
         StationConfiguration stationConfiguration = SimulatorConfigCreator.createStationConfiguration(STATION_ID, DEFAULT_EVSE_COUNT, DEFAULT_EVSE_CONNECTORS, getMeterValuesConfiguration());
         stationConfiguration.getComponentsConfiguration().getTxCtrlr().setEvConnectionTimeOutSec(getEVConnectionTimeOutSec());
-        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStartPoint(txStartStopPoints);
-        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStopPoint(txStartStopPoints);
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStartPoints(txStartStopPoints);
+        stationConfiguration.getComponentsConfiguration().getTxCtrlr().setTxStopPoints(txStartStopPoints);
 
         SimulatorConfiguration simulatorConfiguration = SimulatorConfigCreator.createSimulatorConfiguration(stationConfiguration);
 
