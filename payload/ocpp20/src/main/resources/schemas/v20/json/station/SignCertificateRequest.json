@@ -7,7 +7,7 @@
   "properties": {
     "csr": {
       "type": "string",
-      "maxLength": 800
+      "maxLength": 5500
     },
     "typeOfCertificate": {
       "type": "string",

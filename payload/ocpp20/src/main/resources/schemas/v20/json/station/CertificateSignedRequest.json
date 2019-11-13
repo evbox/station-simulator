@@ -10,7 +10,7 @@
       "additionalItems": false,
       "items": {
         "type": "string",
-        "maxLength": 800
+        "maxLength": 5500
       },
       "minItems": 1
     },

@@ -18,7 +18,14 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 import java.time.*;
 import java.util.*;
 
@@ -29,6 +36,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * Represents the state of the station.
  */
+@Slf4j
 @ToString
 public class StationStore {
 
@@ -39,6 +47,9 @@ public class StationStore {
     private OptionList<TxStartStopPointVariableValues> txStartPointValues;
     private OptionList<TxStartStopPointVariableValues> txStopPointValues;
 
+    private X509Certificate stationCertificate;
+    private PublicKey stationPublicKey;
+    private PrivateKey stationPrivateKey;
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
@@ -79,6 +90,30 @@ public class StationStore {
 
     public void setEVConnectionTimeOut(int evConnectionTimeOut) {
         this.evConnectionTimeOut = evConnectionTimeOut;
+    }
+
+    public X509Certificate getStationCertificate() {
+        return stationCertificate;
+    }
+
+    public void setStationCertificate(X509Certificate stationCertificate) {
+        this.stationCertificate = stationCertificate;
+    }
+
+    public PublicKey getStationPublicKey() {
+        return stationPublicKey;
+    }
+
+    public void setStationPublicKey(PublicKey stationPublicKey) {
+        this.stationPublicKey = stationPublicKey;
+    }
+
+    public PrivateKey getStationPrivateKey() {
+        return stationPrivateKey;
+    }
+
+    public void setStationPrivateKey(PrivateKey stationPrivateKey) {
+        this.stationPrivateKey = stationPrivateKey;
     }
 
     public Integer unlockConnector(int evseId) {
@@ -211,7 +246,7 @@ public class StationStore {
     StationStoreView createView() {
         List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
-        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, evsesCopy);
+        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, stationCertificate, evsesCopy);
     }
 
     @Getter
@@ -222,6 +257,7 @@ public class StationStore {
         private final Clock clock;
         private final int heartbeatInterval;
         private final int evConnectionTimeOut;
+        private final X509Certificate stationCertificate;
         private final List<EvseView> evses;
 
         public boolean hasAuthorizedToken() {
@@ -247,6 +283,24 @@ public class StationStore {
         @JsonIgnore
         public EvseView getDefaultEvse() {
             return evses.get(0);
+        }
+
+        @JsonIgnore
+        public String getStationCertificate() {
+            if (stationCertificate == null) {
+                return "No certificate found!";
+            }
+
+            String certificate = "";
+            try (StringWriter stringWriter = new StringWriter(); JcaPEMWriter pemWriter = new JcaPEMWriter(stringWriter)) {
+                pemWriter.writeObject(stationCertificate);
+                pemWriter.flush();
+                certificate = stringWriter.toString();
+            } catch (IOException e) {
+                log.debug("Error printing the certificate", e);
+            }
+
+            return certificate;
         }
 
         public boolean isCharging(Integer evseId) {

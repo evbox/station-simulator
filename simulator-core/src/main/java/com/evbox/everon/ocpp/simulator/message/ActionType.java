@@ -22,7 +22,10 @@ public enum ActionType {
     REQUEST_STOP_TRANSACTION("RequestStopTransaction", RequestStopTransactionRequest.class, RequestStopTransactionResponse.class),
     REQUEST_START_TRANSACTION("RequestStartTransaction", RequestStartTransactionRequest.class, RequestStartTransactionResponse.class),
     SET_CHARGING_PROFILE("SetChargingProfile", SetChargingProfileRequest.class, SetChargingProfileResponse.class),
-    UNLOCK_CONNECTOR("UnlockConnector", UnlockConnectorRequest.class, UnlockConnectorResponse.class);
+    UNLOCK_CONNECTOR("UnlockConnector", UnlockConnectorRequest.class, UnlockConnectorResponse.class),
+    SIGN_CERTIFICATE("SignCertificate", SignCertificateRequest.class, SignCertificateResponse.class),
+    TRIGGER_MESSAGE("TriggerMessage", TriggerMessageRequest.class, TriggerMessageResponse.class),
+    CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class);
 
     private final String actionTypeName;
     private final Class requestClazz;
