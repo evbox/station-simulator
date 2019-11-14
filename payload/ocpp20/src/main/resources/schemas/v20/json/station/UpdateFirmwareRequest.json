@@ -21,7 +21,7 @@
         },
         "signingCertificate": {
           "type": "string",
-          "maxLength": 800
+          "maxLength": 5500
         },
         "signature": {
           "type": "string",

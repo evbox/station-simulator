@@ -26,6 +26,7 @@ public class ConsoleReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleReader.class);
 
     private static final String SHOW_STATION_STORE_CMD = "stat";
+    private static final String SHOW_STATION_CERTIFICATE_CMD = "cert";
 
     private int selectedStation;
 
@@ -66,9 +67,10 @@ public class ConsoleReader {
 
         boolean selectStationCommand = commandArgs.size() == 1 && StringUtils.isNumeric(commandName);
         boolean showStationStoreCommand = commandArgs.size() == 1 && SHOW_STATION_STORE_CMD.equalsIgnoreCase(commandName);
+        boolean showStationCertificateCommand = commandArgs.size() == 1 && SHOW_STATION_CERTIFICATE_CMD.equalsIgnoreCase(commandName);
 
         if (selectStationCommand) {
-            selectNewStation(Integer.valueOf(commandName));
+            selectNewStation(Integer.parseInt(commandName));
         } else if (ConsoleCommand.contains(commandName)) {
             UserMessage userMessage = ConsoleCommand.toUserMessage(commandName, commandArgs.subList(1, commandArgs.size()));
 
@@ -78,6 +80,8 @@ public class ConsoleReader {
 
         } else if (showStationStoreCommand) {
             showStationStore();
+        } else if (showStationCertificateCommand) {
+            showStationCertificate();
         } else if (isNotBlank(commandName)) {
             System.out.println("Unknown command: " + commandName); //NOSONAR
         }
@@ -85,6 +89,11 @@ public class ConsoleReader {
 
     private void showStationStore() {
         System.out.println(stations.get(selectedStation).getStateView()); //NOSONAR
+    }
+
+    private void showStationCertificate() {
+        System.out.println(stations.get(selectedStation).getStateView().getStationCertificate()); //NOSONAR
+
     }
 
     private void selectNewStation(int newStationIndex) {
@@ -114,6 +123,7 @@ public class ConsoleReader {
         commands += "\tplug {evseId} {connectorId} - plug cable to given connector\n";
         commands += "\tunplug {evseId} {connectorId} - unplug cable from given connector\n";
         commands += "\tauth {tokenId} {evseId} - authorize token at given EVSE\n";
+        commands += "\tcert - print certificate of the station\n";
         commands += "\tstat - show state of selected station";
 
         System.out.println(commands); //NOSONAR

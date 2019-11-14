@@ -345,6 +345,18 @@ public class StationMessageSender {
     }
 
     /**
+     * Sends SignCertificateRequest message
+     *
+     * @param csr Certificate signing request
+     */
+    public void sendSignCertificateRequest(String csr) {
+        SignCertificateRequest payload = payloadFactory.createSignCertificateRequest(csr);
+
+        Call call = createAndRegisterCall(ActionType.SIGN_CERTIFICATE, payload);
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
+    }
+
+    /**
      * Send an incoming message {@link AbstractWebSocketClientInboxMessage} to ocpp server.
      *
      * @param message {@link AbstractWebSocketClientInboxMessage}

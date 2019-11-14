@@ -22,6 +22,12 @@ import static java.math.BigDecimal.ZERO;
 
 public class PayloadFactory {
 
+    SignCertificateRequest createSignCertificateRequest(String csr) {
+        return new SignCertificateRequest()
+                    .withCsr(new CiString.CiString5500(csr))
+                    .withTypeOfCertificate(SignCertificateRequest.TypeOfCertificate.CHARGING_STATION_CERTIFICATE);
+    }
+
     AuthorizeRequest createAuthorizeRequest(String tokenId, List<Integer> evseIds) {
         AuthorizeRequest payload = new AuthorizeRequest();
         if (!evseIds.isEmpty()) {

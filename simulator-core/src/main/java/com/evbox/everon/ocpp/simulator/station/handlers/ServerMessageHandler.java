@@ -59,6 +59,8 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(RequestStartTransactionRequest.class, new RequestStartTransactionRequestHandler(stationStore, stationMessageSender, stateManager))
                 .put(SetChargingProfileRequest.class, new SetChargingProfileRequestHandler(stationMessageSender))
                 .put(UnlockConnectorRequest.class, new UnlockConnectorRequestHandler(stationStore, stationMessageSender))
+                .put(CertificateSignedRequest.class, new CertificateSignedRequestHandler(stationStore, stationMessageSender))
+                .put(TriggerMessageRequest.class, new TriggerMessageRequestHandler(stationStore, stationMessageSender))
                 .build();
     }
 
