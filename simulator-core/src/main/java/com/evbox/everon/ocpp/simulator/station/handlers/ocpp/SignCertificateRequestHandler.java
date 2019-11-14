@@ -4,6 +4,9 @@ import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -20,7 +23,7 @@ import java.security.*;
 @Slf4j
 public class SignCertificateRequestHandler implements Runnable {
 
-    private static final String SIGNATURE_ALG = "SHA256withRSA";
+    private static final String SIGNATURE_ALG = "SHA256WITHECDSA";
 
     private StationStore stationStore;
     private StationMessageSender stationMessageSender;
@@ -33,15 +36,16 @@ public class SignCertificateRequestHandler implements Runnable {
     @Override
     public void run() {
         try {
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(2048, new SecureRandom());
-            KeyPair keypair = keyGen.generateKeyPair();
-            PublicKey publicKey = keypair.getPublic();
-            PrivateKey privateKey = keypair.getPrivate();
-            String csr = generatePKCS10(publicKey, privateKey);
+            Security.addProvider(new BouncyCastleProvider());
 
-            stationStore.setStationPublicKey(publicKey);
-            stationStore.setStationPrivateKey(privateKey);
+            ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("prime256v1");
+            KeyPairGenerator g = KeyPairGenerator.getInstance("ECDSA", "BC");
+            g.initialize(ecSpec, new SecureRandom());
+            KeyPair keyPair = g.generateKeyPair();
+            String csr = generatePKCS10(keyPair.getPublic(), keyPair.getPrivate());
+
+            stationStore.setStationPublicKey(keyPair.getPublic());
+            stationStore.setStationPrivateKey(keyPair.getPrivate());
             stationMessageSender.sendSignCertificateRequest(csr);
         } catch (Exception e) {
             log.debug("Error while creating the CSR", e);
