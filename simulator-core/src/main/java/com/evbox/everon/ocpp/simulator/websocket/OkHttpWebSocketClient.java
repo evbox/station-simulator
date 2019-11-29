@@ -20,7 +20,7 @@ public class OkHttpWebSocketClient {
 
     private static final String COLON = ":";
 
-    private final OkHttpClient client;
+    private OkHttpClient client;
     private final SimulatorConfiguration.StationConfiguration stationConfiguration;
     private WebSocket webSocket;
     private ChannelListener listener;
@@ -28,6 +28,11 @@ public class OkHttpWebSocketClient {
     public OkHttpWebSocketClient(OkHttpClient client, SimulatorConfiguration.StationConfiguration stationConfiguration) {
         this.client = client;
         this.stationConfiguration = stationConfiguration;
+    }
+
+    public void setClient(OkHttpClient client) {
+        disconnect("Simulator switching to security profile 3");
+        this.client = client;
     }
 
     public void setListener(ChannelListener listener) {
@@ -84,7 +89,11 @@ public class OkHttpWebSocketClient {
     }
 
     public void disconnect() {
-        webSocket.close(1000, "Simulator goes offline");
+        disconnect("Simulator goes offline");
+    }
+
+    public void disconnect(String reason) {
+        webSocket.close(1000, reason);
     }
 
     public void reconnect(String url) {

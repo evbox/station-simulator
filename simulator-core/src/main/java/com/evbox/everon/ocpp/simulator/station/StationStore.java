@@ -48,6 +48,7 @@ public class StationStore {
     private OptionList<TxStartStopPointVariableValues> txStopPointValues;
 
     private X509Certificate stationCertificate;
+    private List<X509Certificate> stationCertificateChain;
     private PublicKey stationPublicKey;
     private PrivateKey stationPrivateKey;
 
@@ -98,6 +99,14 @@ public class StationStore {
 
     public void setStationCertificate(X509Certificate stationCertificate) {
         this.stationCertificate = stationCertificate;
+    }
+
+    public List<X509Certificate> getStationCertificateChain() {
+        return Collections.unmodifiableList(stationCertificateChain);
+    }
+
+    public void setStationCertificateChain(List<X509Certificate> stationCertificateChain) {
+        this.stationCertificateChain = new ArrayList<>(stationCertificateChain);
     }
 
     public PublicKey getStationPublicKey() {

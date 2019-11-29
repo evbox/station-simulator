@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -44,14 +46,26 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        request.getCert().forEach(c -> sb.append(c.toString()));
+        List<String> chain = new ArrayList<>();
+        request.getCert().forEach(c -> chain.add(c.toString()));
 
-        X509Certificate certificate = convertStringToCertificate(sb.toString());
-        if (certificate != null && isCertificateValid(certificate)) {
+        if (chain.isEmpty()) {
+            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedResponse.Status.REJECTED));
+            return;
+        }
+
+
+        X509Certificate stationCertificate = convertStringToCertificate(chain.get(0));
+        if (stationCertificate != null && isCertificateValid(stationCertificate)) {
             stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedResponse.Status.ACCEPTED));
-            stationStore.setStationCertificate(certificate);
-            startCertificateRenewerTask(certificate);
+            stationStore.setStationCertificate(stationCertificate);
+            startCertificateRenewerTask(stationCertificate);
+
+            if (chain.size() > 1) {
+                List<X509Certificate> stationCertificateChain = new ArrayList<>();
+                chain.subList(1, chain.size()).forEach(c -> stationCertificateChain.add(convertStringToCertificate(c)));
+                stationStore.setStationCertificateChain(stationCertificateChain);
+            }
         } else {
             stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedResponse.Status.REJECTED));
         }

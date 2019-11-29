@@ -6,7 +6,6 @@ import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.v20.message.station.CertificateSignedRequest;
 import com.evbox.everon.ocpp.v20.message.station.CertificateSignedResponse;
 import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +22,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_MESSAGE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,8 +106,7 @@ public class CertificateSignedRequestHandlerTest {
         verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());
         assertThat(messageCaptor.getValue().getStatus().value()).isEqualTo(CertificateSignedResponse.Status.ACCEPTED.value());
         verify(stationStoreMock).setStationCertificate(any());
-
-
+        verify(stationStoreMock).setStationCertificateChain(argThat(chain -> chain.size() == 1));
 
         ScheduledFuture scheduledFuture = requestHandler.getScheduledFuture();
         assertThat(Optional.ofNullable(scheduledFuture)).isNotEmpty();
@@ -121,7 +120,7 @@ public class CertificateSignedRequestHandlerTest {
 
     private List<CiString.CiString5500> stringToCiStringsList(String certificate) {
         List<CiString.CiString5500> result = new ArrayList<>();
-        Splitter.fixedLength(5500).split(certificate).forEach(c -> result.add(new CiString.CiString5500(c)));
+        Arrays.stream(certificate.split("\n")).forEach(c -> result.add(new CiString.CiString5500(c)));
         return result;
     }
 

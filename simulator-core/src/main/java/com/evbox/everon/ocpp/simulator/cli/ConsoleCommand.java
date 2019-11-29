@@ -1,9 +1,6 @@
 package com.evbox.everon.ocpp.simulator.cli;
 
-import com.evbox.everon.ocpp.simulator.station.actions.user.Authorize;
-import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
-import com.evbox.everon.ocpp.simulator.station.actions.user.Unplug;
-import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.user.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -78,6 +75,21 @@ public enum ConsoleCommand {
 
             boolean validTokenId = !arg.isEmpty() && identifierStringPattern.matcher(arg).matches();
             checkArgument(validTokenId, "Expected valid 'identifierString' at [%s], but was '%s'", index, arg);
+        }
+    },
+
+    PROFILE3 {
+        private static final int WS_PATH_INDEX = 0;
+
+        @Override
+        public UserMessage toUserMessage(List<String> args) {
+            validateArgs(args);
+            return new SecurityProfile3(args.get(WS_PATH_INDEX));
+        }
+
+        @Override
+        void validateArgs(List<String> args) {
+            validateLength(args, 1);
         }
     };
 
