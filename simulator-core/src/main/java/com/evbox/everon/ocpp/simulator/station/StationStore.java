@@ -102,11 +102,11 @@ public class StationStore {
     }
 
     public List<X509Certificate> getStationCertificateChain() {
-        return Collections.unmodifiableList(stationCertificateChain);
+        return stationCertificateChain;
     }
 
     public void setStationCertificateChain(List<X509Certificate> stationCertificateChain) {
-        this.stationCertificateChain = new ArrayList<>(stationCertificateChain);
+        this.stationCertificateChain = Collections.unmodifiableList(stationCertificateChain);
     }
 
     public PublicKey getStationPublicKey() {

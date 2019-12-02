@@ -279,40 +279,18 @@ public class Station {
         }
 
         try {
-            char[] emptyPassword = new char[0];
+            KeyStore trustStore = SecurityUtils.generateKeyStore(state.getStationCertificate(), state.getStationCertificateChain(), state.getStationPublicKey(), state.getStationPrivateKey());
+            X509TrustManager trustManager = SecurityUtils.createTrustManager(trustStore);
+            SSLContext sslContext = SecurityUtils.prepareSSLContext(trustStore);
 
-            PKCS12PfxPdu pfx = SecurityUtils.generateKeyStore(state.getStationCertificate(), state.getStationCertificateChain(), state.getStationPublicKey(), state.getStationPrivateKey());
-
-            KeyStore trustStore  = KeyStore.getInstance("PKCS12");
-            trustStore.load(new ByteArrayInputStream(pfx.getEncoded()), emptyPassword);
-
-            KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyFactory.init(trustStore, emptyPassword);
-            KeyManager[] keyManagers = keyFactory.getKeyManagers();
-
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(trustStore);
-            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-            if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
-                throw new IllegalStateException("Unexpected default trust managers:" + Arrays.toString(trustManagers));
-            }
-            X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
-
-            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-            sslContext.init(keyManagers, null, new SecureRandom());
-            SSLContext.setDefault(sslContext);
-
-            defaultHttpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
-
-            this.okHttpWebSocketClient.setClient(defaultHttpClientBuilder.build());
+            this.defaultHttpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+            this.okHttpWebSocketClient.setClient(this.defaultHttpClientBuilder.build());
 
             connectToServer(url);
-
         } catch (Exception e) {
             log.info("Exception while trying to switch to a profile3 connection", e);
             throw new IllegalStateException(e);
         }
     }
-
 
 }
