@@ -123,6 +123,7 @@ public class ConsoleReader {
         commands += "\tplug {evseId} {connectorId} - plug cable to given connector\n";
         commands += "\tunplug {evseId} {connectorId} - unplug cable from given connector\n";
         commands += "\tauth {tokenId} {evseId} - authorize token at given EVSE\n";
+        commands += "\tprofile3 {endpoint} - switch to security profile 3\n";
         commands += "\tcert - print certificate of the station\n";
         commands += "\tstat - show state of selected station";
 

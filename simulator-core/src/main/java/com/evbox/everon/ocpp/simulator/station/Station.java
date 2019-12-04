@@ -9,6 +9,7 @@ import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.SystemMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
+import com.evbox.everon.ocpp.simulator.station.support.SecurityUtils;
 import com.evbox.everon.ocpp.simulator.websocket.LoggingInterceptor;
 import com.evbox.everon.ocpp.simulator.websocket.OkHttpWebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
@@ -17,9 +18,17 @@ import com.evbox.everon.ocpp.v20.message.station.BootNotificationResponse;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import org.bouncycastle.pkcs.*;
 
+import javax.net.ssl.*;
+import java.io.ByteArrayInputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import static java.util.Objects.isNull;
 
 /**
  * This class is the representation of OCPP station.
@@ -32,6 +41,8 @@ import java.util.concurrent.TimeUnit;
 public class Station {
 
     private final OkHttpClient defaultHttpClient;
+    private final OkHttpClient.Builder defaultHttpClientBuilder;
+    private final OkHttpWebSocketClient okHttpWebSocketClient;
 
     private final SimulatorConfiguration.StationConfiguration configuration;
 
@@ -64,7 +75,7 @@ public class Station {
      * @param socketConfiguration socket configuration
      */
     public Station(SimulatorConfiguration.StationConfiguration stationConfiguration, SimulatorConfiguration.WebSocketConfiguration socketConfiguration) {
-        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+        defaultHttpClientBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new LoggingInterceptor())
                 .addNetworkInterceptor(new LoggingInterceptor());
 
@@ -72,19 +83,20 @@ public class Station {
             socketConfiguration = SimulatorConfiguration.WebSocketConfiguration.builder().build();
         }
 
-        httpClientBuilder.callTimeout(socketConfiguration.getCallTimeoutMs(), TimeUnit.MILLISECONDS);
-        httpClientBuilder.connectTimeout(socketConfiguration.getConnectTimeoutMs(), TimeUnit.MILLISECONDS);
-        httpClientBuilder.readTimeout(socketConfiguration.getReadTimeoutMs(), TimeUnit.MILLISECONDS);
-        httpClientBuilder.writeTimeout(socketConfiguration.getWriteTimeoutMs(), TimeUnit.MILLISECONDS);
+        defaultHttpClientBuilder.callTimeout(socketConfiguration.getCallTimeoutMs(), TimeUnit.MILLISECONDS);
+        defaultHttpClientBuilder.connectTimeout(socketConfiguration.getConnectTimeoutMs(), TimeUnit.MILLISECONDS);
+        defaultHttpClientBuilder.readTimeout(socketConfiguration.getReadTimeoutMs(), TimeUnit.MILLISECONDS);
+        defaultHttpClientBuilder.writeTimeout(socketConfiguration.getWriteTimeoutMs(), TimeUnit.MILLISECONDS);
 
-        httpClientBuilder.pingInterval(socketConfiguration.getPingIntervalMs(), TimeUnit.MILLISECONDS);
+        defaultHttpClientBuilder.pingInterval(socketConfiguration.getPingIntervalMs(), TimeUnit.MILLISECONDS);
 
-        defaultHttpClient = httpClientBuilder.build();
+        defaultHttpClient = defaultHttpClientBuilder.build();
 
         this.configuration = stationConfiguration;
         this.state = new StationStore(configuration);
 
-        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), new OkHttpWebSocketClient(defaultHttpClient, configuration));
+        this.okHttpWebSocketClient = new OkHttpWebSocketClient(defaultHttpClient, configuration);
+        this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), okHttpWebSocketClient);
 
         this.callRegistry = new SubscriptionRegistry();
         this.stationMessageSender = new StationMessageSender(callRegistry, state, webSocketClient);
@@ -253,6 +265,32 @@ public class Station {
      */
     void refreshStateView() {
         this.stationStoreView = state.createView();
+    }
+
+    /**
+     * Stops the current connection and establish a new one using
+     * security profile 3.
+     *
+     * @param url endpoint supporting security profile 3
+     */
+    public void switchToSecurityProfile3(String url) {
+        if (isNull(state.getStationCertificate()) || isNull(state.getStationPublicKey()) || isNull(state.getStationPrivateKey())) {
+            throw new IllegalArgumentException("No station certificate found. Please request one!");
+        }
+
+        try {
+            KeyStore trustStore = SecurityUtils.generateKeyStore(state.getStationCertificate(), state.getStationCertificateChain(), state.getStationPublicKey(), state.getStationPrivateKey());
+            X509TrustManager trustManager = SecurityUtils.createTrustManager(trustStore);
+            SSLContext sslContext = SecurityUtils.prepareSSLContext(trustStore);
+
+            this.defaultHttpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+            this.okHttpWebSocketClient.setClient(this.defaultHttpClientBuilder.build());
+
+            connectToServer(url);
+        } catch (Exception e) {
+            log.info("Exception while trying to switch to a profile3 connection", e);
+            throw new IllegalStateException(e);
+        }
     }
 
 }
