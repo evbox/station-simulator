@@ -1,5 +1,10 @@
 # Station Simulator Releases #
 
+### Version 0.4.0
+
+- Added support for A02 and A03 use cases
+- Simulator can now connect using security profile 3 
+
 ### Version 0.3.9
 
 - Bug fixes
