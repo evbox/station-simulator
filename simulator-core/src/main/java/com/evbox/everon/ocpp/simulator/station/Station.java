@@ -18,13 +18,9 @@ import com.evbox.everon.ocpp.v20.message.station.BootNotificationResponse;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import org.bouncycastle.pkcs.*;
 
 import javax.net.ssl.*;
-import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
-import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -185,6 +181,9 @@ public class Station {
      * @return {@link StationStore}
      */
     public StationStoreView getStateView() {
+        if (stationStoreView == null) {
+            refreshStateView();
+        }
         return stationStoreView;
     }
 
