@@ -27,7 +27,7 @@ public class RemoteStartTransactionIt extends StationSimulatorSetUp {
     private final int EV_CONNECTION_TIMEOUT = 2;
 
     @Test
-    void shouldRemotelyStartTransaction() {
+    void shouldRemotelyStartTransactionRemoteStartFirst() {
 
         ocppMockServer
                 .when(Authorize.request(DEFAULT_TOKEN_ID, ISO_14443))
@@ -60,6 +60,47 @@ public class RemoteStartTransactionIt extends StationSimulatorSetUp {
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isFalse());
 
         triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
+
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().hasOngoingTransaction(DEFAULT_EVSE_ID)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().getDefaultEvse().getTokenId()).isEqualTo(DEFAULT_TOKEN_ID));
+
+    }
+
+    @Test
+    void shouldRemotelyStartTransactionPlugFirst() {
+
+        ocppMockServer
+                .when(Authorize.request(DEFAULT_TOKEN_ID, ISO_14443))
+                .thenReturn(Authorize.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(TransactionEventRequest.EventType.STARTED))
+                .thenReturn(TransactionEvent.response());
+
+        ocppMockServer
+                .when(TransactionEvent.request(TransactionEventRequest.EventType.UPDATED))
+                .thenReturn(TransactionEvent.response());
+
+        ocppMockServer
+                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.AVAILABLE))
+                .thenReturn(StatusNotification.response());
+
+        ocppMockServer
+                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.OCCUPIED))
+                .thenReturn(StatusNotification.response());
+
+        stationSimulatorRunner.run();
+        ocppMockServer.waitUntilConnected();
+
+        triggerUserAction(STATION_ID, new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID));
+
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().hasOngoingTransaction(DEFAULT_EVSE_ID)).isTrue());
+        await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isFalse());
+
+        IdToken token = new IdToken().withIdToken(new CiString.CiString36(DEFAULT_TOKEN_ID));
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.REQUEST_START_TRANSACTION, new RequestStartTransactionRequest().withEvseId(DEFAULT_EVSE_ID).withIdToken(token).withRemoteStartId(1));
+        ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isTrue());
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().hasOngoingTransaction(DEFAULT_EVSE_ID)).isTrue());

@@ -7,6 +7,7 @@ import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.common.MeterValue;
 import com.evbox.everon.ocpp.v20.message.common.SampledValue;
 import com.evbox.everon.ocpp.v20.message.station.AuthorizeRequest;
+import com.evbox.everon.ocpp.v20.message.station.RequestStartTransactionRequest;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 
@@ -29,6 +30,9 @@ public class OcppMessageFactory {
 
     public static ResetRequestBuilder createResetRequest() {
         return new ResetRequestBuilder();
+    }
+    public static RequestStartTransactionRequestBuilder createRequestStartTransactionBuilder() {
+        return new RequestStartTransactionRequestBuilder();
     }
 
     public static GetVariablesResponseBuilder createGetVariablesResponse() {
@@ -102,6 +106,36 @@ public class OcppMessageFactory {
             ResetRequest resetRequest = new ResetRequest();
             resetRequest.setType(type);
             return resetRequest;
+        }
+    }
+
+    public static class RequestStartTransactionRequestBuilder {
+
+        private Integer evseId;
+        private Integer remoteStartId;
+        private IdToken idToken;
+
+        public RequestStartTransactionRequestBuilder withEvseId(Integer evseId) {
+            this.evseId = evseId;
+            return this;
+        }
+
+        public RequestStartTransactionRequestBuilder withRemoteStartId(Integer remoteStartId) {
+            this.remoteStartId = remoteStartId;
+            return this;
+        }
+
+        public RequestStartTransactionRequestBuilder withIdToken(IdToken idToken) {
+            this.idToken = idToken;
+            return this;
+        }
+
+        public RequestStartTransactionRequest build() {
+            RequestStartTransactionRequest request = new RequestStartTransactionRequest();
+            request.setEvseId(evseId);
+            request.setIdToken(idToken);
+            request.setRemoteStartId(remoteStartId);
+            return request;
         }
     }
 

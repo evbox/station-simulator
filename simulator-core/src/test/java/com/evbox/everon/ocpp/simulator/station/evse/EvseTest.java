@@ -83,4 +83,12 @@ class EvseTest {
         assertThat(evse.tryFindAvailableConnector()).isEqualTo(Optional.empty());
     }
 
+    @Test
+    void testFindPluggedConnector() {
+        assertThat(evse.tryFindAvailableConnector().map(Connector::getId).orElse(0)).isEqualTo(1);
+        evse.findConnector(1).plug();
+
+        assertThat(evse.tryFindPluggedConnector().map(Connector::getId).orElse(0)).isEqualTo(1);
+    }
+
 }
