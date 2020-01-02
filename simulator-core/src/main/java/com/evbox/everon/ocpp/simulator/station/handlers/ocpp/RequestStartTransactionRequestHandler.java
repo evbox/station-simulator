@@ -1,22 +1,25 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
-import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Handler for {@link RequestStartTransactionRequest} request.
  */
 @Slf4j
 public class RequestStartTransactionRequestHandler implements OcppRequestHandler<RequestStartTransactionRequest> {
+
+    private static final Set<String> ALLOWED_STATES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AvailableState.NAME, WaitingForAuthorizationState.NAME)));
 
     private final StationStore stationStore;
     private final StationMessageSender stationMessageSender;
@@ -43,20 +46,36 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
 
         if (optionalEvse.isPresent()) {
             Evse evse = optionalEvse.get();
+            String evseState = stateManager.getStateForEvse(evse.getId()).getStateName();
 
-            if (!AvailableState.NAME.equals(stateManager.getStateForEvse(evse.getId()).getStateName())) {
+            if (!ALLOWED_STATES.contains(evseState)) {
                 log.debug("Evse not available");
                 stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
                 return;
             }
 
             Connector connector = evse.tryFindAvailableConnector().orElse(null);
-            if (connector == null || connector.getCableStatus() != CableStatus.UNPLUGGED) {
-                log.debug("Connector not available");
+            RequestStartTransactionResponse response = new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.ACCEPTED);
+
+            if (WaitingForAuthorizationState.NAME.equals(evseState)) {
+                // Allowed to remote start only if there is an ongoing transaction
+                if (!evse.hasOngoingTransaction()) {
+                    log.debug("Evse has no ongoing transaction");
+                    stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
+                    return;
+                }
+
+                connector = evse.tryFindPluggedConnector().orElse(null);
+                response = response.withTransactionId(new CiString.CiString36(evse.getTransaction().getTransactionId()));
+            }
+
+            if (connector == null) {
+                log.debug("Connector not found");
                 stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
                 return;
             }
-            stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.ACCEPTED));
+
+            stationMessageSender.sendCallResult(callId, response);
 
             stateManager.remoteStart(evse.getId(), request.getRemoteStartId(), request.getIdToken().getIdToken().toString(), connector);
         } else {

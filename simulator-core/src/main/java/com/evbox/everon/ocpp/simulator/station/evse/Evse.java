@@ -336,6 +336,16 @@ public class Evse {
                 .filter(connector -> StatusNotificationRequest.ConnectorStatus.AVAILABLE.equals(connector.getConnectorStatus()))
                 .findAny();
     }
+    /**
+     * Find an instance of a plugged {@link Connector}.
+     *
+     * @return optional {@link Connector} instance
+     */
+    public Optional<Connector> tryFindPluggedConnector() {
+        return connectors.stream()
+                .filter(connector -> StatusNotificationRequest.ConnectorStatus.OCCUPIED.equals(connector.getConnectorStatus()))
+                .findAny();
+    }
 
     /**
      * Find an instance of {@link Connector} by connector_id.

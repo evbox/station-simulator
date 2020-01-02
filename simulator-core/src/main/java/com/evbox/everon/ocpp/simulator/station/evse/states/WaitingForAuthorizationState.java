@@ -12,6 +12,7 @@ import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.AUTHORIZED;
+import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_START;
 import static java.util.Collections.singletonList;
 
 /**
@@ -52,7 +53,9 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
 
                 }
 
-                startCharging(stationMessageSender, evse, tokenId);
+                int connectorId = startCharging(evse);
+                stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, TransactionData.ChargingState.CHARGING);
+
                 stateManager.setStateForEvse(evseId, new ChargingState());
             }
         });
@@ -82,7 +85,15 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
 
     @Override
     public void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
-        // NOP
+        StationStore stationStore = stateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+
+        Evse evse = stationStore.findEvse(evseId);
+        evse.setToken(tokenId);
+
+        startCharging(evse);
+        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connector.getId(), REMOTE_START, tokenId, TransactionData.ChargingState.CHARGING);
+        stateManager.setStateForEvse(evseId, new ChargingState());
     }
 
     @Override
@@ -90,10 +101,10 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
         // NOP
     }
 
-    private void startCharging(StationMessageSender stationMessageSender, Evse evse, String tokenId) {
+    private int startCharging(Evse evse) {
         Integer connectorId = evse.lockPluggedConnector();
         evse.startCharging();
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, TransactionData.ChargingState.CHARGING);
+        return connectorId;
     }
 
 }
