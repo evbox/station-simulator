@@ -31,10 +31,10 @@ public class StationComponentsHolder {
 
     /**
      *  Keeps track for each component which variables are monitored.
-     *  Key: Component name
-     *  Value: Set of names of monitored variables
+     *  Key: Id of the monitor
+     *  Value: Map that for each monitor has a set of names of monitored variables
      */
-    private final Map<String, Set<String>> monitoredComponents;
+    private final Map<Integer, Map<String, Set<String>>> monitoredComponents;
 
     public StationComponentsHolder(Station station, StationStore stationStore) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
@@ -55,10 +55,12 @@ public class StationComponentsHolder {
         return Optional.ofNullable(components.get(componentName));
     }
 
-    public void monitorComponent(String componentName, String variableName) {
-        Set<String> set = monitoredComponents.getOrDefault(componentName, new HashSet<>());
+    public void monitorComponent(int monitorId, String componentName, String variableName) {
+        Map<String, Set<String>> map = monitoredComponents.getOrDefault(monitorId, new HashMap<>());
+        Set<String> set = map.getOrDefault(componentName, new HashSet<>());
         set.add(variableName);
-        monitoredComponents.put(componentName, set);
+        map.put(componentName, set);
+        monitoredComponents.put(monitorId, map);
     }
 
     /**

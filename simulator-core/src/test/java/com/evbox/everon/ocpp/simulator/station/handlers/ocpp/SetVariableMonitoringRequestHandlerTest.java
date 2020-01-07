@@ -89,8 +89,8 @@ class SetVariableMonitoringRequestHandlerTest {
         assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getStatus() == SetMonitoringResult.Status.ACCEPTED));
         assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getId() == 1));
 
-        verify(stationComponentsHolder).monitorComponent("component", "variable1");
-        verify(stationComponentsHolder).monitorComponent("component", "variable2");
+        verify(stationComponentsHolder).monitorComponent(1, "component", "variable1");
+        verify(stationComponentsHolder).monitorComponent(1, "component", "variable2");
     }
 
     private SetMonitoringDatum createdMonitoringDatum(String componentName, String variableName) {

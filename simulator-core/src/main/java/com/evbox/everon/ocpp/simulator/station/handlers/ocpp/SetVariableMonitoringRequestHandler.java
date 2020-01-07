@@ -53,8 +53,8 @@ public class SetVariableMonitoringRequestHandler implements OcppRequestHandler<S
             if (!component.get().getVariableNames().contains(variableName)) {
                 results.add(monitoringResult.withStatus(SetMonitoringResult.Status.UNKNOWN_VARIABLE));
             } else {
-                stationComponentsHolder.monitorComponent(componentName, variableName);
                 int id = Optional.ofNullable(data.getId()).orElseGet(() -> ThreadLocalRandom.current().nextInt());
+                stationComponentsHolder.monitorComponent(id, componentName, variableName);
                 monitoringResult = monitoringResult.withId(id).withStatus(SetMonitoringResult.Status.ACCEPTED);
                 results.add(monitoringResult);
             }
