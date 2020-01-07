@@ -11,6 +11,7 @@ import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.Availabilit
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
+import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableMonitoringRequest;
 import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import com.google.common.collect.ImmutableMap;
@@ -61,6 +62,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(UnlockConnectorRequest.class, new UnlockConnectorRequestHandler(stationStore, stationMessageSender))
                 .put(CertificateSignedRequest.class, new CertificateSignedRequestHandler(stationStore, stationMessageSender))
                 .put(TriggerMessageRequest.class, new TriggerMessageRequestHandler(stationStore, stationMessageSender))
+                .put(SetVariableMonitoringRequest.class, new SetVariableMonitoringRequestHandler(stationComponentsHolder, stationMessageSender))
                 .build();
     }
 

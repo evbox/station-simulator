@@ -13,9 +13,7 @@ import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
@@ -31,6 +29,13 @@ public class StationComponentsHolder {
      */
     private final Map<CiString.CiString50, StationComponent> components;
 
+    /**
+     *  Keeps track for each component which variables are monitored.
+     *  Key: Component name
+     *  Value: Set of names of monitored variables
+     */
+    private final Map<String, Set<String>> monitoredComponents;
+
     public StationComponentsHolder(Station station, StationStore stationStore) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
                 .add(new OCPPCommCtrlrComponent(station, stationStore))
@@ -43,10 +48,17 @@ public class StationComponentsHolder {
 
         components = ImmutableMap.copyOf(componentsList.stream().collect(
                 Collectors.toMap(sc -> new CiString.CiString50(sc.getComponentName()), identity())));
+        monitoredComponents = new HashMap<>();
     }
 
     public Optional<StationComponent> getComponent(CiString.CiString50 componentName) {
         return Optional.ofNullable(components.get(componentName));
+    }
+
+    public void monitorComponent(String componentName, String variableName) {
+        Set<String> set = monitoredComponents.getOrDefault(componentName, new HashSet<>());
+        set.add(variableName);
+        monitoredComponents.put(componentName, set);
     }
 
     /**
