@@ -63,6 +63,14 @@ public class StationComponentsHolder {
         monitoredComponents.put(monitorId, map);
     }
 
+    public boolean clearMonitor(int id) {
+        if (monitoredComponents.containsKey(id)) {
+            monitoredComponents.remove(id);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Generates report data for all components in the holder
      *

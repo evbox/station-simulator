@@ -63,6 +63,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(CertificateSignedRequest.class, new CertificateSignedRequestHandler(stationStore, stationMessageSender))
                 .put(TriggerMessageRequest.class, new TriggerMessageRequestHandler(stationStore, stationMessageSender))
                 .put(SetVariableMonitoringRequest.class, new SetVariableMonitoringRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(ClearVariableMonitoringRequest.class, new ClearVariableMonitoringRequestHandler(stationComponentsHolder, stationMessageSender))
                 .build();
     }
 

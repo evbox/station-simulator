@@ -26,6 +26,7 @@ public enum ActionType {
     SIGN_CERTIFICATE("SignCertificate", SignCertificateRequest.class, SignCertificateResponse.class),
     TRIGGER_MESSAGE("TriggerMessage", TriggerMessageRequest.class, TriggerMessageResponse.class),
     SET_VARIABLE_MONITORING("SetVariableMonitoring", SetVariableMonitoringRequest.class, SetVariableMonitoringResponse.class),
+    CLEAR_VARIABLE_MONITORING("ClearVariableMonitoring", ClearVariableMonitoringRequest.class, ClearVariableMonitoringResponse.class),
     CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class);
 
     private final String actionTypeName;
