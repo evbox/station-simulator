@@ -7,8 +7,8 @@ import com.evbox.everon.ocpp.v20.message.station.ClearVariableMonitoringRequest;
 import com.evbox.everon.ocpp.v20.message.station.ClearVariableMonitoringResponse;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handler for {@link ClearVariableMonitoringRequest} request.
@@ -32,15 +32,17 @@ public class ClearVariableMonitoringRequestHandler implements OcppRequestHandler
      */
     @Override
     public void handle(String callId, ClearVariableMonitoringRequest request) {
-        List<ClearMonitoringResult> results = new ArrayList<>();
-        for (int id : request.getId()) {
-            ClearMonitoringResult result = new ClearMonitoringResult().withId(id);
-            if (stationComponentsHolder.clearMonitor(id)) {
-                results.add(result.withStatus(ClearMonitoringResult.Status.ACCEPTED));
-            } else {
-                results.add(result.withStatus(ClearMonitoringResult.Status.NOT_FOUND));
-            }
-        }
+        List<ClearMonitoringResult> results = request.getId().stream()
+                .map(id -> new ClearMonitoringResult().withId(id).withStatus(tryClearMonitor(id)))
+                .collect(Collectors.toList());
         stationMessageSender.sendCallResult(callId, new ClearVariableMonitoringResponse().withClearMonitoringResult(results));
     }
+
+    private ClearMonitoringResult.Status tryClearMonitor(int id) {
+        if (stationComponentsHolder.clearMonitor(id)) {
+            return ClearMonitoringResult.Status.ACCEPTED;
+        }
+        return ClearMonitoringResult.Status.NOT_FOUND;
+    }
+
 }

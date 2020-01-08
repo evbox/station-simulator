@@ -44,20 +44,20 @@ public class SetVariableMonitoringRequestHandler implements OcppRequestHandler<S
 
             String componentName = data.getComponent().getName().toString();
             Optional<StationComponent> component = stationComponentsHolder.getComponent(new CiString.CiString50(componentName));
-            if (!component.isPresent()) {
-                results.add(monitoringResult.withStatus(SetMonitoringResult.Status.UNKNOWN_COMPONENT));
-                continue;
-            }
 
-            String variableName = data.getVariable().getName().toString();
-            if (!component.get().getVariableNames().contains(variableName)) {
-                results.add(monitoringResult.withStatus(SetMonitoringResult.Status.UNKNOWN_VARIABLE));
-            } else {
-                int id = Optional.ofNullable(data.getId()).orElseGet(() -> ThreadLocalRandom.current().nextInt());
-                stationComponentsHolder.monitorComponent(id, componentName, variableName);
-                monitoringResult = monitoringResult.withId(id).withStatus(SetMonitoringResult.Status.ACCEPTED);
-                results.add(monitoringResult);
-            }
+            component.ifPresent(c -> {
+                String variableName = data.getVariable().getName().toString();
+                if (!c.getVariableNames().contains(variableName)) {
+                    monitoringResult.setStatus(SetMonitoringResult.Status.UNKNOWN_VARIABLE);
+                } else {
+                    int id = Optional.ofNullable(data.getId()).orElseGet(() -> ThreadLocalRandom.current().nextInt());
+                    stationComponentsHolder.monitorComponent(id, componentName, variableName);
+                    monitoringResult.setId(id);
+                    monitoringResult.setStatus(SetMonitoringResult.Status.ACCEPTED);
+                }
+            });
+
+            results.add(monitoringResult);
         }
 
         stationMessageSender.sendCallResult(callId, new SetVariableMonitoringResponse().withSetMonitoringResult(results));
@@ -65,6 +65,7 @@ public class SetVariableMonitoringRequestHandler implements OcppRequestHandler<S
 
     private SetMonitoringResult buildResponse(SetMonitoringDatum request) {
         return new SetMonitoringResult()
+                .withStatus(SetMonitoringResult.Status.UNKNOWN_COMPONENT)
                 .withType(SetMonitoringResult.Type.fromValue(request.getType().value()))
                 .withSeverity(request.getSeverity())
                 .withComponent(request.getComponent())

@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 
@@ -32,9 +33,9 @@ public class StationComponentsHolder {
     /**
      *  Keeps track for each component which variables are monitored.
      *  Key: Id of the monitor
-     *  Value: Map that for each monitor has a set of names of monitored variables
+     *  Value: List of monitored components
      */
-    private final Map<Integer, Map<String, Set<String>>> monitoredComponents;
+    private final Map<Integer, MonitoredComponent> monitoredComponents;
 
     public StationComponentsHolder(Station station, StationStore stationStore) {
         List<StationComponent> componentsList = new ImmutableList.Builder<StationComponent>()
@@ -56,19 +57,20 @@ public class StationComponentsHolder {
     }
 
     public void monitorComponent(int monitorId, String componentName, String variableName) {
-        Map<String, Set<String>> map = monitoredComponents.getOrDefault(monitorId, new HashMap<>());
-        Set<String> set = map.getOrDefault(componentName, new HashSet<>());
-        set.add(variableName);
-        map.put(componentName, set);
-        monitoredComponents.put(monitorId, map);
+        MonitoredComponent monitored = monitoredComponents.getOrDefault(monitorId, new MonitoredComponent());
+        monitored.addMonitoredComponent(componentName, variableName);
+        monitoredComponents.put(monitorId, monitored);
     }
 
+    /**
+     * Removes all the components currently monitored
+     * with the specified id
+     *
+     * @param id id of the monitor
+     * @return true if the monitor exists otherwise false
+     */
     public boolean clearMonitor(int id) {
-        if (monitoredComponents.containsKey(id)) {
-            monitoredComponents.remove(id);
-            return true;
-        }
-        return false;
+        return nonNull(monitoredComponents.remove(id));
     }
 
     /**
@@ -82,5 +84,17 @@ public class StationComponentsHolder {
                 .values().stream()
                 .flatMap(component -> component.generateReportData(onlyMutableVariables).stream())
                 .collect(toList());
+    }
+
+    public static class MonitoredComponent {
+
+        private Map<String, Set<String>> componentsMap = new HashMap<>();
+
+        public void addMonitoredComponent(String componentName, String variableName) {
+            Set<String> set = componentsMap.getOrDefault(componentName, new HashSet<>());
+            set.add(variableName);
+            componentsMap.put(componentName, set);
+        }
+
     }
 }
