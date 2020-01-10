@@ -12,6 +12,7 @@ import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
 import com.evbox.everon.ocpp.simulator.station.support.LRUCache;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Send station messages to the OCPP server.
@@ -53,6 +55,28 @@ public class StationMessageSender {
         this.callRegistry = subscriptionRegistry;
         this.webSocketClient = webSocketClient;
         this.timeOfLastMessageSent = LocalDateTime.MIN;
+    }
+
+    /**
+     * Send NotifyReportRequest event.
+     *
+     * @param requestId         request id
+     * @param monitoringResult  monitors to be reported
+     */
+    public void sendNotifyMonitoringReport(Integer requestId, Map<ComponentVariable, List<SetMonitoringDatum>> monitoringResult) {
+        List<Monitor> monitors = monitoringResult.entrySet().stream()
+                                                            .map(StationMessageSender::toMonitor)
+                                                            .collect(Collectors.toList());
+
+        NotifyMonitoringReportRequest request = new NotifyMonitoringReportRequest()
+                .withRequestId(requestId)
+                .withTbc(false)
+                .withSeqNo(0)
+                .withMonitor(monitors)
+                .withGeneratedAt(ZonedDateTime.now());
+
+        Call call = createAndRegisterCall(ActionType.NOTIFY_MONITORING_REPORT, request);
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
     }
 
     /**
@@ -406,6 +430,21 @@ public class StationMessageSender {
      * @return timestamp in milliseconds
      */
     public LocalDateTime getTimeOfLastMessageSent() { return timeOfLastMessageSent; }
+
+    private static Monitor toMonitor(Map.Entry<ComponentVariable, List<SetMonitoringDatum>> entry) {
+        return new Monitor()
+                .withComponent(entry.getKey().getComponent())
+                .withVariable(entry.getKey().getVariable())
+                .withVariableMonitoring(
+                        entry.getValue().stream()
+                                .map(d -> new VariableMonitoring()
+                                        .withId(d.getId())
+                                        .withSeverity(d.getSeverity())
+                                        .withTransaction(d.getTransaction())
+                                        .withType(VariableMonitoring.Type.fromValue(d.getType().value()))
+                                        .withValue(d.getValue()))
+                                .collect(Collectors.toList()));
+    }
 
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
         TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationStore.findEvse(evseId),

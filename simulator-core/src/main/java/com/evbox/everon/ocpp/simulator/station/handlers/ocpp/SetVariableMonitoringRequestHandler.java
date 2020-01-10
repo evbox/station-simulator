@@ -4,10 +4,7 @@ import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetMonitoringDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetMonitoringResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableMonitoringRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableMonitoringResponse;
+import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -51,7 +48,7 @@ public class SetVariableMonitoringRequestHandler implements OcppRequestHandler<S
                     monitoringResult.setStatus(SetMonitoringResult.Status.UNKNOWN_VARIABLE);
                 } else {
                     int id = Optional.ofNullable(data.getId()).orElseGet(() -> ThreadLocalRandom.current().nextInt());
-                    stationComponentsHolder.monitorComponent(id, componentName, variableName);
+                    stationComponentsHolder.monitorComponent(id, buildComponentVariable(componentName, variableName), data);
                     monitoringResult.setId(id);
                     monitoringResult.setStatus(SetMonitoringResult.Status.ACCEPTED);
                 }
@@ -61,6 +58,11 @@ public class SetVariableMonitoringRequestHandler implements OcppRequestHandler<S
         }
 
         stationMessageSender.sendCallResult(callId, new SetVariableMonitoringResponse().withSetMonitoringResult(results));
+    }
+
+    private ComponentVariable buildComponentVariable(String componentName, String variableName) {
+        return new ComponentVariable().withComponent(new Component().withName(new CiString.CiString50(componentName)))
+                                        .withVariable(new Variable().withName(new CiString.CiString50(variableName)));
     }
 
     private SetMonitoringResult buildResponse(SetMonitoringDatum request) {

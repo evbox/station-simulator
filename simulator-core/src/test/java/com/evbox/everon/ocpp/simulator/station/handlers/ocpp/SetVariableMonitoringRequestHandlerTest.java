@@ -7,20 +7,15 @@ import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SetVariableMonitoringRequestHandlerTest {
@@ -89,8 +84,8 @@ class SetVariableMonitoringRequestHandlerTest {
         assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getStatus() == SetMonitoringResult.Status.ACCEPTED));
         assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getId() == 1));
 
-        verify(stationComponentsHolder).monitorComponent(1, "component", "variable1");
-        verify(stationComponentsHolder).monitorComponent(1, "component", "variable2");
+        verify(stationComponentsHolder).monitorComponent(eq(1), argThat(cv -> "component".equals(cv.getComponent().getName().toString()) && "variable1".equals(cv.getVariable().getName().toString())), eq(datums.get(0)));
+        verify(stationComponentsHolder).monitorComponent(eq(1), argThat(cv -> "component".equals(cv.getComponent().getName().toString()) && "variable2".equals(cv.getVariable().getName().toString())), eq(datums.get(1)));
     }
 
     private SetMonitoringDatum createdMonitoringDatum(String componentName, String variableName) {
