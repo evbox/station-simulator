@@ -64,6 +64,14 @@ public class StationComponentsHolder {
         monitoredComponents.put(monitorId, monitored);
     }
 
+    /**
+     * Will collect all the ComponentVariables monitored right now.
+     * Because a variable can be monitored by multiple monitors, the result
+     * will group all the details regarding a specific ComponentVariable into a list,
+     * independently of the monitor to which they belong.
+     *
+     * @return map with all monitoring details grouped by ComponentVariable
+     */
     public Map<ComponentVariable, List<SetMonitoringDatum>> getAllMonitoredComponents() {
         Map<ComponentVariable, List<SetMonitoringDatum>> result = new HashMap<>();
         for (Map<ComponentVariable, List<SetMonitoringDatum>> map : getAllMaps()) {
@@ -77,6 +85,16 @@ public class StationComponentsHolder {
         return result;
     }
 
+    /**
+     * Will collect all the ComponentVariables monitored right now
+     * that has a matching in the input list.
+     * Because a variable can be monitored by multiple monitors, the result
+     * will group all the details regarding a specific ComponentVariable into a list,
+     * independently of the monitor to which they belong.
+     *
+     * @param componentVariables list of ComponentVariables to match against
+     * @return map with all monitoring details grouped by ComponentVariable
+     */
     public Map<ComponentVariable, List<SetMonitoringDatum>> getByComponentAndVariable(List<ComponentVariable> componentVariables) {
         Map<ComponentVariable, List<SetMonitoringDatum>> result = new HashMap<>();
         for (Map<ComponentVariable, List<SetMonitoringDatum>> map : getAllMaps()) {
