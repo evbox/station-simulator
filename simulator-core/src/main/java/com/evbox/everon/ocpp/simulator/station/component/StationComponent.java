@@ -9,10 +9,8 @@ import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.function.Function.identity;
@@ -57,6 +55,15 @@ public abstract class StationComponent {
         }
 
         return accessor.get(new AttributePath(component, variable, attributeType));
+    }
+
+    /**
+     *  Retrieves the name of the variables for this specific component.
+     *
+     * @return Set with name of variables
+     */
+    public Set<String> getVariableNames() {
+        return variableAccessors.keySet().stream().map(CiString::toString).collect(Collectors.toSet());
     }
 
     /**

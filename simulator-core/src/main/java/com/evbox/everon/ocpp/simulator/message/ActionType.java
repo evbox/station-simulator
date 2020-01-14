@@ -25,6 +25,10 @@ public enum ActionType {
     UNLOCK_CONNECTOR("UnlockConnector", UnlockConnectorRequest.class, UnlockConnectorResponse.class),
     SIGN_CERTIFICATE("SignCertificate", SignCertificateRequest.class, SignCertificateResponse.class),
     TRIGGER_MESSAGE("TriggerMessage", TriggerMessageRequest.class, TriggerMessageResponse.class),
+    SET_VARIABLE_MONITORING("SetVariableMonitoring", SetVariableMonitoringRequest.class, SetVariableMonitoringResponse.class),
+    CLEAR_VARIABLE_MONITORING("ClearVariableMonitoring", ClearVariableMonitoringRequest.class, ClearVariableMonitoringResponse.class),
+    GET_MONITORING_REPORT("GetMonitoringReport", GetMonitoringReportRequest.class, GetMonitoringReportResponse.class),
+    NOTIFY_MONITORING_REPORT("NotifyMonitoringReport", NotifyMonitoringReportRequest.class, NotifyMonitoringReportResponse.class),
     CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class);
 
     private final String actionTypeName;

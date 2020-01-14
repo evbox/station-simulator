@@ -9,9 +9,7 @@ import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
-import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
+import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +59,9 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(UnlockConnectorRequest.class, new UnlockConnectorRequestHandler(stationStore, stationMessageSender))
                 .put(CertificateSignedRequest.class, new CertificateSignedRequestHandler(stationStore, stationMessageSender))
                 .put(TriggerMessageRequest.class, new TriggerMessageRequestHandler(stationStore, stationMessageSender))
+                .put(SetVariableMonitoringRequest.class, new SetVariableMonitoringRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(ClearVariableMonitoringRequest.class, new ClearVariableMonitoringRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(GetMonitoringReportRequest.class, new GetMonitoringReportRequestHandler(stationComponentsHolder, stationMessageSender))
                 .build();
     }
 
