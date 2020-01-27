@@ -20,6 +20,8 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
+sourceCompatibility = 11
+targetCompatibility = 11
 
 run {
     if (project.hasProperty('arguments')) {
@@ -85,7 +87,7 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.4.0'
+version '0.4.1'
 
 publishing {
     publications {
