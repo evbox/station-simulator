@@ -19,7 +19,7 @@
           "$ref": "../common/types/IdTokenType.json#IdTokenType"
         },
         "idTokenInfo": {
-          "$ref": "../common/types/IdTokenInfoType.json#IdTokenInfoType"
+          "$ref": "./IdTokenInfoType.json#IdTokenInfoType"
         }
       },
       "required": [

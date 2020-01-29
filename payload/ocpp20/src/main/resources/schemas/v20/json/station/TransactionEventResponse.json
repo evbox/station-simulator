@@ -15,10 +15,10 @@
       "type": "integer"
     },
     "idTokenInfo": {
-      "$ref": "../common/types/IdTokenInfoType.json#IdTokenInfoType"
+      "$ref": "./IdTokenInfoType.json#IdTokenInfoType"
     },
     "updatedPersonalMessage": {
-      "$ref": "../common/types/IdTokenInfoType.json#MessageContentType"
+      "$ref": "./IdTokenInfoType.json#MessageContentType"
     }
   }
 }
