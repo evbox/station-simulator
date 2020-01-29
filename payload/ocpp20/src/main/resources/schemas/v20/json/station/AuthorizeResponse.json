@@ -21,7 +21,7 @@
   "additionalProperties": true,
   "properties": {
     "idTokenInfo": {
-      "$ref": "./IdTokenInfoType.json#IdTokenInfoType"
+      "$ref": "../common/types/IdTokenInfoType.json#IdTokenInfoType"
     },
     "certificateStatus": {
       "$ref": "#/definitions/CertificateStatusEnumType"

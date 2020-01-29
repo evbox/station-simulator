@@ -29,7 +29,8 @@ public enum ActionType {
     CLEAR_VARIABLE_MONITORING("ClearVariableMonitoring", ClearVariableMonitoringRequest.class, ClearVariableMonitoringResponse.class),
     GET_MONITORING_REPORT("GetMonitoringReport", GetMonitoringReportRequest.class, GetMonitoringReportResponse.class),
     NOTIFY_MONITORING_REPORT("NotifyMonitoringReport", NotifyMonitoringReportRequest.class, NotifyMonitoringReportResponse.class),
-    CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class);
+    CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class),
+    SEND_LOCAL_LIST("SendLocalList", SendLocalListRequest.class, SendLocalListResponse.class);
 
     private final String actionTypeName;
     private final Class requestClazz;

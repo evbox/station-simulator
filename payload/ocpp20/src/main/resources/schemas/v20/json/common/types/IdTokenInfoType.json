@@ -40,7 +40,7 @@
                 "maxLength": 36
             },
             "type": {
-                "$ref": "#IdTokenEnumType"
+                "$ref": "#/IdTokenEnumType"
             }
         },
         "required": [
@@ -63,7 +63,7 @@
         "additionalProperties": true,
         "properties": {
             "format": {
-                "$ref": "#MessageFormatEnumType"
+                "$ref": "#/MessageFormatEnumType"
             },
             "language": {
                 "type": "string",
@@ -84,7 +84,7 @@
         "additionalProperties": true,
         "properties": {
             "status": {
-                "$ref": "#AuthorizationStatusEnumType"
+                "$ref": "#/AuthorizationStatusEnumType"
             },
             "cacheExpiryDateTime": {
                 "type": "string",
@@ -94,7 +94,7 @@
                 "type": "integer"
             },
             "groupIdToken": {
-                "$ref": "#GroupIdTokenType"
+                "$ref": "#/GroupIdTokenType"
             },
             "language1": {
                 "type": "string",
@@ -105,7 +105,7 @@
                 "maxLength": 8
             },
             "personalMessage": {
-                "$ref": "#MessageContentType"
+                "$ref": "#/MessageContentType"
             }
         },
         "required": [

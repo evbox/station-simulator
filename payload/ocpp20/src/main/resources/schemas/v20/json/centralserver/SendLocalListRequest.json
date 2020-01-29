@@ -16,10 +16,10 @@
       "additionalProperties": true,
       "properties": {
         "idToken": {
-          "$ref": "../common/types/IdTokenType.json#IdTokenType"
+          "$ref": "../common/types/IdTokenType.json#/IdTokenType"
         },
         "idTokenInfo": {
-          "$ref": "./IdTokenInfoType.json#IdTokenInfoType"
+          "$ref": "../common/types/IdTokenInfoType.json#/IdTokenInfoType"
         }
       },
       "required": [
