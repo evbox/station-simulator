@@ -62,6 +62,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(SetVariableMonitoringRequest.class, new SetVariableMonitoringRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ClearVariableMonitoringRequest.class, new ClearVariableMonitoringRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(GetMonitoringReportRequest.class, new GetMonitoringReportRequestHandler(stationComponentsHolder, stationMessageSender))
+                .put(SendLocalListRequest.class, new SendLocalListRequestHandler(stationMessageSender))
                 .build();
     }
 
