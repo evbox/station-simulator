@@ -21,6 +21,10 @@ plugins {
     id 'java'
 }
 
+apply plugin: 'java'
+sourceCompatibility = 11
+targetCompatibility = 11
+
 plugins.withType(JsonSchemaPlugin).whenPluginAdded {
     jsonSchema2Pojo {
         generateBuilders = true
