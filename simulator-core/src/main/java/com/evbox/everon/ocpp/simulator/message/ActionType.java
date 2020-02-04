@@ -30,7 +30,8 @@ public enum ActionType {
     GET_MONITORING_REPORT("GetMonitoringReport", GetMonitoringReportRequest.class, GetMonitoringReportResponse.class),
     NOTIFY_MONITORING_REPORT("NotifyMonitoringReport", NotifyMonitoringReportRequest.class, NotifyMonitoringReportResponse.class),
     CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class),
-    SEND_LOCAL_LIST("SendLocalList", SendLocalListRequest.class, SendLocalListResponse.class);
+    SEND_LOCAL_LIST("SendLocalList", SendLocalListRequest.class, SendLocalListResponse.class),
+    SET_NETWORK_PROFILE("SetNetworkProfile", SetNetworkProfileRequest.class, SetNetworkProfileResponse.class);
 
     private final String actionTypeName;
     private final Class requestClazz;

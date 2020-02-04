@@ -8,6 +8,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.evbox.everon.ocpp.simulator.station.exceptions.StationException;
+import com.evbox.everon.ocpp.v20.message.station.ConnectionData;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,6 +52,7 @@ public class StationStore {
     private List<X509Certificate> stationCertificateChain;
     private PublicKey stationPublicKey;
     private PrivateKey stationPrivateKey;
+    private Map<Integer, ConnectionData> networkConnectionProfiles;
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
@@ -152,6 +154,8 @@ public class StationStore {
     public List<Evse> getEvses() {
         return new ArrayList<>(evses.values());
     }
+
+    public void addNetworkConnectionProfile(Integer configurationSlot, ConnectionData data) { networkConnectionProfiles.put(configurationSlot, data); }
 
     public boolean hasOngoingTransaction(Integer evseId) {
         return findEvse(evseId).hasOngoingTransaction();
