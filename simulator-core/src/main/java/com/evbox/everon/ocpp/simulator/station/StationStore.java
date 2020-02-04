@@ -52,7 +52,7 @@ public class StationStore {
     private List<X509Certificate> stationCertificateChain;
     private PublicKey stationPublicKey;
     private PrivateKey stationPrivateKey;
-    private Map<Integer, ConnectionData> networkConnectionProfiles;
+    private Map<Integer, ConnectionData> networkConnectionProfiles = new HashMap<>();
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
