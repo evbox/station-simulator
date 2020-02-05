@@ -19,22 +19,15 @@ public class SetNetworkProfileHandler implements OcppRequestHandler<SetNetworkPr
 
     @Override
     public void handle(String callId, SetNetworkProfileRequest request) {
-        if (isRequestValid(request)) {
-            stationStore.addNetworkConnectionProfile(request.getConfigurationSlot(), request.getConnectionData());
-            stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileResponse.Status.ACCEPTED));
-        } else {
-            log.debug("Invalid request received!");
-            stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileResponse.Status.REJECTED));
+        Optional.ofNullable(request.getConnectionData())
+                .filter(cd -> ConnectionData.OcppVersion.OCPP_20.equals(cd.getOcppVersion()) && ConnectionData.OcppTransport.JSON.equals(cd.getOcppTransport()))
+                .ifPresentOrElse(connectionData -> {
+                    stationStore.addNetworkConnectionProfile(request.getConfigurationSlot(), connectionData);
+                    stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileResponse.Status.ACCEPTED));
+                },
+                () -> {
+                    log.debug("Invalid request received!");
+                    stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileResponse.Status.REJECTED));
+                });
         }
-
-    }
-
-    private boolean isRequestValid(SetNetworkProfileRequest request) {
-        return Optional.ofNullable(request.getConnectionData()).isPresent()
-                && Optional.ofNullable(request.getConnectionData().getOcppVersion()).isPresent()
-                && Optional.ofNullable(request.getConnectionData().getOcppTransport()).isPresent()
-                && ConnectionData.OcppTransport.JSON.equals(request.getConnectionData().getOcppTransport())
-                && ConnectionData.OcppVersion.OCPP_20.equals(request.getConnectionData().getOcppVersion());
-    }
-
 }
