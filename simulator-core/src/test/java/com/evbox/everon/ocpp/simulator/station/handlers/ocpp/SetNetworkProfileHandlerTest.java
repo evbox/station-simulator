@@ -18,6 +18,9 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @ExtendWith(MockitoExtension.class)
 class SetNetworkProfileHandlerTest {
 
+    private static final String CALL_ID = "123";
+    private static final int CONFIGURATION_SLOT = 123;
+
     @Mock
     private StationMessageSender stationMessageSender;
 
@@ -32,7 +35,7 @@ class SetNetworkProfileHandlerTest {
 
     @Test
     public void testSetNetworkProfileValidRequest() {
-        handler.handle("123", new SetNetworkProfileRequest().withConfigurationSlot(123).withConnectionData(new ConnectionData().withOcppVersion(ConnectionData.OcppVersion.OCPP_20).withOcppTransport(ConnectionData.OcppTransport.JSON)));
+        handler.handle(CALL_ID, new SetNetworkProfileRequest().withConfigurationSlot(CONFIGURATION_SLOT).withConnectionData(new ConnectionData().withOcppVersion(ConnectionData.OcppVersion.OCPP_20).withOcppTransport(ConnectionData.OcppTransport.JSON)));
 
         verify(stationStore).addNetworkConnectionProfile(anyInt(), any(ConnectionData.class));
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
@@ -45,21 +48,21 @@ class SetNetworkProfileHandlerTest {
 
     @Test
     public void testSetNetworkProfileOcppVersionIsMissing() {
-        handler.handle("123", new SetNetworkProfileRequest().withConfigurationSlot(123).withConnectionData(new ConnectionData().withOcppTransport(ConnectionData.OcppTransport.JSON)));
+        handler.handle(CALL_ID, new SetNetworkProfileRequest().withConfigurationSlot(CONFIGURATION_SLOT).withConnectionData(new ConnectionData().withOcppTransport(ConnectionData.OcppTransport.JSON)));
 
         assertRejected();
     }
 
     @Test
     public void testSetNetworkProfileOcppVersionIsNot20() {
-        handler.handle("123", new SetNetworkProfileRequest().withConfigurationSlot(123).withConnectionData(new ConnectionData().withOcppVersion(ConnectionData.OcppVersion.OCPP_16).withOcppTransport(ConnectionData.OcppTransport.JSON)));
+        handler.handle(CALL_ID, new SetNetworkProfileRequest().withConfigurationSlot(CONFIGURATION_SLOT).withConnectionData(new ConnectionData().withOcppVersion(ConnectionData.OcppVersion.OCPP_16).withOcppTransport(ConnectionData.OcppTransport.JSON)));
 
         assertRejected();
     }
 
     @Test
     public void testSetNetworkProfileOcppTransportIsSoap() {
-        handler.handle("123", new SetNetworkProfileRequest().withConfigurationSlot(123).withConnectionData(new ConnectionData().withOcppVersion(ConnectionData.OcppVersion.OCPP_16).withOcppTransport(ConnectionData.OcppTransport.SOAP)));
+        handler.handle(CALL_ID, new SetNetworkProfileRequest().withConfigurationSlot(CONFIGURATION_SLOT).withConnectionData(new ConnectionData().withOcppVersion(ConnectionData.OcppVersion.OCPP_16).withOcppTransport(ConnectionData.OcppTransport.SOAP)));
 
         assertRejected();
     }
