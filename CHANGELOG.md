@@ -1,5 +1,9 @@
 # Station Simulator Releases #
 
+### Version 0.4.1
+
+- Upgraded simulator to Java 11
+
 ### Version 0.4.0
 
 - Added support for A02 and A03 use cases
