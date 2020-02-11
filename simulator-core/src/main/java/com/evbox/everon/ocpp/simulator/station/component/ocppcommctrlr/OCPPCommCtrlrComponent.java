@@ -19,7 +19,8 @@ public class OCPPCommCtrlrComponent extends StationComponent {
 
     public OCPPCommCtrlrComponent(Station station, StationStore stationStore) {
         super(ImmutableList.of(
-                new HeartbeatIntervalVariableAccessor(station, stationStore)
+                new HeartbeatIntervalVariableAccessor(station, stationStore),
+                new NetworkConfigurationPriorityVariableAccessor(station, stationStore)
         ));
     }
 }

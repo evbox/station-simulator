@@ -53,6 +53,7 @@ public class StationStore {
     private PublicKey stationPublicKey;
     private PrivateKey stationPrivateKey;
     private Map<Integer, ConnectionData> networkConnectionProfiles = new HashMap<>();
+    private List<Integer> networkConfigurationPriority = new ArrayList<>();
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
@@ -157,6 +158,10 @@ public class StationStore {
 
     public void addNetworkConnectionProfile(Integer configurationSlot, ConnectionData data) { networkConnectionProfiles.put(configurationSlot, data); }
 
+    public Map<Integer, ConnectionData> getNetworkConnectionProfiles() {
+        return networkConnectionProfiles;
+    }
+
     public boolean hasOngoingTransaction(Integer evseId) {
         return findEvse(evseId).hasOngoingTransaction();
     }
@@ -238,6 +243,14 @@ public class StationStore {
 
     public void setTxStopPointValues(OptionList<TxStartStopPointVariableValues> txStopPointValues) {
         this.txStopPointValues = txStopPointValues;
+    }
+
+    public void addNetworkConfigurationPriority(Integer networkConfigurationPriority) {
+        this.networkConfigurationPriority.add(networkConfigurationPriority);
+    }
+
+    public List<Integer> getNetworkConfigurationPriority() {
+        return this.networkConfigurationPriority;
     }
 
     private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
