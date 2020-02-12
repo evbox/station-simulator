@@ -90,7 +90,7 @@ public class NetworkConfigurationPriorityVariableAccessor extends VariableAccess
 
     @Override
     public boolean isMutable() {
-        return false;
+        return true;
     }
 
     private SetVariableResult validateActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
