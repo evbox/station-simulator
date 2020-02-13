@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.SEQUENCE_LIST;
 import static java.util.Collections.singletonList;
@@ -33,17 +34,11 @@ public class NetworkConfigurationPriorityVariableAccessor extends VariableAccess
         super(station, stationStore);
     }
 
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::validateActualValue)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.of(AttributeType.ACTUAL, this::validateActualValue);
 
-    private final Map<AttributeType, VariableSetter> variableSetters = ImmutableMap.<AttributeType, VariableSetter>builder()
-            .put(AttributeType.ACTUAL, this::setActualValue)
-            .build();
+    private final Map<AttributeType, VariableSetter> variableSetters = ImmutableMap.of(AttributeType.ACTUAL, this::setActualValue);
 
     @Override
     public String getVariableName() {
@@ -101,11 +96,13 @@ public class NetworkConfigurationPriorityVariableAccessor extends VariableAccess
 
         if (!isNumeric(attributeValue.toString())) {
             return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
-        } else if (!getStationStore().getNetworkConnectionProfiles().containsKey(Integer.parseInt(attributeValue.toString()))) {
-            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
-        } else {
-            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED);
         }
+
+        if (!getStationStore().getNetworkConnectionProfiles().containsKey(Integer.parseInt(attributeValue.toString()))) {
+            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
+        }
+
+        return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED);
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
@@ -117,7 +114,7 @@ public class NetworkConfigurationPriorityVariableAccessor extends VariableAccess
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeValue(new CiString.CiString1000(String.valueOf((networkNetworkConfigurationPriority))));
+                .withAttributeValue(new CiString.CiString1000(String.valueOf(networkNetworkConfigurationPriority)));
     }
 
     private void setActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {

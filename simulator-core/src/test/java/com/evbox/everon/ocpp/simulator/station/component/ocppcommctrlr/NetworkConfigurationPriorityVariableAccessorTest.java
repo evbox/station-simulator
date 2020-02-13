@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,10 +76,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
 
     @Test
     void getVariableValidatorsValidValue() {
-        Map<Integer, ConnectionData> networkConnectionProfiles = new HashMap<>() {{
-            put(1, new ConnectionData());
-            put(2, new ConnectionData());
-        }};
+        Map<Integer, ConnectionData> networkConnectionProfiles = Map.of(1, new ConnectionData(), 2, new ConnectionData());
 
         when(stationStore.getNetworkConnectionProfiles()).thenReturn(networkConnectionProfiles);
 
@@ -94,10 +90,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
 
     @Test
     void getVariableValidatorsInvalidValue() {
-        Map<Integer, ConnectionData> networkConnectionProfiles = new HashMap<>() {{
-            put(3, new ConnectionData());
-            put(4, new ConnectionData());
-        }};
+        Map<Integer, ConnectionData> networkConnectionProfiles = Map.of(3, new ConnectionData(), 4, new ConnectionData());
 
         when(stationStore.getNetworkConnectionProfiles()).thenReturn(networkConnectionProfiles);
 
@@ -111,10 +104,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
 
     @Test
     void getVariableValidatorsInvalidValueNan() {
-        Map<Integer, ConnectionData> networkConnectionProfiles = new HashMap<>() {{
-            put(3, new ConnectionData());
-            put(4, new ConnectionData());
-        }};
+        Map<Integer, ConnectionData> networkConnectionProfiles = Map.of(3, new ConnectionData(), 4, new ConnectionData());
 
         when(stationStore.getNetworkConnectionProfiles()).thenReturn(networkConnectionProfiles);
 
