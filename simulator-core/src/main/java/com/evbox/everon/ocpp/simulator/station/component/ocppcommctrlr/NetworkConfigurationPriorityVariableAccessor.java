@@ -16,7 +16,6 @@ import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
 import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
 import com.evbox.everon.ocpp.v20.message.station.VariableAttribute;
 import com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics;
-import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;
@@ -33,11 +32,11 @@ public class NetworkConfigurationPriorityVariableAccessor extends VariableAccess
         super(station, stationStore);
     }
 
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.of(AttributeType.ACTUAL, this::getActualValue);
+    private final Map<AttributeType, VariableGetter> variableGetters = Map.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.of(AttributeType.ACTUAL, this::validateActualValue);
+    private final Map<AttributeType, SetVariableValidator> variableValidators = Map.of(AttributeType.ACTUAL, this::validateActualValue);
 
-    private final Map<AttributeType, VariableSetter> variableSetters = ImmutableMap.of(AttributeType.ACTUAL, this::setActualValue);
+    private final Map<AttributeType, VariableSetter> variableSetters = Map.of(AttributeType.ACTUAL, this::setActualValue);
 
     @Override
     public String getVariableName() {
