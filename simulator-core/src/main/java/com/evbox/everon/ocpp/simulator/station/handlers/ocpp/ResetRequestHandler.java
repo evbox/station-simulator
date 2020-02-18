@@ -28,17 +28,14 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
     /**
      * Handle {@link ResetRequest} request.
      *
-     * @param callId identity of the message
+     * @param callId  identity of the message
      * @param request incoming request from the server
      */
     @Override
     public void handle(String callId, ResetRequest request) {
-        if (request.getType() == ResetRequest.Type.IMMEDIATE) {
-            sendResponse(callId, new ResetResponse().withStatus(ResetResponse.Status.ACCEPTED));
-            resetStation();
-        } else {
-            sendResponse(callId, new ResetResponse().withStatus(ResetResponse.Status.REJECTED));
-        }
+        sendResponse(callId, new ResetResponse().withStatus(ResetResponse.Status.ACCEPTED));
+        resetStation();
+
     }
 
     private void sendResponse(String callId, Object payload) {

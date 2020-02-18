@@ -21,6 +21,7 @@ import okhttp3.OkHttpClient;
 
 import javax.net.ssl.*;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -227,6 +228,14 @@ public class Station {
      */
     public void updateTxStopPointValues(OptionList<TxStartStopPointVariableValues> txStopPointValues) {
         state.setTxStopPointValues(txStopPointValues);
+    }
+
+    /**
+     * Updates station network configuration priority values
+     * @param networkConfigurationPriorityValues NetworkConfigurationPriority values to apply
+     */
+    public void updateNetworkConfigurationPriorityValues(Integer networkConfigurationPriorityValues) {
+        state.addNetworkConfigurationPriority(networkConfigurationPriorityValues);
     }
 
     /**

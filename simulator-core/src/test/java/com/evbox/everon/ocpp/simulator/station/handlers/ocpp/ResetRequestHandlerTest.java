@@ -103,7 +103,7 @@ public class ResetRequestHandlerTest {
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        ResetResponse payload = new ResetResponse().withStatus(ResetResponse.Status.REJECTED);
+        ResetResponse payload = new ResetResponse().withStatus(ResetResponse.Status.ACCEPTED);
 
         ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(AbstractWebSocketClientInboxMessage.class);
 
