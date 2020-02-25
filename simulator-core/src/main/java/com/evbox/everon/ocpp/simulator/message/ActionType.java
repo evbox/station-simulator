@@ -31,7 +31,8 @@ public enum ActionType {
     NOTIFY_MONITORING_REPORT("NotifyMonitoringReport", NotifyMonitoringReportRequest.class, NotifyMonitoringReportResponse.class),
     CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class),
     SEND_LOCAL_LIST("SendLocalList", SendLocalListRequest.class, SendLocalListResponse.class),
-    SET_NETWORK_PROFILE("SetNetworkProfile", SetNetworkProfileRequest.class, SetNetworkProfileResponse.class);
+    SET_NETWORK_PROFILE("SetNetworkProfile", SetNetworkProfileRequest.class, SetNetworkProfileResponse.class),
+    RESERVE_NOW("ReserveNow", ReserveNowRequest.class, ReserveNowResponse.class);
 
     private final String actionTypeName;
     private final Class requestClazz;
