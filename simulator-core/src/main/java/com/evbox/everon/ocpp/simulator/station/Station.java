@@ -8,6 +8,10 @@ import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.SystemMessageHandler;
 import com.evbox.everon.ocpp.simulator.station.handlers.UserMessageHandler;
+import com.evbox.everon.ocpp.simulator.station.schedulers.AlertEventScheduler;
+import com.evbox.everon.ocpp.simulator.station.schedulers.HeartbeatScheduler;
+import com.evbox.everon.ocpp.simulator.station.schedulers.MeterValuesScheduler;
+import com.evbox.everon.ocpp.simulator.station.schedulers.PeriodicEventScheduler;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.station.support.SecurityUtils;
 import com.evbox.everon.ocpp.simulator.websocket.LoggingInterceptor;
@@ -21,7 +25,6 @@ import okhttp3.OkHttpClient;
 
 import javax.net.ssl.*;
 import java.security.KeyStore;
-import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -105,6 +108,8 @@ public class Station {
         }
 
         new MeterValuesScheduler(state, stationMessageSender, meterValuesConfiguration.getSendMeterValuesIntervalSec(), meterValuesConfiguration.getConsumptionWattHour());
+        new PeriodicEventScheduler(stationMessageSender);
+        new AlertEventScheduler(stationMessageSender);
 
         this.stateManager = new StateManager(this, state, stationMessageSender);
     }

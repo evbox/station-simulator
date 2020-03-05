@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station;
 
+import com.evbox.everon.ocpp.simulator.station.schedulers.HeartbeatSenderTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -80,6 +80,22 @@ public class StationMessageSender {
     }
 
     /**
+     * Send NotifyEventRequest event.
+     *
+     * @param eventData list of event data
+     */
+    public void sendNotifyEvent(List<EventDatum> eventData) {
+        NotifyEventRequest request = new NotifyEventRequest()
+                .withGeneratedAt(ZonedDateTime.now())
+                .withTbc(false)
+                .withSeqNo(0)
+                .withEventData(eventData);
+
+        Call call = createAndRegisterCall(ActionType.NOTIFY_EVENT, request);
+        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
+    }
+
+    /**
      * Send TransactionEventStart event.
      *
      * @param evseId  evse identity
