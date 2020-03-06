@@ -9,6 +9,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.evbox.everon.ocpp.simulator.station.exceptions.StationException;
 import com.evbox.everon.ocpp.v20.message.station.ConnectionData;
+import com.evbox.everon.ocpp.v20.message.station.Reservation;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,6 +55,7 @@ public class StationStore {
     private PrivateKey stationPrivateKey;
     private Map<Integer, ConnectionData> networkConnectionProfiles = new HashMap<>();
     private List<Integer> networkConfigurationPriority = new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
@@ -162,6 +164,18 @@ public class StationStore {
         return networkConnectionProfiles;
     }
 
+    public void addReservation(Reservation reservation) {
+        reservations.add(reservation);
+    }
+
+    public void removeReservation(Reservation reservation) {
+        reservations.remove(reservation);
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
     public boolean hasOngoingTransaction(Integer evseId) {
         return findEvse(evseId).hasOngoingTransaction();
     }
@@ -220,6 +234,12 @@ public class StationStore {
                     .stream()
                     .filter(evse -> !evse.hasOngoingTransaction())
                     .findAny();
+    }
+
+    public Optional<Reservation> tryFindReservationById(int reservationId) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getId().equals(reservationId))
+                .findAny();
     }
 
     public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
