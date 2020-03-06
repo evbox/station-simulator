@@ -33,6 +33,7 @@ public enum ActionType {
     SEND_LOCAL_LIST("SendLocalList", SendLocalListRequest.class, SendLocalListResponse.class),
     SET_NETWORK_PROFILE("SetNetworkProfile", SetNetworkProfileRequest.class, SetNetworkProfileResponse.class),
     RESERVE_NOW("ReserveNow", ReserveNowRequest.class, ReserveNowResponse.class),
+    NOTIFY_EVENT("NotifyEvent", NotifyEventRequest.class, NotifyEventResponse.class),
     CANCEL_RESERVATION("CancelReservation", CancelReservationRequest.class, CancelReservationResponse.class);
 
     private final String actionTypeName;

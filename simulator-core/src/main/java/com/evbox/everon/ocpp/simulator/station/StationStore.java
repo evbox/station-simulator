@@ -289,7 +289,7 @@ public class StationStore {
         return evseMapBuilder.build();
     }
 
-    StationStoreView createView() {
+    public StationStoreView createView() {
         List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
         return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, stationCertificate, evsesCopy);

@@ -1,5 +1,7 @@
-package com.evbox.everon.ocpp.simulator.station;
+package com.evbox.everon.ocpp.simulator.station.schedulers;
 
+import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +20,7 @@ public class MeterValuesScheduler {
     public MeterValuesScheduler(StationStore stationStore, StationMessageSender stationMessageSender, long sendMeterValuesInterval, long powerConsumption) {
         this.meterValuesSenderTask = new MeterValuesSenderTask(stationStore, stationMessageSender, sendMeterValuesInterval, powerConsumption);
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-                meterValuesSenderTask, INITIAL_TASK_DELAY_IN_SECONDS, TASK_PERIOD_IN_SECONDS, TimeUnit.MILLISECONDS);
+                meterValuesSenderTask, INITIAL_TASK_DELAY_IN_SECONDS, TASK_PERIOD_IN_SECONDS, TimeUnit.SECONDS);
     }
 
 }

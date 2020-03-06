@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.websocket;
 
+import lombok.Builder;
 import lombok.ToString;
 
 import java.util.Optional;
@@ -66,6 +67,7 @@ public abstract class AbstractWebSocketClientInboxMessage {
 
     public static final class OcppMessage extends AbstractWebSocketClientInboxMessage {
 
+        @Builder
         public OcppMessage(Object data) {
             super(data);
         }
