@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.v20.message.common.Evse;
 import com.evbox.everon.ocpp.v20.message.station.CancelReservationRequest;
 import com.evbox.everon.ocpp.v20.message.station.CancelReservationResponse;
 import com.evbox.everon.ocpp.v20.message.station.Reservation;
@@ -22,37 +23,27 @@ public class CancelReservationRequestHandler implements OcppRequestHandler<Cance
     @Override
     public void handle(String callId, CancelReservationRequest request) {
         Optional<Reservation> reservationOpt = stationStore.tryFindReservationById(request.getReservationId());
+        CancelReservationResponse cancelReservationResponse = reservationOpt.map(reservation -> new CancelReservationResponse().withStatus(CancelReservationResponse.Status.ACCEPTED))
+                .orElseGet(() -> new CancelReservationResponse().withStatus(CancelReservationResponse.Status.REJECTED));
 
-        if (!reservationOpt.isPresent()) {
-            stationMessageSender.sendCallResult(callId, new CancelReservationResponse().withStatus(CancelReservationResponse.Status.REJECTED));
-        } else {
-            Reservation reservation = reservationOpt.get();
-            stationMessageSender.sendCallResult(callId, new CancelReservationResponse().withStatus(CancelReservationResponse.Status.ACCEPTED));
-
-            if (isConnectorReserved(reservation)) {
+        reservationOpt.ifPresent(reservation -> {
+            if (reservation.getEvse().getConnectorId() != null && isConnectorReserved(reservation)) {
                 makeConnectorAvailable(reservation);
                 stationMessageSender.sendStatusNotification(reservation.getEvse().getId().intValue(), reservation.getEvse().getConnectorId().intValue(), StatusNotificationRequest.ConnectorStatus.AVAILABLE);
             }
-
             stationStore.removeReservation(reservation);
-        }
+        });
+        stationMessageSender.sendCallResult(callId, cancelReservationResponse);
     }
 
     private boolean isConnectorReserved(Reservation reservation) {
-        if (reservation.getEvse().getConnectorId() != null)  {
-            Optional<Connector> connector = stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId());
-            if (connector.isPresent()) {
-                return StatusNotificationRequest.ConnectorStatus.RESERVED.equals(connector.get().getConnectorStatus());
-            }
-        }
-        return false;
+        return stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId())
+                    .map(connector -> StatusNotificationRequest.ConnectorStatus.RESERVED.equals(connector.getConnectorStatus()))
+                    .orElse(false);
     }
 
     private void makeConnectorAvailable(Reservation reservation) {
-        Optional<Connector> connector = stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId());
-
-        if (connector.isPresent()) {
-            connector.get().setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE);
-        }
+        stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId())
+            .ifPresent(theConnector -> theConnector.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE));
     }
 }

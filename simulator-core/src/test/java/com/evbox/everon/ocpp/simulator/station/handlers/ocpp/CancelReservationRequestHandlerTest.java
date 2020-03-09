@@ -81,8 +81,8 @@ public class CancelReservationRequestHandlerTest {
         assertThat(response.getAdditionalProperties()).isEmpty();
     }
 
-    private Reservation buildReservation(Integer evse_id, Integer reservation_id, Integer connector_id) {
-        Evse evse = new Evse().withId(evse_id).withConnectorId(connector_id);
-        return new Reservation().withId(reservation_id).withEvse(evse);
+    private Reservation buildReservation(Integer evseId, Integer reservationId, Integer connectorId) {
+        Evse evse = new Evse().withId(evseId).withConnectorId(connectorId);
+        return new Reservation().withId(reservationId).withEvse(evse);
     }
 }
