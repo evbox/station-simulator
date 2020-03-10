@@ -27,23 +27,25 @@ public class CancelReservationRequestHandler implements OcppRequestHandler<Cance
                 .orElseGet(() -> new CancelReservationResponse().withStatus(CancelReservationResponse.Status.REJECTED));
 
         reservationOpt.ifPresent(reservation -> {
-            if (reservation.getEvse().getConnectorId() != null && isConnectorReserved(reservation)) {
+            if(isConnectorReserved(reservation)) {
                 makeConnectorAvailable(reservation);
-                stationMessageSender.sendStatusNotification(reservation.getEvse().getId().intValue(), reservation.getEvse().getConnectorId().intValue(), StatusNotificationRequest.ConnectorStatus.AVAILABLE);
             }
             stationStore.removeReservation(reservation);
-        });
+         });
         stationMessageSender.sendCallResult(callId, cancelReservationResponse);
     }
 
     private boolean isConnectorReserved(Reservation reservation) {
-        return stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId())
-                    .map(connector -> StatusNotificationRequest.ConnectorStatus.RESERVED.equals(connector.getConnectorStatus()))
+        return reservation.getEvse().getConnectorId() != null && stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId())
+                    .map(Connector::getConnectorStatus)
+                    .map(status -> StatusNotificationRequest.ConnectorStatus.RESERVED.equals(status))
                     .orElse(false);
     }
 
     private void makeConnectorAvailable(Reservation reservation) {
         stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId())
-            .ifPresent(theConnector -> theConnector.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE));
+            .ifPresent(connector -> connector.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE));
+
+        stationMessageSender.sendStatusNotification(reservation.getEvse().getId().intValue(), reservation.getEvse().getConnectorId().intValue(), StatusNotificationRequest.ConnectorStatus.AVAILABLE);
     }
 }
