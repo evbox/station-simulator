@@ -32,7 +32,9 @@ public enum ActionType {
     CERTIFICATE_SIGNED("CertificateSigned", CertificateSignedRequest.class, CertificateSignedResponse.class),
     SEND_LOCAL_LIST("SendLocalList", SendLocalListRequest.class, SendLocalListResponse.class),
     SET_NETWORK_PROFILE("SetNetworkProfile", SetNetworkProfileRequest.class, SetNetworkProfileResponse.class),
-    RESERVE_NOW("ReserveNow", ReserveNowRequest.class, ReserveNowResponse.class);
+    RESERVE_NOW("ReserveNow", ReserveNowRequest.class, ReserveNowResponse.class),
+    CUSTOMER_INFORMATION("CustomerInformation", CustomerInformationRequest.class, CustomerInformationResponse.class),
+    NOTIFY_CUSTOMER_INFORMATION("NotifyCustomerInformation", NotifyCustomerInformationRequest.class, NotifyCustomerInformationResponse.class);
 
     private final String actionTypeName;
     private final Class requestClazz;
