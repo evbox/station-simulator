@@ -34,9 +34,9 @@ public class CustomerInformationRequestHandler implements OcppRequestHandler<Cus
 
     @Override
     public void handle(String callId, CustomerInformationRequest request) {
-        final var customerIdentifier = Optional.ofNullable(request.getCustomerIdentifier()).map(CiString64::toString).orElse(StringUtils.EMPTY);
-        final var idToken = Optional.ofNullable(request.getIdToken()).map(IdToken::getIdToken).map(CiString::toString).orElse(StringUtils.EMPTY);
-        final var certificateSerialNumber = Optional.ofNullable(request.getCustomerCertificate()).map(CustomerCertificate::getSerialNumber).map(CiString::toString).orElse(StringUtils.EMPTY);
+        final var customerIdentifier = Optional.ofNullable(request.getCustomerIdentifier()).map(CiString64::toString).orElse("");
+        final var idToken = Optional.ofNullable(request.getIdToken()).map(IdToken::getIdToken).map(CiString::toString).orElse("");
+        final var certificateSerialNumber = Optional.ofNullable(request.getCustomerCertificate()).map(CustomerCertificate::getSerialNumber).map(CiString::toString).orElse("");
 
         verifyAndSendCustomerDataReport(callId, customerIdentifier, idToken, certificateSerialNumber, request.getRequestId(), request.getClear(), request.getReport());
     }
