@@ -9,7 +9,6 @@ import com.evbox.everon.ocpp.v20.message.station.CustomerInformationRequest;
 import com.evbox.everon.ocpp.v20.message.station.CustomerInformationResponse;
 import com.evbox.everon.ocpp.v20.message.station.NotifyCustomerInformationRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
