@@ -34,9 +34,9 @@ public class CustomerInformationRequestHandler implements OcppRequestHandler<Cus
 
     @Override
     public void handle(String callId, CustomerInformationRequest request) {
-        final String customerIdentifier = Optional.ofNullable(request.getCustomerIdentifier()).map(CiString64::toString).orElse(StringUtils.EMPTY);
-        final String idToken = Optional.ofNullable(request.getIdToken()).map(IdToken::getIdToken).map(CiString::toString).orElse(StringUtils.EMPTY);
-        final String certificateSerialNumber = Optional.ofNullable(request.getCustomerCertificate()).map(CustomerCertificate::getSerialNumber).map(CiString::toString).orElse(StringUtils.EMPTY);
+        final var customerIdentifier = Optional.ofNullable(request.getCustomerIdentifier()).map(CiString64::toString).orElse(StringUtils.EMPTY);
+        final var idToken = Optional.ofNullable(request.getIdToken()).map(IdToken::getIdToken).map(CiString::toString).orElse(StringUtils.EMPTY);
+        final var certificateSerialNumber = Optional.ofNullable(request.getCustomerCertificate()).map(CustomerCertificate::getSerialNumber).map(CiString::toString).orElse(StringUtils.EMPTY);
 
         verifyAndSendCustomerDataReport(callId, customerIdentifier, idToken, certificateSerialNumber, request.getRequestId(), request.getClear(), request.getReport());
     }
@@ -59,7 +59,7 @@ public class CustomerInformationRequestHandler implements OcppRequestHandler<Cus
 
     private void sendCustomerInfoNotFoundRequest(final String callId, final Integer requestId) {
         sendCustomerInformationResponse(callId, CustomerInformationResponse.Status.REJECTED);
-        NotifyCustomerInformationRequest baseRequest = createNotifyCustomerInformationBaseRequest(requestId);
+        var baseRequest = createNotifyCustomerInformationBaseRequest(requestId);
         stationMessageSender.sendNotifyCustomerInformationRequest(baseRequest.withData(NO_CUSTOMER_DATA_FOUND));
     }
 
@@ -74,7 +74,7 @@ public class CustomerInformationRequestHandler implements OcppRequestHandler<Cus
     }
 
     private void sendCustomerDataReport(final String customerIdentifier, String idToken, String certificateSerialNumber, Integer requestId) {
-        List<CiString512> customerInformation = getCustomerInformation(customerIdentifier, idToken, certificateSerialNumber);
+        var customerInformation = getCustomerInformation(customerIdentifier, idToken, certificateSerialNumber);
         sendNotifyCustomerInformationReport(customerInformation, createNotifyCustomerInformationBaseRequest(requestId));
     }
 
@@ -87,7 +87,7 @@ public class CustomerInformationRequestHandler implements OcppRequestHandler<Cus
     }
 
     private void sendMultiplePageReport(List<CiString512> customerInformation, NotifyCustomerInformationRequest baseRequest) {
-        CiString512 lastElement = customerInformation.get(customerInformation.size() - 1);
+        var lastElement = customerInformation.get(customerInformation.size() - 1);
         customerInformation.remove(lastElement);
         customerInformation.forEach(data -> stationMessageSender.sendNotifyCustomerInformationRequest(baseRequest.withData(data).withTbc(true).withSeqNo(customerInformation.indexOf(data))));
         stationMessageSender.sendNotifyCustomerInformationRequest(baseRequest.withTbc(false).withData(lastElement).withSeqNo(customerInformation.size()));

@@ -57,8 +57,8 @@ class CustomerInformationRequestHandlerTest {
         verify(stationMessageSender).sendCallResult(anyString(), customerInformationResponseArgumentCaptor.capture());
         verify(stationMessageSender).sendNotifyCustomerInformationRequest(notifyCustomerInformationResponseArgumentCaptor.capture());
 
-        CustomerInformationResponse customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
-        NotifyCustomerInformationRequest notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
+        var customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
+        var notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
 
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationResponse.Status.REJECTED);
 
@@ -71,7 +71,7 @@ class CustomerInformationRequestHandlerTest {
 
     @Test
     public void testHandleSingleReportNoClear() {
-        CiString.CiString64 customerIdentification = new CiString.CiString64("ID123456");
+        var customerIdentification = new CiString.CiString64("ID123456");
         customerInformationRequestHandler.handle("123", new CustomerInformationRequest()
                 .withRequestId(123)
                 .withClear(false)
@@ -82,8 +82,8 @@ class CustomerInformationRequestHandlerTest {
         verify(stationMessageSender).sendCallResult(anyString(), customerInformationResponseArgumentCaptor.capture());
         verify(stationMessageSender).sendNotifyCustomerInformationRequest(notifyCustomerInformationResponseArgumentCaptor.capture());
 
-        CustomerInformationResponse customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
-        NotifyCustomerInformationRequest notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
+        var customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
+        var notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
 
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationResponse.Status.ACCEPTED);
 
@@ -105,7 +105,7 @@ class CustomerInformationRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), customerInformationResponseArgumentCaptor.capture());
 
-        CustomerInformationResponse customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
+        var customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
 
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationResponse.Status.REJECTED);
     }
@@ -122,14 +122,14 @@ class CustomerInformationRequestHandlerTest {
         verify(stationMessageSender).sendCallResult(anyString(), customerInformationResponseArgumentCaptor.capture());
         verify(stationMessageSender, atLeastOnce()).sendNotifyCustomerInformationRequest(notifyCustomerInformationResponseArgumentCaptor.capture());
 
-        CustomerInformationResponse customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
-        NotifyCustomerInformationRequest notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
+        var customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
+        var notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
 
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationResponse.Status.ACCEPTED);
 
-        List<CiString.CiString512> data = CustomerDataUtils.getCustomerInformation("", "idToken1", "");
+        var data = CustomerDataUtils.getCustomerInformation("", "idToken1", "");
 
-        CiString.CiString512 lastElement = data.get(data.size() - 1);
+        var lastElement = data.get(data.size() - 1);
         data.remove(lastElement);
 
         assertThat(notifyCustomerInformationRequest.getData()).isEqualTo(lastElement);
@@ -141,7 +141,7 @@ class CustomerInformationRequestHandlerTest {
 
     @Test
     public void testHandleSingleReportAndClear() {
-        CiString.CiString64 customerIdentification = new CiString.CiString64("ID123456");
+        var customerIdentification = new CiString.CiString64("ID123456");
         customerInformationRequestHandler.handle("123", new CustomerInformationRequest()
                 .withRequestId(123)
                 .withClear(true)
@@ -152,8 +152,8 @@ class CustomerInformationRequestHandlerTest {
         verify(stationMessageSender, atLeast(2)).sendCallResult(anyString(), customerInformationResponseArgumentCaptor.capture());
         verify(stationMessageSender, atLeast(2)).sendNotifyCustomerInformationRequest(notifyCustomerInformationResponseArgumentCaptor.capture());
 
-        CustomerInformationResponse customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
-        NotifyCustomerInformationRequest notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
+        var customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
+        var notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
 
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationResponse.Status.ACCEPTED);
 
@@ -162,7 +162,7 @@ class CustomerInformationRequestHandlerTest {
 
     @Test
     public void testHandleNoReportAndClear() {
-        CiString.CiString64 customerIdentification = new CiString.CiString64("ID123456");
+        var customerIdentification = new CiString.CiString64("ID123456");
         customerInformationRequestHandler.handle("123", new CustomerInformationRequest()
                 .withRequestId(123)
                 .withClear(true)
@@ -173,8 +173,8 @@ class CustomerInformationRequestHandlerTest {
         verify(stationMessageSender, atMostOnce()).sendCallResult(anyString(), customerInformationResponseArgumentCaptor.capture());
         verify(stationMessageSender, atMostOnce()).sendNotifyCustomerInformationRequest(notifyCustomerInformationResponseArgumentCaptor.capture());
 
-        CustomerInformationResponse customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
-        NotifyCustomerInformationRequest notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
+        var customerInformationResponse = customerInformationResponseArgumentCaptor.getValue();
+        var notifyCustomerInformationRequest = notifyCustomerInformationResponseArgumentCaptor.getValue();
 
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationResponse.Status.ACCEPTED);
 
