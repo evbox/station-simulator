@@ -404,7 +404,7 @@ public class StationMessageSender {
      */
     public void sendNotifyCustomerInformationRequest(final NotifyCustomerInformationRequest request) {
         Call call = createAndRegisterCall(ActionType.NOTIFY_CUSTOMER_INFORMATION, request);
-        sendMessage(new AbstractWebSocketClientInboxMessage.OcppMessage(call.toJson()));
+        sendMessage(OcppMessage.builder().data(call.toJson()).build());
     }
 
     /**
