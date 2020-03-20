@@ -6,12 +6,13 @@ import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.states.helpers.AuthorizeHelper;
+import com.evbox.everon.ocpp.v20.message.station.AuthorizeResponse;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_STOP;
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.STOP_AUTHORIZED;
+import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.*;
 import static java.util.Collections.singletonList;
 
 /**
@@ -34,29 +35,43 @@ public class ChargingState extends AbstractEvseState {
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationStore stationStore = stateManager.getStationStore();
-        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
-
         log.info("in authorizeToken {}", tokenId);
 
-        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
-            if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
-                Evse evse = stationStore.findEvse(evseId);
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId),
+                (request, response) -> handleAuthorizeResponse(evseId, tokenId, response));
+    }
 
-                evse.setToken(tokenId);
-                int connectorId = stopCharging(stationMessageSender, evse);
+    private void handleAuthorizeResponse(int evseId, String tokenId, AuthorizeResponse response) {
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
+        Evse evse = stationStore.findEvse(evseId);
+        OptionList<TxStartStopPointVariableValues> stopPoints = stationStore.getTxStopPointValues();
 
-                OptionList<TxStartStopPointVariableValues> stopPoints = stationStore.getTxStopPointValues();
-                if (stopPoints.contains(TxStartStopPointVariableValues.AUTHORIZED) && !stopPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
-                    evse.stopTransaction();
-                    evse.clearToken();
+        if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
+            evse.setToken(tokenId);
+            int connectorId = stopCharging(stationMessageSender, evse);
 
-                    stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
-                }
-                stateManager.setStateForEvse(evseId, new StoppedState());
+            if (stopPoints.contains(TxStartStopPointVariableValues.AUTHORIZED) && !stopPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
+                evse.stopTransaction();
+                evse.clearToken();
+
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
             }
-        });
+            stateManager.setStateForEvse(evseId, new StoppedState());
+        } else  {
+            AuthorizeHelper.handleFailedAuthorizeResponse(stateManager, evse);
 
+            if (evse.hasOngoingTransaction()) {
+                if (!stopPoints.contains(TxStartStopPointVariableValues.AUTHORIZED)) {
+                    stateManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
+                } else {
+                    stateManager.setStateForEvse(evseId, new StoppedState());
+                }
+
+                evse.tryUnlockConnector();
+            }
+        }
     }
 
     @Override

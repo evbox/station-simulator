@@ -193,7 +193,7 @@ class StateManagerTest {
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), notAuthorizeResponse);
 
         // Verify that state did not change
-        verify(evseMock, times(0)).setEvseState(any());
+        verify(evseMock, never()).setEvseState(any());
     }
 
     private void checkStateIs(String name) {
