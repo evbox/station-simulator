@@ -1,7 +1,10 @@
 package com.evbox.everon.ocpp.simulator.station.evse.states;
 
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Abstract class to represents the state of a specific evse.
@@ -16,11 +19,11 @@ public abstract class AbstractEvseState {
 
     public abstract String getStateName();
 
-    public abstract void onPlug(int evseId, int connectorId);
+    public abstract CompletableFuture<UserMessageResult> onPlug(int evseId, int connectorId);
 
-    public abstract void onAuthorize(int evseId, String tokenId);
+    public abstract CompletableFuture<UserMessageResult> onAuthorize(int evseId, String tokenId);
 
-    public abstract void onUnplug(int evseId, int connectorId);
+    public abstract CompletableFuture<UserMessageResult> onUnplug(int evseId, int connectorId);
 
     public abstract void onRemoteStart(int evseId, int remoteStartId, String tokenId, Connector connector);
 

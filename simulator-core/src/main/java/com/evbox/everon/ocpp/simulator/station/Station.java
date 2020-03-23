@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationStore.StationStoreView;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
@@ -25,6 +26,7 @@ import okhttp3.OkHttpClient;
 
 import javax.net.ssl.*;
 import java.security.KeyStore;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -179,6 +181,17 @@ public class Station {
      */
     public void sendMessage(StationMessage stationMessage) {
         this.stationMessageInbox.offer(stationMessage);
+    }
+
+    /**
+     * Executes a specific UserMessage, like
+     * plug, unplug or authorize.
+     *
+     * @param userCommand command to execute
+     * @return Future with result of command executed
+     */
+    public CompletableFuture<?> executeUserCommand(UserMessage userCommand) {
+        return userCommand.perform(stateManager);
     }
 
     /**

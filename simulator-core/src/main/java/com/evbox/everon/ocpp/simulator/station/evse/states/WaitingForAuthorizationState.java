@@ -2,8 +2,9 @@ package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.states.helpers.AuthorizeHelper;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
@@ -13,7 +14,10 @@ import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.*;
+import java.util.concurrent.CompletableFuture;
+
+import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.AUTHORIZED;
+import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_START;
 import static java.util.Collections.singletonList;
 
 /**
@@ -30,20 +34,23 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
     }
 
     @Override
-    public void onPlug(int evseId, int connectorId) {
-        // NOP
+    public CompletableFuture<UserMessageResult> onPlug(int evseId, int connectorId) {
+        return CompletableFuture.completedFuture(UserMessageResult.NOT_EXECUTED);
     }
 
     @Override
-    public void onAuthorize(int evseId, String tokenId) {
+    public CompletableFuture<UserMessageResult> onAuthorize(int evseId, String tokenId) {
         log.info("in authorizeToken {}", tokenId);
 
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId),
-                (request, response) -> handleAuthorizeResponse(evseId, tokenId, response));
+                (request, response) -> handleAuthorizeResponse(evseId, tokenId, response, future));
+
+        return future;
     }
 
-    private void handleAuthorizeResponse(int evseId, String tokenId, AuthorizeResponse response) {
+    private void handleAuthorizeResponse(int evseId, String tokenId, AuthorizeResponse response, CompletableFuture<UserMessageResult> future) {
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         StationStore stationStore = stateManager.getStationStore();
         Evse evse = stationStore.findEvse(evseId);
@@ -62,13 +69,15 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
             stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, TransactionData.ChargingState.CHARGING);
 
             stateManager.setStateForEvse(evseId, new ChargingState());
+            future.complete(UserMessageResult.SUCCESSFUL);
         } else {
             AuthorizeHelper.handleFailedAuthorizeResponse(stateManager, evse);
+            future.complete(UserMessageResult.FAILED);
         }
     }
 
     @Override
-    public void onUnplug(int evseId, int connectorId) {
+    public CompletableFuture<UserMessageResult> onUnplug(int evseId, int connectorId) {
         Evse evse = stateManager.getStationStore().findEvse(evseId);
 
         if (evse.findConnector(connectorId).getCableStatus() == CableStatus.LOCKED) {
@@ -87,6 +96,7 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
         }
 
         stateManager.setStateForEvse(evseId, new AvailableState());
+        return CompletableFuture.completedFuture(UserMessageResult.SUCCESSFUL);
     }
 
     @Override

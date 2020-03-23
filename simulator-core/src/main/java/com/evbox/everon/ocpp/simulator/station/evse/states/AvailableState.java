@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.evse.states;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.*;
 import com.evbox.everon.ocpp.simulator.station.actions.system.CancelRemoteStartTransaction;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
@@ -12,6 +13,7 @@ import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +36,7 @@ public class AvailableState extends AbstractEvseState {
     }
 
     @Override
-    public void onPlug(int evseId, int connectorId) {
+    public CompletableFuture<UserMessageResult> onPlug(int evseId, int connectorId) {
         Evse evse = stateManager.getStationStore().findEvse(evseId);
 
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
@@ -43,9 +45,9 @@ public class AvailableState extends AbstractEvseState {
 
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
 
+        CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
         evse.plug(connectorId);
         stationMessageSender.sendStatusNotificationAndSubscribe(evse, evse.findConnector(connectorId), (statusNotificationRequest, statusNotificationResponse) -> {
-
             OptionList<TxStartStopPointVariableValues> startPoints = stateManager.getStationStore().getTxStartPointValues();
             if (startPoints.contains(TxStartStopPointVariableValues.EV_CONNECTED) && !startPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
@@ -53,18 +55,21 @@ public class AvailableState extends AbstractEvseState {
 
                 stationMessageSender.sendTransactionEventStart(evseId, connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
             }
+            future.complete(UserMessageResult.SUCCESSFUL);
         });
 
         stateManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
+        return future;
     }
 
     @Override
-    public void onAuthorize(int evseId, String tokenId) {
+    public CompletableFuture<UserMessageResult> onAuthorize(int evseId, String tokenId) {
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         StationStore stationStore = stateManager.getStationStore();
 
         log.info("in authorizeToken {}", tokenId);
 
+        CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
             if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
                 List<Evse> authorizedEvses = hasEvses(response) ? getEvseList(response, stationStore) : singletonList(stationStore.getDefaultEvse());
@@ -79,13 +84,18 @@ public class AvailableState extends AbstractEvseState {
                     authorizedEvses.forEach(evse -> stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId));
                 }
                 stateManager.setStateForEvse(evseId, new WaitingForPlugState());
+
+                future.complete(UserMessageResult.SUCCESSFUL);
+            } else {
+                future.complete(UserMessageResult.FAILED);
             }
         });
+        return future;
     }
 
     @Override
-    public void onUnplug(int evseId, int connectorId) {
-        // NOP
+    public CompletableFuture<UserMessageResult> onUnplug(int evseId, int connectorId) {
+        return CompletableFuture.completedFuture(UserMessageResult.NOT_EXECUTED);
     }
 
     @Override

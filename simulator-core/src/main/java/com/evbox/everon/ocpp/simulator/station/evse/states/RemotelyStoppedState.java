@@ -2,9 +2,12 @@ package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+
+import java.util.concurrent.CompletableFuture;
 
 public class RemotelyStoppedState extends StoppedState {
 
@@ -16,7 +19,7 @@ public class RemotelyStoppedState extends StoppedState {
     }
 
     @Override
-    public void onUnplug(int evseId, int connectorId) {
+    public CompletableFuture<UserMessageResult> onUnplug(int evseId, int connectorId) {
         StationStore stationStore = stateManager.getStationStore();
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         Evse evse = stationStore.findEvse(evseId);
@@ -29,5 +32,6 @@ public class RemotelyStoppedState extends StoppedState {
         stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.REMOTE);
 
         stateManager.setStateForEvse(evseId, new AvailableState());
+        return CompletableFuture.completedFuture(UserMessageResult.SUCCESSFUL);
     }
 }
