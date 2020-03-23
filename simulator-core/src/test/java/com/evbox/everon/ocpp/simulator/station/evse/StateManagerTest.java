@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.states.*;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.*;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -32,7 +34,10 @@ class StateManagerTest {
     StationMessageSender stationMessageSenderMock;
 
     private StateManager stateManager;
-    private ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
+
+    @Captor
+    private ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor;
+
     private final AuthorizeResponse authorizeResponse = new AuthorizeResponse()
                                                             .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
                                                             .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
@@ -114,9 +119,35 @@ class StateManagerTest {
     }
 
     @Test
-    void verifyNotAuthorizedInChargingState() {
+    void verifyDeathorizeInChargingStateSwitchToStopped() {
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
-        checkStateDidNotChangeAfterAuth();
+        when(evseMock.hasOngoingTransaction()).thenReturn(true);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
+
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), notAuthorizeResponse);
+
+        // Verify that state did not change
+        verify(evseMock).setEvseState(any(StoppedState.class));
+        verify(evseMock).tryUnlockConnector();
+    }
+
+    @Test
+    void verifyDeathorizeInChargingStateSwitchToWaitingForAutorization() {
+        when(evseMock.getEvseState()).thenReturn(new ChargingState());
+        when(evseMock.hasOngoingTransaction()).thenReturn(true);
+        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
+
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), notAuthorizeResponse);
+
+        // Verify that state did not change
+        verify(evseMock).setEvseState(any(WaitingForAuthorizationState.class));
+        verify(evseMock).tryUnlockConnector();
     }
 
     @Test
