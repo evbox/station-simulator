@@ -34,7 +34,10 @@ public enum ActionType {
     SET_NETWORK_PROFILE("SetNetworkProfile", SetNetworkProfileRequest.class, SetNetworkProfileResponse.class),
     RESERVE_NOW("ReserveNow", ReserveNowRequest.class, ReserveNowResponse.class),
     NOTIFY_EVENT("NotifyEvent", NotifyEventRequest.class, NotifyEventResponse.class),
+    CUSTOMER_INFORMATION("CustomerInformation", CustomerInformationRequest.class, CustomerInformationResponse.class),
+    NOTIFY_CUSTOMER_INFORMATION("NotifyCustomerInformation", NotifyCustomerInformationRequest.class, NotifyCustomerInformationResponse.class),
     CANCEL_RESERVATION("CancelReservation", CancelReservationRequest.class, CancelReservationResponse.class);
+
 
     private final String actionTypeName;
     private final Class requestClazz;

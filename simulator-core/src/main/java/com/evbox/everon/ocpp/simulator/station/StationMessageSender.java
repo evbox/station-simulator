@@ -12,8 +12,8 @@ import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.station.support.CallIdGenerator;
 import com.evbox.everon.ocpp.simulator.station.support.LRUCache;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.v20.message.centralserver.*;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import lombok.extern.slf4j.Slf4j;
@@ -111,10 +111,10 @@ public class StationMessageSender {
     /**
      * Send TransactionEventStart event.
      *
-     * @param evseId            evse identity
-     * @param connectorId       connector identity
-     * @param remoteStartId     connector identity
-     * @param reason            reason why it was triggered
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param remoteStartId connector identity
+     * @param reason        reason why it was triggered
      */
     public void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TransactionEventRequest.TriggerReason reason) {
         sendTransactionEventStart(evseId, connectorId, remoteStartId, reason, null, null);
@@ -394,6 +394,16 @@ public class StationMessageSender {
         SignCertificateRequest payload = payloadFactory.createSignCertificateRequest(csr);
 
         Call call = createAndRegisterCall(ActionType.SIGN_CERTIFICATE, payload);
+        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+    }
+
+    /**
+     * Sends NotifyCustomerInformationRequest containing customer data
+     *
+     * @param request - notify customer information request
+     */
+    public void sendNotifyCustomerInformationRequest(final NotifyCustomerInformationRequest request) {
+        Call call = createAndRegisterCall(ActionType.NOTIFY_CUSTOMER_INFORMATION, request);
         sendMessage(OcppMessage.builder().data(call.toJson()).build());
     }
 
