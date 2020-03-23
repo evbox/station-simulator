@@ -5,14 +5,15 @@ import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.states.helpers.AuthorizeHelper;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
+import com.evbox.everon.ocpp.v20.message.station.AuthorizeResponse;
 import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.AUTHORIZED;
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_START;
+import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.*;
 import static java.util.Collections.singletonList;
 
 /**
@@ -35,30 +36,35 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
 
     @Override
     public void onAuthorize(int evseId, String tokenId) {
-        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
-        StationStore stationStore = stateManager.getStationStore();
-
         log.info("in authorizeToken {}", tokenId);
 
-        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
-            if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
-                Evse evse = stationStore.findEvse(evseId);
-                evse.setToken(tokenId);
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId),
+                (request, response) -> handleAuthorizeResponse(evseId, tokenId, response));
+    }
 
-                if (!evse.hasOngoingTransaction()) {
-                    String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                    evse.createTransaction(transactionId);
+    private void handleAuthorizeResponse(int evseId, String tokenId, AuthorizeResponse response) {
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        StationStore stationStore = stateManager.getStationStore();
+        Evse evse = stationStore.findEvse(evseId);
 
-                    stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId);
+        if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
+            evse.setToken(tokenId);
 
-                }
+            if (!evse.hasOngoingTransaction()) {
+                String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
+                evse.createTransaction(transactionId);
 
-                int connectorId = startCharging(evse);
-                stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, TransactionData.ChargingState.CHARGING);
-
-                stateManager.setStateForEvse(evseId, new ChargingState());
+                stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId);
             }
-        });
+
+            int connectorId = startCharging(evse);
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, TransactionData.ChargingState.CHARGING);
+
+            stateManager.setStateForEvse(evseId, new ChargingState());
+        } else {
+            AuthorizeHelper.handleFailedAuthorizeResponse(stateManager, evse);
+        }
     }
 
     @Override
@@ -106,5 +112,4 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
         evse.startCharging();
         return connectorId;
     }
-
 }
