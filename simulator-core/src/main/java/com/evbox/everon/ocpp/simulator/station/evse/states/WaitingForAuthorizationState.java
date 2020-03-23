@@ -112,5 +112,4 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
         evse.startCharging();
         return connectorId;
     }
-
 }
