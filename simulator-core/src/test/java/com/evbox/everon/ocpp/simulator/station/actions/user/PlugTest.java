@@ -3,11 +3,11 @@ package com.evbox.everon.ocpp.simulator.station.actions.user;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CONNECTOR_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -54,13 +54,13 @@ public class PlugTest {
     }
 
     @Test
-    void shouldThrowExceptionOnIllegalState() {
+    void shouldFutureFailOnIllegalState() throws Exception {
 
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
         when(connectorMock.getCableStatus()).thenReturn(CableStatus.LOCKED);
 
-        assertThrows(IllegalStateException.class, () -> plug.perform(stateManagerMock));
+        assertEquals(UserMessageResult.FAILED, plug.perform(stateManagerMock).get());
 
     }
 

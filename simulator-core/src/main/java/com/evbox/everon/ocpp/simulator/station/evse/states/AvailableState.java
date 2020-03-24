@@ -1,7 +1,10 @@
 package com.evbox.everon.ocpp.simulator.station.evse.states;
 
 import com.evbox.everon.ocpp.common.OptionList;
-import com.evbox.everon.ocpp.simulator.station.*;
+import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationMessage;
+import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.actions.system.CancelRemoteStartTransaction;
 import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
@@ -40,7 +43,8 @@ public class AvailableState extends AbstractEvseState {
         Evse evse = stateManager.getStationStore().findEvse(evseId);
 
         if (evse.findConnector(connectorId).getCableStatus() != CableStatus.UNPLUGGED) {
-            throw new IllegalStateException(String.format("Connector is not available: %d %d", evseId, connectorId));
+            log.error(String.format("Connector is not available: %d %d", evseId, connectorId));
+            return CompletableFuture.completedFuture(UserMessageResult.FAILED);
         }
 
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
