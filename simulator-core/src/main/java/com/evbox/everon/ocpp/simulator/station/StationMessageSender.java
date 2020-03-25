@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -75,7 +76,7 @@ public class StationMessageSender {
                 .withTbc(false)
                 .withSeqNo(0)
                 .withMonitor(monitors)
-                .withGeneratedAt(ZonedDateTime.now());
+                .withGeneratedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
         Call call = createAndRegisterCall(ActionType.NOTIFY_MONITORING_REPORT, request);
         sendMessage(OcppMessage.builder().data(call.toJson()).build());
@@ -88,7 +89,7 @@ public class StationMessageSender {
      */
     public void sendNotifyEvent(List<EventDatum> eventData) {
         NotifyEventRequest request = new NotifyEventRequest()
-                .withGeneratedAt(ZonedDateTime.now())
+                .withGeneratedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .withTbc(false)
                 .withSeqNo(0)
                 .withEventData(eventData);

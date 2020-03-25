@@ -25,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
@@ -209,7 +210,7 @@ public class ServerMessageHandlerTest {
 
         String callResultJson = createCallResult()
                 .withMessageId(DEFAULT_MESSAGE_ID)
-                .withCurrentTime(ZonedDateTime.now().toString())
+                .withCurrentTime(ZonedDateTime.now(ZoneOffset.UTC).toString())
                 .withIntervalInSeconds(1)
                 .withStatus("Accepted")
                 .toJson();
