@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -33,7 +34,7 @@ public class BootNotification {
     public static Function<Call, String> response() {
         return incomingRequest -> JsonMessageTypeFactory.createCallResult()
                 .withMessageId(incomingRequest.getMessageId())
-                .withCurrentTime(ZonedDateTime.now().toString())
+                .withCurrentTime(ZonedDateTime.now(ZoneOffset.UTC).toString())
                 .withIntervalInSeconds(DEFAULT_HEARTBEAT_INTERVAL)
                 .withStatus("Accepted")
                 .toJson();

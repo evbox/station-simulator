@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -225,7 +226,7 @@ class StationMessageSenderTest {
     @Test
     void verifyNotifyReportAsync() throws InterruptedException, JsonProcessingException {
         List<ReportDatum> reportData = singletonList(new ReportDatum());
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
         NotifyReportRequest request = new NotifyReportRequest()
                 .withTbc(false)

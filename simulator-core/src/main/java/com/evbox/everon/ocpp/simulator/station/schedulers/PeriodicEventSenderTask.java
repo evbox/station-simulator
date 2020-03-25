@@ -7,6 +7,7 @@ import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
 import com.evbox.everon.ocpp.v20.message.station.EventDatum;
 import lombok.AllArgsConstructor;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,7 +25,7 @@ public class PeriodicEventSenderTask implements Runnable {
     private EventDatum generateEventDatum() {
         return new EventDatum()
                     .withEventId(ThreadLocalRandom.current().nextInt(100))
-                    .withTimestamp(ZonedDateTime.now())
+                    .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
                     .withTrigger(EventDatum.Trigger.PERIODIC)
                     .withActualValue(new CiString.CiString1000("123"))
                     .withCleared(true)

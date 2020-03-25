@@ -10,6 +10,7 @@ import com.evbox.everon.ocpp.v20.message.station.CustomerInformationResponse;
 import com.evbox.everon.ocpp.v20.message.station.NotifyCustomerInformationRequest;
 import lombok.RequiredArgsConstructor;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +95,7 @@ public class CustomerInformationRequestHandler implements OcppRequestHandler<Cus
 
     private NotifyCustomerInformationRequest createNotifyCustomerInformationBaseRequest(final Integer requestId) {
         return new NotifyCustomerInformationRequest()
-                .withGeneratedAt(ZonedDateTime.now())
+                .withGeneratedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .withRequestId(requestId)
                 .withSeqNo(0)
                 .withTbc(false);

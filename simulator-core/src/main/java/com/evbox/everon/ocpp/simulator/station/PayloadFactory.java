@@ -156,14 +156,14 @@ public class PayloadFactory {
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo) {
-        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now()).withSampledValue(
+        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now(ZoneOffset.UTC)).withSampledValue(
                 Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal("1010")))));
         return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
     }
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, long powerConsumed) {
-        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now()).withSampledValue(
+        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now(ZoneOffset.UTC)).withSampledValue(
                 Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed)))));
         return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
     }
