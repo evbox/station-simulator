@@ -4,6 +4,8 @@ import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Represents Unplug message.
  */
@@ -20,7 +22,7 @@ public class Unplug implements UserMessage {
      * @param stateManager manges state of the evse for station
      */
     @Override
-    public void perform(StateManager stateManager) {
-        stateManager.cableUnplugged(evseId, connectorId);
+    public CompletableFuture<UserMessageResult> perform(StateManager stateManager) {
+        return stateManager.cableUnplugged(evseId, connectorId);
     }
 }

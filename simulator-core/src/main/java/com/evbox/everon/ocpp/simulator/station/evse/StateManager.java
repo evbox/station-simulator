@@ -3,7 +3,10 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AbstractEvseState;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Manages the state for the evses of a station.
@@ -28,16 +31,16 @@ public class StateManager {
         return stationStore.findEvse(eveseId).getEvseState();
     }
 
-    public void cablePlugged(int evseId, int connectorId) {
-        getState(evseId).onPlug(evseId, connectorId);
+    public CompletableFuture<UserMessageResult> cablePlugged(int evseId, int connectorId) {
+        return getState(evseId).onPlug(evseId, connectorId);
     }
 
-    public void authorized(int evseId, String tokenId) {
-        getState(evseId).onAuthorize(evseId, tokenId);
+    public CompletableFuture<UserMessageResult> authorized(int evseId, String tokenId) {
+        return getState(evseId).onAuthorize(evseId, tokenId);
     }
 
-    public void cableUnplugged(int evseId, int connectorId) {
-        getState(evseId).onUnplug(evseId, connectorId);
+    public CompletableFuture<UserMessageResult> cableUnplugged(int evseId, int connectorId) {
+        return getState(evseId).onUnplug(evseId, connectorId);
     }
 
     public void remoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {

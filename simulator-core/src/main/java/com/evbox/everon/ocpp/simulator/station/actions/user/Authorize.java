@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Represents Authorize message.
  */
@@ -22,8 +24,8 @@ public class Authorize implements UserMessage {
      * @param stateManager manges state of the evse for station
      */
     @Override
-    public void perform(StateManager stateManager) {
-        stateManager.authorized(evseId, tokenId);
+    public CompletableFuture<UserMessageResult> perform(StateManager stateManager) {
+        return stateManager.authorized(evseId, tokenId);
     }
 
 }

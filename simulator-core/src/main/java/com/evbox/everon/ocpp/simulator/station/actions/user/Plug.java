@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Represents Plug message.
  */
@@ -22,7 +24,7 @@ public class Plug implements UserMessage {
      * @param stateManager manges state of the evse for station
      */
     @Override
-    public void perform(StateManager stateManager) {
-        stateManager.cablePlugged(evseId, connectorId);
+    public CompletableFuture<UserMessageResult> perform(StateManager stateManager) {
+        return stateManager.cablePlugged(evseId, connectorId);
     }
 }

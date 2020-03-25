@@ -3,6 +3,8 @@ package com.evbox.everon.ocpp.simulator.station;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationStore.StationStoreView;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.handlers.ServerMessageHandler;
@@ -23,8 +25,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
 import java.security.KeyStore;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -179,6 +183,19 @@ public class Station {
      */
     public void sendMessage(StationMessage stationMessage) {
         this.stationMessageInbox.offer(stationMessage);
+    }
+
+    /**
+     * Executes a specific UserMessage, like
+     * plug, unplug or authorize.
+     *
+     * @param userCommand command to execute
+     * @param timeOutSec  will fail after this amount of seconds
+     * @return Future with result of command executed
+     */
+    public Future<UserMessageResult> executeUserCommand(UserMessage userCommand, int timeOutSec) {
+        return userCommand.perform(stateManager)
+                            .completeOnTimeout(UserMessageResult.FAILED, timeOutSec, TimeUnit.SECONDS);
     }
 
     /**
