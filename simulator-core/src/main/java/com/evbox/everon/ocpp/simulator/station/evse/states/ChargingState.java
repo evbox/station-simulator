@@ -41,12 +41,23 @@ public class ChargingState extends AbstractEvseState {
     public CompletableFuture<UserMessageResult> onAuthorize(int evseId, String tokenId) {
         log.info("in authorizeToken {}", tokenId);
 
+        if (!isTokenThatStarted(evseId, tokenId)) {
+            log.error("Cannot stop transaction with different token than start one.");
+            return CompletableFuture.completedFuture(UserMessageResult.FAILED);
+        }
+
         CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId),
                 (request, response) -> handleAuthorizeResponse(evseId, tokenId, response, future));
 
         return future;
+    }
+
+    private boolean isTokenThatStarted(int evseId, String tokenId) {
+        StationStore stationStore = stateManager.getStationStore();
+        Evse evse = stationStore.findEvse(evseId);
+        return evse.getTokenId().equals(tokenId);
     }
 
     private void handleAuthorizeResponse(int evseId, String tokenId, AuthorizeResponse response, CompletableFuture<UserMessageResult> future) {

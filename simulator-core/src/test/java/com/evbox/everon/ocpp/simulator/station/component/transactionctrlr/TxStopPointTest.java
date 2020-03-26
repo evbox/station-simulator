@@ -68,6 +68,7 @@ public class TxStopPointTest {
     void verifyStopOnlyOnAuthorizedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -115,6 +116,7 @@ public class TxStopPointTest {
     void verifyStopOnlyOnEVConnectedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -147,6 +149,7 @@ public class TxStopPointTest {
     void verifyStopOnlyOnPowerPathClosedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED )));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -161,6 +164,7 @@ public class TxStopPointTest {
     @Test
     void verifyStopOnlyOnPowerPathClosedAuthUnplugAction() {
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -186,6 +190,7 @@ public class TxStopPointTest {
     void verifyStopOnAuthorizedAndEVConnectedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -216,6 +221,7 @@ public class TxStopPointTest {
     @Test
     void verifyStartOnAuthorizedAndPowerPathClosedAuthUnplugAction() {
         when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -257,6 +263,7 @@ public class TxStopPointTest {
     void verifyStopOnAuthorizedAndEVConnectedAndPowerPathClosedAuthAction() {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
