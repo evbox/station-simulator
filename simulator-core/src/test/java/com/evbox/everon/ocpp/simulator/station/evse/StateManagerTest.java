@@ -66,6 +66,7 @@ class StateManagerTest {
 
         checkStateIs(ChargingState.NAME);
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
 
         triggerAuthorizeAndGetResponse();
 
@@ -91,6 +92,7 @@ class StateManagerTest {
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(ChargingState.NAME);
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
 
         triggerAuthorizeAndGetResponse();
 
@@ -122,6 +124,7 @@ class StateManagerTest {
     void verifyDeathorizeInChargingStateSwitchToStopped() {
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
@@ -138,6 +141,7 @@ class StateManagerTest {
     void verifyDeathorizeInChargingStateSwitchToWaitingForAutorization() {
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
         when(evseMock.hasOngoingTransaction()).thenReturn(true);
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
@@ -165,6 +169,7 @@ class StateManagerTest {
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
         when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
 
         triggerAuthorizeAndGetResponse();
 

@@ -41,6 +41,10 @@ public class AuthorizeTest {
 
     Authorize authorize;
 
+    private final AuthorizeResponse authorizeResponse = new AuthorizeResponse()
+                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
+                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
+
     @BeforeEach
     void setUp() {
         this.authorize = new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID);
@@ -61,10 +65,6 @@ public class AuthorizeTest {
 
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
 
-        AuthorizeResponse authorizeResponse = new AuthorizeResponse()
-                .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
-                .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
-
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 
         verify(evseMock).setToken(anyString());
@@ -80,10 +80,6 @@ public class AuthorizeTest {
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
-
-        AuthorizeResponse authorizeResponse = new AuthorizeResponse()
-                .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
-                .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
 
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -103,10 +99,6 @@ public class AuthorizeTest {
 
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
 
-        AuthorizeResponse authorizeResponse = new AuthorizeResponse()
-                .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
-                .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
-
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(false);
 
@@ -121,16 +113,13 @@ public class AuthorizeTest {
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED)));
 
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
 
         authorize.perform(stateManagerMock);
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
-
-        AuthorizeResponse authorizeResponse = new AuthorizeResponse()
-                .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
-                .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
 
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -150,10 +139,6 @@ public class AuthorizeTest {
 
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
 
-        AuthorizeResponse authorizeResponse = new AuthorizeResponse()
-                .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
-                .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
-
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
@@ -161,5 +146,17 @@ public class AuthorizeTest {
         verify(evseMock, never()).startCharging();
         verify(evseMock, never()).stopCharging();
 
+    }
+
+    @Test
+    void shouldNotStopWithDifferentToken() {
+        final String wrongToken = "AA123";
+
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(evseMock.getEvseState()).thenReturn(new ChargingState());
+        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
+        new Authorize(wrongToken, DEFAULT_EVSE_ID).perform(stateManagerMock);
+
+        verify(stationMessageSenderMock, never()).sendAuthorizeAndSubscribe(anyString(), anyList(), any());
     }
 }

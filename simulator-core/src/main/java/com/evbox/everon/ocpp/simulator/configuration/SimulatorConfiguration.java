@@ -26,7 +26,7 @@ public class SimulatorConfiguration {
     private static final long DEFAULT_READ_TIMEOUT = 10_000;
     private static final long DEFAULT_WRITE_TIMEOUT = 10_000;
 
-    private static final long DEFAULT_PING_INTERVAL = 10_000;
+    private static final long DEFAULT_PING_INTERVAL = 30_000;
 
     private WebSocketConfiguration socketConfiguration;
     private List<StationConfiguration> stations;
