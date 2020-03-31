@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +40,8 @@ public class Evse {
     private final List<Connector> connectors;
 
     private String tokenId;
+    private Instant chargingStart;
+    private Duration chargingDuration;
     private boolean charging;
     private long seqNo;
 
@@ -108,6 +112,7 @@ public class Evse {
                 .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
 
         charging = true;
+        chargingStart = Instant.now();
         return lockedConnector.getId();
     }
 
@@ -116,6 +121,13 @@ public class Evse {
      */
     public void stopCharging() {
         charging = false;
+        if (chargingStart != null) {
+            chargingDuration = Duration.between(chargingStart, Instant.now());
+        }
+    }
+
+    public Duration getDurationOfLastChargingSession() {
+        return Optional.ofNullable(chargingDuration).orElse(Duration.ZERO);
     }
 
     /**

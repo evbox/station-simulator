@@ -101,22 +101,6 @@ public class PayloadFactory {
     }
 
     TransactionEventRequest createTransactionEventUpdate(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
-                                                         TransactionData.ChargingState chargingState, Instant currentDateTime) {
-
-        TransactionData transactionData = new TransactionData()
-                .withId(new CiString.CiString36(evse.getTransaction().getTransactionId()))
-                .withChargingState(chargingState);
-
-        TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.UPDATED, currentDateTime, evse.getSeqNoAndIncrement());
-
-        if (tokenId != null) {
-            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443));
-        }
-
-        return payload;
-    }
-
-    TransactionEventRequest createTransactionEventUpdate(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
                                                          TransactionData.ChargingState chargingState, Instant currentDateTime, long powerConsumed) {
 
         TransactionData transactionData = new TransactionData()
@@ -135,11 +119,17 @@ public class PayloadFactory {
     TransactionEventRequest createTransactionEventEnded(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
                                                         TransactionData.StoppedReason stoppedReason, Instant currentDateTime) {
 
+        return createTransactionEventEnded(evse, connectorId, reason, stoppedReason, currentDateTime, 1000);
+    }
+
+    TransactionEventRequest createTransactionEventEnded(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
+                                                        TransactionData.StoppedReason stoppedReason, Instant currentDateTime, long powerConsumed) {
+
         TransactionData transactionData = new TransactionData().withId(new CiString.CiString36(evse.getTransaction().toString()))
                 .withChargingState(TransactionData.ChargingState.SUSPENDED_EVSE)
                 .withStoppedReason(stoppedReason);
 
-        return createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement());
+        return createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
     }
 
     NotifyReportRequest createNotifyReportRequest(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
@@ -156,9 +146,7 @@ public class PayloadFactory {
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo) {
-        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now(ZoneOffset.UTC)).withSampledValue(
-                Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal("1010")))));
-        return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
+        return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, 1000);
     }
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,

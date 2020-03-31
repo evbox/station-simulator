@@ -13,6 +13,7 @@ import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_STOP;
@@ -74,7 +75,7 @@ public class ChargingState extends AbstractEvseState {
                 evse.stopTransaction();
                 evse.clearToken();
 
-                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED, getKWConsumed(evse));
             }
             stateManager.setStateForEvse(evseId, new StoppedState());
             future.complete(UserMessageResult.SUCCESSFUL);
@@ -121,5 +122,14 @@ public class ChargingState extends AbstractEvseState {
         Integer connectorId = evse.unlockConnector();
         stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, TransactionData.ChargingState.EV_DETECTED);
         return connectorId;
+    }
+
+    private long getKWConsumed(Evse evse) {
+        long stationPowerHour = stateManager.getStation()
+                                        .getConfiguration()
+                                        .getMeterValuesConfiguration()
+                                        .getConsumptionWattHour();
+        Duration sessionDuration = evse.getDurationOfLastChargingSession();
+        return sessionDuration.getSeconds() * (stationPowerHour / 3600);
     }
 }
