@@ -193,32 +193,18 @@ public class StationMessageSender {
      * @param connectorId   connector identity
      * @param reason        reason why it was triggered
      * @param stoppedReason reason why transaction was stopped
+     * @param powerConsumed kw consumed during transaction
      * @param subscriber    callback that will be executed after receiving a response from OCPP server
      */
     public void sendTransactionEventEndedAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason,
-                                                      Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
+                                                      long powerConsumed, Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
         TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.findEvse(evseId),
-                connectorId, reason, stoppedReason, stationStore.getCurrentTime());
+                connectorId, reason, stoppedReason, stationStore.getCurrentTime(), powerConsumed);
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
 
         sendMessage(OcppMessage.builder().data(call.toJson()).build());
-    }
-
-    /**
-     * Send TransactionEventEnded event.
-     *
-     * @param evseId        evse identity
-     * @param connectorId   connector identity
-     * @param triggerReason reason why it was triggered
-     * @param stoppedReason reason why transaction was stopped
-     */
-    public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason triggerReason, TransactionData.StoppedReason stoppedReason) {
-        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.findEvse(evseId),
-                connectorId, triggerReason, stoppedReason, stationStore.getCurrentTime());
-
-        sendPayloadOfType(ActionType.TRANSACTION_EVENT, payload);
     }
 
     /**

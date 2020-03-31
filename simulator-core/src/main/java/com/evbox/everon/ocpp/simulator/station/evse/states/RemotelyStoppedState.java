@@ -29,7 +29,10 @@ public class RemotelyStoppedState extends StoppedState {
         evse.clearToken();
 
         stationMessageSender.sendStatusNotification(evse, evse.findConnector(connectorId));
-        stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.REMOTE);
+        stationMessageSender.sendTransactionEventEnded(evseId, connectorId,
+                                                        TransactionEventRequest.TriggerReason.EV_DEPARTED,
+                                                        TransactionData.StoppedReason.REMOTE,
+                                                        evse.getWattConsumedLastSession());
 
         stateManager.setStateForEvse(evseId, new AvailableState());
         return CompletableFuture.completedFuture(UserMessageResult.SUCCESSFUL);

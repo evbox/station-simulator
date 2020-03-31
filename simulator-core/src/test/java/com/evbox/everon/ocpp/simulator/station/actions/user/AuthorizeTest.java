@@ -1,8 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.actions.user;
 
 import com.evbox.everon.ocpp.common.OptionList;
-import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
@@ -22,7 +20,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -42,8 +39,6 @@ public class AuthorizeTest {
     StateManager stateManagerMock;
     @Mock
     Evse evseMock;
-    @Mock
-    Station stationMock;
 
     Authorize authorize;
 
@@ -54,7 +49,7 @@ public class AuthorizeTest {
     @BeforeEach
     void setUp() {
         this.authorize = new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID);
-        this.stateManagerMock = new StateManager(stationMock, stationStoreMock, stationMessageSenderMock);
+        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.getEvseState()).thenReturn(new AvailableState());
 }
@@ -120,9 +115,6 @@ public class AuthorizeTest {
 
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
         when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(evseMock.getDurationOfLastChargingSession()).thenReturn(Duration.ZERO);
-
-        when(stationMock.getConfiguration()).thenReturn(new SimulatorConfiguration.StationConfiguration());
 
         authorize.perform(stateManagerMock);
 

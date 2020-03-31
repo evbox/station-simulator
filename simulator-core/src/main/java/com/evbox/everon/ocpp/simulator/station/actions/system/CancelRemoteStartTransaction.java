@@ -35,7 +35,7 @@ public class CancelRemoteStartTransaction implements SystemMessage {
         if (WaitingForPlugState.NAME.equals(stateManager.getStateForEvse(evseId).getStateName())) {
             stationMessageSender.sendStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
             stationStore.findEvse(evseId).stopTransaction();
-            stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_CONNECT_TIMEOUT, TransactionData.StoppedReason.TIMEOUT);
+            stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TransactionEventRequest.TriggerReason.EV_CONNECT_TIMEOUT, TransactionData.StoppedReason.TIMEOUT, 0L);
             stateManager.setStateForEvse(evseId, new AvailableState());
         }
     }

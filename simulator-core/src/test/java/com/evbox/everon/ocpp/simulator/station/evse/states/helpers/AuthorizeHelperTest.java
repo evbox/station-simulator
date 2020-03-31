@@ -70,6 +70,7 @@ class AuthorizeHelperTest {
         verify(stationMessageSenderMock).sendTransactionEventEnded(eq(1),
                 eq(1),
                 eq(TransactionEventRequest.TriggerReason.DEAUTHORIZED),
-                eq(TransactionData.StoppedReason.DE_AUTHORIZED));
+                eq(TransactionData.StoppedReason.DE_AUTHORIZED),
+                eq(0L));
     }
 }

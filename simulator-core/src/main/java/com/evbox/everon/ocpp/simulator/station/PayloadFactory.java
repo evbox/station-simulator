@@ -91,7 +91,7 @@ public class PayloadFactory {
                 .withId(new CiString.CiString36(evse.getTransaction().toString()))
                 .withRemoteStartId(remoteStartId)
                 .withChargingState(chargingState);
-        TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, STARTED, currentDateTime, evse.getSeqNoAndIncrement());
+        TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, STARTED, currentDateTime, evse.getSeqNoAndIncrement(), 0L);
 
         if (tokenId != null) {
             payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443));
@@ -117,12 +117,6 @@ public class PayloadFactory {
     }
 
     TransactionEventRequest createTransactionEventEnded(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
-                                                        TransactionData.StoppedReason stoppedReason, Instant currentDateTime) {
-
-        return createTransactionEventEnded(evse, connectorId, reason, stoppedReason, currentDateTime, 1000);
-    }
-
-    TransactionEventRequest createTransactionEventEnded(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
                                                         TransactionData.StoppedReason stoppedReason, Instant currentDateTime, long powerConsumed) {
 
         TransactionData transactionData = new TransactionData().withId(new CiString.CiString36(evse.getTransaction().toString()))
@@ -142,11 +136,6 @@ public class PayloadFactory {
         notifyReportRequest.setRequestId(requestId);
 
         return notifyReportRequest;
-    }
-
-    private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
-                                                           TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo) {
-        return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, 1000);
     }
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,

@@ -127,7 +127,7 @@ class StationMessageSenderTest {
 
         mockStationPersistenceLayer();
 
-        stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV);
+        stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV, 0L);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
