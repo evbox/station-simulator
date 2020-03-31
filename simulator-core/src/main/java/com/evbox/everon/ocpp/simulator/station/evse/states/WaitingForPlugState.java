@@ -83,7 +83,7 @@ public class WaitingForPlugState extends AbstractEvseState {
                     evse.stopTransaction();
                     evse.clearToken();
 
-                    stationMessageSender.sendTransactionEventEnded(evse.getId(), null, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.DE_AUTHORIZED);
+                    stationMessageSender.sendTransactionEventEnded(evse.getId(), null, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.DE_AUTHORIZED, evse.getWattConsumedLastSession());
                 }
                 stateManager.setStateForEvse(evseId, new AvailableState());
                 future.complete(UserMessageResult.SUCCESSFUL);

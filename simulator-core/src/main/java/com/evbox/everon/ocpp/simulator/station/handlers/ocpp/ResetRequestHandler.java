@@ -49,8 +49,9 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
         evseIds.forEach(evseId -> {
             if (state.hasOngoingTransaction(evseId)) {
                 state.stopCharging(evseId);
+                long powerConsumed = state.findEvse(evseId).getWattConsumedLastSession();
                 Integer connectorId = state.unlockConnector(evseId);
-                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, TransactionData.StoppedReason.IMMEDIATE_RESET, (request, response) -> reboot());
+                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, TransactionData.StoppedReason.IMMEDIATE_RESET, powerConsumed, (request, response) -> reboot());
             } else {
                 reboot();
             }

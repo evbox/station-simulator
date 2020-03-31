@@ -71,15 +71,14 @@ public class StationMessageSender {
                                                             .map(StationMessageSender::toMonitor)
                                                             .collect(Collectors.toList());
 
-        NotifyMonitoringReportRequest request = new NotifyMonitoringReportRequest()
+        NotifyMonitoringReportRequest payload = new NotifyMonitoringReportRequest()
                 .withRequestId(requestId)
                 .withTbc(false)
                 .withSeqNo(0)
                 .withMonitor(monitors)
                 .withGeneratedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
-        Call call = createAndRegisterCall(ActionType.NOTIFY_MONITORING_REPORT, request);
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.NOTIFY_MONITORING_REPORT, payload);
     }
 
     /**
@@ -88,14 +87,13 @@ public class StationMessageSender {
      * @param eventData list of event data
      */
     public void sendNotifyEvent(List<EventDatum> eventData) {
-        NotifyEventRequest request = new NotifyEventRequest()
+        NotifyEventRequest payload = new NotifyEventRequest()
                 .withGeneratedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .withTbc(false)
                 .withSeqNo(0)
                 .withEventData(eventData);
 
-        Call call = createAndRegisterCall(ActionType.NOTIFY_EVENT, request);
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.NOTIFY_EVENT, payload);
     }
 
     /**
@@ -131,28 +129,6 @@ public class StationMessageSender {
      */
     public void sendTransactionEventStart(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.ChargingState chargingState) {
         sendTransactionEventStart(evseId, connectorId, null, reason, null, chargingState);
-    }
-
-    /**
-     * Send TransactionEventUpdate event and subscribe on response.
-     *
-     * @param evseId        evse identity
-     * @param connectorId   connector identity
-     * @param reason        reason why it was triggered
-     * @param tokenId       token identity
-     * @param chargingState charging state of the station
-     * @param subscriber    callback that will be executed after receiving a response from OCPP server
-     */
-    public void sendTransactionEventUpdateAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState,
-                                                       Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
-
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventUpdate(stationStore.findEvse(evseId),
-                connectorId, reason, tokenId, chargingState, stationStore.getCurrentTime());
-
-        Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
-        callRegistry.addSubscription(call.getMessageId(), transactionEvent, subscriber);
-
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
     }
 
     /**
@@ -204,13 +180,10 @@ public class StationMessageSender {
      * @param powerConsumed power consumed by the evse
      */
     public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState, Long powerConsumed) {
-
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventUpdate(stationStore.findEvse(evseId),
+        TransactionEventRequest payload = payloadFactory.createTransactionEventUpdate(stationStore.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, stationStore.getCurrentTime(), Optional.ofNullable(powerConsumed).orElse(0L));
 
-        Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
-
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.TRANSACTION_EVENT, payload);
     }
 
     /**
@@ -220,12 +193,13 @@ public class StationMessageSender {
      * @param connectorId   connector identity
      * @param reason        reason why it was triggered
      * @param stoppedReason reason why transaction was stopped
+     * @param powerConsumed kw consumed during transaction
      * @param subscriber    callback that will be executed after receiving a response from OCPP server
      */
     public void sendTransactionEventEndedAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason,
-                                                      Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
+                                                      long powerConsumed, Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
         TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.findEvse(evseId),
-                connectorId, reason, stoppedReason, stationStore.getCurrentTime());
+                connectorId, reason, stoppedReason, stationStore.getCurrentTime(), powerConsumed);
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
@@ -240,14 +214,13 @@ public class StationMessageSender {
      * @param connectorId   connector identity
      * @param triggerReason reason why it was triggered
      * @param stoppedReason reason why transaction was stopped
+     * @param powerConsumed kwh consumed during session
      */
-    public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason triggerReason, TransactionData.StoppedReason stoppedReason) {
+    public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason triggerReason, TransactionData.StoppedReason stoppedReason, long powerConsumed) {
         TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.findEvse(evseId),
-                connectorId, triggerReason, stoppedReason, stationStore.getCurrentTime());
+                connectorId, triggerReason, stoppedReason, stationStore.getCurrentTime(), powerConsumed);
 
-        Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
-
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.TRANSACTION_EVENT, payload);
     }
 
     /**
@@ -289,9 +262,7 @@ public class StationMessageSender {
     public void sendBootNotification(BootNotificationRequest.Reason reason) {
         BootNotificationRequest payload = payloadFactory.createBootNotification(reason);
 
-        Call call = createAndRegisterCall(ActionType.BOOT_NOTIFICATION, payload);
-
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.BOOT_NOTIFICATION, payload);
     }
 
     /**
@@ -321,10 +292,7 @@ public class StationMessageSender {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId,
                 stationStore.findEvse(evseId).findConnector(connectorId).getCableStatus(), stationStore.getCurrentTime());
 
-        Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
-
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
-
+        sendPayloadOfType(ActionType.STATUS_NOTIFICATION, payload);
     }
 
     /**
@@ -337,10 +305,7 @@ public class StationMessageSender {
     public void sendStatusNotification(int evseId, int connectorId, StatusNotificationRequest.ConnectorStatus connectorStatus) {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, connectorStatus, stationStore.getCurrentTime());
 
-        Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
-
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
-
+        sendPayloadOfType(ActionType.STATUS_NOTIFICATION, payload);
     }
 
     /**
@@ -352,9 +317,7 @@ public class StationMessageSender {
     public void sendStatusNotification(Evse evse, Connector connector) {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evse, connector, stationStore.getCurrentTime());
 
-        Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
-
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.STATUS_NOTIFICATION, payload);
     }
 
     /**
@@ -382,8 +345,7 @@ public class StationMessageSender {
         NotifyReportRequest payload =
                 payloadFactory.createNotifyReportRequest(requestId, tbc, seqNo, generatedAt, reportData);
 
-        Call call = createAndRegisterCall(ActionType.NOTIFY_REPORT, payload);
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.NOTIFY_REPORT, payload);
     }
 
     /**
@@ -394,8 +356,7 @@ public class StationMessageSender {
     public void sendSignCertificateRequest(String csr) {
         SignCertificateRequest payload = payloadFactory.createSignCertificateRequest(csr);
 
-        Call call = createAndRegisterCall(ActionType.SIGN_CERTIFICATE, payload);
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.SIGN_CERTIFICATE, payload);
     }
 
     /**
@@ -404,8 +365,7 @@ public class StationMessageSender {
      * @param request - notify customer information request
      */
     public void sendNotifyCustomerInformationRequest(final NotifyCustomerInformationRequest request) {
-        Call call = createAndRegisterCall(ActionType.NOTIFY_CUSTOMER_INFORMATION, request);
-        sendMessage(OcppMessage.builder().data(call.toJson()).build());
+        sendPayloadOfType(ActionType.NOTIFY_CUSTOMER_INFORMATION, request);
     }
 
     /**
@@ -478,8 +438,11 @@ public class StationMessageSender {
         TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationStore.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, remoteStartId, stationStore.getCurrentTime());
 
-        Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, transactionEvent);
+        sendPayloadOfType(ActionType.TRANSACTION_EVENT, transactionEvent);
+    }
 
+    private <T> void sendPayloadOfType(ActionType type, T payload) {
+        Call call = createAndRegisterCall(type, payload);
         sendMessage(OcppMessage.builder().data(call.toJson()).build());
     }
 

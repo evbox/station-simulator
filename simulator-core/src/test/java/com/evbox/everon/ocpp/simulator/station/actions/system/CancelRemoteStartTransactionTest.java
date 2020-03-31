@@ -52,7 +52,7 @@ public class CancelRemoteStartTransactionTest {
 
         verify(stationMessageSenderMock).sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, StatusNotificationRequest.ConnectorStatus.AVAILABLE);
         verify(evseMock).stopTransaction();
-        verify(stationMessageSenderMock).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.EV_CONNECT_TIMEOUT, TransactionData.StoppedReason.TIMEOUT);
+        verify(stationMessageSenderMock).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.EV_CONNECT_TIMEOUT, TransactionData.StoppedReason.TIMEOUT, 0L);
         verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(AvailableState.NAME)));
     }
 

@@ -14,7 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Optional;
 
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.*;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -38,6 +39,7 @@ public class Evse {
     private final List<Connector> connectors;
 
     private String tokenId;
+    private long chargingStartAtMeter;
     private boolean charging;
     private long seqNo;
 
@@ -108,6 +110,7 @@ public class Evse {
                 .orElseThrow(() -> new IllegalStateException("Connectors must be in locked status before charging session could be started"));
 
         charging = true;
+        chargingStartAtMeter = totalConsumedWattHours;
         return lockedConnector.getId();
     }
 
@@ -116,6 +119,10 @@ public class Evse {
      */
     public void stopCharging() {
         charging = false;
+    }
+
+    public long getWattConsumedLastSession() {
+        return Math.max(0, totalConsumedWattHours - chargingStartAtMeter);
     }
 
     /**

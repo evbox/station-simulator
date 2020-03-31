@@ -80,7 +80,7 @@ public class UnplugTest {
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock).sendTransactionEventEnded(anyInt(), anyInt(), any(TransactionEventRequest.TriggerReason.class),
-                nullable(TransactionData.StoppedReason.class));
+                nullable(TransactionData.StoppedReason.class), anyLong());
 
     }
 

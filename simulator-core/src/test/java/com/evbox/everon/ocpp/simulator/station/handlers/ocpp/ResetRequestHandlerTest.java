@@ -4,6 +4,7 @@ import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.mock.factory.OcppMessageFactory;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
@@ -62,18 +63,21 @@ public class ResetRequestHandlerTest {
 
     @Test
     void verifyEventSending() {
+        Evse evse = mock(Evse.class);
         ResetRequest request = OcppMessageFactory.createResetRequest()
                 .withType(ResetRequest.Type.IMMEDIATE)
                 .build();
 
         when(stationStore.getEvseIds()).thenReturn(Collections.singletonList(1));
         when(stationStore.hasOngoingTransaction(anyInt())).thenReturn(true);
+        when(stationStore.findEvse(anyInt())).thenReturn(evse);
+        when(evse.getWattConsumedLastSession()).thenReturn(0L);
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
         verify(stationStore).stopCharging(anyInt());
         verify(stationMessageSender).sendTransactionEventEndedAndSubscribe(anyInt(), anyInt(),
-                any(TransactionEventRequest.TriggerReason.class), any(TransactionData.StoppedReason.class), any(Subscriber.class));
+                any(TransactionEventRequest.TriggerReason.class), any(TransactionData.StoppedReason.class), anyLong(), any(Subscriber.class));
 
     }
 

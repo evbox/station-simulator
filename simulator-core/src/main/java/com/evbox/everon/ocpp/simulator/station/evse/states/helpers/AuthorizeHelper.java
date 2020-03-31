@@ -38,7 +38,8 @@ public final class AuthorizeHelper {
                 stationMessageSender.sendTransactionEventEnded(evse.getId(),
                         connector.map(Connector::getId).orElse(null),
                         TransactionEventRequest.TriggerReason.DEAUTHORIZED,
-                        TransactionData.StoppedReason.DE_AUTHORIZED);
+                        TransactionData.StoppedReason.DE_AUTHORIZED,
+                        evse.getWattConsumedLastSession());
             }
         }
     }

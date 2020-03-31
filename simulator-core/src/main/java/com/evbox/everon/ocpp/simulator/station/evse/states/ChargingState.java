@@ -74,7 +74,7 @@ public class ChargingState extends AbstractEvseState {
                 evse.stopTransaction();
                 evse.clearToken();
 
-                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED, evse.getWattConsumedLastSession());
             }
             stateManager.setStateForEvse(evseId, new StoppedState());
             future.complete(UserMessageResult.SUCCESSFUL);
@@ -122,4 +122,5 @@ public class ChargingState extends AbstractEvseState {
         stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, TransactionData.ChargingState.EV_DETECTED);
         return connectorId;
     }
+
 }
