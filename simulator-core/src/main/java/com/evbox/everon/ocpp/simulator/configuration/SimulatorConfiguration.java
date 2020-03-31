@@ -35,7 +35,7 @@ public class SimulatorConfiguration {
     public static class StationConfiguration {
         private String id;
         private Evse evse;
-        private MeterValuesConfiguration meterValuesConfiguration;
+        private MeterValuesConfiguration meterValuesConfiguration = MeterValuesConfiguration.builder().build();
         private ComponentsConfiguration componentsConfiguration = ComponentsConfiguration.builder().build();
     }
 

@@ -1,13 +1,15 @@
 package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.evbox.everon.ocpp.common.OptionList;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
+import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
-import com.evbox.everon.ocpp.simulator.station.evse.ChargingStopReason;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.states.*;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.states.ChargingState;
+import com.evbox.everon.ocpp.simulator.station.evse.states.StoppedState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,19 +20,20 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TxStopPointTest {
+
+    @Mock
+    Station stationMock;
 
     @Mock
     Connector connectorMock;
@@ -61,7 +64,7 @@ public class TxStopPointTest {
     void setUp() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
-        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
+        this.stateManagerMock = new StateManager(stationMock, stationStoreMock, stationMessageSenderMock);
     }
 
     @Test
@@ -69,14 +72,16 @@ public class TxStopPointTest {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
         when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
+        when(evseMock.getDurationOfLastChargingSession()).thenReturn(Duration.ZERO);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationMock.getConfiguration()).thenReturn(new SimulatorConfiguration.StationConfiguration());
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED, 0);
         verify(evseMock, times(1)).stopTransaction();
     }
 
@@ -191,14 +196,16 @@ public class TxStopPointTest {
         when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
         when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
         when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
+        when(evseMock.getDurationOfLastChargingSession()).thenReturn(Duration.ZERO);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationMock.getConfiguration()).thenReturn(new SimulatorConfiguration.StationConfiguration());
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED, 0);
         verify(evseMock, times(1)).stopTransaction();
     }
 
