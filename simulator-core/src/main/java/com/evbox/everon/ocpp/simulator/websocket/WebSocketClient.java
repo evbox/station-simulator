@@ -104,6 +104,7 @@ public class WebSocketClient implements ChannelListener {
             try {
                 Thread.sleep(configuration.getReconnectIntervalMs());
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 log.error(e.getMessage(), e);
             }
 
