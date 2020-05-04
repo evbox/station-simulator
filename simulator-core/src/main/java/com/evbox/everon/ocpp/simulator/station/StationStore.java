@@ -42,6 +42,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @ToString
 public class StationStore {
 
+    private String stationId;
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private int evConnectionTimeOut;
@@ -58,6 +59,7 @@ public class StationStore {
     private List<Reservation> reservations = new ArrayList<>();
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
+        this.stationId = configuration.getId();
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
@@ -69,6 +71,10 @@ public class StationStore {
         this.heartbeatInterval = heartbeatInterval;
         this.evConnectionTimeOut = evConnectionTimeOut;
         this.evses = evses;
+    }
+
+    public String getStationId() {
+        return stationId;
     }
 
     public Instant getCurrentTime() {

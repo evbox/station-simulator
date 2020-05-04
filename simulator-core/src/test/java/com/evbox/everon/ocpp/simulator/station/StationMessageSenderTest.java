@@ -7,9 +7,10 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
-import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
+import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketMessageInbox;
+import com.evbox.everon.ocpp.v20.message.common.SignedMeterValue;
 import com.evbox.everon.ocpp.v20.message.station.*;
 import com.evbox.everon.ocpp.v20.message.station.TransactionData.ChargingState;
 import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason;
@@ -40,6 +41,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class StationMessageSenderTest {
+
+    private final String STATION_ID = "EVB-P123";
 
     @Mock
     StationStore stationStoreMock;
@@ -87,13 +90,41 @@ class StationMessageSenderTest {
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
         TransactionEventRequest actualPayload = (TransactionEventRequest) actualCall.getPayload();
+        SignedMeterValue signedMeterValue = actualPayload.getMeterValue().get(0).getSampledValue().get(0).getSignedMeterValue();
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
                 () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED),
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
                 () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
-                () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID))
+                () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
+                () -> assertThat(signedMeterValue).isNull()
+        );
+
+    }
+
+    @Test
+    void verifyTransactionEventStartEichrecht() throws InterruptedException {
+
+        mockStationPersistenceLayer();
+        when(stationStoreMock.getStationId()).thenReturn("EVB-Eichrecht");
+
+        stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
+
+        Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
+
+        TransactionEventRequest actualPayload = (TransactionEventRequest) actualCall.getPayload();
+        SignedMeterValue signedMeterValue = actualPayload.getMeterValue().get(0).getSampledValue().get(0).getSignedMeterValue();
+
+        assertAll(
+                () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
+                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED),
+                () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
+                () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
+                () -> assertThat(signedMeterValue.getEncodedMeterValue().toString()).isNotEmpty()
         );
 
     }
@@ -111,13 +142,15 @@ class StationMessageSenderTest {
         Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
 
         TransactionEventRequest actualPayload = (TransactionEventRequest) actualCall.getPayload();
+        SignedMeterValue signedMeterValue = actualPayload.getMeterValue().get(0).getSampledValue().get(0).getSignedMeterValue();
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
                 () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.UPDATED),
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
                 () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
-                () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID))
+                () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
+                () -> assertThat(signedMeterValue).isNull()
         );
 
     }
@@ -141,6 +174,31 @@ class StationMessageSenderTest {
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
                 () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getTransactionData().getStoppedReason()).isEqualTo(TransactionData.StoppedReason.STOPPED_BY_EV)
+        );
+    }
+
+    @Test
+    void verifyTransactionEventEndedEichrecht() throws InterruptedException {
+
+        mockStationPersistenceLayer();
+        when(stationStoreMock.getStationId()).thenReturn("EVB-Eichrecht");
+
+        stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV, 0L);
+
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
+
+        Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
+
+        TransactionEventRequest actualPayload = (TransactionEventRequest) actualCall.getPayload();
+        SignedMeterValue signedMeterValue = actualPayload.getMeterValue().get(0).getSampledValue().get(0).getSignedMeterValue();
+
+        assertAll(
+                () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
+                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.ENDED),
+                () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
+                () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualPayload.getTransactionData().getStoppedReason()).isEqualTo(TransactionData.StoppedReason.STOPPED_BY_EV),
+                () -> assertThat(signedMeterValue.getEncodedMeterValue().toString()).isNotEmpty()
         );
     }
 
@@ -253,6 +311,7 @@ class StationMessageSenderTest {
                 .withId(DEFAULT_EVSE_ID)
                 .build();
         when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
+        when(stationStoreMock.getStationId()).thenReturn(STATION_ID);
 
         when(stationStoreMock.getCurrentTime()).thenReturn(new Date().toInstant());
     }
