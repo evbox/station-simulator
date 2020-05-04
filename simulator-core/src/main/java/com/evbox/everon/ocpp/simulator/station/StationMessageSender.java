@@ -112,7 +112,7 @@ public class StationMessageSender {
      *
      * @param evseId        evse identity
      * @param connectorId   connector identity
-     * @param remoteStartId connector identity
+     * @param remoteStartId remote start id
      * @param reason        reason why it was triggered
      */
     public void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TransactionEventRequest.TriggerReason reason) {
@@ -180,7 +180,7 @@ public class StationMessageSender {
      * @param powerConsumed power consumed by the evse
      */
     public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState, Long powerConsumed) {
-        TransactionEventRequest payload = payloadFactory.createTransactionEventUpdate(stationStore.findEvse(evseId),
+        TransactionEventRequest payload = payloadFactory.createTransactionEventUpdate(stationStore.getStationId(), stationStore.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, stationStore.getCurrentTime(), Optional.ofNullable(powerConsumed).orElse(0L));
 
         sendPayloadOfType(ActionType.TRANSACTION_EVENT, payload);
@@ -198,7 +198,7 @@ public class StationMessageSender {
      */
     public void sendTransactionEventEndedAndSubscribe(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData.StoppedReason stoppedReason,
                                                       long powerConsumed, Subscriber<TransactionEventRequest, TransactionEventResponse> subscriber) {
-        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.findEvse(evseId),
+        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.getStationId(), stationStore.findEvse(evseId),
                 connectorId, reason, stoppedReason, stationStore.getCurrentTime(), powerConsumed);
 
         Call call = createAndRegisterCall(ActionType.TRANSACTION_EVENT, payload);
@@ -217,7 +217,7 @@ public class StationMessageSender {
      * @param powerConsumed kwh consumed during session
      */
     public void sendTransactionEventEnded(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason triggerReason, TransactionData.StoppedReason stoppedReason, long powerConsumed) {
-        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.findEvse(evseId),
+        TransactionEventRequest payload = payloadFactory.createTransactionEventEnded(stationStore.getStationId(), stationStore.findEvse(evseId),
                 connectorId, triggerReason, stoppedReason, stationStore.getCurrentTime(), powerConsumed);
 
         sendPayloadOfType(ActionType.TRANSACTION_EVENT, payload);
@@ -435,7 +435,7 @@ public class StationMessageSender {
     }
 
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationStore.findEvse(evseId),
+        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationStore.getStationId(), stationStore.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, remoteStartId, stationStore.getCurrentTime());
 
         sendPayloadOfType(ActionType.TRANSACTION_EVENT, transactionEvent);

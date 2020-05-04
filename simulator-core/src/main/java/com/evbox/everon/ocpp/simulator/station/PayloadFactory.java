@@ -7,6 +7,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v20.message.common.IdToken;
 import com.evbox.everon.ocpp.v20.message.common.MeterValue;
 import com.evbox.everon.ocpp.v20.message.common.SampledValue;
+import com.evbox.everon.ocpp.v20.message.common.SignedMeterValue;
 import com.evbox.everon.ocpp.v20.message.station.*;
 
 import javax.annotation.Nullable;
@@ -18,9 +19,24 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.STARTED;
+import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.UPDATED;
 import static java.math.BigDecimal.ZERO;
 
 public class PayloadFactory {
+
+    private static final String EICHRECHT = "EICHRECHT";
+    private static final String SIGNED_METER_START = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<values>" +
+            "  <value>" +
+            "    <signedData format=\"ALFEN\">AP;0;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAABAOOJYUAGMXEGV4AIAAEEAB7Y6AAO3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABKYAAAAA====;R7KGQ3CEYTZI6AWKPOA42MXJTGBW27EUE2E6X7J77J5WMQXPSOM3E27NMVM2D77DPTMO3YACIPTRI===;</signedData>" +
+            "  </value>" +
+            "</values>";
+    private static final String SIGNED_METER_STOP = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<values>" +
+            "  <value>" +
+            "    <signedData format=\"ALFEN\">AP;1;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAAAQHCKIUAETXIGV4AIAAEEAB7Y6ACT3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABLAAAAAA====;HIWX6JKGDO3JARYVAQYKJO6XB7HFLMLNUUCDBOTWJFFC7IY3VWZGN7UPIVA26TMTK4S2GVXJ3BD4S===;</signedData>" +
+            "  </value>" +
+            "</values>";
 
     SignCertificateRequest createSignCertificateRequest(String csr) {
         return new SignCertificateRequest()
@@ -84,14 +100,14 @@ public class PayloadFactory {
                 .withChargingStation(chargingStation);
     }
 
-    TransactionEventRequest createTransactionEventStart(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
+    TransactionEventRequest createTransactionEventStart(String stationId, Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
                                                         TransactionData.ChargingState chargingState, Integer remoteStartId,  Instant currentDateTime) {
 
         TransactionData transactionData = new TransactionData()
                 .withId(new CiString.CiString36(evse.getTransaction().toString()))
                 .withRemoteStartId(remoteStartId)
                 .withChargingState(chargingState);
-        TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, STARTED, currentDateTime, evse.getSeqNoAndIncrement(), 0L);
+        TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionData, STARTED, currentDateTime, evse.getSeqNoAndIncrement(), 0L);
 
         if (tokenId != null) {
             payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443));
@@ -100,14 +116,14 @@ public class PayloadFactory {
         return payload;
     }
 
-    TransactionEventRequest createTransactionEventUpdate(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
+    TransactionEventRequest createTransactionEventUpdate(String stationId, Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
                                                          TransactionData.ChargingState chargingState, Instant currentDateTime, long powerConsumed) {
 
         TransactionData transactionData = new TransactionData()
                 .withId(new CiString.CiString36(evse.getTransaction().getTransactionId()))
                 .withChargingState(chargingState);
 
-        TransactionEventRequest payload = createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.UPDATED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
+        TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.UPDATED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
 
         if (tokenId != null) {
             payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443));
@@ -116,14 +132,14 @@ public class PayloadFactory {
         return payload;
     }
 
-    TransactionEventRequest createTransactionEventEnded(Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
+    TransactionEventRequest createTransactionEventEnded(String stationId, Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
                                                         TransactionData.StoppedReason stoppedReason, Instant currentDateTime, long powerConsumed) {
 
         TransactionData transactionData = new TransactionData().withId(new CiString.CiString36(evse.getTransaction().toString()))
                 .withChargingState(TransactionData.ChargingState.SUSPENDED_EVSE)
                 .withStoppedReason(stoppedReason);
 
-        return createTransactionEvent(evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
+        return createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
     }
 
     NotifyReportRequest createNotifyReportRequest(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
@@ -138,10 +154,15 @@ public class PayloadFactory {
         return notifyReportRequest;
     }
 
-    private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
+    private TransactionEventRequest createTransactionEvent(String stationId, Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, long powerConsumed) {
-        List<MeterValue> meterValues = Collections.singletonList(new MeterValue().withTimestamp(ZonedDateTime.now(ZoneOffset.UTC)).withSampledValue(
-                Collections.singletonList(new SampledValue().withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed)))));
+        SampledValue sampledValue = new SampledValue()
+                                        .withSignedMeterValue(createSignedMeterValues(stationId, eventType))
+                                        .withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed));
+        MeterValue meterValue = new MeterValue()
+                                    .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
+                                    .withSampledValue(Collections.singletonList(sampledValue));
+        List<MeterValue> meterValues = Collections.singletonList(meterValue);
         return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
     }
 
@@ -157,5 +178,22 @@ public class PayloadFactory {
 
         transaction.setMeterValue(meterValues);
         return transaction;
+    }
+
+    private SignedMeterValue createSignedMeterValues(String stationId, TransactionEventRequest.EventType eventType) {
+        if (stationId.toUpperCase().contains(EICHRECHT) && eventType != UPDATED) {
+            SignedMeterValue signedMeterValue =  new SignedMeterValue()
+                                                    .withEncodingMethod(SignedMeterValue.EncodingMethod.COSEM_PROTECTED_DATA)
+                                                    .withSignatureMethod(SignedMeterValue.SignatureMethod.ECDSA_192_SHA_256)
+                                                    .withMeterValueSignature(new CiString.CiString2500(""));
+            if (eventType == STARTED) {
+                signedMeterValue.setEncodedMeterValue(new CiString.CiString512(SIGNED_METER_START));
+            } else {
+                signedMeterValue.setEncodedMeterValue(new CiString.CiString512(SIGNED_METER_STOP));
+            }
+
+            return signedMeterValue;
+        }
+        return null;
     }
 }
