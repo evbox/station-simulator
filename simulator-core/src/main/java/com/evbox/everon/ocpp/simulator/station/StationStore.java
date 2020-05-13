@@ -10,6 +10,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.evbox.everon.ocpp.simulator.station.exceptions.StationException;
 import com.evbox.everon.ocpp.v20.message.station.ConnectionData;
 import com.evbox.everon.ocpp.v20.message.station.Reservation;
+import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -60,7 +61,7 @@ public class StationStore {
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.stationId = configuration.getId();
-        this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors());
+        this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors(), configuration.getEvse().getConnectorStatus());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
         this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoints()));
@@ -279,14 +280,14 @@ public class StationStore {
         return this.networkConfigurationPriority;
     }
 
-    private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount) {
+    private Map<Integer, Evse> initEvses(Integer evseCount, Integer connectorsPerEvseCount, StatusNotificationRequest.ConnectorStatus connectorStatus) {
 
         ImmutableMap.Builder<Integer, Evse> evseMapBuilder = ImmutableMap.builder();
 
         for (int evseId = 1; evseId <= evseCount; evseId++) {
             ImmutableList.Builder<Connector> connectorListBuilder = ImmutableList.builder();
             for (int connectorId = 1; connectorId <= connectorsPerEvseCount; connectorId++) {
-                connectorListBuilder.add(new Connector(connectorId, CableStatus.UNPLUGGED, AVAILABLE));
+                connectorListBuilder.add(new Connector(connectorId, CableStatus.UNPLUGGED, connectorStatus));
             }
 
             evseMapBuilder.put(evseId, new Evse(evseId, connectorListBuilder.build()));
