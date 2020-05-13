@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.configuration;
 
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
+import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,8 @@ public class SimulatorConfiguration {
 
     private static final long DEFAULT_PING_INTERVAL = 30_000;
 
+    private static final StatusNotificationRequest.ConnectorStatus DEFAULT_EVSE_CONNECTOR_STATUS = StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+
     private WebSocketConfiguration socketConfiguration;
     private List<StationConfiguration> stations;
 
@@ -50,6 +53,11 @@ public class SimulatorConfiguration {
          * Amount of connectors per each EVSE
          */
         private int connectors;
+
+        /**
+         * Status of connector per each EVSE
+         */
+        private StatusNotificationRequest.ConnectorStatus connectorStatus = DEFAULT_EVSE_CONNECTOR_STATUS;
     }
 
     @Data
