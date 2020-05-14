@@ -29,7 +29,7 @@ public class SimulatorConfiguration {
 
     private static final long DEFAULT_PING_INTERVAL = 30_000;
 
-    private static final StatusNotificationRequest.ConnectorStatus DEFAULT_EVSE_CONNECTOR_STATUS = StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+    private static final StatusNotificationRequest.ConnectorStatus DEFAULT_EVSE_STATUS = StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 
     private WebSocketConfiguration socketConfiguration;
     private List<StationConfiguration> stations;
@@ -57,7 +57,7 @@ public class SimulatorConfiguration {
         /**
          * Status of connector per each EVSE
          */
-        private StatusNotificationRequest.ConnectorStatus connectorStatus = DEFAULT_EVSE_CONNECTOR_STATUS;
+        private StatusNotificationRequest.ConnectorStatus status = DEFAULT_EVSE_STATUS;
     }
 
     @Data
