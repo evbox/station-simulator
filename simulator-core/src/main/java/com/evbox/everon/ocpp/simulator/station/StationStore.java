@@ -32,7 +32,6 @@ import java.security.cert.X509Certificate;
 import java.time.*;
 import java.util.*;
 
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -61,7 +60,7 @@ public class StationStore {
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.stationId = configuration.getId();
-        this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors(), configuration.getEvse().getConnectorStatus());
+        this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors(), configuration.getEvse().getStatus());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
         this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoints()));

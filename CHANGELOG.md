@@ -1,5 +1,14 @@
 # Station Simulator Releases #
 
+### Version 0.4.3
+
+- Station can be started with configured status
+- Sending hardcoded Eichrecht metervalues
+
+### Version 0.4.2
+
+- Minor bug fixes
+
 ### Version 0.4.1
 
 - Upgraded simulator to Java 11

@@ -151,7 +151,7 @@ public class Station {
 
                 for (int i = 1; i <= configuration.getEvse().getCount(); i++) {
                     for (int j = 1; j <= configuration.getEvse().getConnectors(); j++) {
-                        stationMessageSender.sendStatusNotification(i, j, configuration.getEvse().getConnectorStatus());
+                        stationMessageSender.sendStatusNotification(i, j, configuration.getEvse().getStatus());
                     }
                 }
             }
