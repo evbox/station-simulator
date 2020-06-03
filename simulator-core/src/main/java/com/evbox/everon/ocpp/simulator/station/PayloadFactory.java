@@ -25,18 +25,8 @@ import static java.math.BigDecimal.ZERO;
 public class PayloadFactory {
 
     private static final String EICHRECHT = "EICHRECHT";
-    private static final String SIGNED_METER_START = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<values>" +
-            "  <value>" +
-            "    <signedData format=\"ALFEN\">AP;0;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAABAOOJYUAGMXEGV4AIAAEEAB7Y6AAO3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABKYAAAAA====;R7KGQ3CEYTZI6AWKPOA42MXJTGBW27EUE2E6X7J77J5WMQXPSOM3E27NMVM2D77DPTMO3YACIPTRI===;</signedData>" +
-            "  </value>" +
-            "</values>";
-    private static final String SIGNED_METER_STOP = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<values>" +
-            "  <value>" +
-            "    <signedData format=\"ALFEN\">AP;1;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAAAQHCKIUAETXIGV4AIAAEEAB7Y6ACT3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABLAAAAAA====;HIWX6JKGDO3JARYVAQYKJO6XB7HFLMLNUUCDBOTWJFFC7IY3VWZGN7UPIVA26TMTK4S2GVXJ3BD4S===;</signedData>" +
-            "  </value>" +
-            "</values>";
+    private static final String SIGNED_METER_START = "AP;0;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAABAOOJYUAGMXEGV4AIAAEEAB7Y6AAO3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABKYAAAAA====;R7KGQ3CEYTZI6AWKPOA42MXJTGBW27EUE2E6X7J77J5WMQXPSOM3E27NMVM2D77DPTMO3YACIPTRI===;";
+    private static final String SIGNED_METER_STOP = "AP;1;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAAAQHCKIUAETXIGV4AIAAEEAB7Y6ACT3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABLAAAAAA====;HIWX6JKGDO3JARYVAQYKJO6XB7HFLMLNUUCDBOTWJFFC7IY3VWZGN7UPIVA26TMTK4S2GVXJ3BD4S===;";
 
     SignCertificateRequest createSignCertificateRequest(String csr) {
         return new SignCertificateRequest()
@@ -157,7 +147,7 @@ public class PayloadFactory {
     private TransactionEventRequest createTransactionEvent(String stationId, Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, long powerConsumed) {
         SampledValue sampledValue = new SampledValue()
-                                        .withSignedMeterValue(createSignedMeterValues(stationId, eventType))
+                                        .withSignedMeterValue(createSignedMeterValues(stationId, eventType, powerConsumed))
                                         .withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed));
         MeterValue meterValue = new MeterValue()
                                     .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
@@ -180,16 +170,17 @@ public class PayloadFactory {
         return transaction;
     }
 
-    private SignedMeterValue createSignedMeterValues(String stationId, TransactionEventRequest.EventType eventType) {
+    private SignedMeterValue createSignedMeterValues(String stationId, TransactionEventRequest.EventType eventType, Long powerConsumed) {
         if (stationId.toUpperCase().contains(EICHRECHT) && eventType != UPDATED) {
             SignedMeterValue signedMeterValue =  new SignedMeterValue()
-                                                    .withEncodingMethod(SignedMeterValue.EncodingMethod.COSEM_PROTECTED_DATA)
-                                                    .withSignatureMethod(SignedMeterValue.SignatureMethod.ECDSA_192_SHA_256)
-                                                    .withMeterValueSignature(new CiString.CiString2500(""));
+                                                    .withEncodingMethod(SignedMeterValue.EncodingMethod.OTHER)
+                                                     .withEncodedMeterValue(new CiString.CiString512(powerConsumed.toString()))
+                                                    .withSignatureMethod(SignedMeterValue.SignatureMethod.ECDSA_192_SHA_256);
+
             if (eventType == STARTED) {
-                signedMeterValue.setEncodedMeterValue(new CiString.CiString512(SIGNED_METER_START));
+                signedMeterValue.withMeterValueSignature(new CiString.CiString2500(SIGNED_METER_START));
             } else {
-                signedMeterValue.setEncodedMeterValue(new CiString.CiString512(SIGNED_METER_STOP));
+                signedMeterValue.withMeterValueSignature(new CiString.CiString2500(SIGNED_METER_STOP));
             }
 
             return signedMeterValue;
