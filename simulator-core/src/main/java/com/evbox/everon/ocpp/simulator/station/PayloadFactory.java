@@ -18,8 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.STARTED;
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.UPDATED;
+import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.*;
 import static java.math.BigDecimal.ZERO;
 
 public class PayloadFactory {
@@ -149,6 +148,15 @@ public class PayloadFactory {
         SampledValue sampledValue = new SampledValue()
                                         .withSignedMeterValue(createSignedMeterValues(stationId, eventType, powerConsumed))
                                         .withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed));
+
+        if(STARTED.equals(eventType)) {
+            sampledValue.withContext(SampledValue.Context.TRANSACTION_BEGIN);
+        }
+
+        if(ENDED.equals(eventType)) {
+            sampledValue.withContext(SampledValue.Context.TRANSACTION_END);
+        }
+
         MeterValue meterValue = new MeterValue()
                                     .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
                                     .withSampledValue(Collections.singletonList(sampledValue));
