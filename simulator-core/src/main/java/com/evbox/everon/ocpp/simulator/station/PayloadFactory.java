@@ -147,7 +147,8 @@ public class PayloadFactory {
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, long powerConsumed) {
         SampledValue sampledValue = new SampledValue()
                                         .withSignedMeterValue(createSignedMeterValues(stationId, eventType, powerConsumed))
-                                        .withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed));
+                                        .withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed))
+                                        .withMeasurand(SampledValue.Measurand.ENERGY_ACTIVE_IMPORT_REGISTER);
 
         if(STARTED.equals(eventType)) {
             sampledValue.withContext(SampledValue.Context.TRANSACTION_BEGIN);
