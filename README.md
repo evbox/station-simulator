@@ -27,7 +27,7 @@ To include the simulator in Maven-based project, use the following dependency:
 <dependency>
   <groupId>io.everon</groupId>
   <artifactId>ocpp-station-simulator</artifactId>
-  <version>0.3.9</version>
+  <version>0.4.3</version>
   <type>pom</type>
 </dependency>
 ```
