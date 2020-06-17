@@ -98,7 +98,7 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.4.3'
+version '0.4.4'
 
 publishing {
     publications {
