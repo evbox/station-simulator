@@ -1,5 +1,9 @@
 # Station Simulator Releases #
 
+### Version 0.4.4
+
+- Minor bug fixes
+
 ### Version 0.4.3
 
 - Station can be started with configured status
