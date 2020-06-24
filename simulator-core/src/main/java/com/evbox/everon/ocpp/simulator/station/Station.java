@@ -143,19 +143,7 @@ public class Station {
 
         webSocketClient.startAcceptingMessages();
 
-        stationMessageSender.sendBootNotificationAndSubscribe(BootNotificationRequest.Reason.POWER_UP, (request, response) -> {
-            if (response.getStatus() == BootNotificationResponse.Status.ACCEPTED) {
-                state.setCurrentTime(response.getCurrentTime());
-
-                updateHeartbeat(response.getInterval());
-
-                for (int i = 1; i <= configuration.getEvse().getCount(); i++) {
-                    for (int j = 1; j <= configuration.getEvse().getConnectors(); j++) {
-                        stationMessageSender.sendStatusNotification(i, j, configuration.getEvse().getStatus());
-                    }
-                }
-            }
-        });
+        sendInitialBootNotification();
 
         UserMessageHandler userMessageHandler = new UserMessageHandler(stateManager);
         SystemMessageHandler systemMessageHandler = new SystemMessageHandler(state, stationMessageSender, stateManager);
@@ -166,6 +154,25 @@ public class Station {
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("station-consumer-" + getConfiguration().getId()).build();
 
         StationMessageConsumer.runSingleThreaded(this, stationMessageInbox, stationMessageRouter, threadFactory);
+    }
+
+    private void sendInitialBootNotification() {
+        stationMessageSender.sendBootNotificationAndSubscribe(BootNotificationRequest.Reason.POWER_UP, (request, response) -> {
+            BootNotificationResponse.Status status = response.getStatus();
+            if (status == BootNotificationResponse.Status.ACCEPTED) {
+                state.setCurrentTime(response.getCurrentTime());
+                updateHeartbeat(response.getInterval());
+                sendInitialStatusNotifications();
+            }
+        });
+    }
+
+    private void sendInitialStatusNotifications() {
+        for (int i = 1; i <= configuration.getEvse().getCount(); i++) {
+            for (int j = 1; j <= configuration.getEvse().getConnectors(); j++) {
+                stationMessageSender.sendStatusNotification(i, j, configuration.getEvse().getStatus());
+            }
+        }
     }
 
     /**
@@ -288,6 +295,7 @@ public class Station {
             Thread.currentThread().interrupt();
         }
         reconnect();
+        sendInitialBootNotification();
     }
 
     /**
