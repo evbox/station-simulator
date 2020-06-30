@@ -26,11 +26,13 @@ public class PayloadFactory {
     private static final String EICHRECHT = "EICHRECHT";
     private static final String SIGNED_METER_START = "AP;0;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAABAOOJYUAGMXEGV4AIAAEEAB7Y6AAO3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABKYAAAAA====;R7KGQ3CEYTZI6AWKPOA42MXJTGBW27EUE2E6X7J77J5WMQXPSOM3E27NMVM2D77DPTMO3YACIPTRI===;";
     private static final String SIGNED_METER_STOP = "AP;1;3;ALCV3ABBBISHMA2RYEGAZE3HV5YQBQRQAEHAR2MN;BIHEIWSHAAA2W2V7OYYDCNQAAAFACRC2I4ADGAETI4AAAAAQHCKIUAETXIGV4AIAAEEAB7Y6ACT3EAIAAAAAAABQGQ2UINJZGZATGMJTGQ4DAAAAAAAAAACXAAAABLAAAAAA====;HIWX6JKGDO3JARYVAQYKJO6XB7HFLMLNUUCDBOTWJFFC7IY3VWZGN7UPIVA26TMTK4S2GVXJ3BD4S===;";
+    private static final String V2G = "V2G";
+    private static final long V2G_START = 100000000L;
 
     SignCertificateRequest createSignCertificateRequest(String csr) {
         return new SignCertificateRequest()
-                    .withCsr(new CiString.CiString5500(csr))
-                    .withTypeOfCertificate(SignCertificateRequest.TypeOfCertificate.CHARGING_STATION_CERTIFICATE);
+                .withCsr(new CiString.CiString5500(csr))
+                .withTypeOfCertificate(SignCertificateRequest.TypeOfCertificate.CHARGING_STATION_CERTIFICATE);
     }
 
     AuthorizeRequest createAuthorizeRequest(String tokenId, List<Integer> evseIds) {
@@ -146,23 +148,34 @@ public class PayloadFactory {
     private TransactionEventRequest createTransactionEvent(String stationId, Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
                                                            TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, long powerConsumed) {
         SampledValue sampledValue = new SampledValue()
-                                        .withSignedMeterValue(createSignedMeterValues(stationId, eventType, powerConsumed))
-                                        .withValue(eventType == STARTED ? ZERO : new BigDecimal(powerConsumed))
+                .withSignedMeterValue(createSignedMeterValues(stationId, eventType, powerConsumed))
+                .withValue(getPowerConsumed(stationId, eventType, powerConsumed))
                                         .withMeasurand(SampledValue.Measurand.ENERGY_ACTIVE_IMPORT_REGISTER);
 
         if(STARTED.equals(eventType)) {
             sampledValue.withContext(SampledValue.Context.TRANSACTION_BEGIN);
         }
 
-        if(ENDED.equals(eventType)) {
+        if (ENDED.equals(eventType)) {
             sampledValue.withContext(SampledValue.Context.TRANSACTION_END);
         }
 
         MeterValue meterValue = new MeterValue()
-                                    .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
-                                    .withSampledValue(Collections.singletonList(sampledValue));
+                .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
+                .withSampledValue(Collections.singletonList(sampledValue));
         List<MeterValue> meterValues = Collections.singletonList(meterValue);
         return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
+    }
+
+    private BigDecimal getPowerConsumed(String stationId, TransactionEventRequest.EventType eventType, long powerConsumed) {
+        if (isV2GTransaction(stationId)) {
+            return eventType == STARTED ? new BigDecimal(V2G_START) : new BigDecimal(V2G_START - powerConsumed);
+        }
+        return eventType == STARTED ? ZERO : new BigDecimal(powerConsumed);
+    }
+
+    private boolean isV2GTransaction(String stationId) {
+        return stationId.toUpperCase().startsWith(V2G);
     }
 
     private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
