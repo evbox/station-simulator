@@ -31,8 +31,10 @@ import java.security.KeyStore;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This class is the representation of OCPP station.
@@ -163,6 +165,7 @@ public class Station {
                 state.setCurrentTime(response.getCurrentTime());
                 updateHeartbeat(response.getInterval());
                 sendInitialStatusNotifications();
+                sendEichrechtMeterPublicKeys();
             }
         });
     }
@@ -172,6 +175,13 @@ public class Station {
             for (int j = 1; j <= configuration.getEvse().getConnectors(); j++) {
                 stationMessageSender.sendStatusNotification(i, j, configuration.getEvse().getStatus());
             }
+        }
+    }
+
+    private void sendEichrechtMeterPublicKeys() {
+        if (configuration.getId().toUpperCase().contains("EICHRECHT")) {
+            stationMessageSender.sendDataTransfer(IntStream.rangeClosed(1, configuration.getEvse().getCount())
+                    .boxed().collect(toList()));
         }
     }
 
