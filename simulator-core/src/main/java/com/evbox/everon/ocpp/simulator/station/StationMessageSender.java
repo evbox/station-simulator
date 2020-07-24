@@ -1,7 +1,5 @@
 package com.evbox.everon.ocpp.simulator.station;
 
-import static  com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage.OcppMessage;
-
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.message.CallError;
@@ -27,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage.OcppMessage;
 
 /**
  * Send station messages to the OCPP server.
@@ -306,6 +306,16 @@ public class StationMessageSender {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evseId, connectorId, connectorStatus, stationStore.getCurrentTime());
 
         sendPayloadOfType(ActionType.STATUS_NOTIFICATION, payload);
+    }
+
+    /**
+     * Send DataTransfer event.
+     *
+     * @param evseIds EvseIds
+     */
+    public void sendDataTransfer(List<Integer> evseIds) {
+        DataTransferRequest payload = payloadFactory.createPublicKeyDataTransfer(evseIds);
+        sendPayloadOfType(ActionType.DATA_TRANSFER, payload);
     }
 
     /**
