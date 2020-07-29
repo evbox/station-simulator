@@ -1,39 +1,70 @@
-﻿{
+{
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$id": "urn:OCPP:Cp:2:2018:4:GetDisplayMessagesRequest",
-  "comment": "OCPP 2.0 - v1p0",
-  "type": "object",
-  "additionalProperties": true,
-  "properties": {
-    "requestId": {
-      "type": "integer"
+  "$id": "urn:OCPP:Cp:2:2020:3:GetDisplayMessagesRequest",
+  "comment": "OCPP 2.0.1 FINAL",
+  "definitions": {
+    "CustomDataType": {
+      "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
+      "javaType": "CustomData",
+      "type": "object",
+      "properties": {
+        "vendorId": {
+          "type": "string",
+          "maxLength": 255
+        }
+      },
+      "required": [
+        "vendorId"
+      ]
     },
-    "priority": {
+    "MessagePriorityEnumType": {
+      "description": "If provided the Charging Station shall return Display Messages with the given priority only.\r\n",
+      "javaType": "MessagePriorityEnum",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "AlwaysFront",
         "InFront",
         "NormalCycle"
       ]
     },
-    "state": {
+    "MessageStateEnumType": {
+      "description": "If provided the Charging Station shall return Display Messages with the given state only. \r\n",
+      "javaType": "MessageStateEnum",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "Charging",
         "Faulted",
         "Idle",
         "Unavailable"
       ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "customData": {
+      "$ref": "#/definitions/CustomDataType"
     },
     "id": {
+      "description": "If provided the Charging Station shall return Display Messages of the given ids. This field SHALL NOT contain more ids than set in &lt;&lt;configkey-number-of-display-messages,NumberOfDisplayMessages.maxLimit&gt;&gt;\r\n\r\n",
       "type": "array",
       "additionalItems": false,
       "items": {
         "type": "integer"
       },
       "minItems": 1
+    },
+    "requestId": {
+      "description": "The Id of this request.\r\n",
+      "type": "integer"
+    },
+    "priority": {
+      "$ref": "#/definitions/MessagePriorityEnumType"
+    },
+    "state": {
+      "$ref": "#/definitions/MessageStateEnumType"
     }
   },
   "required": [
