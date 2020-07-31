@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "CustomData",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "ConnectorEnumType": {
       "description": "This field specifies the connector type.\r\n",
-      "javaType": "ConnectorEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ConnectorEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -49,7 +49,7 @@
     },
     "IdTokenEnumType": {
       "description": "Enumeration of possible idToken types.\r\n",
-      "javaType": "IdTokenEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.IdTokenEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -65,7 +65,7 @@
     },
     "AdditionalInfoType": {
       "description": "Contains a case insensitive identifier to use for the authorization and the type of authorization to support multiple forms of identifiers.\r\n",
-      "javaType": "AdditionalInfo",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.AdditionalInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -90,7 +90,7 @@
     },
     "IdTokenType": {
       "description": "Contains a case insensitive identifier to use for the authorization and the type of authorization to support multiple forms of identifiers.\r\n",
-      "javaType": "IdToken",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.IdToken",
       "type": "object",
       "additionalProperties": false,
       "properties": {

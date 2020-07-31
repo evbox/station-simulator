@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "CustomData",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "BootReasonEnumType": {
       "description": "This contains the reason for sending this message to the CSMS.\r\n",
-      "javaType": "BootReasonEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.BootReasonEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -36,7 +36,7 @@
     },
     "ChargingStationType": {
       "description": "Charge_ Point\r\nurn:x-oca:ocpp:uid:2:233122\r\nThe physical system where an Electrical Vehicle (EV) can be charged.\r\n",
-      "javaType": "ChargingStation",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingStation",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -74,7 +74,7 @@
     },
     "ModemType": {
       "description": "Wireless_ Communication_ Module\r\nurn:x-oca:ocpp:uid:2:233306\r\nDefines parameters required for initiating and maintaining wireless communication with other devices.\r\n",
-      "javaType": "Modem",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.Modem",
       "type": "object",
       "additionalProperties": false,
       "properties": {

@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "CustomData",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "AttributeEnumType": {
       "description": "Attribute type for which value is requested. When absent, default Actual is assumed.\r\n",
-      "javaType": "AttributeEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.AttributeEnum",
       "type": "string",
       "default": "Actual",
       "additionalProperties": false,
@@ -32,7 +32,7 @@
     },
     "GetVariableStatusEnumType": {
       "description": "Result status of getting the variable.\r\n\r\n",
-      "javaType": "GetVariableStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.GetVariableStatusEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -45,7 +45,7 @@
     },
     "ComponentType": {
       "description": "A physical or logical component\r\n",
-      "javaType": "Component",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.Component",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -72,7 +72,7 @@
     },
     "EVSEType": {
       "description": "EVSE\r\nurn:x-oca:ocpp:uid:2:233123\r\nElectric Vehicle Supply Equipment\r\n",
-      "javaType": "EVSE",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.EVSE",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -94,7 +94,7 @@
     },
     "GetVariableResultType": {
       "description": "Class to hold results of GetVariables request.\r\n",
-      "javaType": "GetVariableResult",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -130,7 +130,7 @@
     },
     "StatusInfoType": {
       "description": "Element providing more information about the status.\r\n",
-      "javaType": "StatusInfo",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.StatusInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -154,7 +154,7 @@
     },
     "VariableType": {
       "description": "Reference key to a component-variable.\r\n",
-      "javaType": "Variable",
+      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.Variable",
       "type": "object",
       "additionalProperties": false,
       "properties": {

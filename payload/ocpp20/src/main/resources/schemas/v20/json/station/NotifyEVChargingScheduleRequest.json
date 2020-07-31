@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "CustomData",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "ChargingRateUnitEnumType": {
       "description": "Charging_ Schedule. Charging_ Rate_ Unit. Charging_ Rate_ Unit_ Code\r\nurn:x-oca:ocpp:uid:1:569238\r\nThe unit of measure Limit is expressed in.\r\n",
-      "javaType": "ChargingRateUnitEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingRateUnitEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -29,7 +29,7 @@
     },
     "CostKindEnumType": {
       "description": "Cost. Cost_ Kind. Cost_ Kind_ Code\r\nurn:x-oca:ocpp:uid:1:569243\r\nThe kind of cost referred to in the message element amount\r\n",
-      "javaType": "CostKindEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.CostKindEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -40,7 +40,7 @@
     },
     "ChargingSchedulePeriodType": {
       "description": "Charging_ Schedule_ Period\r\nurn:x-oca:ocpp:uid:2:233257\r\nCharging schedule period structure defines a time period in a charging schedule.\r\n",
-      "javaType": "ChargingSchedulePeriod",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingSchedulePeriod",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -71,7 +71,7 @@
     },
     "ChargingScheduleType": {
       "description": "Charging_ Schedule\r\nurn:x-oca:ocpp:uid:2:233256\r\nCharging schedule structure defines a list of charging periods, as used in: GetCompositeSchedule.conf and ChargingProfile. \r\n",
-      "javaType": "ChargingSchedule",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingSchedule",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -119,7 +119,7 @@
     },
     "ConsumptionCostType": {
       "description": "Consumption_ Cost\r\nurn:x-oca:ocpp:uid:2:233259\r\n",
-      "javaType": "ConsumptionCost",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ConsumptionCost",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -147,7 +147,7 @@
     },
     "CostType": {
       "description": "Cost\r\nurn:x-oca:ocpp:uid:2:233258\r\n",
-      "javaType": "Cost",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.Cost",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -173,7 +173,7 @@
     },
     "RelativeTimeIntervalType": {
       "description": "Relative_ Timer_ Interval\r\nurn:x-oca:ocpp:uid:2:233270\r\n",
-      "javaType": "RelativeTimeInterval",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.RelativeTimeInterval",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -195,7 +195,7 @@
     },
     "SalesTariffEntryType": {
       "description": "Sales_ Tariff_ Entry\r\nurn:x-oca:ocpp:uid:2:233271\r\n",
-      "javaType": "SalesTariffEntry",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.SalesTariffEntry",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -226,7 +226,7 @@
     },
     "SalesTariffType": {
       "description": "Sales_ Tariff\r\nurn:x-oca:ocpp:uid:2:233272\r\nNOTE: This dataType is based on dataTypes from &lt;&lt;ref-ISOIEC15118-2,ISO 15118-2&gt;&gt;.\r\n",
-      "javaType": "SalesTariff",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.SalesTariff",
       "type": "object",
       "additionalProperties": false,
       "properties": {

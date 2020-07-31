@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "CustomData",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "FirmwareStatusEnumType": {
       "description": "This contains the progress status of the firmware installation.\r\n",
-      "javaType": "FirmwareStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.FirmwareStatusEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [

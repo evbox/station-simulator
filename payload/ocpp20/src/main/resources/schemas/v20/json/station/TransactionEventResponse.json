@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "CustomData",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "AuthorizationStatusEnumType": {
       "description": "ID_ Token. Status. Authorization_ Status\r\nurn:x-oca:ocpp:uid:1:569372\r\nCurrent status of the ID Token.\r\n",
-      "javaType": "AuthorizationStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.AuthorizationStatusEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -37,7 +37,7 @@
     },
     "IdTokenEnumType": {
       "description": "Enumeration of possible idToken types.\r\n",
-      "javaType": "IdTokenEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.IdTokenEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -53,7 +53,7 @@
     },
     "MessageFormatEnumType": {
       "description": "Message_ Content. Format. Message_ Format_ Code\r\nurn:x-enexis:ecdm:uid:1:570848\r\nFormat of the message.\r\n",
-      "javaType": "MessageFormatEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.MessageFormatEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -65,7 +65,7 @@
     },
     "AdditionalInfoType": {
       "description": "Contains a case insensitive identifier to use for the authorization and the type of authorization to support multiple forms of identifiers.\r\n",
-      "javaType": "AdditionalInfo",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.AdditionalInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -90,7 +90,7 @@
     },
     "IdTokenInfoType": {
       "description": "ID_ Token\r\nurn:x-oca:ocpp:uid:2:233247\r\nContains status information about an identifier.\r\nIt is advised to not stop charging for a token that expires during charging, as ExpiryDate is only used for caching purposes. If ExpiryDate is not given, the status has no end date.\r\n",
-      "javaType": "IdTokenInfo",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.IdTokenInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -141,7 +141,7 @@
     },
     "IdTokenType": {
       "description": "Contains a case insensitive identifier to use for the authorization and the type of authorization to support multiple forms of identifiers.\r\n",
-      "javaType": "IdToken",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.IdToken",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -172,7 +172,7 @@
     },
     "MessageContentType": {
       "description": "Message_ Content\r\nurn:x-enexis:ecdm:uid:2:234490\r\nContains message details, for a message to be displayed on a Charging Station.\r\n\r\n",
-      "javaType": "MessageContent",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.MessageContent",
       "type": "object",
       "additionalProperties": false,
       "properties": {

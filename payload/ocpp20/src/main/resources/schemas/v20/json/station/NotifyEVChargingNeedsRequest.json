@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "CustomData",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "EnergyTransferModeEnumType": {
       "description": "Charging_ Needs. Requested. Energy_ Transfer_ Mode_ Code\r\nurn:x-oca:ocpp:uid:1:569209\r\nMode of energy transfer requested by the EV.\r\n",
-      "javaType": "EnergyTransferModeEnum",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.EnergyTransferModeEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -31,7 +31,7 @@
     },
     "ACChargingParametersType": {
       "description": "AC_ Charging_ Parameters\r\nurn:x-oca:ocpp:uid:2:233250\r\nEV AC charging parameters.\r\n\r\n",
-      "javaType": "ACChargingParameters",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ACChargingParameters",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -64,7 +64,7 @@
     },
     "ChargingNeedsType": {
       "description": "Charging_ Needs\r\nurn:x-oca:ocpp:uid:2:233249\r\n",
-      "javaType": "ChargingNeeds",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingNeeds",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -92,7 +92,7 @@
     },
     "DCChargingParametersType": {
       "description": "DC_ Charging_ Parameters\r\nurn:x-oca:ocpp:uid:2:233251\r\nEV DC charging parameters\r\n\r\n\r\n",
-      "javaType": "DCChargingParameters",
+      "javaType": "com.evbox.everon.ocpp.v20.message.station.DCChargingParameters",
       "type": "object",
       "additionalProperties": false,
       "properties": {
