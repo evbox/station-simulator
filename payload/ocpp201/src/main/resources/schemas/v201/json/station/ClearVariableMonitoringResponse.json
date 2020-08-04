@@ -19,7 +19,7 @@
     },
     "ClearMonitoringStatusEnumType": {
       "description": "Result of the clear request for this monitor, identified by its Id.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearMonitoringStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearMonitoringStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

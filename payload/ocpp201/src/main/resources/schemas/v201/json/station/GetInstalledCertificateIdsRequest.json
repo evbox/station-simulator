@@ -18,7 +18,7 @@
       ]
     },
     "GetCertificateIdUseEnumType": {
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetCertificateIdUseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetCertificateIdUse",
       "type": "string",
       "additionalProperties": false,
       "enum": [

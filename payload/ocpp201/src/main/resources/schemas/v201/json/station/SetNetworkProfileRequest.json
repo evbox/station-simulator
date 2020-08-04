@@ -19,7 +19,7 @@
     },
     "APNAuthenticationEnumType": {
       "description": "APN. APN_ Authentication. APN_ Authentication_ Code\r\nurn:x-oca:ocpp:uid:1:568828\r\nAuthentication method.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.APNAuthenticationEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.APNAuthentication",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -31,7 +31,7 @@
     },
     "OCPPInterfaceEnumType": {
       "description": "Applicable Network Interface.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.OCPPInterfaceEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.OCPPInterface",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -47,7 +47,7 @@
     },
     "OCPPTransportEnumType": {
       "description": "Communication_ Function. OCPP_ Transport. OCPP_ Transport_ Code\r\nurn:x-oca:ocpp:uid:1:569356\r\nDefines the transport protocol (e.g. SOAP or JSON). Note: SOAP is not supported in OCPP 2.0, but is supported by other versions of OCPP.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.OCPPTransportEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.OCPPTransport",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -57,7 +57,7 @@
     },
     "OCPPVersionEnumType": {
       "description": "Communication_ Function. OCPP_ Version. OCPP_ Version_ Code\r\nurn:x-oca:ocpp:uid:1:569355\r\nDefines the OCPP version used for this communication function.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.OCPPVersionEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.OCPPVersion",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -69,7 +69,7 @@
     },
     "VPNEnumType": {
       "description": "VPN. Type. VPN_ Code\r\nurn:x-oca:ocpp:uid:1:569277\r\nType of VPN\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.VPNEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.VPN",
       "type": "string",
       "additionalProperties": false,
       "enum": [

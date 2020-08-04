@@ -19,7 +19,7 @@
     },
     "BootReasonEnumType": {
       "description": "This contains the reason for sending this message to the CSMS.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.BootReasonEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.BootReason",
       "type": "string",
       "additionalProperties": false,
       "enum": [

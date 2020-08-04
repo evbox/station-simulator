@@ -19,7 +19,7 @@
     },
     "ClearMessageStatusEnumType": {
       "description": "Returns whether the Charging Station has been able to remove the message.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearMessageStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearMessageStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

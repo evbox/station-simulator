@@ -19,7 +19,7 @@
     },
     "ResetEnumType": {
       "description": "This contains the type of reset that the Charging Station or EVSE should perform.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.ResetEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Reset",
       "type": "string",
       "additionalProperties": false,
       "enum": [

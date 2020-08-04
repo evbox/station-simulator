@@ -19,7 +19,7 @@
     },
     "GetChargingProfileStatusEnumType": {
       "description": "This indicates whether the Charging Station is able to process this request and will send &lt;&lt;reportchargingprofilesrequest, ReportChargingProfilesRequest&gt;&gt; messages.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetChargingProfileStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetChargingProfileStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

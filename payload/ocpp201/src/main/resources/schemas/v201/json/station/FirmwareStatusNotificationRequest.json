@@ -19,7 +19,7 @@
     },
     "FirmwareStatusEnumType": {
       "description": "This contains the progress status of the firmware installation.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.FirmwareStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.FirmwareStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

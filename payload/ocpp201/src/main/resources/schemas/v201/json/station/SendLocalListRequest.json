@@ -19,7 +19,7 @@
     },
     "AuthorizationStatusEnumType": {
       "description": "ID_ Token. Status. Authorization_ Status\r\nurn:x-oca:ocpp:uid:1:569372\r\nCurrent status of the ID Token.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.AuthorizationStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.AuthorizationStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -37,7 +37,7 @@
     },
     "IdTokenEnumType": {
       "description": "Enumeration of possible idToken types.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdTokenEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdToken",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -53,7 +53,7 @@
     },
     "MessageFormatEnumType": {
       "description": "Message_ Content. Format. Message_ Format_ Code\r\nurn:x-enexis:ecdm:uid:1:570848\r\nFormat of the message.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.MessageFormatEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.MessageFormat",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -65,7 +65,7 @@
     },
     "UpdateEnumType": {
       "description": "This contains the type of update (full or differential) of this request.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.UpdateEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Update",
       "type": "string",
       "additionalProperties": false,
       "enum": [

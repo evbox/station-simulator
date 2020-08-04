@@ -19,7 +19,7 @@
     },
     "AuthorizationStatusEnumType": {
       "description": "ID_ Token. Status. Authorization_ Status\r\nurn:x-oca:ocpp:uid:1:569372\r\nCurrent status of the ID Token.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.AuthorizationStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.AuthorizationStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -37,7 +37,7 @@
     },
     "AuthorizeCertificateStatusEnumType": {
       "description": "Certificate status information. \r\n- if all certificates are valid: return 'Accepted'.\r\n- if one of the certificates was revoked, return 'CertificateRevoked'.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.AuthorizeCertificateStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.AuthorizeCertificateStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -52,7 +52,7 @@
     },
     "IdTokenEnumType": {
       "description": "Enumeration of possible idToken types.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdTokenEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdToken",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -68,7 +68,7 @@
     },
     "MessageFormatEnumType": {
       "description": "Message_ Content. Format. Message_ Format_ Code\r\nurn:x-enexis:ecdm:uid:1:570848\r\nFormat of the message.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.MessageFormatEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.MessageFormat",
       "type": "string",
       "additionalProperties": false,
       "enum": [

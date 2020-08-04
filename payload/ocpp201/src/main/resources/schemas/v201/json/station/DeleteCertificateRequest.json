@@ -19,7 +19,7 @@
     },
     "HashAlgorithmEnumType": {
       "description": "Used algorithms for the hashes provided.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.HashAlgorithmEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.HashAlgorithm",
       "type": "string",
       "additionalProperties": false,
       "enum": [

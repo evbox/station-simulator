@@ -19,7 +19,7 @@
     },
     "GenericStatusEnumType": {
       "description": "Indicates whether the Charging Station was able to accept the request.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.GenericStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GenericStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

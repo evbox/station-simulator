@@ -19,7 +19,7 @@
     },
     "ClearCacheStatusEnumType": {
       "description": "Accepted if the Charging Station has executed the request, otherwise rejected.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearCacheStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearCacheStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

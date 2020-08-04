@@ -18,7 +18,7 @@
       ]
     },
     "ComponentCriterionEnumType": {
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.ComponentCriterionEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.ComponentCriterion",
       "type": "string",
       "additionalProperties": false,
       "enum": [

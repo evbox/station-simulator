@@ -19,7 +19,7 @@
     },
     "CancelReservationStatusEnumType": {
       "description": "This indicates the success or failure of the canceling of a reservation by CSMS.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.CancelReservationStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CancelReservationStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

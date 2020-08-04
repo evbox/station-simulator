@@ -19,7 +19,7 @@
     },
     "ChargingLimitSourceEnumType": {
       "description": "Source of the charging limit.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingLimitSourceEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingLimitSource",
       "type": "string",
       "additionalProperties": false,
       "enum": [

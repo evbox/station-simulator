@@ -19,7 +19,7 @@
     },
     "UpdateFirmwareStatusEnumType": {
       "description": "This field indicates whether the Charging Station was able to accept the request.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.UpdateFirmwareStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.UpdateFirmwareStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

@@ -19,7 +19,7 @@
     },
     "GetDisplayMessagesStatusEnumType": {
       "description": "Indicates if the Charging Station has Display Messages that match the request criteria in the &lt;&lt;getdisplaymessagesrequest,GetDisplayMessagesRequest&gt;&gt;\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.GetDisplayMessagesStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.GetDisplayMessagesStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

@@ -19,7 +19,7 @@
     },
     "ReservationUpdateStatusEnumType": {
       "description": "The updated reservation status.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReservationUpdateStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReservationUpdateStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

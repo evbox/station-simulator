@@ -19,7 +19,7 @@
     },
     "Iso15118EVCertificateStatusEnumType": {
       "description": "Indicates whether the message was processed properly.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.Iso15118EVCertificateStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Iso15118EVCertificateStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

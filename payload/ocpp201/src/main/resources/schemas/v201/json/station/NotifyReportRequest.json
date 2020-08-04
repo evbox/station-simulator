@@ -19,7 +19,7 @@
     },
     "AttributeEnumType": {
       "description": "Attribute: Actual, MinSet, MaxSet, etc.\r\nDefaults to Actual if absent.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.AttributeEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Attribute",
       "type": "string",
       "default": "Actual",
       "additionalProperties": false,
@@ -32,7 +32,7 @@
     },
     "DataEnumType": {
       "description": "Data type of this variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.DataEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Data",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -48,7 +48,7 @@
     },
     "MutabilityEnumType": {
       "description": "Defines the mutability of this attribute. Default is ReadWrite when omitted.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.MutabilityEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Mutability",
       "type": "string",
       "default": "ReadWrite",
       "additionalProperties": false,

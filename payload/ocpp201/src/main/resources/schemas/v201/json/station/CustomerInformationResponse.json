@@ -19,7 +19,7 @@
     },
     "CustomerInformationStatusEnumType": {
       "description": "Indicates whether the request was accepted.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomerInformationStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomerInformationStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

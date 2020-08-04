@@ -19,7 +19,7 @@
     },
     "LogEnumType": {
       "description": "This contains the type of log file that the Charging Station\r\nshould send.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.LogEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Log",
       "type": "string",
       "additionalProperties": false,
       "enum": [

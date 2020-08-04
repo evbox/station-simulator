@@ -19,7 +19,7 @@
     },
     "MessageTriggerEnumType": {
       "description": "Type of message to be triggered.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.MessageTriggerEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.MessageTrigger",
       "type": "string",
       "additionalProperties": false,
       "enum": [

@@ -19,7 +19,7 @@
     },
     "MessageFormatEnumType": {
       "description": "Message_ Content. Format. Message_ Format_ Code\r\nurn:x-enexis:ecdm:uid:1:570848\r\nFormat of the message.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageFormatEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageFormat",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -31,7 +31,7 @@
     },
     "MessagePriorityEnumType": {
       "description": "Message_ Info. Priority. Message_ Priority_ Code\r\nurn:x-enexis:ecdm:uid:1:569253\r\nWith what priority should this message be shown\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessagePriorityEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessagePriority",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -42,7 +42,7 @@
     },
     "MessageStateEnumType": {
       "description": "Message_ Info. State. Message_ State_ Code\r\nurn:x-enexis:ecdm:uid:1:569254\r\nDuring what state should this message be shown. When omitted this message should be shown in any state of the Charging Station.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageStateEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageState",
       "type": "string",
       "additionalProperties": false,
       "enum": [

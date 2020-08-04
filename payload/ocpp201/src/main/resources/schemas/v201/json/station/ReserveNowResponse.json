@@ -19,7 +19,7 @@
     },
     "ReserveNowStatusEnumType": {
       "description": "This indicates the success or failure of the reservation.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReserveNowStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReserveNowStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

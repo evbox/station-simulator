@@ -19,7 +19,7 @@
     },
     "SendLocalListStatusEnumType": {
       "description": "This indicates whether the Charging Station has successfully received and applied the update of the Local Authorization List.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.SendLocalListStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.SendLocalListStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

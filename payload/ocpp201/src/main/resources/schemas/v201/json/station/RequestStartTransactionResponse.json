@@ -19,7 +19,7 @@
     },
     "RequestStartStopStatusEnumType": {
       "description": "Status indicating whether the Charging Station accepts the request to start a transaction.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.RequestStartStopStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.RequestStartStopStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

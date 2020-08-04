@@ -19,7 +19,7 @@
     },
     "EnergyTransferModeEnumType": {
       "description": "Charging_ Needs. Requested. Energy_ Transfer_ Mode_ Code\r\nurn:x-oca:ocpp:uid:1:569209\r\nMode of energy transfer requested by the EV.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.EnergyTransferModeEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EnergyTransferMode",
       "type": "string",
       "additionalProperties": false,
       "enum": [

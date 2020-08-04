@@ -19,7 +19,7 @@
     },
     "ResetStatusEnumType": {
       "description": "This indicates whether the Charging Station is able to perform the reset.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.ResetStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.ResetStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

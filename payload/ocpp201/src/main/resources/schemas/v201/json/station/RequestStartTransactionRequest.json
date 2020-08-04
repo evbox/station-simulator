@@ -19,7 +19,7 @@
     },
     "ChargingProfileKindEnumType": {
       "description": "Charging_ Profile. Charging_ Profile_ Kind. Charging_ Profile_ Kind_ Code\r\nurn:x-oca:ocpp:uid:1:569232\r\nIndicates the kind of schedule.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingProfileKindEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingProfileKind",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -30,7 +30,7 @@
     },
     "ChargingProfilePurposeEnumType": {
       "description": "Charging_ Profile. Charging_ Profile_ Purpose. Charging_ Profile_ Purpose_ Code\r\nurn:x-oca:ocpp:uid:1:569231\r\nDefines the purpose of the schedule transferred by this profile\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingProfilePurposeEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingProfilePurpose",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -42,7 +42,7 @@
     },
     "ChargingRateUnitEnumType": {
       "description": "Charging_ Schedule. Charging_ Rate_ Unit. Charging_ Rate_ Unit_ Code\r\nurn:x-oca:ocpp:uid:1:569238\r\nThe unit of measure Limit is expressed in.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingRateUnitEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingRateUnit",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -52,7 +52,7 @@
     },
     "CostKindEnumType": {
       "description": "Cost. Cost_ Kind. Cost_ Kind_ Code\r\nurn:x-oca:ocpp:uid:1:569243\r\nThe kind of cost referred to in the message element amount\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.CostKindEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CostKind",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -63,7 +63,7 @@
     },
     "IdTokenEnumType": {
       "description": "Enumeration of possible idToken types.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdTokenEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdToken",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -79,7 +79,7 @@
     },
     "RecurrencyKindEnumType": {
       "description": "Charging_ Profile. Recurrency_ Kind. Recurrency_ Kind_ Code\r\nurn:x-oca:ocpp:uid:1:569233\r\nIndicates the start point of a recurrence.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.RecurrencyKindEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.RecurrencyKind",
       "type": "string",
       "additionalProperties": false,
       "enum": [

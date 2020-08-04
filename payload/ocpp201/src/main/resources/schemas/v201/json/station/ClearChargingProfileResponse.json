@@ -19,7 +19,7 @@
     },
     "ClearChargingProfileStatusEnumType": {
       "description": "Indicates if the Charging Station was able to execute the request.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearChargingProfileStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ClearChargingProfileStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

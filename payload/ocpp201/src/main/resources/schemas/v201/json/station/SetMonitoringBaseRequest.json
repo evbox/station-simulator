@@ -19,7 +19,7 @@
     },
     "MonitoringBaseEnumType": {
       "description": "Specify which monitoring base will be set\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.MonitoringBaseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.MonitoringBase",
       "type": "string",
       "additionalProperties": false,
       "enum": [

@@ -19,7 +19,7 @@
     },
     "UploadLogStatusEnumType": {
       "description": "This contains the status of the log upload.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.UploadLogStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.UploadLogStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

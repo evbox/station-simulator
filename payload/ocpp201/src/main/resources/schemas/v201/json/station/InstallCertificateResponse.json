@@ -19,7 +19,7 @@
     },
     "InstallCertificateStatusEnumType": {
       "description": "Charging Station indicates if installation was successful.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.InstallCertificateStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.InstallCertificateStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

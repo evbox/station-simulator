@@ -19,7 +19,7 @@
     },
     "GenericStatusEnumType": {
       "description": "Returns whether the CSMS has been able to process the message successfully. It does not imply any approval of the charging schedule.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.GenericStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GenericStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

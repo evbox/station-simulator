@@ -19,7 +19,7 @@
     },
     "ConnectorStatusEnumType": {
       "description": "This contains the current status of the Connector.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ConnectorStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ConnectorStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

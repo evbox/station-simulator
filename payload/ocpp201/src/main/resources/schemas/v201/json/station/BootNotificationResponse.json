@@ -19,7 +19,7 @@
     },
     "RegistrationStatusEnumType": {
       "description": "This contains whether the Charging Station has been registered\r\nwithin the CSMS.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.RegistrationStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.RegistrationStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

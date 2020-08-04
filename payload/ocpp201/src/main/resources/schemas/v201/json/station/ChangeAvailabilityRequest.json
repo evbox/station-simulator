@@ -19,7 +19,7 @@
     },
     "OperationalStatusEnumType": {
       "description": "This contains the type of availability change that the Charging Station should perform.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.OperationalStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.OperationalStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

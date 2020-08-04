@@ -19,7 +19,7 @@
     },
     "EventNotificationEnumType": {
       "description": "Specifies the event notification type of the message.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.EventNotificationEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EventNotification",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -31,7 +31,7 @@
     },
     "EventTriggerEnumType": {
       "description": "Type of monitor that triggered this event, e.g. exceeding a threshold value.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.EventTriggerEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EventTrigger",
       "type": "string",
       "additionalProperties": false,
       "enum": [

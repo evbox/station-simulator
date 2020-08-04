@@ -19,7 +19,7 @@
     },
     "InstallCertificateUseEnumType": {
       "description": "Indicates the certificate type that is sent.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.InstallCertificateUseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.InstallCertificateUse",
       "type": "string",
       "additionalProperties": false,
       "enum": [

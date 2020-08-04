@@ -19,7 +19,7 @@
     },
     "ChargingRateUnitEnumType": {
       "description": "Can be used to force a power or current profile.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingRateUnitEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingRateUnit",
       "type": "string",
       "additionalProperties": false,
       "enum": [

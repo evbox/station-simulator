@@ -19,7 +19,7 @@
     },
     "GetCertificateStatusEnumType": {
       "description": "This indicates whether the charging station was able to retrieve the OCSP certificate status.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetCertificateStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetCertificateStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

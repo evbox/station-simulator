@@ -19,7 +19,7 @@
     },
     "DataTransferStatusEnumType": {
       "description": "This indicates the success or failure of the data transfer.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.DataTransferStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.DataTransferStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

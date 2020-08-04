@@ -18,7 +18,7 @@
       ]
     },
     "MonitoringCriterionEnumType": {
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MonitoringCriterionEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MonitoringCriterion",
       "type": "string",
       "additionalProperties": false,
       "enum": [

@@ -19,7 +19,7 @@
     },
     "ChargingRateUnitEnumType": {
       "description": "Charging_ Schedule. Charging_ Rate_ Unit. Charging_ Rate_ Unit_ Code\r\nurn:x-oca:ocpp:uid:1:569238\r\nThe unit of measure Limit is expressed in.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingRateUnitEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingRateUnit",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -29,7 +29,7 @@
     },
     "CostKindEnumType": {
       "description": "Cost. Cost_ Kind. Cost_ Kind_ Code\r\nurn:x-oca:ocpp:uid:1:569243\r\nThe kind of cost referred to in the message element amount\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.CostKindEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CostKind",
       "type": "string",
       "additionalProperties": false,
       "enum": [

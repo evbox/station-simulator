@@ -18,7 +18,7 @@
       ]
     },
     "ChargingLimitSourceEnumType": {
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingLimitSourceEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingLimitSource",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -30,7 +30,7 @@
     },
     "ChargingProfilePurposeEnumType": {
       "description": "Charging_ Profile. Charging_ Profile_ Purpose. Charging_ Profile_ Purpose_ Code\r\nurn:x-oca:ocpp:uid:1:569231\r\nDefines the purpose of the schedule transferred by this profile\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingProfilePurposeEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingProfilePurpose",
       "type": "string",
       "additionalProperties": false,
       "enum": [

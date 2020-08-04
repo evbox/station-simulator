@@ -19,7 +19,7 @@
     },
     "MessagePriorityEnumType": {
       "description": "If provided the Charging Station shall return Display Messages with the given priority only.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessagePriorityEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessagePriority",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -30,7 +30,7 @@
     },
     "MessageStateEnumType": {
       "description": "If provided the Charging Station shall return Display Messages with the given state only. \r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageStateEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageState",
       "type": "string",
       "additionalProperties": false,
       "enum": [

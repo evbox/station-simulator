@@ -19,7 +19,7 @@
     },
     "MonitorEnumType": {
       "description": "The type of this monitor, e.g. a threshold, delta or periodic monitor. \r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MonitorEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Monitor",
       "type": "string",
       "additionalProperties": false,
       "enum": [

@@ -19,7 +19,7 @@
     },
     "GetCertificateIdUseEnumType": {
       "description": "Indicates the type of the requested certificate(s).\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetCertificateIdUseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetCertificateIdUse",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -32,7 +32,7 @@
     },
     "GetInstalledCertificateStatusEnumType": {
       "description": "Charging Station indicates if it can process the request.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetInstalledCertificateStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetInstalledCertificateStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -42,7 +42,7 @@
     },
     "HashAlgorithmEnumType": {
       "description": "Used algorithms for the hashes provided.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.HashAlgorithmEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.HashAlgorithm",
       "type": "string",
       "additionalProperties": false,
       "enum": [

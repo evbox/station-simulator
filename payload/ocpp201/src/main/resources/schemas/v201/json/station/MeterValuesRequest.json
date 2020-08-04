@@ -20,7 +20,7 @@
     },
     "LocationEnumType": {
       "description": "Sampled_ Value. Location. Location_ Code\r\nurn:x-oca:ocpp:uid:1:569265\r\nIndicates where the measured value has been sampled. Default =  \"Outlet\"\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.LocationEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Location",
       "type": "string",
       "default": "Outlet",
       "additionalProperties": false,
@@ -34,7 +34,7 @@
     },
     "MeasurandEnumType": {
       "description": "Sampled_ Value. Measurand. Measurand_ Code\r\nurn:x-oca:ocpp:uid:1:569263\r\nType of measurement. Default = \"Energy.Active.Import.Register\"\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.MeasurandEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Measurand",
       "type": "string",
       "default": "Energy.Active.Import.Register",
       "additionalProperties": false,
@@ -68,7 +68,7 @@
     },
     "PhaseEnumType": {
       "description": "Sampled_ Value. Phase. Phase_ Code\r\nurn:x-oca:ocpp:uid:1:569264\r\nIndicates how the measured value is to be interpreted. For instance between L1 and neutral (L1-N) Please note that not all values of phase are applicable to all Measurands. When phase is absent, the measured value is interpreted as an overall value.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.PhaseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Phase",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -86,7 +86,7 @@
     },
     "ReadingContextEnumType": {
       "description": "Sampled_ Value. Context. Reading_ Context_ Code\r\nurn:x-oca:ocpp:uid:1:569261\r\nType of detail value: start, end or sample. Default = \"Sample.Periodic\"\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReadingContextEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReadingContext",
       "type": "string",
       "default": "Sample.Periodic",
       "additionalProperties": false,

@@ -19,7 +19,7 @@
     },
     "UnlockStatusEnumType": {
       "description": "This indicates whether the Charging Station has unlocked the connector.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.UnlockStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.UnlockStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

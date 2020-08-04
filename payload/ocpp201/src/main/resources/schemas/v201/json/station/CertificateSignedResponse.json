@@ -19,7 +19,7 @@
     },
     "CertificateSignedStatusEnumType": {
       "description": "Returns whether certificate signing has been accepted, otherwise rejected.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.CertificateSignedStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CertificateSignedStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

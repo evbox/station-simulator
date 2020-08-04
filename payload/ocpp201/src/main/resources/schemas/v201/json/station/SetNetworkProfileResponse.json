@@ -19,7 +19,7 @@
     },
     "SetNetworkProfileStatusEnumType": {
       "description": "Result of operation.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.SetNetworkProfileStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.SetNetworkProfileStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

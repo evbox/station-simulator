@@ -19,7 +19,7 @@
     },
     "PublishFirmwareStatusEnumType": {
       "description": "This contains the progress status of the publishfirmware\r\ninstallation.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.PublishFirmwareStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.PublishFirmwareStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [

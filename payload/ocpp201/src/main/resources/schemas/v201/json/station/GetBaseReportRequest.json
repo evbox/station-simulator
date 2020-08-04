@@ -19,7 +19,7 @@
     },
     "ReportBaseEnumType": {
       "description": "This field specifies the report base.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReportBaseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReportBase",
       "type": "string",
       "additionalProperties": false,
       "enum": [

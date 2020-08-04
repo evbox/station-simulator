@@ -19,7 +19,7 @@
     },
     "AttributeEnumType": {
       "description": "Attribute type for which value is requested. When absent, default Actual is assumed.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.AttributeEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Attribute",
       "type": "string",
       "default": "Actual",
       "additionalProperties": false,
@@ -32,7 +32,7 @@
     },
     "GetVariableStatusEnumType": {
       "description": "Result status of getting the variable.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.GetVariableStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.GetVariableStatus",
       "type": "string",
       "additionalProperties": false,
       "enum": [
