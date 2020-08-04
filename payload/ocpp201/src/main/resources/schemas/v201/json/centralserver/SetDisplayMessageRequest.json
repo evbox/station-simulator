@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "MessageFormatEnumType": {
       "description": "Message_ Content. Format. Message_ Format_ Code\r\nurn:x-enexis:ecdm:uid:1:570848\r\nFormat of the message.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MessageFormatEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageFormatEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -31,7 +31,7 @@
     },
     "MessagePriorityEnumType": {
       "description": "Message_ Info. Priority. Message_ Priority_ Code\r\nurn:x-enexis:ecdm:uid:1:569253\r\nWith what priority should this message be shown\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MessagePriorityEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessagePriorityEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -42,7 +42,7 @@
     },
     "MessageStateEnumType": {
       "description": "Message_ Info. State. Message_ State_ Code\r\nurn:x-enexis:ecdm:uid:1:569254\r\nDuring what state should this message be shown. When omitted this message should be shown in any state of the Charging Station.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MessageStateEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageStateEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -54,7 +54,7 @@
     },
     "ComponentType": {
       "description": "A physical or logical component\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.Component",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Component",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -81,7 +81,7 @@
     },
     "EVSEType": {
       "description": "EVSE\r\nurn:x-oca:ocpp:uid:2:233123\r\nElectric Vehicle Supply Equipment\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.EVSE",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.EVSE",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -103,7 +103,7 @@
     },
     "MessageContentType": {
       "description": "Message_ Content\r\nurn:x-enexis:ecdm:uid:2:234490\r\nContains message details, for a message to be displayed on a Charging Station.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MessageContent",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageContent",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -131,7 +131,7 @@
     },
     "MessageInfoType": {
       "description": "Message_ Info\r\nurn:x-enexis:ecdm:uid:2:233264\r\nContains message details, for a message to be displayed on a Charging Station.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MessageInfo",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MessageInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {

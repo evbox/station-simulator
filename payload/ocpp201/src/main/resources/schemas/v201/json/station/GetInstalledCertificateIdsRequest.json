@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -18,7 +18,7 @@
       ]
     },
     "GetCertificateIdUseEnumType": {
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.GetCertificateIdUseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GetCertificateIdUseEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [

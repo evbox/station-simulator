@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "LogStatusEnumType": {
       "description": "This field indicates whether the Charging Station was able to accept the request.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.LogStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.LogStatusEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -30,7 +30,7 @@
     },
     "StatusInfoType": {
       "description": "Element providing more information about the status.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.StatusInfo",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.StatusInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {

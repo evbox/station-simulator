@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "AttributeEnumType": {
       "description": "Attribute: Actual, MinSet, MaxSet, etc.\r\nDefaults to Actual if absent.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.AttributeEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.AttributeEnum",
       "type": "string",
       "default": "Actual",
       "additionalProperties": false,
@@ -32,7 +32,7 @@
     },
     "DataEnumType": {
       "description": "Data type of this variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.DataEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.DataEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -48,7 +48,7 @@
     },
     "MutabilityEnumType": {
       "description": "Defines the mutability of this attribute. Default is ReadWrite when omitted.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.MutabilityEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.MutabilityEnum",
       "type": "string",
       "default": "ReadWrite",
       "additionalProperties": false,
@@ -60,7 +60,7 @@
     },
     "ComponentType": {
       "description": "A physical or logical component\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.Component",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Component",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -87,7 +87,7 @@
     },
     "EVSEType": {
       "description": "EVSE\r\nurn:x-oca:ocpp:uid:2:233123\r\nElectric Vehicle Supply Equipment\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.EVSE",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EVSE",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -109,7 +109,7 @@
     },
     "ReportDataType": {
       "description": "Class to report components, variables and variable attributes and characteristics.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.ReportData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReportData",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -143,7 +143,7 @@
     },
     "VariableAttributeType": {
       "description": "Attribute data of a variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.VariableAttribute",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.VariableAttribute",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -175,7 +175,7 @@
     },
     "VariableCharacteristicsType": {
       "description": "Fixed read-only parameters of a variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.VariableCharacteristics",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -215,7 +215,7 @@
     },
     "VariableType": {
       "description": "Reference key to a component-variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.Variable",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Variable",
       "type": "object",
       "additionalProperties": false,
       "properties": {

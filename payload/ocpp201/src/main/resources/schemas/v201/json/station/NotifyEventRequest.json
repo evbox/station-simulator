@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "EventNotificationEnumType": {
       "description": "Specifies the event notification type of the message.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.EventNotificationEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EventNotificationEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -31,7 +31,7 @@
     },
     "EventTriggerEnumType": {
       "description": "Type of monitor that triggered this event, e.g. exceeding a threshold value.\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.EventTriggerEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EventTriggerEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -42,7 +42,7 @@
     },
     "ComponentType": {
       "description": "A physical or logical component\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.Component",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Component",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -69,7 +69,7 @@
     },
     "EventDataType": {
       "description": "Class to report an event notification for a component-variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.EventData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EventData",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -142,7 +142,7 @@
     },
     "EVSEType": {
       "description": "EVSE\r\nurn:x-oca:ocpp:uid:2:233123\r\nElectric Vehicle Supply Equipment\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.EVSE",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EVSE",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -164,7 +164,7 @@
     },
     "VariableType": {
       "description": "Reference key to a component-variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.Variable",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Variable",
       "type": "object",
       "additionalProperties": false,
       "properties": {

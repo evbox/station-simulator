@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "MonitorEnumType": {
       "description": "The type of this monitor, e.g. a threshold, delta or periodic monitor. \r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MonitorEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MonitorEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -32,7 +32,7 @@
     },
     "ComponentType": {
       "description": "A physical or logical component\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.Component",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Component",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -59,7 +59,7 @@
     },
     "EVSEType": {
       "description": "EVSE\r\nurn:x-oca:ocpp:uid:2:233123\r\nElectric Vehicle Supply Equipment\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.EVSE",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.EVSE",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -81,7 +81,7 @@
     },
     "MonitoringDataType": {
       "description": "Class to hold parameters of SetVariableMonitoring request.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MonitoringData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MonitoringData",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -111,7 +111,7 @@
     },
     "VariableMonitoringType": {
       "description": "A monitoring setting for a variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.VariableMonitoring",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.VariableMonitoring",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -148,7 +148,7 @@
     },
     "VariableType": {
       "description": "Reference key to a component-variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.Variable",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Variable",
       "type": "object",
       "additionalProperties": false,
       "properties": {

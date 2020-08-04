@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "ResetEnumType": {
       "description": "This contains the type of reset that the Charging Station or EVSE should perform.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.ResetEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.ResetEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [

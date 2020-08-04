@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "ChargingStateEnumType": {
       "description": "Transaction. State. Transaction_ State_ Code\r\nurn:x-oca:ocpp:uid:1:569419\r\nCurrent charging state, is required when state\r\nhas changed.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingStateEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingStateEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -32,7 +32,7 @@
     },
     "IdTokenEnumType": {
       "description": "Enumeration of possible idToken types.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.IdTokenEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdTokenEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -48,7 +48,7 @@
     },
     "LocationEnumType": {
       "description": "Sampled_ Value. Location. Location_ Code\r\nurn:x-oca:ocpp:uid:1:569265\r\nIndicates where the measured value has been sampled. Default =  \"Outlet\"\r\n\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.LocationEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.LocationEnum",
       "type": "string",
       "default": "Outlet",
       "additionalProperties": false,
@@ -62,7 +62,7 @@
     },
     "MeasurandEnumType": {
       "description": "Sampled_ Value. Measurand. Measurand_ Code\r\nurn:x-oca:ocpp:uid:1:569263\r\nType of measurement. Default = \"Energy.Active.Import.Register\"\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.MeasurandEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.MeasurandEnum",
       "type": "string",
       "default": "Energy.Active.Import.Register",
       "additionalProperties": false,
@@ -96,7 +96,7 @@
     },
     "PhaseEnumType": {
       "description": "Sampled_ Value. Phase. Phase_ Code\r\nurn:x-oca:ocpp:uid:1:569264\r\nIndicates how the measured value is to be interpreted. For instance between L1 and neutral (L1-N) Please note that not all values of phase are applicable to all Measurands. When phase is absent, the measured value is interpreted as an overall value.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.PhaseEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.PhaseEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -114,7 +114,7 @@
     },
     "ReadingContextEnumType": {
       "description": "Sampled_ Value. Context. Reading_ Context_ Code\r\nurn:x-oca:ocpp:uid:1:569261\r\nType of detail value: start, end or sample. Default = \"Sample.Periodic\"\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.ReadingContextEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReadingContextEnum",
       "type": "string",
       "default": "Sample.Periodic",
       "additionalProperties": false,
@@ -131,7 +131,7 @@
     },
     "ReasonEnumType": {
       "description": "Transaction. Stopped_ Reason. EOT_ Reason_ Code\r\nurn:x-oca:ocpp:uid:1:569413\r\nThis contains the reason why the transaction was stopped. MAY only be omitted when Reason is \"Local\".\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.ReasonEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReasonEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -158,7 +158,7 @@
     },
     "TransactionEventEnumType": {
       "description": "This contains the type of this event.\r\nThe first TransactionEvent of a transaction SHALL contain: \"Started\" The last TransactionEvent of a transaction SHALL contain: \"Ended\" All others SHALL contain: \"Updated\"\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.TransactionEventEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.TransactionEventEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -169,7 +169,7 @@
     },
     "TriggerReasonEnumType": {
       "description": "Reason the Charging Station sends this message to the CSMS\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.TriggerReasonEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.TriggerReasonEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -198,7 +198,7 @@
     },
     "AdditionalInfoType": {
       "description": "Contains a case insensitive identifier to use for the authorization and the type of authorization to support multiple forms of identifiers.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.AdditionalInfo",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.AdditionalInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -223,7 +223,7 @@
     },
     "EVSEType": {
       "description": "EVSE\r\nurn:x-oca:ocpp:uid:2:233123\r\nElectric Vehicle Supply Equipment\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.EVSE",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EVSE",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -245,7 +245,7 @@
     },
     "IdTokenType": {
       "description": "Contains a case insensitive identifier to use for the authorization and the type of authorization to support multiple forms of identifiers.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.IdToken",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdToken",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -276,7 +276,7 @@
     },
     "MeterValueType": {
       "description": "Meter_ Value\r\nurn:x-oca:ocpp:uid:2:233265\r\nCollection of one or more sampled values in MeterValuesRequest and TransactionEvent. All sampled values in a MeterValue are sampled at the same point in time.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.MeterValue",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.MeterValue",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -304,7 +304,7 @@
     },
     "SampledValueType": {
       "description": "Sampled_ Value\r\nurn:x-oca:ocpp:uid:2:233266\r\nSingle sampled value in MeterValues. Each value can be accompanied by optional fields.\r\n\r\nTo save on mobile data usage, default values of all of the optional fields are such that. The value without any additional fields will be interpreted, as a register reading of active import energy in Wh (Watt-hour) units.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.SampledValue",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.SampledValue",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -340,7 +340,7 @@
     },
     "SignedMeterValueType": {
       "description": "Represent a signed version of the meter value.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.SignedMeterValue",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.SignedMeterValue",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -377,7 +377,7 @@
     },
     "TransactionType": {
       "description": "Transaction\r\nurn:x-oca:ocpp:uid:2:233318\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.Transaction",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Transaction",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -410,7 +410,7 @@
     },
     "UnitOfMeasureType": {
       "description": "Represents a UnitOfMeasure with a multiplier\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.UnitOfMeasure",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.UnitOfMeasure",
       "type": "object",
       "additionalProperties": false,
       "properties": {

@@ -3,7 +3,7 @@
     "$id": "urn:OCPP:Cp:2:2018:4:EvseType",
     "comment": "OCPP 2.0 - v1p0",
     "EVSEType": {
-        "javaType": "com.evbox.everon.ocpp.v20.message.common.Evse",
+        "javaType": "com.evbox.everon.ocpp.v201.message.common.Evse",
         "type": "object",
         "additionalProperties": true,
         "properties": {

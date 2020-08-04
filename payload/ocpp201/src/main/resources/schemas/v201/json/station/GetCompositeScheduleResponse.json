@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -19,7 +19,7 @@
     },
     "ChargingRateUnitEnumType": {
       "description": "The unit of measure Limit is\r\nexpressed in.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingRateUnitEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingRateUnitEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -29,7 +29,7 @@
     },
     "GenericStatusEnumType": {
       "description": "The Charging Station will indicate if it was\r\nable to process the request\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.GenericStatusEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.GenericStatusEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -39,7 +39,7 @@
     },
     "ChargingSchedulePeriodType": {
       "description": "Charging_ Schedule_ Period\r\nurn:x-oca:ocpp:uid:2:233257\r\nCharging schedule period structure defines a time period in a charging schedule.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.ChargingSchedulePeriod",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ChargingSchedulePeriod",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -70,7 +70,7 @@
     },
     "CompositeScheduleType": {
       "description": "Composite_ Schedule\r\nurn:x-oca:ocpp:uid:2:233362\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.CompositeSchedule",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.CompositeSchedule",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -112,7 +112,7 @@
     },
     "StatusInfoType": {
       "description": "Element providing more information about the status.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.station.StatusInfo",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.StatusInfo",
       "type": "object",
       "additionalProperties": false,
       "properties": {

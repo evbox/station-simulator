@@ -32,7 +32,7 @@
     }
   },
   "ChargingProfileType": {
-    "javaType": "com.evbox.everon.ocpp.v20.message.common.ChargingProfile",
+    "javaType": "com.evbox.everon.ocpp.v201.message.common.ChargingProfile",
     "type": "object",
     "additionalProperties": true,
     "properties": {

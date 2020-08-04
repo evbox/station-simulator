@@ -33,7 +33,7 @@
       ]
     },
     "MessageContentType": {
-      "javaType": "com.evbox.everon.ocpp.v20.message.common.MessageContent",
+      "javaType": "com.evbox.everon.ocpp.v201.message.common.MessageContent",
       "type": "object",
       "additionalProperties": true,
       "properties": {
@@ -56,7 +56,7 @@
     }
   },
   "MessageInfoType": {
-    "javaType": "com.evbox.everon.ocpp.v20.message.common.MessageInfo",
+    "javaType": "com.evbox.everon.ocpp.v201.message.common.MessageInfo",
     "type": "object",
     "additionalProperties": true,
     "properties": {

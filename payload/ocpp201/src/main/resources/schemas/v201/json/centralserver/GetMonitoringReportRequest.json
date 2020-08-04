@@ -5,7 +5,7 @@
   "definitions": {
     "CustomDataType": {
       "description": "This class does not get 'AdditionalProperties = false' in the schema generation, so it can be extended with arbitrary JSON properties to allow adding custom data.",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.CustomData",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.CustomData",
       "type": "object",
       "properties": {
         "vendorId": {
@@ -18,7 +18,7 @@
       ]
     },
     "MonitoringCriterionEnumType": {
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.MonitoringCriterionEnum",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.MonitoringCriterionEnum",
       "type": "string",
       "additionalProperties": false,
       "enum": [
@@ -29,7 +29,7 @@
     },
     "ComponentType": {
       "description": "A physical or logical component\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.Component",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Component",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -56,7 +56,7 @@
     },
     "ComponentVariableType": {
       "description": "Class to report components, variables and variable attributes and characteristics.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.ComponentVariable",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.ComponentVariable",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -76,7 +76,7 @@
     },
     "EVSEType": {
       "description": "EVSE\r\nurn:x-oca:ocpp:uid:2:233123\r\nElectric Vehicle Supply Equipment\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.EVSE",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.EVSE",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -98,7 +98,7 @@
     },
     "VariableType": {
       "description": "Reference key to a component-variable.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v20.message.centralserver.Variable",
+      "javaType": "com.evbox.everon.ocpp.v201.message.centralserver.Variable",
       "type": "object",
       "additionalProperties": false,
       "properties": {

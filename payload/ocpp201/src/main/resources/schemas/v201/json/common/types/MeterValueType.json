@@ -165,7 +165,7 @@
     }
   },
   "MeterValueType": {
-    "javaType": "com.evbox.everon.ocpp.v20.message.common.MeterValue",
+    "javaType": "com.evbox.everon.ocpp.v201.message.common.MeterValue",
     "type": "object",
     "additionalProperties": true,
     "properties": {

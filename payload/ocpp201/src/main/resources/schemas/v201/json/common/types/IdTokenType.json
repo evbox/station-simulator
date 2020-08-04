@@ -33,7 +33,7 @@
         ]
     },
     "IdTokenType": {
-        "javaType": "com.evbox.everon.ocpp.v20.message.common.IdToken",
+        "javaType": "com.evbox.everon.ocpp.v201.message.common.IdToken",
         "additionalProperties": true,
         "properties": {
             "additionalInfo": {
