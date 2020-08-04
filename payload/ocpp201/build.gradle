@@ -70,8 +70,8 @@ class OcppGeneratorRuleFactory extends RuleFactory {
 apply plugin: 'jsonschema2pojo'
 
 jsonSchema2Pojo {
-    source = files("${sourceSets.main.output.resourcesDir}/schemas/v20/json")
-    targetPackage = "com.evbox.everon.ocpp.v20.message"
+    source = files("${sourceSets.main.output.resourcesDir}/schemas/v201/json")
+    targetPackage = "com.evbox.everon.ocpp.v201.message"
 }
 
 dependencies {
