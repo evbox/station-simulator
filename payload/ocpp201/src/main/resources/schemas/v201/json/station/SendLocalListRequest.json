@@ -37,7 +37,7 @@
     },
     "IdTokenEnumType": {
       "description": "Enumeration of possible idToken types.\r\n",
-      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdToken",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdTokenType",
       "type": "string",
       "additionalProperties": false,
       "enum": [
