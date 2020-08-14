@@ -4,8 +4,9 @@
   "comment": "OCPP 2.0 - v1p0",
   "definitions": {
     "EncodingMethodEnumType": {
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.EncodingMethod",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "Other",
         "DLMS Message",
@@ -14,8 +15,9 @@
       ]
     },
     "LocationEnumType": {
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Location",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "Body",
         "Cable",
@@ -25,8 +27,9 @@
       ]
     },
     "MeasurandEnumType": {
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Measurand",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "Current.Export",
         "Current.Import",
@@ -56,8 +59,9 @@
       ]
     },
     "PhaseEnumType": {
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.Phase",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "L1",
         "L2",
@@ -72,8 +76,9 @@
       ]
     },
     "ReadingContextEnumType": {
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.ReadingContext",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "Interruption.Begin",
         "Interruption.End",
@@ -86,8 +91,9 @@
       ]
     },
     "SignatureMethodEnumType": {
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.SignatureMethod",
       "type": "string",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "enum": [
         "ECDSAP256SHA256",
         "ECDSAP384SHA384",
