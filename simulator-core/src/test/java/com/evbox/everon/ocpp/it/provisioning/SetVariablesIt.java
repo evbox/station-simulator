@@ -7,9 +7,9 @@ import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.Heartbeat
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.EVConnectionTimeOutVariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxCtrlrComponent;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesResponse;
+import com.evbox.everon.ocpp.v201.message.centralserver.Attribute;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariablesRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariablesResponse;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
@@ -31,7 +31,7 @@ class SetVariablesIt extends StationSimulatorSetUp {
                 "ReservationFeature",
                 "ReserveConnectorZeroSupported",
                 "true",
-                SetVariableDatum.AttributeType.TARGET);
+                Attribute.TARGET);
 
         Call call = new Call(DEFAULT_CALL_ID, ActionType.SET_VARIABLES, setVariablesRequest);
 
@@ -55,7 +55,7 @@ class SetVariablesIt extends StationSimulatorSetUp {
                 OCPPCommCtrlrComponent.NAME,
                 HeartbeatIntervalVariableAccessor.NAME,
                 String.valueOf(newHeartbeatInterval),
-                SetVariableDatum.AttributeType.ACTUAL);
+                Attribute.ACTUAL);
 
         shouldSetHeartbeatIntervalWithSetVariablesRequestImpl(setVariablesRequest, newHeartbeatInterval);
     }
@@ -69,7 +69,7 @@ class SetVariablesIt extends StationSimulatorSetUp {
                 OCPPCommCtrlrComponent.NAME.toUpperCase(),
                 HeartbeatIntervalVariableAccessor.NAME.toUpperCase(),
                 String.valueOf(newHeartbeatInterval),
-                SetVariableDatum.AttributeType.ACTUAL);
+                Attribute.ACTUAL);
 
         shouldSetHeartbeatIntervalWithSetVariablesRequestImpl(setVariablesRequest, newHeartbeatInterval);
     }
@@ -84,7 +84,7 @@ class SetVariablesIt extends StationSimulatorSetUp {
                 TxCtrlrComponent.NAME,
                 EVConnectionTimeOutVariableAccessor.NAME,
                 String.valueOf(evConnectionTimeout),
-                SetVariableDatum.AttributeType.ACTUAL);
+                Attribute.ACTUAL);
 
         Call call = new Call(DEFAULT_CALL_ID, ActionType.SET_VARIABLES, setVariablesRequest);
 
