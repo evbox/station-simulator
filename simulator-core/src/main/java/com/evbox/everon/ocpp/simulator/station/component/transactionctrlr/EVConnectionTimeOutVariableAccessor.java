@@ -9,19 +9,17 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
-import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
-import com.evbox.everon.ocpp.v20.message.station.VariableAttribute;
-import com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
+import com.evbox.everon.ocpp.v201.message.centralserver.Attribute;
+import com.evbox.everon.ocpp.v201.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.Component;
+import com.evbox.everon.ocpp.v201.message.station.Variable;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.evbox.everon.ocpp.v20.message.station.VariableCharacteristics.DataType.INTEGER;
+import static com.evbox.everon.ocpp.v201.message.station.Data.INTEGER;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
@@ -65,21 +63,21 @@ public class EVConnectionTimeOutVariableAccessor extends VariableAccessor {
     }
 
     @Override
-    public List<ReportDatum> generateReportData(String componentName) {
+    public List<ReportData> generateReportData(String componentName) {
         Component component = new Component()
                 .withName(new CiString.CiString50(componentName));
 
         int evConnectionTimeOut = getStationStore().getEVConnectionTimeOut();
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString1000(String.valueOf(evConnectionTimeOut)))
-                .withPersistence(false)
+                .withValue(new CiString.CiString2500(String.valueOf(evConnectionTimeOut)))
+                .withPersistent(false)
                 .withConstant(false);
 
         VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
                 .withDataType(INTEGER)
                 .withSupportsMonitoring(false);
 
-        ReportDatum reportDatum = new ReportDatum()
+        ReportData reportDatum = new ReportData()
                 .withComponent(component)
                 .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
                 .withVariableCharacteristics(variableCharacteristics)
@@ -95,12 +93,12 @@ public class EVConnectionTimeOutVariableAccessor extends VariableAccessor {
         SetVariableResult setVariableResult = new SetVariableResult()
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
-                .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
+                .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()));
 
         if (!isNumeric(attributeValue.toString())) {
-            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.INVALID_VALUE);
+            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED); //TODO check that this corresponds to INVALID_VALUE in OCPP 2.0
         } else {
-            return setVariableResult.withAttributeStatus(SetVariableResult.AttributeStatus.ACCEPTED);
+            return setVariableResult.withAttributeStatus(SetVariableStatus.ACCEPTED);
         }
     }
 
@@ -113,10 +111,10 @@ public class EVConnectionTimeOutVariableAccessor extends VariableAccessor {
         int evConnectionTimeOut = getStationStore().getEVConnectionTimeOut();
 
         return new GetVariableResult()
-                .withAttributeStatus(GetVariableResult.AttributeStatus.ACCEPTED)
+                .withAttributeStatus(GetVariableStatus.ACCEPTED)
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
-                .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeValue(new CiString.CiString1000(String.valueOf(evConnectionTimeOut)));
+                .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
+                .withAttributeValue(new CiString.CiString2500(String.valueOf(evConnectionTimeOut)));
     }
 }
