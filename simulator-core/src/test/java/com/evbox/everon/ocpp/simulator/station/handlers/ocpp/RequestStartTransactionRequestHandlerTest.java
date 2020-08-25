@@ -4,12 +4,17 @@ import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.factory.OcppMessageFactory;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.*;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
-import com.evbox.everon.ocpp.v20.message.common.IdToken;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.IdToken;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartStopStatus;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartTransactionRequest;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartTransactionResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -22,7 +27,7 @@ import java.util.Optional;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +74,7 @@ public class RequestStartTransactionRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         RequestStartTransactionResponse response = (RequestStartTransactionResponse) responseCaptor.getValue();
-        assertThat(response.getStatus()).isEqualTo(RequestStartTransactionResponse.Status.ACCEPTED);
+        assertThat(response.getStatus()).isEqualTo(RequestStartStopStatus.ACCEPTED);
     }
 
     @Test
@@ -83,7 +88,7 @@ public class RequestStartTransactionRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         RequestStartTransactionResponse response = (RequestStartTransactionResponse) responseCaptor.getValue();
-        assertThat(response.getStatus()).isEqualTo(RequestStartTransactionResponse.Status.REJECTED);
+        assertThat(response.getStatus()).isEqualTo(RequestStartStopStatus.REJECTED);
     }
 
     @Test
@@ -94,7 +99,7 @@ public class RequestStartTransactionRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         RequestStartTransactionResponse response = (RequestStartTransactionResponse) responseCaptor.getValue();
-        assertThat(response.getStatus()).isEqualTo(RequestStartTransactionResponse.Status.REJECTED);
+        assertThat(response.getStatus()).isEqualTo(RequestStartStopStatus.REJECTED);
     }
 
     @Test
@@ -108,7 +113,7 @@ public class RequestStartTransactionRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         RequestStartTransactionResponse response = (RequestStartTransactionResponse) responseCaptor.getValue();
-        assertThat(response.getStatus()).isEqualTo(RequestStartTransactionResponse.Status.REJECTED);
+        assertThat(response.getStatus()).isEqualTo(RequestStartStopStatus.REJECTED);
     }
 
     @Test
@@ -121,7 +126,7 @@ public class RequestStartTransactionRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         RequestStartTransactionResponse response = (RequestStartTransactionResponse) responseCaptor.getValue();
-        assertThat(response.getStatus()).isEqualTo(RequestStartTransactionResponse.Status.REJECTED);
+        assertThat(response.getStatus()).isEqualTo(RequestStartStopStatus.REJECTED);
     }
 
 }
