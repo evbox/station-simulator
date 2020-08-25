@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.message;
 
-import com.evbox.everon.ocpp.v20.message.station.HeartbeatResponse;
+import com.evbox.everon.ocpp.v201.message.station.HeartbeatResponse;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneOffset;
