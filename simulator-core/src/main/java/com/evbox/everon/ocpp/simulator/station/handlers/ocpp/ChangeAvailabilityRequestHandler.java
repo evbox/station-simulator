@@ -3,7 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityStateMapper;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
+import com.evbox.everon.ocpp.v201.message.station.ChangeAvailabilityRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -64,7 +64,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
     }
 
     private boolean isChangeEvseAvailability(ChangeAvailabilityRequest request) {
-        return request.getEvseId() != 0;
+        return request.getEvse().getId() != 0;
     }
 
 }
