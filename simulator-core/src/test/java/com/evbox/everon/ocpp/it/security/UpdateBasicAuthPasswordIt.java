@@ -4,8 +4,8 @@ import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.Attribute;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariablesRequest;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
@@ -29,7 +29,7 @@ public class UpdateBasicAuthPasswordIt extends StationSimulatorSetUp {
                 SECURITY_COMPONENT_NAME,
                 BASIC_AUTH_PASSWORD_VARIABLE_NAME,
                 expectedPassword,
-                SetVariableDatum.AttributeType.ACTUAL);
+                Attribute.ACTUAL);
 
         Call call = new Call(DEFAULT_CALL_ID, ActionType.SET_VARIABLES, setVariablesRequest);
 
