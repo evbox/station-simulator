@@ -12,7 +12,8 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.ChargingState;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
