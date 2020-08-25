@@ -8,8 +8,8 @@ import com.evbox.everon.ocpp.mock.expect.ExpectedCount;
 import com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator;
 import com.evbox.everon.ocpp.simulator.StationSimulatorRunner;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
-import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.StationConfiguration;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.MeterValuesConfiguration;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration.StationConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationMessage;
 import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.atLeastOnce;
-import static com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest.Reason.POWER_UP;
+import static com.evbox.everon.ocpp.v201.message.station.BootReason.POWER_UP;
 
 public class StationSimulatorSetUp  {
 
