@@ -6,18 +6,20 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v201.message.centralserver.Component;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableStatus;
+import com.evbox.everon.ocpp.v201.message.centralserver.Variable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.evbox.everon.ocpp.mock.constants.VariableConstants.*;
+import static com.evbox.everon.ocpp.mock.constants.VariableConstants.TRANSACTION_COMPONENT_NAME;
+import static com.evbox.everon.ocpp.mock.constants.VariableConstants.TX_START_POINT_VARIABLE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +52,7 @@ public class TxStartPointVariableAccessorTest {
 
         assertThat(result.getComponent().getName().toString()).isEqualTo(TRANSACTION_COMPONENT_NAME);
         assertThat(result.getVariable().getName().toString()).isEqualTo(TX_START_POINT_VARIABLE_NAME);
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableResult.AttributeStatus.ACCEPTED);
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.ACCEPTED);
     }
 
     @Test
@@ -61,7 +63,7 @@ public class TxStartPointVariableAccessorTest {
 
         assertThat(result.getComponent().getName().toString()).isEqualTo(TRANSACTION_COMPONENT_NAME);
         assertThat(result.getVariable().getName().toString()).isEqualTo(TX_START_POINT_VARIABLE_NAME);
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableResult.AttributeStatus.ACCEPTED);
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.ACCEPTED);
     }
 
     @Test
@@ -72,7 +74,7 @@ public class TxStartPointVariableAccessorTest {
 
         SetVariableResult result = setVariableValidator.validate(attributePath(), invalidValues);
 
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableResult.AttributeStatus.INVALID_VALUE);
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);//TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
     }
 
     private AttributePath attributePath() {
