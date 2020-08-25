@@ -3,8 +3,9 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.v20.message.station.UnlockConnectorRequest;
-import com.evbox.everon.ocpp.v20.message.station.UnlockConnectorResponse;
+import com.evbox.everon.ocpp.v201.message.station.UnlockConnectorRequest;
+import com.evbox.everon.ocpp.v201.message.station.UnlockConnectorResponse;
+import com.evbox.everon.ocpp.v201.message.station.UnlockStatus;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
@@ -35,10 +36,10 @@ public class UnlockConnectorRequestHandler implements OcppRequestHandler<UnlockC
         Optional<Evse> evse = stationStore.tryFindEvse(evseId);
         if (evse.isPresent() && !evse.get().hasOngoingTransaction()) {
             evse.get().tryUnlockConnector();
-            stationMessageSender.sendCallResult(callId, new UnlockConnectorResponse().withStatus(UnlockConnectorResponse.Status.UNLOCKED));
+            stationMessageSender.sendCallResult(callId, new UnlockConnectorResponse().withStatus(UnlockStatus.UNLOCKED));
         } else {
             log.debug("Received UnlockConnectorRequest with invalid evseId: " + evseId);
-            stationMessageSender.sendCallResult(callId, new UnlockConnectorResponse().withStatus(UnlockConnectorResponse.Status.UNLOCK_FAILED));
+            stationMessageSender.sendCallResult(callId, new UnlockConnectorResponse().withStatus(UnlockStatus.UNLOCK_FAILED));
         }
     }
 }
