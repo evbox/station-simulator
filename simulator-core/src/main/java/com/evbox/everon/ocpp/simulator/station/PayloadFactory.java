@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.evbox.everon.ocpp.simulator.message.ObjectMapperHolder.JSON_OBJECT_MAPPER;
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.EventType.*;
+import static com.evbox.everon.ocpp.v201.message.station.TransactionEvent.*;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.toList;
 
@@ -37,16 +37,17 @@ public class PayloadFactory {
     SignCertificateRequest createSignCertificateRequest(String csr) {
         return new SignCertificateRequest()
                 .withCsr(new CiString.CiString5500(csr))
-                .withTypeOfCertificate(SignCertificateRequest.TypeOfCertificate.CHARGING_STATION_CERTIFICATE);
+                .withCertificateType(CertificateSigningUse.CHARGING_STATION_CERTIFICATE);
     }
 
-    AuthorizeRequest createAuthorizeRequest(String tokenId, List<Integer> evseIds) {
+    //TODO: this evseIds was removed from AuthorizeRequest in OCPP 2.0.1, remove from method signature
+    AuthorizeRequest createAuthorizeRequest(String tokenId, @SuppressWarnings("unused") List<Integer> evseIds) {
         AuthorizeRequest payload = new AuthorizeRequest();
-        if (!evseIds.isEmpty()) {
-            payload.setEvseId(evseIds);
-        }
+//        if (!evseIds.isEmpty()) {
+//            payload.setEvseId(evseIds);
+//        }
 
-        IdToken idToken = new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443);
+        IdToken idToken = new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443);
         payload.setIdToken(idToken);
 
         return payload;
@@ -54,13 +55,13 @@ public class PayloadFactory {
 
     StatusNotificationRequest createStatusNotification(int evseId, int connectorId, CableStatus cableStatus, Instant currentTime) {
         if (cableStatus == CableStatus.UNPLUGGED) {
-            return createStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.AVAILABLE, currentTime);
+            return createStatusNotification(evseId, connectorId, ConnectorStatus.AVAILABLE, currentTime);
         }
 
-        return createStatusNotification(evseId, connectorId, StatusNotificationRequest.ConnectorStatus.OCCUPIED, currentTime);
+        return createStatusNotification(evseId, connectorId, ConnectorStatus.OCCUPIED, currentTime);
     }
 
-    StatusNotificationRequest createStatusNotification(int evseId, int connectorId, StatusNotificationRequest.ConnectorStatus connectorStatus, Instant currentTime) {
+    StatusNotificationRequest createStatusNotification(int evseId, int connectorId, ConnectorStatus connectorStatus, Instant currentTime) {
         return new StatusNotificationRequest()
                     .withEvseId(evseId)
                     .withConnectorId(connectorId)
@@ -78,7 +79,7 @@ public class PayloadFactory {
         return payload;
     }
 
-    BootNotificationRequest createBootNotification(BootNotificationRequest.Reason reason) {
+    BootNotificationRequest createBootNotification(BootReason reason) {
         Modem modem = new Modem();
         modem.setIccid(new CiString.CiString20(StationHardwareData.MODEM_ICCID));
         modem.setImsi(new CiString.CiString20(StationHardwareData.MODEM_IMSI));
@@ -88,7 +89,7 @@ public class PayloadFactory {
 
         chargingStation.setVendorName(new CiString.CiString50(StationHardwareData.VENDOR_NAME));
         chargingStation.setModel(new CiString.CiString20(StationHardwareData.MODEL));
-        chargingStation.setSerialNumber(new CiString.CiString20(StationHardwareData.SERIAL_NUMBER));
+        chargingStation.setSerialNumber(new CiString.CiString25(StationHardwareData.SERIAL_NUMBER));
         chargingStation.setFirmwareVersion(new CiString.CiString50(StationHardwareData.FIRMWARE_VERSION));
 
         return new BootNotificationRequest()
@@ -96,49 +97,50 @@ public class PayloadFactory {
                 .withChargingStation(chargingStation);
     }
 
-    TransactionEventRequest createTransactionEventStart(String stationId, Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
-                                                        TransactionData.ChargingState chargingState, Integer remoteStartId,  Instant currentDateTime) {
+    TransactionEventRequest createTransactionEventStart(String stationId, Evse evse, Integer connectorId, TriggerReason reason, String tokenId,
+                                                        ChargingState chargingState, Integer remoteStartId,  Instant currentDateTime) {
 
-        TransactionData transactionData = new TransactionData()
-                .withId(new CiString.CiString36(evse.getTransaction().toString()))
+        Transaction transactionInfo = new Transaction()
+                .withTransactionId(new CiString.CiString36(evse.getTransaction().toString()))
                 .withRemoteStartId(remoteStartId)
                 .withChargingState(chargingState);
-        TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionData, STARTED, currentDateTime, evse.getSeqNoAndIncrement(), 0L);
+
+        TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionInfo, STARTED, currentDateTime, evse.getSeqNoAndIncrement(), 0L);
 
         if (tokenId != null) {
-            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443));
+            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443));
         }
 
         return payload;
     }
 
-    TransactionEventRequest createTransactionEventUpdate(String stationId, Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
-                                                         TransactionData.ChargingState chargingState, Instant currentDateTime, long powerConsumed) {
+    TransactionEventRequest createTransactionEventUpdate(String stationId, Evse evse, Integer connectorId, TriggerReason reason, String tokenId,
+                                                         ChargingState chargingState, Instant currentDateTime, long powerConsumed) {
 
-        TransactionData transactionData = new TransactionData()
-                .withId(new CiString.CiString36(evse.getTransaction().getTransactionId()))
+        Transaction transactionInfo = new Transaction()
+                .withTransactionId(new CiString.CiString36(evse.getTransaction().getTransactionId()))
                 .withChargingState(chargingState);
 
-        TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.UPDATED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
+        TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionInfo, TransactionEvent.UPDATED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
 
         if (tokenId != null) {
-            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443));
+            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443));
         }
 
         return payload;
     }
 
-    TransactionEventRequest createTransactionEventEnded(String stationId, Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason,
-                                                        TransactionData.StoppedReason stoppedReason, Instant currentDateTime, long powerConsumed) {
+    TransactionEventRequest createTransactionEventEnded(String stationId, Evse evse, Integer connectorId, TriggerReason reason,
+                                                        Reason stoppedReason, Instant currentDateTime, long powerConsumed) {
 
-        TransactionData transactionData = new TransactionData().withId(new CiString.CiString36(evse.getTransaction().toString()))
-                .withChargingState(TransactionData.ChargingState.SUSPENDED_EVSE)
+        Transaction transactionInfo = new Transaction().withTransactionId(new CiString.CiString36(evse.getTransaction().toString()))
+                .withChargingState(ChargingState.SUSPENDED_EV)
                 .withStoppedReason(stoppedReason);
 
-        return createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionData, TransactionEventRequest.EventType.ENDED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
+        return createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionInfo, TransactionEvent.ENDED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
     }
 
-    NotifyReportRequest createNotifyReportRequest(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportDatum> reportData) {
+    NotifyReportRequest createNotifyReportRequest(@Nullable Integer requestId, boolean tbc, int seqNo, ZonedDateTime generatedAt, List<ReportData> reportData) {
         NotifyReportRequest notifyReportRequest = new NotifyReportRequest()
                 .withGeneratedAt(generatedAt)
                 .withReportData(reportData)
@@ -150,19 +152,19 @@ public class PayloadFactory {
         return notifyReportRequest;
     }
 
-    private TransactionEventRequest createTransactionEvent(String stationId, Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
-                                                           TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, long powerConsumed) {
+    private TransactionEventRequest createTransactionEvent(String stationId, Integer evseId, Integer connectorId, TriggerReason reason, Transaction transactionData,
+                                                           TransactionEvent eventType, Instant currentDateTime, Integer seqNo, Long powerConsumed) {
         SampledValue sampledValue = new SampledValue()
-                .withSignedMeterValue(createSignedMeterValues(stationId, eventType, powerConsumed))
+                .withSignedMeterValue(createSignedMeterValues(stationId, eventType))
                 .withValue(getPowerConsumed(stationId, eventType, powerConsumed))
-                                        .withMeasurand(SampledValue.Measurand.ENERGY_ACTIVE_IMPORT_REGISTER);
+                                        .withMeasurand(Measurand.ENERGY_ACTIVE_IMPORT_REGISTER);
 
         if(STARTED.equals(eventType)) {
-            sampledValue.withContext(SampledValue.Context.TRANSACTION_BEGIN);
+            sampledValue.withContext(ReadingContext.TRANSACTION_BEGIN);
         }
 
         if (ENDED.equals(eventType)) {
-            sampledValue.withContext(SampledValue.Context.TRANSACTION_END);
+            sampledValue.withContext(ReadingContext.TRANSACTION_END);
         }
 
         MeterValue meterValue = new MeterValue()
@@ -172,7 +174,7 @@ public class PayloadFactory {
         return createTransactionEvent(evseId, connectorId, reason, transactionData, eventType, currentDateTime, seqNo, meterValues);
     }
 
-    private BigDecimal getPowerConsumed(String stationId, TransactionEventRequest.EventType eventType, long powerConsumed) {
+    private BigDecimal getPowerConsumed(String stationId, TransactionEvent eventType, long powerConsumed) {
         if (isV2GTransaction(stationId)) {
             return eventType == STARTED ? new BigDecimal(V2G_START) : new BigDecimal(V2G_START - powerConsumed);
         }
@@ -183,31 +185,33 @@ public class PayloadFactory {
         return stationId.toUpperCase().startsWith(V2G);
     }
 
-    private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TransactionEventRequest.TriggerReason reason, TransactionData transactionData,
-                                                           TransactionEventRequest.EventType eventType, Instant currentDateTime, Long seqNo, List<MeterValue> meterValues) {
+    private TransactionEventRequest createTransactionEvent(Integer evseId, Integer connectorId, TriggerReason reason, Transaction transactionInfo,
+                                                           TransactionEvent eventType, Instant currentDateTime, Integer seqNo, List<MeterValue> meterValues) {
         TransactionEventRequest transaction = new TransactionEventRequest();
         transaction.setEventType(eventType);
         transaction.setTimestamp(currentDateTime.atZone(ZoneOffset.UTC));
         transaction.setTriggerReason(reason);
         transaction.setSeqNo(seqNo);
-        transaction.setTransactionData(transactionData);
-        transaction.setEvse(new com.evbox.everon.ocpp.v20.message.common.Evse().withId(evseId).withConnectorId(connectorId));
+        transaction.setTransactionInfo(transactionInfo);
+        transaction.setEvse(new EVSE().withId(evseId).withConnectorId(connectorId));
 
         transaction.setMeterValue(meterValues);
         return transaction;
     }
 
-    private SignedMeterValue createSignedMeterValues(String stationId, TransactionEventRequest.EventType eventType, Long powerConsumed) {
+    //TODO check if old SignedMeterValue in src/main/resources/schemas/v201/json/common/types/MeterValueType.json still relevant ???
+    private SignedMeterValue createSignedMeterValues(String stationId, TransactionEvent eventType) {
         if (stationId.toUpperCase().contains(EICHRECHT) && eventType != UPDATED) {
             SignedMeterValue signedMeterValue =  new SignedMeterValue()
-                                                    .withEncodingMethod(SignedMeterValue.EncodingMethod.OTHER)
-                                                     .withEncodedMeterValue(new CiString.CiString512(powerConsumed.toString()))
-                                                    .withSignatureMethod(SignedMeterValue.SignatureMethod.ECDSA_192_SHA_256);
+                    .withEncodingMethod(new CiString.CiString50("Other")) //TODO check: Previously:   .withEncodingMethod(SignedMeterValue.EncodingMethod.OTHER)
+                    //TODO check: No longer needed: .withEncodedMeterValue(new CiString.CiString512(powerConsumed.toString()))
+                   .withSigningMethod(new CiString.CiString50("ECDSA192SHA256"))//TODO check: Previously.withSignatureMethod(SignedMeterValue.SignatureMethod.ECDSA_192_SHA_256);
+                   .withPublicKey(new CiString.CiString2500(PUBLIC_KEY));//TODO check: is the public key value correct?
 
             if (eventType == STARTED) {
-                signedMeterValue.withMeterValueSignature(new CiString.CiString2500(SIGNED_METER_START));
+                signedMeterValue.withSignedMeterData(new CiString.CiString2500(SIGNED_METER_START));
             } else {
-                signedMeterValue.withMeterValueSignature(new CiString.CiString2500(SIGNED_METER_STOP));
+                signedMeterValue.withSignedMeterData(new CiString.CiString2500(SIGNED_METER_STOP));
             }
 
             return signedMeterValue;
