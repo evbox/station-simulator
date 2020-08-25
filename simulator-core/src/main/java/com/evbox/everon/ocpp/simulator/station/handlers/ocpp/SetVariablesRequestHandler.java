@@ -8,10 +8,7 @@ import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder
 import com.evbox.everon.ocpp.simulator.station.component.exception.UnknownComponentException;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidationResult;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesResponse;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -41,7 +38,7 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
      */
     @Override
     public void handle(String callId, SetVariablesRequest request) {
-        List<SetVariableDatum> setVariableData = request.getSetVariableData();
+        List<SetVariableData> setVariableData = request.getSetVariableData();
 
         List<SetVariableValidationResult> results = validate(setVariableData);
 
@@ -53,7 +50,7 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
 
         results.stream()
                 .filter(SetVariableValidationResult::isAccepted)
-                .map(SetVariableValidationResult::getSetVariableDatum)
+                .map(SetVariableValidationResult::getSetVariableData)
                 .forEach(data -> {
                     CiString.CiString50 componentName = data.getComponent().getName();
                     Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(data.getComponent().getName());
@@ -62,7 +59,7 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
                 });
     }
 
-    private List<SetVariableValidationResult> validate(List<SetVariableDatum> setVariableData) {
+    private List<SetVariableValidationResult> validate(List<SetVariableData> setVariableData) {
         return setVariableData.stream().map(data -> {
             CiString.CiString50 componentName = data.getComponent().getName();
             Optional<StationComponent> optionalComponent = stationComponentsHolder.getComponent(componentName);
@@ -71,8 +68,8 @@ public class SetVariablesRequestHandler implements OcppRequestHandler<SetVariabl
                     .orElse(new SetVariableValidationResult(data, new SetVariableResult()
                             .withComponent(data.getComponent())
                             .withVariable(data.getVariable())
-                            .withAttributeType(SetVariableResult.AttributeType.fromValue(data.getAttributeType().value()))
-                            .withAttributeStatus(SetVariableResult.AttributeStatus.UNKNOWN_COMPONENT)
+                            .withAttributeType(Attribute.fromValue(data.getAttributeType().value()))
+                            .withAttributeStatus(SetVariableStatus.UNKNOWN_COMPONENT)
                     ));
         }).collect(toList());
     }
