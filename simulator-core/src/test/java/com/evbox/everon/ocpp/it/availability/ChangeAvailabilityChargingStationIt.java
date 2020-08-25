@@ -20,9 +20,9 @@ import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.times;
 import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.createCall;
 import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createStationConfiguration;
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.UNAVAILABLE;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.UNAVAILABLE;
+import static com.evbox.everon.ocpp.v201.message.station.OperationalStatus.INOPERATIVE;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -65,9 +65,9 @@ public class ChangeAvailabilityChargingStationIt extends StationSimulatorSetUp {
         });
     }
 
-    String changeAvailabilityRequestWithStatus(ChangeAvailabilityRequest.OperationalStatus operationalStatus) {
+    String changeAvailabilityRequestWithStatus(OperationalStatus operationalStatus) {
         ChangeAvailabilityRequest changeAvailabilityRequest = new ChangeAvailabilityRequest()
-                .withEvseId(EVSE_ID_ZERO)
+                .withEvse(new EVSE().withId(EVSE_ID_ZERO))
                 .withOperationalStatus(operationalStatus);
 
         return createCall()
