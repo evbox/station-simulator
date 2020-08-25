@@ -2,11 +2,10 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityResponse;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +20,8 @@ import static com.evbox.everon.ocpp.mock.factory.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.UNAVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.INOPERATIVE;
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
+import static com.evbox.everon.ocpp.v201.message.station.OperationalStatus.INOPERATIVE;
+import static com.evbox.everon.ocpp.v201.message.station.OperationalStatus.OPERATIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,7 +49,7 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withStatus(EvseStatus.AVAILABLE)
                 .withConnectorId(DEFAULT_CONNECTOR_ID)
-                .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
+                .withConnectorStatus(ConnectorStatus.AVAILABLE)
                 .withCableStatus(CableStatus.UNPLUGGED)
                 .withTransaction(EvseTransaction.NONE)
                 .build();
@@ -58,7 +57,7 @@ public class ChangeEvseAvailabilityRequestTest {
         when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
         // when
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);
 
         availabilityManager.changeEvseAvailability(DEFAULT_MESSAGE_ID, request, AVAILABLE);
 
@@ -67,7 +66,7 @@ public class ChangeEvseAvailabilityRequestTest {
 
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
-        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.ACCEPTED);
+        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityStatus.ACCEPTED);
 
     }
 
@@ -78,20 +77,20 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withStatus(EvseStatus.AVAILABLE)
                 .withConnectorId(DEFAULT_CONNECTOR_ID)
-                .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
+                .withConnectorStatus(ConnectorStatus.AVAILABLE)
                 .withCableStatus(CableStatus.UNPLUGGED)
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
         when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(INOPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(INOPERATIVE);
 
         availabilityManager.changeEvseAvailability(DEFAULT_MESSAGE_ID, request, UNAVAILABLE);
 
         assertAll(
                 () -> assertThat(evse.getEvseStatus()).isEqualTo(UNAVAILABLE),
-                () -> assertThat(evse.getConnectors().get(0).getConnectorStatus()).isEqualTo(StatusNotificationRequest.ConnectorStatus.UNAVAILABLE)
+                () -> assertThat(evse.getConnectors().get(0).getConnectorStatus()).isEqualTo(ConnectorStatus.UNAVAILABLE)
         );
 
     }
@@ -103,14 +102,14 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withStatus(UNAVAILABLE)
                 .withConnectorId(DEFAULT_CONNECTOR_ID)
-                .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
+                .withConnectorStatus(ConnectorStatus.AVAILABLE)
                 .withCableStatus(CableStatus.UNPLUGGED)
                 .withTransaction(EvseTransaction.NONE)
                 .build();
 
         when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);
 
         availabilityManager.changeEvseAvailability(DEFAULT_MESSAGE_ID, request, AVAILABLE);
 
@@ -118,7 +117,7 @@ public class ChangeEvseAvailabilityRequestTest {
 
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
-        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.ACCEPTED);
+        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityStatus.ACCEPTED);
 
         Connector connector = evse.getConnectors().get(0);
 
@@ -134,14 +133,14 @@ public class ChangeEvseAvailabilityRequestTest {
                 .withId(DEFAULT_EVSE_ID)
                 .withStatus(EvseStatus.AVAILABLE)
                 .withConnectorId(DEFAULT_CONNECTOR_ID)
-                .withConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE)
+                .withConnectorStatus(ConnectorStatus.AVAILABLE)
                 .withCableStatus(CableStatus.UNPLUGGED)
                 .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, IN_PROGRESS))
                 .build();
 
         when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(INOPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(INOPERATIVE);
 
         availabilityManager.changeEvseAvailability(DEFAULT_MESSAGE_ID, request, UNAVAILABLE);
 
@@ -150,7 +149,7 @@ public class ChangeEvseAvailabilityRequestTest {
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
         assertAll(
-                () -> assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.SCHEDULED),
+                () -> assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityStatus.SCHEDULED),
                 () -> assertThat(evse.getScheduledNewEvseStatus()).isEqualTo(UNAVAILABLE)
         );
 
@@ -162,7 +161,7 @@ public class ChangeEvseAvailabilityRequestTest {
 
         when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenThrow(new IllegalArgumentException());
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);
 
         availabilityManager.changeEvseAvailability(DEFAULT_MESSAGE_ID, request, UNAVAILABLE);
 
@@ -170,7 +169,7 @@ public class ChangeEvseAvailabilityRequestTest {
 
         ChangeAvailabilityResponse response = changeAvailabilityResponseCaptor.getValue();
 
-        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityResponse.Status.REJECTED);
+        assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityStatus.REJECTED);
 
     }
 
