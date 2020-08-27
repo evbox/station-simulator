@@ -18,6 +18,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -61,20 +62,24 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
 
         //TODO ditto: previously in OCPP 2.0  each certificate in the chain was stored in a separate string. Verify that this still works in OCPP 2.0.1 with one signed PEM
         List<X509Certificate> stationCertificates = convertStringToCertificates(chain);
-        X509Certificate first = stationCertificates.get(0);
-        if (!stationCertificates.isEmpty() && isCertificateValid(first)) {
-            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.ACCEPTED));
-            stationStore.setStationCertificate(first);
-            startCertificateRenewerTask(first);
 
-            if (stationCertificates.size() > 1) {
-                List<X509Certificate> stationCertificateChain = new ArrayList<>();
-                stationCertificates.subList(1, stationCertificates.size()).forEach(c -> stationCertificateChain.add(c));
-                stationStore.setStationCertificateChain(stationCertificateChain);
+        if (!stationCertificates.isEmpty()) {
+            X509Certificate first = stationCertificates.get(0);
+            if(isCertificateValid(first)) {
+                stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.ACCEPTED));
+                stationStore.setStationCertificate(first);
+                startCertificateRenewerTask(first);
+
+                if (stationCertificates.size() > 1) {
+                    List<X509Certificate> stationCertificateChain = new ArrayList<>();
+                    stationCertificates.subList(1, stationCertificates.size()).forEach(c -> stationCertificateChain.add(c));
+                    stationStore.setStationCertificateChain(stationCertificateChain);
+                }
+                return;
             }
-        } else {
-            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.REJECTED));
         }
+        stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.REJECTED));
+
     }
 
     private void startCertificateRenewerTask(X509Certificate certificate) {
@@ -101,9 +106,8 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
         } catch (Exception e) {
             log.debug("Invalid certificate", e);
         }
-        return null;
+        return Collections.emptyList();
     }
-
 
 
     private boolean isCertificateValid(X509Certificate certificate) {
