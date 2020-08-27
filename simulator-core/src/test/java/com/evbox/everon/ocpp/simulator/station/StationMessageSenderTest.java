@@ -227,7 +227,7 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualPayload.getReason()).isEqualTo(BootReason.POWER_UP),
-                () -> assertThat(actualPayload.getChargingStation().getSerialNumber()).isEqualTo(new CiString.CiString20(DEFAULT_SERIAL_NUMBER)),
+                () -> assertThat(actualPayload.getChargingStation().getSerialNumber()).isEqualTo(new CiString.CiString25(DEFAULT_SERIAL_NUMBER)),
                 () -> assertThat(actualPayload.getChargingStation().getFirmwareVersion()).isEqualTo(new CiString.CiString50(DEFAULT_FIRMWARE_VERSION)),
                 () -> assertThat(actualPayload.getChargingStation().getModel()).isEqualTo(new CiString.CiString20(DEFAULT_MODEL))
         );
