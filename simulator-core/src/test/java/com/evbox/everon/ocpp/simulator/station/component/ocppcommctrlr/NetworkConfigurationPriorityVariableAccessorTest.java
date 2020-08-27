@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 class NetworkConfigurationPriorityVariableAccessorTest {
 
     private static final List<Integer> PRIORITY_LIST = Arrays.asList(1, 2, 3);
-    private static final CiString.CiString1000 NETWORK_CONFIGURATION_PRIORITY_ATTRIBUTE_LIST = new CiString.CiString1000(String.valueOf(PRIORITY_LIST));
+    private static final CiString.CiString2500 NETWORK_CONFIGURATION_PRIORITY_ATTRIBUTE_LIST = new CiString.CiString2500(String.valueOf(PRIORITY_LIST));
     private static final CiString.CiString1000 NETWORK_CONFIGURATION_PRIORITY_ATTRIBUTE_SINGLE = new CiString.CiString1000("1");
 
     @Mock(lenient = true)
