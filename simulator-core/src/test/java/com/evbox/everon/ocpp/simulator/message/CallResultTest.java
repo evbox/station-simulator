@@ -13,7 +13,10 @@ public class CallResultTest {
     @Test
     void shouldParsePayloadToSpecificType() {
         //given
-        String callResultJson = "[3,\n" + " \"19223201\",\n" + " {\n" + "   \"currentTime\": \"2013-02-01T20:53:32.0Z\",\n" + "   \"interval\": 300,\n" + "   \"status\": \"Accepted\"\n" + "} ]";
+        String callResultJson = "[3,\n" + " \"19223201\",\n" +
+                " {\n" +
+                "   \"currentTime\": \"2013-02-01T20:53:32.0Z\"\n" +
+                "} ]";
         CallResult callResult = CallResult.from(callResultJson);
 
         //when
