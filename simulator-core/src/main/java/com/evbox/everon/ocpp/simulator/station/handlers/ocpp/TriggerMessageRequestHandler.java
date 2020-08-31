@@ -2,8 +2,10 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.v20.message.station.TriggerMessageRequest;
-import com.evbox.everon.ocpp.v20.message.station.TriggerMessageResponse;
+import com.evbox.everon.ocpp.v201.message.station.MessageTrigger;
+import com.evbox.everon.ocpp.v201.message.station.TriggerMessageRequest;
+import com.evbox.everon.ocpp.v201.message.station.TriggerMessageResponse;
+import com.evbox.everon.ocpp.v201.message.station.TriggerMessageStatus;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Executor;
@@ -27,11 +29,11 @@ public class TriggerMessageRequestHandler implements OcppRequestHandler<TriggerM
 
     @Override
     public void handle(String callId, TriggerMessageRequest request) {
-        if (request.getRequestedMessage() == TriggerMessageRequest.RequestedMessage.SIGN_CHARGING_STATION_CERTIFICATE) {
+        if (request.getRequestedMessage() == MessageTrigger.SIGN_CHARGING_STATION_CERTIFICATE) {
             executor.execute(new SignCertificateRequestHandler(stationStore, stationMessageSender));
-            stationMessageSender.sendCallResult(callId, new TriggerMessageResponse().withStatus(TriggerMessageResponse.Status.ACCEPTED));
+            stationMessageSender.sendCallResult(callId, new TriggerMessageResponse().withStatus(TriggerMessageStatus.ACCEPTED));
         } else {
-            stationMessageSender.sendCallResult(callId, new TriggerMessageResponse().withStatus(TriggerMessageResponse.Status.REJECTED));
+            stationMessageSender.sendCallResult(callId, new TriggerMessageResponse().withStatus(TriggerMessageStatus.REJECTED));
         }
     }
 }

@@ -7,7 +7,7 @@ import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.OCCUPIED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIED;
 import static org.awaitility.Awaitility.await;
 
 public class StatusNotificationIt extends StationSimulatorSetUp {

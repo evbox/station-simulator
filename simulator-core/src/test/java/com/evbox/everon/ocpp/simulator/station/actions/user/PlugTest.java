@@ -11,10 +11,10 @@ import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationResponse;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+import com.evbox.everon.ocpp.v201.message.station.ChargingState;
+import com.evbox.everon.ocpp.v201.message.station.StatusNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.StatusNotificationResponse;
+import com.evbox.everon.ocpp.v201.message.station.TriggerReason;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,8 +85,8 @@ public class PlugTest {
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(2)).sendTransactionEventUpdate(anyInt(), anyInt(), any(TransactionEventRequest.TriggerReason.class),
-                isNull(), any(TransactionData.ChargingState.class));
+        verify(stationMessageSenderMock, times(2)).sendTransactionEventUpdate(anyInt(), anyInt(), any(TriggerReason.class),
+                isNull(), any(ChargingState.class));
 
     }
 
@@ -109,8 +109,8 @@ public class PlugTest {
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock).sendTransactionEventStart(anyInt(), anyInt(), any(TransactionEventRequest.TriggerReason.class),
-                any(TransactionData.ChargingState.class));
+        verify(stationMessageSenderMock).sendTransactionEventStart(anyInt(), anyInt(), any(TriggerReason.class),
+                any(ChargingState.class));
 
     }
 }

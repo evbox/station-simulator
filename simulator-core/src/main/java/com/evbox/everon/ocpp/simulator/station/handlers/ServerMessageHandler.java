@@ -1,7 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.handlers;
 
 import com.evbox.everon.ocpp.simulator.message.*;
-import com.evbox.everon.ocpp.simulator.station.*;
+import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseException;
@@ -9,8 +11,8 @@ import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,7 +67,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(SendLocalListRequest.class, new SendLocalListRequestHandler(stationMessageSender))
                 .put(SetNetworkProfileRequest.class, new SetNetworkProfileHandler(stationMessageSender, stationStore))
                 .put(CancelReservationRequest.class, new CancelReservationRequestHandler(stationMessageSender, stationStore))
-                .put(ReserveNowRequest.class, (callId, request) -> stationMessageSender.sendCallResult(callId, new ReserveNowResponse().withStatus(ReserveNowResponse.Status.REJECTED)))
+                .put(ReserveNowRequest.class, (callId, request) -> stationMessageSender.sendCallResult(callId, new ReserveNowResponse().withStatus(ReserveNowStatus.REJECTED)))
                 .put(CustomerInformationRequest.class, new CustomerInformationRequestHandler(stationMessageSender))
                 .build();
     }

@@ -2,10 +2,11 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionRequest;
-import com.evbox.everon.ocpp.v20.message.station.RequestStopTransactionResponse;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartStopStatus;
+import com.evbox.everon.ocpp.v201.message.station.RequestStopTransactionRequest;
+import com.evbox.everon.ocpp.v201.message.station.RequestStopTransactionResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
@@ -38,11 +39,11 @@ public class RequestStopTransactionRequestHandler implements OcppRequestHandler<
         String transactionId = request.getTransactionId().toString();
         Optional<Evse> evse = stationStore.tryFindEvseByTransactionId(transactionId);
         if (evse.isPresent()) {
-            stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.ACCEPTED));
+            stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStartStopStatus.ACCEPTED));
             stateManager.remoteStop(evse.get().getId());
         } else {
             log.debug("Received RequestStopTransactionRequest with invalid transactionID: " + transactionId);
-            stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStopTransactionResponse.Status.REJECTED));
+            stationMessageSender.sendCallResult(callId, new RequestStopTransactionResponse().withStatus(RequestStartStopStatus.REJECTED));
         }
     }
 }

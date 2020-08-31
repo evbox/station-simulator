@@ -1,8 +1,8 @@
 package com.evbox.everon.ocpp.simulator.message;
 
 import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
+import com.evbox.everon.ocpp.v201.message.station.*;
 
 import java.util.Arrays;
 

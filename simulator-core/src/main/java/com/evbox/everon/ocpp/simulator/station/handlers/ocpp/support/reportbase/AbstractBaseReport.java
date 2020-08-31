@@ -1,8 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.reportbase;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
-import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v201.message.station.GetBaseReportRequest;
+import com.evbox.everon.ocpp.v201.message.station.ReportData;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
@@ -23,7 +23,7 @@ public abstract class AbstractBaseReport {
 
     public abstract void generateAndRespond(String callId, GetBaseReportRequest request);
 
-    protected void sendNotifyReportRequests(List<ReportDatum> reportData, GetBaseReportRequest request) {
+    protected void sendNotifyReportRequests(List<ReportData> reportData, GetBaseReportRequest request) {
         int size = reportData.size();
         for (int seqNo = 0; seqNo < size; seqNo++) {
             ZonedDateTime now = ofInstant(clock.instant(), clock.getZone());

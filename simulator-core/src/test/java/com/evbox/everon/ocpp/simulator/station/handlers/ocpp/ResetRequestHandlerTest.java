@@ -7,11 +7,13 @@ import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetResponse;
-import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.Reset;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetResponse;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetStatus;
+import com.evbox.everon.ocpp.v201.message.station.BootReason;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
+import com.evbox.everon.ocpp.v201.message.station.TriggerReason;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,12 +44,12 @@ public class ResetRequestHandlerTest {
     @Test
     void verifyMessageOnImmediateResetRequestType() throws JsonProcessingException {
         ResetRequest request = OcppMessageFactory.createResetRequest()
-                .withType(ResetRequest.Type.IMMEDIATE)
+                .withType(Reset.IMMEDIATE)
                 .build();
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        ResetResponse payload = new ResetResponse().withStatus(ResetResponse.Status.ACCEPTED);
+        ResetResponse payload = new ResetResponse().withStatus(ResetStatus.ACCEPTED);
 
         ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(AbstractWebSocketClientInboxMessage.class);
 
@@ -65,7 +67,7 @@ public class ResetRequestHandlerTest {
     void verifyEventSending() {
         Evse evse = mock(Evse.class);
         ResetRequest request = OcppMessageFactory.createResetRequest()
-                .withType(ResetRequest.Type.IMMEDIATE)
+                .withType(Reset.IMMEDIATE)
                 .build();
 
         when(stationStore.getEvseIds()).thenReturn(Collections.singletonList(1));
@@ -77,14 +79,14 @@ public class ResetRequestHandlerTest {
 
         verify(stationStore).stopCharging(anyInt());
         verify(stationMessageSender).sendTransactionEventEndedAndSubscribe(anyInt(), anyInt(),
-                any(TransactionEventRequest.TriggerReason.class), any(TransactionData.StoppedReason.class), anyLong(), any(Subscriber.class));
+                any(TriggerReason.class), any(Reason.class), anyLong(), any(Subscriber.class));
 
     }
 
     @Test
     void verifyRebooting() {
         ResetRequest request = OcppMessageFactory.createResetRequest()
-                .withType(ResetRequest.Type.IMMEDIATE)
+                .withType(Reset.IMMEDIATE)
                 .build();
 
         when(stationStore.getEvseIds()).thenReturn(Collections.singletonList(1));
@@ -95,19 +97,19 @@ public class ResetRequestHandlerTest {
         verify(stationStore).clearTokens();
         verify(stationStore).clearTransactions();
         verify(stationMessageSender, times(3)).sendMessage(any(AbstractWebSocketClientInboxMessage.class));
-        verify(stationMessageSender).sendBootNotification(any(BootNotificationRequest.Reason.class));
+        verify(stationMessageSender).sendBootNotification(any(BootReason.class));
 
     }
 
     @Test
     void verifyMessageOnIdleResetRequestType() throws JsonProcessingException {
         ResetRequest request = OcppMessageFactory.createResetRequest()
-                .withType(ResetRequest.Type.ON_IDLE)
+                .withType(Reset.ON_IDLE)
                 .build();
 
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
-        ResetResponse payload = new ResetResponse().withStatus(ResetResponse.Status.ACCEPTED);
+        ResetResponse payload = new ResetResponse().withStatus(ResetStatus.ACCEPTED);
 
         ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(AbstractWebSocketClientInboxMessage.class);
 

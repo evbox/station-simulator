@@ -12,7 +12,8 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.ChargingState;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -20,8 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.AUTHORIZED;
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_START;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.AUTHORIZED;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.REMOTE_START;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
@@ -57,7 +58,7 @@ public class AvailableState extends AbstractEvseState {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                 evse.createTransaction(transactionId);
 
-                stationMessageSender.sendTransactionEventStart(evseId, connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+                stationMessageSender.sendTransactionEventStart(evseId, connectorId, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED); //TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
             }
             future.complete(UserMessageResult.SUCCESSFUL);
         });
@@ -75,7 +76,7 @@ public class AvailableState extends AbstractEvseState {
 
         CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
-            if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
+            if (response.getIdTokenInfo().getStatus() == AuthorizationStatus.ACCEPTED) {
                 List<Evse> authorizedEvses = hasEvses(response) ? getEvseList(response, stationStore) : singletonList(stationStore.getDefaultEvse());
 
                 authorizedEvses.forEach(evse -> evse.setToken(tokenId));
@@ -115,7 +116,7 @@ public class AvailableState extends AbstractEvseState {
 
         evse.setToken(tokenId);
 
-        stationMessageSender.sendStatusNotification(evse.getId(), connector.getId(), StatusNotificationRequest.ConnectorStatus.OCCUPIED);
+        stationMessageSender.sendStatusNotification(evse.getId(), connector.getId(), ConnectorStatus.OCCUPIED);
         stationMessageSender.sendTransactionEventStart(evse.getId(), connector.getId(), remoteStartId, REMOTE_START);
 
         Executors.newSingleThreadScheduledExecutor().schedule(() -> {
@@ -132,10 +133,10 @@ public class AvailableState extends AbstractEvseState {
     }
 
     private List<Evse> getEvseList(AuthorizeResponse response, StationStore stationStore) {
-        return response.getEvseId().stream().map(stationStore::findEvse).collect(toList());
+        return response.getIdTokenInfo().getEvseId().stream().map(stationStore::findEvse).collect(toList());//TODO OCPP 2.0 used to have evseIds on response, now inside idToken, is this correct???
     }
 
     private boolean hasEvses(AuthorizeResponse response) {
-        return response.getEvseId() != null && !response.getEvseId().isEmpty();
+        return response.getIdTokenInfo().getEvseId() != null && !response.getIdTokenInfo().getEvseId().isEmpty();//TODO OCPP 2.0 used to have evseIds on response, now inside idToken, is this correct???
     }
 }

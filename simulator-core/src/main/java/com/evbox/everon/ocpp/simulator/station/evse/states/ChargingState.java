@@ -8,15 +8,13 @@ import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStar
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.states.helpers.AuthorizeHelper;
-import com.evbox.everon.ocpp.v20.message.station.AuthorizeResponse;
-import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_STOP;
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.STOP_AUTHORIZED;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.REMOTE_STOP;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.STOP_AUTHORIZED;
 import static java.util.Collections.singletonList;
 
 /**
@@ -66,7 +64,7 @@ public class ChargingState extends AbstractEvseState {
         Evse evse = stationStore.findEvse(evseId);
         OptionList<TxStartStopPointVariableValues> stopPoints = stationStore.getTxStopPointValues();
 
-        if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
+        if (response.getIdTokenInfo().getStatus() == AuthorizationStatus.ACCEPTED) {
             evse.setToken(tokenId);
             int connectorId = stopCharging(stationMessageSender, evse);
 
@@ -74,7 +72,7 @@ public class ChargingState extends AbstractEvseState {
                 evse.stopTransaction();
                 evse.clearToken();
 
-                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, TransactionData.StoppedReason.DE_AUTHORIZED, evse.getWattConsumedLastSession());
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, STOP_AUTHORIZED, Reason.DE_AUTHORIZED, evse.getWattConsumedLastSession());
             }
             stateManager.setStateForEvse(evseId, new StoppedState());
             future.complete(UserMessageResult.SUCCESSFUL);
@@ -111,7 +109,7 @@ public class ChargingState extends AbstractEvseState {
 
         evse.stopCharging();
         Integer connectorId = evse.tryUnlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, REMOTE_STOP, TransactionData.ChargingState.EV_DETECTED);
+        stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, REMOTE_STOP, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);//TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
 
         stateManager.setStateForEvse(evseId, new RemotelyStoppedState());
     }
@@ -119,7 +117,7 @@ public class ChargingState extends AbstractEvseState {
     private int stopCharging(StationMessageSender stationMessageSender, Evse evse) {
         evse.stopCharging();
         Integer connectorId = evse.unlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, TransactionData.ChargingState.EV_DETECTED);
+        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);//TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
         return connectorId;
     }
 

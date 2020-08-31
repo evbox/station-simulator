@@ -2,9 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.v20.message.station.ConnectionData;
-import com.evbox.everon.ocpp.v20.message.station.SetNetworkProfileRequest;
-import com.evbox.everon.ocpp.v20.message.station.SetNetworkProfileResponse;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,14 +18,14 @@ public class SetNetworkProfileHandler implements OcppRequestHandler<SetNetworkPr
     @Override
     public void handle(String callId, SetNetworkProfileRequest request) {
         Optional.ofNullable(request.getConnectionData())
-                .filter(cd -> ConnectionData.OcppVersion.OCPP_20.equals(cd.getOcppVersion()) && ConnectionData.OcppTransport.JSON.equals(cd.getOcppTransport()))
+                .filter(cd -> OCPPVersion.OCPP_20.equals(cd.getOcppVersion()) && OCPPTransport.JSON.equals(cd.getOcppTransport()))
                 .ifPresentOrElse(connectionData -> {
                     stationStore.addNetworkConnectionProfile(request.getConfigurationSlot(), connectionData);
-                    stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileResponse.Status.ACCEPTED));
+                    stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileStatus.ACCEPTED));
                 },
                 () -> {
                     log.debug("Invalid request received!");
-                    stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileResponse.Status.REJECTED));
+                    stationMessageSender.sendCallResult(callId, new SetNetworkProfileResponse().withStatus(SetNetworkProfileStatus.REJECTED));
                 });
         }
 }

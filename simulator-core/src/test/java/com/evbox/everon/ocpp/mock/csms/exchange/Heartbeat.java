@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.mock.csms.exchange;
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
+import com.evbox.everon.ocpp.v201.message.station.HeartbeatResponse;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
@@ -31,6 +32,7 @@ public class Heartbeat {
         return incomingRequest -> JsonMessageTypeFactory.createCallResult()
                 .withMessageId(incomingRequest.getMessageId())
                 .withCurrentTime(serverTime.toString())
+                .withPayload(new HeartbeatResponse().withCurrentTime(serverTime))
                 .toJson();
     }
 }

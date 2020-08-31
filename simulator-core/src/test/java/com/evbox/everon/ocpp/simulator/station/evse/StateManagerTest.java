@@ -4,9 +4,10 @@ import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
+import com.evbox.everon.ocpp.simulator.station.evse.states.ChargingState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.*;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,11 +40,11 @@ class StateManagerTest {
     private ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor;
 
     private final AuthorizeResponse authorizeResponse = new AuthorizeResponse()
-                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED))
-                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
+                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)
+                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
     private final AuthorizeResponse notAuthorizeResponse = new AuthorizeResponse()
-                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.INVALID))
-                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID));
+                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.INVALID)
+                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
     @BeforeEach
     void setUp() {
@@ -56,7 +57,7 @@ class StateManagerTest {
     void verifyFullStateFlowPlugThenAuthorize() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
@@ -82,7 +83,7 @@ class StateManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         triggerAuthorizeAndGetResponse();
 
@@ -164,7 +165,7 @@ class StateManagerTest {
     void verifyStopChargingAndRestart() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
@@ -206,7 +207,7 @@ class StateManagerTest {
     @Test
     void verifyPlugAndUnplug() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, StatusNotificationRequest.ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());

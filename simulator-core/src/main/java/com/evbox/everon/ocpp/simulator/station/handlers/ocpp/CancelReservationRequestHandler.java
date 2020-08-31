@@ -3,11 +3,11 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.v20.message.common.Evse;
-import com.evbox.everon.ocpp.v20.message.station.CancelReservationRequest;
-import com.evbox.everon.ocpp.v20.message.station.CancelReservationResponse;
-import com.evbox.everon.ocpp.v20.message.station.Reservation;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
+import com.evbox.everon.ocpp.simulator.station.model.Reservation;
+import com.evbox.everon.ocpp.v201.message.station.CancelReservationRequest;
+import com.evbox.everon.ocpp.v201.message.station.CancelReservationResponse;
+import com.evbox.everon.ocpp.v201.message.station.CancelReservationStatus;
+import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,8 +23,8 @@ public class CancelReservationRequestHandler implements OcppRequestHandler<Cance
     @Override
     public void handle(String callId, CancelReservationRequest request) {
         Optional<Reservation> reservationOpt = stationStore.tryFindReservationById(request.getReservationId());
-        CancelReservationResponse cancelReservationResponse = reservationOpt.map(reservation -> new CancelReservationResponse().withStatus(CancelReservationResponse.Status.ACCEPTED))
-                .orElseGet(() -> new CancelReservationResponse().withStatus(CancelReservationResponse.Status.REJECTED));
+        CancelReservationResponse cancelReservationResponse = reservationOpt.map(reservation -> new CancelReservationResponse().withStatus(CancelReservationStatus.ACCEPTED))
+                .orElseGet(() -> new CancelReservationResponse().withStatus(CancelReservationStatus.REJECTED));
 
         reservationOpt.ifPresent(reservation -> {
             if(isConnectorReserved(reservation)) {
@@ -38,14 +38,14 @@ public class CancelReservationRequestHandler implements OcppRequestHandler<Cance
     private boolean isConnectorReserved(Reservation reservation) {
         return reservation.getEvse().getConnectorId() != null && stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId())
                     .map(Connector::getConnectorStatus)
-                    .map(status -> StatusNotificationRequest.ConnectorStatus.RESERVED.equals(status))
+                    .map(status -> ConnectorStatus.RESERVED.equals(status))
                     .orElse(false);
     }
 
     private void makeConnectorAvailable(Reservation reservation) {
         stationStore.tryFindConnector(reservation.getEvse().getId(), reservation.getEvse().getConnectorId())
-            .ifPresent(connector -> connector.setConnectorStatus(StatusNotificationRequest.ConnectorStatus.AVAILABLE));
+            .ifPresent(connector -> connector.setConnectorStatus(ConnectorStatus.AVAILABLE));
 
-        stationMessageSender.sendStatusNotification(reservation.getEvse().getId().intValue(), reservation.getEvse().getConnectorId().intValue(), StatusNotificationRequest.ConnectorStatus.AVAILABLE);
+        stationMessageSender.sendStatusNotification(reservation.getEvse().getId().intValue(), reservation.getEvse().getConnectorId().intValue(), ConnectorStatus.AVAILABLE);
     }
 }
