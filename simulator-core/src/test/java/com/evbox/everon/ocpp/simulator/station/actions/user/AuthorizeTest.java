@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_TOKEN_ID;
@@ -42,9 +43,9 @@ public class AuthorizeTest {
 
     Authorize authorize;
 
-    private final AuthorizeResponse authorizeResponse = new AuthorizeResponse()
-                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED));
-                                                            //TODO
+    private AuthorizeResponse authorizeResponse;
+
+    private static final Integer EVSE_ID = 1;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +53,13 @@ public class AuthorizeTest {
         this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.getEvseState()).thenReturn(new AvailableState());
-}
+
+        authorizeResponse = new AuthorizeResponse()
+                .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)
+                .withEvseId(Collections.singletonList(EVSE_ID)) //TODO this a VERY crude fix to failing test, consider refactoring
+                );
+
+    }
 
     @Test
     void shouldSetToken() {
