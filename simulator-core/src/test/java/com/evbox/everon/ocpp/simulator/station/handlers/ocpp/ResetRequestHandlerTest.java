@@ -23,8 +23,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.stream.IntStream;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_MESSAGE_ID;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -53,14 +55,14 @@ public class ResetRequestHandlerTest {
 
         ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(AbstractWebSocketClientInboxMessage.class);
 
-        verify(stationMessageSender).sendMessage(messageCaptor.capture());
+        verify(stationMessageSender, times(3)).sendMessage(messageCaptor.capture());
 
         String expectedCallResult = JsonMessageTypeFactory.createCallResult()
                 .withMessageId(DEFAULT_MESSAGE_ID)
                 .withPayload(payload)
                 .toJson();
 
-        assertThat(messageCaptor.getValue().getData().get()).isEqualTo(expectedCallResult);
+        assertThat(messageCaptor.getAllValues().get(0).getData().get()).isEqualTo(expectedCallResult);
     }
 
     @Test
@@ -78,8 +80,8 @@ public class ResetRequestHandlerTest {
         resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
         verify(stationStore).stopCharging(anyInt());
-        verify(stationMessageSender).sendTransactionEventEndedAndSubscribe(anyInt(), anyInt(),
-                any(TriggerReason.class), any(Reason.class), anyLong(), any(Subscriber.class));
+        verify(stationMessageSender).sendTransactionEventEnded(anyInt(), anyInt(),
+                any(TriggerReason.class), any(Reason.class), anyLong());
 
     }
 
@@ -113,14 +115,65 @@ public class ResetRequestHandlerTest {
 
         ArgumentCaptor<AbstractWebSocketClientInboxMessage> messageCaptor = ArgumentCaptor.forClass(AbstractWebSocketClientInboxMessage.class);
 
-        verify(stationMessageSender).sendMessage(messageCaptor.capture());
+        verify(stationMessageSender, times(3)).sendMessage(messageCaptor.capture());
 
         String expectedCallResult = JsonMessageTypeFactory.createCallResult()
                 .withMessageId(DEFAULT_MESSAGE_ID)
                 .withPayload(payload)
                 .toJson();
 
-        assertThat(messageCaptor.getValue().getData().get()).isEqualTo(expectedCallResult);
+        assertThat(messageCaptor.getAllValues().get(0).getData().get()).isEqualTo(expectedCallResult);
+    }
+
+    @Test
+    void verifyRebootingStationWithMultipleEvse() {
+        Evse evse = mock(Evse.class);
+        ResetRequest request = OcppMessageFactory.createResetRequest()
+                .withType(Reset.IMMEDIATE)
+                .build();
+
+        when(stationStore.getEvseIds()).thenReturn(IntStream.rangeClosed(1, 3).boxed().collect(toList()));
+        when(stationStore.hasOngoingTransaction(anyInt())).thenReturn(true);
+        when(stationStore.findEvse(anyInt())).thenReturn(evse);
+        when(evse.getWattConsumedLastSession()).thenReturn(0L);
+
+        resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
+
+        verify(stationMessageSender, times(3)).sendTransactionEventEnded(anyInt(), anyInt(),
+                any(TriggerReason.class), any(Reason.class), anyLong());
+        verify(stationMessageSender).sendBootNotification(any(BootReason.class));
+
+    }
+
+    @Test
+    void verifyResetEvseOngoingTransaction() {
+        Evse evse = mock(Evse.class);
+        final int evseId = 1;
+        ResetRequest request = OcppMessageFactory.createResetRequest()
+                .withType(Reset.IMMEDIATE)
+                .withEvse(evseId)
+                .build();
+        when(stationStore.hasOngoingTransaction(evseId)).thenReturn(true);
+        when(stationStore.findEvse(evseId)).thenReturn(evse);
+        when(evse.getWattConsumedLastSession()).thenReturn(0L);
+
+        resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
+        verify(stationMessageSender).sendTransactionEventEndedAndSubscribe(anyInt(), anyInt(),
+                any(TriggerReason.class), any(Reason.class), anyLong(), any(Subscriber.class));
+    }
+
+    @Test
+    void verifyResetEvse() {
+        final int evseId = 1;
+        ResetRequest request = OcppMessageFactory.createResetRequest()
+                .withType(Reset.IMMEDIATE)
+                .withEvse(evseId)
+                .build();
+        when(stationStore.hasOngoingTransaction(evseId)).thenReturn(false);
+
+        resetRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
+        verify(stationStore).clearTokens(evseId);
+        verify(stationStore).clearTransactions(evseId);
     }
 
 }

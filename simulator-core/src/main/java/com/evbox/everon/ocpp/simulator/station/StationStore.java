@@ -152,8 +152,16 @@ public class StationStore {
         evses.values().forEach(Evse::clearToken);
     }
 
+    public void clearTokens(int evseId) {
+        Optional.ofNullable(evses.get(evseId)).ifPresent(Evse::clearToken);
+    }
+
     public void clearTransactions() {
         evses.values().forEach(Evse::stopTransaction);
+    }
+
+    public void clearTransactions(int evseId) {
+        Optional.ofNullable(evses.get(evseId)).ifPresent(Evse::stopTransaction);
     }
 
     public List<Integer> getEvseIds() {
@@ -164,7 +172,9 @@ public class StationStore {
         return new ArrayList<>(evses.values());
     }
 
-    public void addNetworkConnectionProfile(Integer configurationSlot, NetworkConnectionProfile data) { networkConnectionProfiles.put(configurationSlot, data); }
+    public void addNetworkConnectionProfile(Integer configurationSlot, NetworkConnectionProfile data) {
+        networkConnectionProfiles.put(configurationSlot, data);
+    }
 
     public Map<Integer, NetworkConnectionProfile> getNetworkConnectionProfiles() {
         return networkConnectionProfiles;
