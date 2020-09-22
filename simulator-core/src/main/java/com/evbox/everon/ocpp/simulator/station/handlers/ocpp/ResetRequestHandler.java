@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.REMOTE_STOP;
+import static java.util.Objects.nonNull;
 
 /**
  * Handler for {@link ResetRequest} request.
@@ -35,8 +36,11 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
     @Override
     public void handle(String callId, ResetRequest request) {
         sendResponse(callId, new ResetResponse().withStatus(ResetStatus.ACCEPTED));
-        resetStation();
-
+        if (nonNull(request.getEvseId())) {
+            resetEvse(request.getEvseId());
+        } else {
+            resetStation();
+        }
     }
 
     private void sendResponse(String callId, Object payload) {
@@ -52,11 +56,26 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
                 state.stopCharging(evseId);
                 long powerConsumed = state.findEvse(evseId).getWattConsumedLastSession();
                 Integer connectorId = state.unlockConnector(evseId);
-                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, Reason.IMMEDIATE_RESET, powerConsumed, (request, response) -> reboot());
-            } else {
-                reboot();
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, REMOTE_STOP, Reason.IMMEDIATE_RESET, powerConsumed);
             }
         });
+        reboot();
+    }
+
+    void resetEvse(int evseId) {
+        if (state.hasOngoingTransaction(evseId)) {
+            state.stopCharging(evseId);
+            long powerConsumed = state.findEvse(evseId).getWattConsumedLastSession();
+            Integer connectorId = state.unlockConnector(evseId);
+            stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, Reason.IMMEDIATE_RESET, powerConsumed, (request, response) -> rebootEvse(evseId));
+        } else {
+            rebootEvse(evseId);
+        }
+    }
+
+    private void rebootEvse(int evseId) {
+        state.clearTokens(evseId);
+        state.clearTransactions(evseId);
     }
 
     private void reboot() {

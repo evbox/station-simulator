@@ -93,15 +93,22 @@ public class OcppMessageFactory {
     public static class ResetRequestBuilder {
 
         private Reset type;
+        private Integer evseId;
 
         public ResetRequestBuilder withType(Reset type) {
             this.type = type;
             return this;
         }
 
+        public ResetRequestBuilder withEvse(int evseId) {
+            this.evseId = evseId;
+            return this;
+        }
+
         public ResetRequest build() {
             ResetRequest resetRequest = new ResetRequest();
             resetRequest.setType(type);
+            resetRequest.setEvseId(evseId);
             return resetRequest;
         }
     }
