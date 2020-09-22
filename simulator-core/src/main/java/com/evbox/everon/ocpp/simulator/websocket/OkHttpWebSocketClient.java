@@ -42,7 +42,7 @@ public class OkHttpWebSocketClient {
     public void connect(String url) {
 
         Request.Builder requestBuilder = new Request.Builder().url(url)
-                .addHeader("Sec-WebSocket-Protocol", "ocpp2.0");
+                .addHeader("Sec-WebSocket-Protocol", "ocpp2.0.1");
 
         if (nonNull(stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().getBasicAuthPassword())) {
 
