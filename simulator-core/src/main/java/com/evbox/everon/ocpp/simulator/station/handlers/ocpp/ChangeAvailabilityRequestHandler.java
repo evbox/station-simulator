@@ -64,7 +64,7 @@ public class ChangeAvailabilityRequestHandler implements OcppRequestHandler<Chan
     }
 
     private boolean isChangeEvseAvailability(ChangeAvailabilityRequest request) {
-        return request.getEvse().getId() != 0;
+        return request.getEvse() != null;
     }
 
 }
