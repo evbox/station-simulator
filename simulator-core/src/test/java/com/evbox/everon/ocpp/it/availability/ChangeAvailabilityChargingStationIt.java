@@ -67,7 +67,6 @@ public class ChangeAvailabilityChargingStationIt extends StationSimulatorSetUp {
 
     String changeAvailabilityRequestWithStatus(OperationalStatus operationalStatus) {
         ChangeAvailabilityRequest changeAvailabilityRequest = new ChangeAvailabilityRequest()
-                .withEvse(new EVSE().withId(EVSE_ID_ZERO))
                 .withOperationalStatus(operationalStatus);
 
         return createCall()
