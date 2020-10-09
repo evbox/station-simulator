@@ -63,7 +63,7 @@ public class ChangeAvailabilityRequestHandlerTest {
     void shouldCallChangeStationAvailability() {
         when(availabilityStateMapperMock.mapFrom(eq(OPERATIVE))).thenReturn(AVAILABLE);
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(EVSE_ID_ZERO)).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withOperationalStatus(OPERATIVE);
 
         changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
