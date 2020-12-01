@@ -115,6 +115,14 @@ public class Evse {
         return lockedConnector.getId();
     }
 
+    public Integer getPluggedConnector(){
+        return connectors.stream()
+                .filter(Connector::isCablePlugged)
+                .findAny()
+                .map(Connector::getId)
+                .orElseThrow(() -> new IllegalStateException("Nothing is plugged in"));
+    }
+
     /**
      * Switch to non-charging state.
      */

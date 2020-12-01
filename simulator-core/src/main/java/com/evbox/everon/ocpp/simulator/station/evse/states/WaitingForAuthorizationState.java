@@ -16,8 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.AUTHORIZED;
-import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.REMOTE_START;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.*;
 import static java.util.Collections.singletonList;
 
 /**
@@ -54,7 +53,6 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         StationStore stationStore = stateManager.getStationStore();
         Evse evse = stationStore.findEvse(evseId);
-
         if (response.getIdTokenInfo().getStatus() == AuthorizationStatus.ACCEPTED) {
             evse.setToken(tokenId);
 
@@ -65,8 +63,11 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
                 stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId);
             }
 
-            int connectorId = startCharging(evse);
-            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
+            int connectorId = evse.getPluggedConnector();
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+
+            connectorId = startCharging(evse);
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, CHARGING_STATE_CHANGED, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
 
             stateManager.setStateForEvse(evseId, new ChargingState());
             future.complete(UserMessageResult.SUCCESSFUL);
