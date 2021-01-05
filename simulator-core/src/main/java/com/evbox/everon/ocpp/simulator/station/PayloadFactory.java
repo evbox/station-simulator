@@ -116,6 +116,13 @@ public class PayloadFactory {
         return payload;
     }
 
+    NotifyEVChargingNeedsRequest createNotifyEVChargingNeeds(Integer evseId){
+        return new NotifyEVChargingNeedsRequest()
+                .withEvseId(evseId)
+                .withChargingNeeds(new ChargingNeeds().withRequestedEnergyTransfer(ChargingNeeds.RequestedEnergyTransfer.AC_SINGLE_PHASE_CORE));
+
+    }
+
     TransactionEventRequest createTransactionEventUpdate(String stationId, Evse evse, Integer connectorId, TransactionEventRequest.TriggerReason reason, String tokenId,
                                                          TransactionData.ChargingState chargingState, Instant currentDateTime, long powerConsumed) {
 
