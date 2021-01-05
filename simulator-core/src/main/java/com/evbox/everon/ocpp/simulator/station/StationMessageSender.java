@@ -41,7 +41,7 @@ public class StationMessageSender {
      */
     private static final int MAX_CALLS = 1_000;
 
-    private static final String ISO_STATION = "ISO";
+    private static final String ISO_STATION_PREFIX = "ISO";
 
     private final StationStore stationStore;
     private final SubscriptionRegistry callRegistry;
@@ -454,7 +454,7 @@ public class StationMessageSender {
 
         sendPayloadOfType(ActionType.TRANSACTION_EVENT, transactionEvent);
 
-        if(stationId.toUpperCase().contains(ISO_STATION)){
+        if(stationId.toUpperCase().startsWith(ISO_STATION_PREFIX)){
             sendPayloadOfType(ActionType.NOTIFY_EV_CHARGING_NEEDS, payloadFactory.createNotifyEVChargingNeeds(evseId));
         }
     }
