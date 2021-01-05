@@ -41,6 +41,8 @@ public class StationMessageSender {
      */
     private static final int MAX_CALLS = 1_000;
 
+    private static final String ISO_STATION = "ISO";
+
     private final StationStore stationStore;
     private final SubscriptionRegistry callRegistry;
     private final WebSocketClient webSocketClient;
@@ -445,10 +447,16 @@ public class StationMessageSender {
     }
 
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TransactionEventRequest.TriggerReason reason, String tokenId, TransactionData.ChargingState chargingState) {
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationStore.getStationId(), stationStore.findEvse(evseId),
+        String stationId = stationStore.getStationId();
+
+        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationId, stationStore.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, remoteStartId, stationStore.getCurrentTime());
 
         sendPayloadOfType(ActionType.TRANSACTION_EVENT, transactionEvent);
+
+        if(stationId.toUpperCase().contains(ISO_STATION)){
+            sendPayloadOfType(ActionType.NOTIFY_EV_CHARGING_NEEDS, payloadFactory.createNotifyEVChargingNeeds(evseId));
+        }
     }
 
     private <T> void sendPayloadOfType(ActionType type, T payload) {

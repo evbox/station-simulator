@@ -38,6 +38,7 @@ public enum ActionType {
     NOTIFY_CUSTOMER_INFORMATION("NotifyCustomerInformation", NotifyCustomerInformationRequest.class, NotifyCustomerInformationResponse.class),
     CANCEL_RESERVATION("CancelReservation", CancelReservationRequest.class, CancelReservationResponse.class),
     DATA_TRANSFER("DataTransfer", DataTransferRequest.class, DataTransferResponse.class),
+    NOTIFY_EV_CHARGING_NEEDS("NotifyEVChargingNeeds", NotifyEVChargingNeedsRequest.class, NotifyEVChargingNeedsResponse.class),
     NOTIFY_CENTRAL_CHARGING_NEEDS("NotifyCentralChargingNeeds", NotifyCentralChargingNeedsRequest.class, NotifyCentralChargingNeedsResponse.class);
 
 
