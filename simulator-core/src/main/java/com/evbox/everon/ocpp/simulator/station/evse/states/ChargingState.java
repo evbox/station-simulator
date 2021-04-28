@@ -8,7 +8,10 @@ import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStar
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.states.helpers.AuthorizeHelper;
-import com.evbox.everon.ocpp.v201.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.AuthorizationStatus;
+import com.evbox.everon.ocpp.v201.message.station.AuthorizeResponse;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
+import com.evbox.everon.ocpp.v201.message.station.TriggerReason;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
@@ -94,6 +97,19 @@ public class ChargingState extends AbstractEvseState {
 
     @Override
     public CompletableFuture<UserMessageResult> onUnplug(int evseId, int connectorId) {
+        StationStore stationStore = stateManager.getStationStore();
+        StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
+        OptionList<TxStartStopPointVariableValues> stopPoints = stationStore.getTxStopPointValues();
+        if (stopPoints.contains(TxStartStopPointVariableValues.EV_CONNECTED) && stationStore.hasOngoingTransaction(evseId)) {
+            stateManager.setStateForEvse(evseId, new AvailableState());
+            Evse chargingEvse = stationStore.findEvse(evseId);
+            chargingEvse.stopCharging();
+            chargingEvse.unlockConnector();
+            chargingEvse.stopTransaction();
+            stationMessageSender.sendTransactionEventEnded(evseId, connectorId, TriggerReason.EV_COMMUNICATION_LOST, Reason.EV_DISCONNECTED, chargingEvse.getWattConsumedLastSession());
+
+            return CompletableFuture.completedFuture(UserMessageResult.SUCCESSFUL);
+        }
         return CompletableFuture.completedFuture(UserMessageResult.NOT_EXECUTED);
     }
 
