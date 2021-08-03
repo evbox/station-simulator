@@ -88,7 +88,9 @@ public class ConsoleReader {
     }
 
     private void showStationStore() {
+     System.out.println("START EVSE state");
         System.out.println(stations.get(selectedStation).getStateView()); //NOSONAR
+        System.out.println("END EVSE state");
     }
 
     private void showStationCertificate() {
