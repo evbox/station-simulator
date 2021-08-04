@@ -6,24 +6,22 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <title>EVSE simulator UI</title>
-
 </head>
 <body>
-<h1>Hello World!</h1>
-We are using Node.js <span id="node-version"></span>,
-Chromium <span id="chrome-version"></span>,
-and Electron <span id="electron-version"></span>.
-
+<h1>EVSE Simulator UI</h1>
 
 <button id="start">Start</button>
 <button id="stop">Stop</button>
 <button id="state">State</button>
 
-
-<div id="state-data"></div>
-
+<div id="state-interactive"></div>
 
 
-<script src="./renderer.js"></script>
+
+<pre id="stations-data"></pre>
+<pre id="state-data"></pre>
+
+
+<script src="./main.js"></script>
 </body>
 </html>
