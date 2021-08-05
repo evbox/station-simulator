@@ -10,17 +10,13 @@ import com.evbox.everon.ocpp.v201.message.station.CertificateSignedStatus;
 import com.evbox.everon.ocpp.v201.message.station.CertificateSigningUse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.util.encoders.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -46,21 +42,18 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
     }
 
     @Override
-    public void handle(String callId, CertificateSignedRequest request) {
+    public void handle(String callId, CertificateSignedRequest request){
         if (request.getCertificateType() == CertificateSigningUse.V_2_G_CERTIFICATE) {
             stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.REJECTED));
             return;
         }
 
-        //TODO previously in OCPP 2.0  each certificate in the chain was stored in a separate string. Verify that this still works in OCPP 2.0.1 with one signed PEM
         String chain = Optional.ofNullable(request.getCertificateChain()).map(CiString::toString).orElse("");
-
         if (chain.isEmpty()) {
             stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.REJECTED));
             return;
         }
 
-        //TODO ditto: previously in OCPP 2.0  each certificate in the chain was stored in a separate string. Verify that this still works in OCPP 2.0.1 with one signed PEM
         List<X509Certificate> stationCertificates = convertStringToCertificates(chain);
 
         if (!stationCertificates.isEmpty()) {
@@ -96,10 +89,9 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
         return scheduledFuture;
     }
 
-    //TODO ditto: previously in OCPP 2.0  each certificate in the chain was stored in a separate string. Verify that this still works in OCPP 2.0.1 with one signed PEM
-    private List<X509Certificate> convertStringToCertificates(String cert) {
+    private List<X509Certificate> convertStringToCertificates(String chain) {
         try {
-            byte[] bytes = Hex.decode(cert);
+            byte[] bytes = chain.getBytes();
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             InputStream in = new ByteArrayInputStream(bytes);
             return factory.generateCertificates(in).stream().map(certificate -> ((X509Certificate) certificate)).collect(Collectors.toList());

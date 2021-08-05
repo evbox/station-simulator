@@ -7,13 +7,10 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.v201.message.station.*;
 import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
@@ -23,7 +20,7 @@ public class UpdateChargingStationCertificateByRequestOfCSMSIt extends StationSi
 
     @Test
     void shouldRequestNewCertificate() throws IOException {
-        final String certificate = Resources.toString(Resources.getResource("derCertificates/validCertificate.der"), Charsets.UTF_8);
+        final String certificate = Resources.toString(Resources.getResource("pemCertificates/validCertificate.pem"), Charsets.UTF_8);
         final String pemCertificate = Resources.toString(Resources.getResource("pemCertificates/validCertificate.pem"), Charsets.UTF_8).replaceAll("\n", "");
 
         ocppMockServer
@@ -42,7 +39,6 @@ public class UpdateChargingStationCertificateByRequestOfCSMSIt extends StationSi
         assertThat(triggerResponse).isNotNull();
         assertThat(triggerResponse.getStatus().value()).isEqualTo(TriggerMessageStatus.ACCEPTED.value());
 
-        //TODO check that certificate is actually a "chain"
         CertificateSignedRequest certificateSignedRequest = new CertificateSignedRequest().withCertificateChain(new CiString.CiString10000(certificate));
         call = new Call(DEFAULT_CALL_ID, ActionType.CERTIFICATE_SIGNED, certificateSignedRequest);
         CertificateSignedResponse certificateResponse = ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson(), CertificateSignedResponse.class);
@@ -52,14 +48,6 @@ public class UpdateChargingStationCertificateByRequestOfCSMSIt extends StationSi
 
         String storedCertificate = stationSimulatorRunner.getStation(STATION_ID).getStateView().getStationCertificate();
         assertThat(storedCertificate.replaceAll("\n", "")).isEqualTo(pemCertificate);
-    }
-
-    //TODO consider removing given new certificate chain parameter OCPP 2.0 to OCPP 2.0.1
-    @SuppressWarnings("unused")
-    private List<CiString.CiString5500> stringToCiStringsList(String certificate) {
-        List<CiString.CiString5500> result = new ArrayList<>();
-        Splitter.fixedLength(5500).split(certificate).forEach(c -> result.add(new CiString.CiString5500(c)));
-        return result;
     }
 
 }
