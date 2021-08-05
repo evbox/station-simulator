@@ -1,27 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <!--    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+    <!--    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
     <title>EVSE simulator UI</title>
 </head>
+
 <body>
 <h1>EVSE Simulator UI</h1>
 
-<button id="start">Start</button>
-<button id="stop">Stop</button>
-<button id="state">State</button>
-
-<div id="state-interactive"></div>
+<div id="app">
+</div>
 
 
-
-<pre id="stations-data"></pre>
-<pre id="state-data"></pre>
-
-
-<script src="./main.js"></script>
+<script src="./app.js" type="module"></script>
 </body>
 </html>
