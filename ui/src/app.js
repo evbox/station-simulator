@@ -13,7 +13,7 @@ const Simulator = {
 
 //language=HTML
 const template = `
-    <div  v-if="!store.state.simulator">
+    <div v-if="!store.state.simulator">
         <label for="wsUrl">Target</label>
         <select v-model="store.state.config.ws" id="wsUrl" name="wsUrl">
             <option v-for="(value, name) in store.state.config.wsOptions" :key="name" :value="value">
@@ -23,16 +23,17 @@ const template = `
         <p> WebSocket:{{store.state.config.ws}}</p>
     </div>
 
+    <div>
+        <textarea name="" id="" cols="30" rows="10"
+                  v-model="store.configuration"></textarea>
+    </div>
+
     <div v-if="store.state.config.ws.includes('test')">
         <label for="adhoc">adHoc</label>
         <input type="text"
                name="adhoc"
                v-model="environment">
     </div>
-
-
-   
-
 
     <button @click="start(store.state.config.ws, environment)" v-if="!store.state.simulator">Start</button>
     <button @click="getSimState()" v-if="store.state.simulator">State</button>
@@ -73,18 +74,19 @@ const app = {
         //     console.log('mounted')
         // })
 
+
         function start(ws, adhoc) {
+            // https://myevbox.atlassian.net/wiki/spaces/EV/pages/2053931047/Configure+station
             if (ws.includes('${environment}')) {
                 ws = ws.replace('${environment}', adhoc)
             }
 
-            startSim(ws)
+            // the simulator only accepts single quoted JSON ¯\_(ツ)_/¯
+            startSim(ws, JSON.stringify(JSON.parse(store.configuration)).replaceAll('\"', '\''))
+            console.log('Connecting to:', ws)
         }
 
         store.state.config.ws = store.state.config.wsOptions['production']
-
-
-
         return {start, store, getSimState, stopSim, plug, unplug}
     },
     template: template

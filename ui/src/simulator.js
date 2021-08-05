@@ -22,9 +22,9 @@ function writeStateToStore(state) {
 
 }
 
-function startSim(ws) {
+function startSim(ws, configuration) {
     const command = './gradlew'
-    const args = ['run', `-Parguments="${ws} --configurationFile ./../configuration.yml"`]
+    const args = ['run', `-Parguments="${ws} --configuration ${configuration}"`]
     const dir = path.join(__dirname, '../')
     sim = spawn(command, args, {cwd: dir, shell: true});
     store.state.simulator = 'starting'

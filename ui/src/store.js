@@ -1,6 +1,8 @@
 import { reactive } from './../dependencies/vue.esm-browser.prod.js';
+import configuration from './configuration.js'
 
 export default reactive({
+    configuration: JSON.stringify(configuration, null, 2),
     state: {
         simulator: null,
         evse: null,
