@@ -1,9 +1,10 @@
 import * as Vue from './../dependencies/vue.esm-browser.prod.js';
-import {startSim, getSimState, stopSim, plug, unplug} from './simulator.js'
+import {startSim, getSimState, stopSim, plug, unplug, selectEvse, auth} from './simulator.js'
 import store from './store.js'
 
 //language=HTML
 const Simulator = {
+    //language=HTML
     template: `
         <div>
             component
@@ -13,7 +14,7 @@ const Simulator = {
 
 //language=HTML
 const template = `
-    <div v-if="!store.state.simulator">
+    <div v-if="!store.state.simulator.started">
         <label for="wsUrl">Target</label>
         <select v-model="store.state.config.ws" id="wsUrl" name="wsUrl">
             <option v-for="(value, name) in store.state.config.wsOptions" :key="name" :value="value">
@@ -32,12 +33,14 @@ const template = `
         <label for="adhoc">adHoc</label>
         <input type="text"
                name="adhoc"
-               v-model="environment">
+               v-model="adhoc">
     </div>
 
-    <button @click="start(store.state.config.ws, environment)" v-if="!store.state.simulator">Start</button>
-    <button @click="getSimState()" v-if="store.state.simulator">State</button>
-    <button @click="stopSim()" v-if="store.state.simulator">Stop</button>
+    <button @click="start(store.state.config.ws, adhoc)" v-if="!store.state.simulator.started">Start</button>
+    <div v-if="store.state.simulator.started">
+        <button @click="getSimState()">Update state</button>
+        <button @click="stopSim()">Stop</button>
+    </div>
 
     <ul v-if="store.state.evse">
         <li v-for="evse in store.state.evse.evses" :key="evse.id">
@@ -54,18 +57,36 @@ const template = `
                     <button @click="unplug(evse.id, connector.id)" v-if="connector.cableStatus !== 'UNPLUGGED'">Unplug
                         cable
                     </button>
+                    
+                    <div>
+                        <label for="rfid">RFID</label>
+                        <input type="text"
+                               name="rfid"
+                               v-model="rfid">
+                        <button @click="auth(rfid, evse.id)">Auth</button>
+                    </div>
+                    
                 </li>
             </ul>
         </li>
     </ul>
 
-    <pre> {{store.state.simulator}}</pre>
-    <pre> {{store.state.evse}}</pre>
+    <p>Evses</p>
+    <ul v-if="store.state.simulator.evses">
+        <li v-for="(evse, index) in store.state.simulator.evses" :key="evse.id">
+            <span>{{evse.id}}</span>
+            <span v-if="evse.selected">Selected</span>
+            <button v-if="!evse.selected" @click="selectEvse(index)">Select</button>
+        </li>
+    </ul>
+
+    <pre> sim:{{store.state.simulator}}</pre>
+    <pre> evse:{{store.state.evse}}</pre>
 `
 
 const app = {
     name: 'App',
-    components: {Simulator},
+    components: {},
 
     setup() {
         const {onMounted} = Vue;
@@ -87,7 +108,7 @@ const app = {
         }
 
         store.state.config.ws = store.state.config.wsOptions['production']
-        return {start, store, getSimState, stopSim, plug, unplug}
+        return {start, store, getSimState, stopSim, plug, unplug, selectEvse, auth}
     },
     template: template
 };

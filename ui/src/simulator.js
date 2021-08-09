@@ -9,15 +9,39 @@ function writeStateToStore(state) {
     const stateString = state.match(/START EVSE state([\s\S]*)END EVSE state/);
     console.log('stateString', stateString)
 
-    const stationsString = state.match(/List of stations:([\s\S]*)Select another/);
+    const stationsString = state.match(/List of stations:([\s\S]*?)Select another/);
     console.log('stationsString', stationsString)
 
-    if (stationsString?.length) {
-        store.state.simulator = stationsString[1]
+    const pluggedString = state.match(/evse([\s\S]*?)plugged/);
+    console.log('pluggedString', pluggedString)
+
+    const unpluggedString = state.match(/evse([\s\S]*?)unplugged/);
+    console.log('unpluggedString', unpluggedString)
+
+    if (stationsString?.length > 0) {
+        store.state.simulator.evses = stationsString[1].trim().split('\n').map(evse => {
+            console.log('evseLine', evse)
+            const evseModel = evse.split(':')
+            return {
+                id: evseModel[1],
+                selected: evseModel[0].includes('SELECTED')
+            }
+        })
+
+
+        if(store.state.simulator.started !== 'started') {
+            store.state.simulator.started = 'started'
+            getSimState()
+        }
+
     }
 
     if (stateString?.length) {
         store.state.evse = JSON.parse(stateString[1])
+    }
+
+    if (pluggedString || unpluggedString){
+        getSimState()
     }
 
 }
@@ -27,7 +51,7 @@ function startSim(ws, configuration) {
     const args = ['run', `-Parguments="${ws} --configuration ${configuration}"`]
     const dir = path.join(__dirname, '../')
     sim = spawn(command, args, {cwd: dir, shell: true});
-    store.state.simulator = 'starting'
+    store.state.simulator.started = 'starting'
 
     function stdoutWatcher() {
         return setTimeout(() => {
@@ -67,22 +91,35 @@ function getSimState() {
 function stopSim() {
     console.log('STOP')
     sim.kill('SIGINT');
-    store.state.simulator = false
-    store.state.evse = false
+    store.state.simulator.started = false
+    store.state.simulator.evses = null
+    store.state.evse = null
 }
 
-function plug(evse, connector){
+function plug(evse, connector) {
+    console.log('Pluging', evse, connector)
+    state = ''
     sim.stdin.write(`plug ${evse} ${connector}\r\n`);
-    getSimState()
 }
 
-function unplug(evse, connector){
+function unplug(evse, connector) {
+    console.log('Unpluging', evse, connector)
+    state = ''
     sim.stdin.write(`unplug ${evse} ${connector}\r\n`);
+}
+
+function selectEvse(evseIndex) {
+    state = ''
+    sim.stdin.write(`${evseIndex}\r\n`);
     getSimState()
 }
 
+function auth(tokenId, evseIndex) {
+    state = ''
+    sim.stdin.write(`auth ${tokenId} ${evseIndex}\r\n`);
+}
 
-export {startSim, getSimState, stopSim , plug, unplug}
+export {startSim, getSimState, stopSim, plug, unplug, selectEvse, auth}
 
 
 
