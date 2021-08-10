@@ -2,6 +2,7 @@ const path = require('path')
 const {spawn} = require('child_process')
 import store from './store.js'
 
+
 let sim = undefined
 let state = ''
 
@@ -47,9 +48,10 @@ function writeStateToStore(state) {
 }
 
 function startSim(ws, configuration) {
+    console.log('dir',__dirname)
     const command = './gradlew'
     const args = ['run', `-Parguments="${ws} --configuration ${configuration}"`]
-    const dir = path.join(__dirname, '../')
+    const dir = path.join(__dirname, '../../')
     sim = spawn(command, args, {cwd: dir, shell: true});
     store.state.simulator.started = 'starting'
 

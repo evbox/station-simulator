@@ -2,19 +2,18 @@
   "name": "ui-evse-simulator",
   "version": "1.0.0",
   "description": "Ui for EVSE CLI",
-  "main": "src/index.html",
+  "main": "src/main.js",
   "icon": "src/icon.svg",
   "frame": false,
   "scripts": {
-    "start": "nw --mixed-context",
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "carlos rodrigues",
   "license": "UNLICENCED",
-  "dependencies": {
-    "fastify": "^3.19.2"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "electron": "^13.1.9",
     "nw": "^0.55.0"
   }
 }
