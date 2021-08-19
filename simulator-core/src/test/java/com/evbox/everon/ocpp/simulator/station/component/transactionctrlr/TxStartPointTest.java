@@ -3,15 +3,15 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,7 +67,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(0)).createTransaction(anyString());
     }
 
@@ -80,9 +79,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(1)).createTransaction(anyString());
     }
 
@@ -97,7 +96,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(1)).createTransaction(anyString());
     }
 
@@ -108,9 +107,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(0)).createTransaction(anyString());
     }
 
@@ -125,7 +124,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(0)).createTransaction(anyString());
     }
 
@@ -136,9 +135,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(0)).createTransaction(anyString());
     }
 
@@ -151,9 +150,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(0)).createTransaction(anyString());
         verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForPlugState.NAME)));
 
@@ -163,7 +162,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(1)).createTransaction(anyString());
         verify(evseMock, times(1)).startCharging();
     }
@@ -179,7 +178,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(0)).createTransaction(anyString());
         verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForAuthorizationState.NAME)));
 
@@ -187,9 +186,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(1)).createTransaction(anyString());
         verify(evseMock, times(1)).startCharging();
     }
@@ -202,9 +201,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(1)).createTransaction(anyString());
     }
 
@@ -219,7 +218,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(1)).createTransaction(anyString());
     }
 
@@ -232,9 +231,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(0)).createTransaction(anyString());
         verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForPlugState.NAME)));
 
@@ -244,7 +243,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(1)).createTransaction(anyString());
         verify(evseMock, times(1)).startCharging();
     }
@@ -260,7 +259,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(0)).createTransaction(anyString());
         verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(WaitingForAuthorizationState.NAME)));
 
@@ -268,9 +267,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(1)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(1)).createTransaction(anyString());
         verify(evseMock, times(1)).startCharging();
     }
@@ -286,7 +285,7 @@ public class TxStartPointTest {
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);//TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         verify(evseMock, times(0)).createTransaction(anyString());
     }
 
@@ -297,9 +296,9 @@ public class TxStartPointTest {
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(IdTokenInfo.Status.ACCEPTED)).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
 
-        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TransactionEventRequest.TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
         verify(evseMock, times(0)).createTransaction(anyString());
     }
 

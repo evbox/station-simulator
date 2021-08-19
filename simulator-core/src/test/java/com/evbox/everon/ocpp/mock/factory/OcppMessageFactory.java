@@ -1,15 +1,12 @@
 package com.evbox.everon.ocpp.mock.factory;
 
 import com.evbox.everon.ocpp.common.CiString;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
-import com.evbox.everon.ocpp.v20.message.common.Evse;
-import com.evbox.everon.ocpp.v20.message.common.IdToken;
-import com.evbox.everon.ocpp.v20.message.common.MeterValue;
-import com.evbox.everon.ocpp.v20.message.common.SampledValue;
-import com.evbox.everon.ocpp.v20.message.station.AuthorizeRequest;
-import com.evbox.everon.ocpp.v20.message.station.RequestStartTransactionRequest;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.Attribute;
+import com.evbox.everon.ocpp.v201.message.centralserver.Component;
+import com.evbox.everon.ocpp.v201.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
+import com.evbox.everon.ocpp.v201.message.station.EVSE;
+import com.evbox.everon.ocpp.v201.message.station.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -55,7 +52,7 @@ public class OcppMessageFactory {
 
         public GetVariablesRequest build() {
 
-            GetVariableDatum getVariableDatum = new GetVariableDatum();
+            GetVariableData getVariableDatum = new GetVariableData();
             getVariableDatum.setComponent(component);
             getVariableDatum.setVariable(variable);
             GetVariablesRequest getVariablesRequest = new GetVariablesRequest();
@@ -68,20 +65,20 @@ public class OcppMessageFactory {
     public static class SetVariablesRequestBuilder extends SkeletonBuilder<SetVariablesRequestBuilder> {
 
         private CiString.CiString1000 attributeValue;
-        private SetVariableDatum.AttributeType attributeType = SetVariableDatum.AttributeType.ACTUAL;
+        private Attribute attributeType = Attribute.ACTUAL;
 
         public SetVariablesRequestBuilder withAttributeValue(String attributeValue) {
             this.attributeValue = new CiString.CiString1000(attributeValue);
             return this;
         }
 
-        public SetVariablesRequestBuilder withAttributeType(SetVariableDatum.AttributeType attributeType) {
+        public SetVariablesRequestBuilder withAttributeType(Attribute attributeType) {
             this.attributeType = attributeType;
             return this;
         }
 
         public SetVariablesRequest build() {
-            SetVariableDatum setVariableDatum = new SetVariableDatum();
+            SetVariableData setVariableDatum = new SetVariableData();
             setVariableDatum.setComponent(component);
             setVariableDatum.setVariable(variable);
             setVariableDatum.setAttributeValue(attributeValue);
@@ -95,16 +92,23 @@ public class OcppMessageFactory {
 
     public static class ResetRequestBuilder {
 
-        private ResetRequest.Type type;
+        private Reset type;
+        private Integer evseId;
 
-        public ResetRequestBuilder withType(ResetRequest.Type type) {
+        public ResetRequestBuilder withType(Reset type) {
             this.type = type;
+            return this;
+        }
+
+        public ResetRequestBuilder withEvse(int evseId) {
+            this.evseId = evseId;
             return this;
         }
 
         public ResetRequest build() {
             ResetRequest resetRequest = new ResetRequest();
             resetRequest.setType(type);
+            resetRequest.setEvseId(evseId);
             return resetRequest;
         }
     }
@@ -141,16 +145,16 @@ public class OcppMessageFactory {
 
     public static class GetVariablesResponseBuilder extends SkeletonBuilder<GetVariablesResponseBuilder> {
 
-        private GetVariableResult.AttributeStatus attributeStatus;
-        private CiString.CiString1000 attributeValue;
+        private GetVariableStatus attributeStatus;
+        private CiString.CiString2500 attributeValue;
 
-        public GetVariablesResponseBuilder withAttributeStatus(GetVariableResult.AttributeStatus attributeStatus) {
+        public GetVariablesResponseBuilder withAttributeStatus(GetVariableStatus attributeStatus) {
             this.attributeStatus = attributeStatus;
             return this;
         }
 
         public GetVariablesResponseBuilder withAttributeValue(String attributeValue) {
-            this.attributeValue = new CiString.CiString1000(attributeValue);
+            this.attributeValue = new CiString.CiString2500(attributeValue);
             return this;
         }
 
@@ -171,9 +175,9 @@ public class OcppMessageFactory {
 
     public static class SetVariablesResponseBuilder extends SkeletonBuilder<SetVariablesResponseBuilder> {
 
-        private SetVariableResult.AttributeStatus attributeStatus;
+        private SetVariableStatus attributeStatus;
 
-        public SetVariablesResponseBuilder withAttributeStatus(SetVariableResult.AttributeStatus attributeStatus) {
+        public SetVariablesResponseBuilder withAttributeStatus(SetVariableStatus attributeStatus) {
             this.attributeStatus = attributeStatus;
             return this;
         }
@@ -193,18 +197,18 @@ public class OcppMessageFactory {
 
     public static class TransactionEventBuilder {
 
-        private TransactionEventRequest.EventType eventType;
+        private TransactionEvent eventType;
         private int sampledValue;
         private Instant meterValueTimestamp;
         private Instant timestamp;
-        private TransactionEventRequest.TriggerReason triggerReason;
-        private long seqNo;
+        private TriggerReason triggerReason;
+        private Integer seqNo;
         private String transactionId;
         private int evseId;
         private String tokenId;
-        private IdToken.Type tokenType;
+        private IdTokenType tokenType;
 
-        public TransactionEventBuilder withEventType(TransactionEventRequest.EventType eventType) {
+        public TransactionEventBuilder withEventType(TransactionEvent eventType) {
             this.eventType = eventType;
             return this;
         }
@@ -224,7 +228,7 @@ public class OcppMessageFactory {
             return this;
         }
 
-        public TransactionEventBuilder withTriggerReason(TransactionEventRequest.TriggerReason triggerReason) {
+        public TransactionEventBuilder withTriggerReason(TriggerReason triggerReason) {
             this.triggerReason = triggerReason;
             return this;
         }
@@ -249,7 +253,7 @@ public class OcppMessageFactory {
             return this;
         }
 
-        public TransactionEventBuilder withTokenType(IdToken.Type tokenType) {
+        public TransactionEventBuilder withTokenType(IdTokenType tokenType) {
             this.tokenType = tokenType;
             return this;
         }
@@ -268,8 +272,8 @@ public class OcppMessageFactory {
                     .withTimestamp(timestamp.atZone(ZoneOffset.UTC))
                     .withTriggerReason(triggerReason)
                     .withSeqNo(seqNo)
-                    .withTransactionData(new TransactionData().withId(new CiString.CiString36(transactionId)))
-                    .withEvse(new Evse().withId(evseId))
+                    .withTransactionInfo(new Transaction().withTransactionId(new CiString.CiString36(transactionId)))
+                    .withEvse(new EVSE().withId(evseId))
                     .withIdToken(idToken);
 
         }
@@ -293,8 +297,8 @@ public class OcppMessageFactory {
 
         public AuthorizeRequest build() {
             return new AuthorizeRequest()
-                    .withIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdToken.Type.ISO_14443))
-                    .withEvseId(Collections.singletonList(evseId));
+                    .withIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443));
+            //TODO: check removed evse id here. Present in OCPP 2.0 but not in OCPP 2.0.1
         }
     }
 

@@ -2,9 +2,9 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse;
-import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v201.message.station.GetBaseReportRequest;
+import com.evbox.everon.ocpp.v201.message.station.GetBaseReportResponse;
+import com.evbox.everon.ocpp.v201.message.station.ReportData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,9 +23,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_MESSAGE_ID;
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.*;
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.NOT_SUPPORTED;
+import static com.evbox.everon.ocpp.v201.message.station.GenericDeviceModelStatus.ACCEPTED;
+import static com.evbox.everon.ocpp.v201.message.station.ReportBase.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.ZonedDateTime.ofInstant;
 import static java.util.Collections.singletonList;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class GetAbstractBaseReportRequestHandlerTest {
 
     private static final int REQUEST_ID = 300;
-    private static final ReportDatum REPORT_DATUM = new ReportDatum();
+    private static final ReportData REPORT_DATUM = new ReportData();
 
     @Mock
     StationMessageSender stationMessageSenderMock;

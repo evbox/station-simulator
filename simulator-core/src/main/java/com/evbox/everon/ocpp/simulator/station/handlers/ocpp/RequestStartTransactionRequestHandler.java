@@ -3,12 +3,14 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartStopStatus;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartTransactionRequest;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartTransactionResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -50,18 +52,18 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
 
             if (!ALLOWED_STATES.contains(evseState)) {
                 log.debug("Evse not available");
-                stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
+                stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartStopStatus.REJECTED));
                 return;
             }
 
             Connector connector = evse.tryFindAvailableConnector().orElse(null);
-            RequestStartTransactionResponse response = new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.ACCEPTED);
+            RequestStartTransactionResponse response = new RequestStartTransactionResponse().withStatus(RequestStartStopStatus.ACCEPTED);
 
             if (WaitingForAuthorizationState.NAME.equals(evseState)) {
                 // Allowed to remote start only if there is an ongoing transaction
                 if (!evse.hasOngoingTransaction()) {
                     log.debug("Evse has no ongoing transaction");
-                    stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
+                    stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartStopStatus.REJECTED));
                     return;
                 }
 
@@ -71,7 +73,7 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
 
             if (connector == null) {
                 log.debug("Connector not found");
-                stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
+                stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartStopStatus.REJECTED));
                 return;
             }
 
@@ -80,7 +82,7 @@ public class RequestStartTransactionRequestHandler implements OcppRequestHandler
             stateManager.remoteStart(evse.getId(), request.getRemoteStartId(), request.getIdToken().getIdToken().toString(), connector);
         } else {
             log.debug("No available evse to start a new transaction");
-            stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartTransactionResponse.Status.REJECTED));
+            stationMessageSender.sendCallResult(callId, new RequestStartTransactionResponse().withStatus(RequestStartStopStatus.REJECTED));
         }
     }
 

@@ -4,7 +4,8 @@ import com.evbox.everon.ocpp.simulator.station.evse.Connector.ConnectorView;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction.EvseTransactionView;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AbstractEvseState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
+import com.evbox.everon.ocpp.v201.message.station.StatusNotificationRequest;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class Evse {
     private String tokenId;
     private long chargingStartAtMeter;
     private boolean charging;
-    private long seqNo;
+    private int seqNo;
 
     private EvseStatus evseStatus;
     private EvseTransaction transaction;
@@ -114,6 +115,14 @@ public class Evse {
         return lockedConnector.getId();
     }
 
+    public Integer getPluggedConnector(){
+        return connectors.stream()
+                .filter(Connector::isCablePlugged)
+                .findAny()
+                .map(Connector::getId)
+                .orElseThrow(() -> new IllegalStateException("Nothing is plugged in"));
+    }
+
     /**
      * Switch to non-charging state.
      */
@@ -130,7 +139,7 @@ public class Evse {
      *
      * @return current sequence number
      */
-    public Long getSeqNoAndIncrement() {
+    public Integer getSeqNoAndIncrement() {
         return seqNo++;
     }
 
@@ -340,7 +349,7 @@ public class Evse {
      */
     public Optional<Connector> tryFindAvailableConnector() {
         return connectors.stream()
-                .filter(connector -> StatusNotificationRequest.ConnectorStatus.AVAILABLE.equals(connector.getConnectorStatus()))
+                .filter(connector -> ConnectorStatus.AVAILABLE.equals(connector.getConnectorStatus()))
                 .findAny();
     }
     /**
@@ -350,7 +359,7 @@ public class Evse {
      */
     public Optional<Connector> tryFindPluggedConnector() {
         return connectors.stream()
-                .filter(connector -> StatusNotificationRequest.ConnectorStatus.OCCUPIED.equals(connector.getConnectorStatus()))
+                .filter(connector -> ConnectorStatus.OCCUPIED.equals(connector.getConnectorStatus()))
                 .findAny();
     }
 

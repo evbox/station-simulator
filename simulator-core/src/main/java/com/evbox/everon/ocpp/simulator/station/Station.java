@@ -19,8 +19,10 @@ import com.evbox.everon.ocpp.simulator.station.support.SecurityUtils;
 import com.evbox.everon.ocpp.simulator.websocket.LoggingInterceptor;
 import com.evbox.everon.ocpp.simulator.websocket.OkHttpWebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
-import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
-import com.evbox.everon.ocpp.v20.message.station.BootNotificationResponse;
+import com.evbox.everon.ocpp.v201.message.station.BootNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.BootNotificationResponse;
+import com.evbox.everon.ocpp.v201.message.station.BootReason;
+import com.evbox.everon.ocpp.v201.message.station.RegistrationStatus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -159,9 +161,9 @@ public class Station {
     }
 
     private void sendInitialBootNotification() {
-        stationMessageSender.sendBootNotificationAndSubscribe(BootNotificationRequest.Reason.POWER_UP, (request, response) -> {
-            BootNotificationResponse.Status status = response.getStatus();
-            if (status == BootNotificationResponse.Status.ACCEPTED) {
+        stationMessageSender.sendBootNotificationAndSubscribe(BootReason.POWER_UP, (request, response) -> {
+            RegistrationStatus status = response.getStatus();
+            if (status == RegistrationStatus.ACCEPTED) {
                 state.setCurrentTime(response.getCurrentTime());
                 updateHeartbeat(response.getInterval());
                 sendInitialStatusNotifications();

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EvseTest {

@@ -2,7 +2,8 @@ package com.evbox.everon.ocpp.simulator.station.component.variable;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableStatus;
 
 @FunctionalInterface
 public interface SetVariableResultCreator {
@@ -14,5 +15,5 @@ public interface SetVariableResultCreator {
      * @param attributeValue contains value that needs to be set to attribute
      * @return object which includes component, variable, attribute type and attributeStatus which indicates success of an operation
      */
-    SetVariableResult createResult(AttributePath attributePath, CiString.CiString1000 attributeValue, SetVariableResult.AttributeStatus attributeStatus);
+    SetVariableResult createResult(AttributePath attributePath, CiString.CiString1000 attributeValue, SetVariableStatus attributeStatus);
 }

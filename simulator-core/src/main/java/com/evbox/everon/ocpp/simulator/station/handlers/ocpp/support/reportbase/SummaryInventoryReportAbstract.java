@@ -7,16 +7,16 @@ import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder
 import com.evbox.everon.ocpp.simulator.station.component.chargingstation.ChargingStationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComponent;
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse;
-import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v201.message.station.GetBaseReportRequest;
+import com.evbox.everon.ocpp.v201.message.station.GetBaseReportResponse;
+import com.evbox.everon.ocpp.v201.message.station.ReportData;
 
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
+import static com.evbox.everon.ocpp.v201.message.station.GenericDeviceModelStatus.ACCEPTED;
 
 public class SummaryInventoryReportAbstract extends AbstractBaseReport {
 
@@ -32,7 +32,7 @@ public class SummaryInventoryReportAbstract extends AbstractBaseReport {
     @Override
     public void generateAndRespond(String callId, GetBaseReportRequest request) {
         stationMessageSender.sendCallResult(callId, new GetBaseReportResponse().withStatus(ACCEPTED));
-        List<ReportDatum> reportData = new ArrayList<>();
+        List<ReportData> reportData = new ArrayList<>();
 
         reportData.addAll(getAvailabilityStateReport(ChargingStationComponent.NAME));
         reportData.addAll(getAvailabilityStateReport(EVSEComponent.NAME));
@@ -41,9 +41,9 @@ public class SummaryInventoryReportAbstract extends AbstractBaseReport {
         sendNotifyReportRequests(reportData, request);
     }
 
-    private List<ReportDatum> getAvailabilityStateReport(String componentName) {
+    private List<ReportData> getAvailabilityStateReport(String componentName) {
         Optional<StationComponent> optComponent = stationComponentsHolder.getComponent(new CiString.CiString50(componentName));
-        List<ReportDatum> reportData = new ArrayList<>();
+        List<ReportData> reportData = new ArrayList<>();
         if (optComponent.isPresent()) {
             StationComponent component = optComponent.get();
             reportData.addAll(component.getVariableAccessorByName(new CiString.CiString50(AVAILABILITY_STATE_NAME)).generateReportData(component.getComponentName()));

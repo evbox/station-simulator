@@ -4,20 +4,22 @@ import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.mock.csms.exchange.Authorize;
 import com.evbox.everon.ocpp.mock.csms.exchange.StatusNotification;
+import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import com.evbox.everon.ocpp.simulator.station.evse.EvseStatus;
-import com.evbox.everon.ocpp.v20.message.common.IdToken;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
+import com.evbox.everon.ocpp.v201.message.station.IdToken;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
+import com.evbox.everon.ocpp.v201.message.station.RequestStartTransactionRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.times;
-import static com.evbox.everon.ocpp.v20.message.common.IdToken.Type.ISO_14443;
+import static com.evbox.everon.ocpp.v201.message.station.IdTokenType.ISO_14443;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.waitAtMost;
@@ -34,19 +36,19 @@ public class RemoteStartTransactionIt extends StationSimulatorSetUp {
                 .thenReturn(Authorize.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.STARTED))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.STARTED))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.UPDATED))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.UPDATED))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.AVAILABLE))
+                .when(StatusNotification.request(ConnectorStatus.AVAILABLE))
                 .thenReturn(StatusNotification.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.OCCUPIED))
+                .when(StatusNotification.request(ConnectorStatus.OCCUPIED))
                 .thenReturn(StatusNotification.response());
 
         stationSimulatorRunner.run();
@@ -75,19 +77,19 @@ public class RemoteStartTransactionIt extends StationSimulatorSetUp {
                 .thenReturn(Authorize.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.STARTED))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.STARTED))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.UPDATED))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.UPDATED))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.AVAILABLE))
+                .when(StatusNotification.request(ConnectorStatus.AVAILABLE))
                 .thenReturn(StatusNotification.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.OCCUPIED))
+                .when(StatusNotification.request(ConnectorStatus.OCCUPIED))
                 .thenReturn(StatusNotification.response());
 
         stationSimulatorRunner.run();
@@ -116,19 +118,19 @@ public class RemoteStartTransactionIt extends StationSimulatorSetUp {
                 .thenReturn(Authorize.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.STARTED))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.STARTED))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.ENDED, TransactionData.StoppedReason.TIMEOUT))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.ENDED, Reason.TIMEOUT))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.AVAILABLE), times(2))
+                .when(StatusNotification.request(ConnectorStatus.AVAILABLE), times(2))
                 .thenReturn(StatusNotification.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.OCCUPIED))
+                .when(StatusNotification.request(ConnectorStatus.OCCUPIED))
                 .thenReturn(StatusNotification.response());
 
         stationSimulatorRunner.run();

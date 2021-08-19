@@ -101,6 +101,10 @@ public abstract class CiString implements Comparable<CiString> {
         }
     }
 
+    public static class CiString40 extends CiString {
+        public CiString40(String string) { super(string, 40);}
+    }
+
     public static class CiString50 extends CiString {
         public CiString50(String string) {
             super(string, 50);
@@ -154,6 +158,18 @@ public abstract class CiString implements Comparable<CiString> {
     public static class CiString5500 extends CiString {
         public CiString5500(String string) {
             super(string, 5500);
+        }
+    }
+
+    public static class CiString5600 extends CiString {
+        public CiString5600(String string) {
+            super(string, 5600);
+        }
+    }
+
+    public static class CiString10000 extends CiString {
+        public CiString10000(String string) {
+            super(string, 10000);
         }
     }
 

@@ -1,7 +1,8 @@
 package com.evbox.everon.ocpp.simulator.station.component.variable;
 
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableData;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableResult;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableStatus;
 import lombok.Value;
 
 /**
@@ -10,10 +11,10 @@ import lombok.Value;
 @Value
 public class SetVariableValidationResult {
 
-    private SetVariableDatum setVariableDatum;
+    private SetVariableData setVariableData;
     private SetVariableResult result;
 
     public boolean isAccepted() {
-        return result.getAttributeStatus() == SetVariableResult.AttributeStatus.ACCEPTED;
+        return result.getAttributeStatus() == SetVariableStatus.ACCEPTED;
     }
 }

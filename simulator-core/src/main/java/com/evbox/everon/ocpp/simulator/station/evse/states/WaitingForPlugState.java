@@ -7,14 +7,15 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
-import com.evbox.everon.ocpp.v20.message.station.IdTokenInfo;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+import com.evbox.everon.ocpp.v201.message.station.AuthorizationStatus;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
+import com.evbox.everon.ocpp.v201.message.station.TriggerReason;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.*;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.CABLE_PLUGGED_IN;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.CHARGING_STATE_CHANGED;
 import static java.util.Collections.singletonList;
 
 /**
@@ -51,15 +52,15 @@ public class WaitingForPlugState extends AbstractEvseState {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                 evse.createTransaction(transactionId);
 
-                stationMessageSender.sendTransactionEventStart(evseId, connectorId, CABLE_PLUGGED_IN, TransactionData.ChargingState.EV_DETECTED);
+                stationMessageSender.sendTransactionEventStart(evseId, connectorId, CABLE_PLUGGED_IN, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);//TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
             } else {
-                stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, TransactionEventRequest.TriggerReason.CABLE_PLUGGED_IN, tokenId, TransactionData.ChargingState.EV_DETECTED);
+                stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CABLE_PLUGGED_IN, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);//TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
             }
 
             startCharging(evse);
 
-            stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, TransactionEventRequest.TriggerReason.CHARGING_STATE_CHANGED, tokenId,
-                    TransactionData.ChargingState.CHARGING);
+            stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CHARGING_STATE_CHANGED, tokenId,
+                    com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
             future.complete(UserMessageResult.SUCCESSFUL);
         });
 
@@ -76,14 +77,14 @@ public class WaitingForPlugState extends AbstractEvseState {
 
         CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
         stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
-            if (response.getIdTokenInfo().getStatus() == IdTokenInfo.Status.ACCEPTED) {
+            if (response.getIdTokenInfo().getStatus() == AuthorizationStatus.ACCEPTED) {
                 Evse evse = stationStore.findEvse(evseId);
 
                 if (evse.hasOngoingTransaction()) {
                     evse.stopTransaction();
                     evse.clearToken();
 
-                    stationMessageSender.sendTransactionEventEnded(evse.getId(), null, TransactionEventRequest.TriggerReason.EV_DEPARTED, TransactionData.StoppedReason.DE_AUTHORIZED, evse.getWattConsumedLastSession());
+                    stationMessageSender.sendTransactionEventEnded(evse.getId(), null, TriggerReason.EV_DEPARTED, Reason.DE_AUTHORIZED, evse.getWattConsumedLastSession());
                 }
                 stateManager.setStateForEvse(evseId, new AvailableState());
                 future.complete(UserMessageResult.SUCCESSFUL);

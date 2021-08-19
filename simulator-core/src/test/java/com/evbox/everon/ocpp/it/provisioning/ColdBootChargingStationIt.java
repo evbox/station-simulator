@@ -12,7 +12,7 @@ import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.once;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.times;
 import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createSimulatorConfiguration;
 import static com.evbox.everon.ocpp.mock.factory.SimulatorConfigCreator.createStationConfiguration;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.awaitility.Awaitility.await;
 
 public class ColdBootChargingStationIt extends StationSimulatorSetUp {

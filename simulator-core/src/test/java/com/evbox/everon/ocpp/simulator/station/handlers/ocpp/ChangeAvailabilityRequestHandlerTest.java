@@ -2,7 +2,9 @@ package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityManager;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.support.AvailabilityStateMapper;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
+import com.evbox.everon.ocpp.v201.message.station.ChangeAvailabilityRequest;
+import com.evbox.everon.ocpp.v201.message.station.EVSE;
+import com.evbox.everon.ocpp.v201.message.station.OperationalStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.AVAILABLE;
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
+import static com.evbox.everon.ocpp.v201.message.station.OperationalStatus.OPERATIVE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -35,9 +37,9 @@ public class ChangeAvailabilityRequestHandlerTest {
     @DisplayName("Should throw an IllegalArgumentException on invalid operational status")
     void shouldThrowExceptionOnInvalidOperationalStatus() {
 
-        when(availabilityStateMapperMock.mapFrom(any(ChangeAvailabilityRequest.OperationalStatus.class))).thenThrow(new IllegalArgumentException("some runtime exception"));
+        when(availabilityStateMapperMock.mapFrom(any(OperationalStatus.class))).thenThrow(new IllegalArgumentException("some runtime exception"));
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);
 
         assertThrows(IllegalArgumentException.class, () -> changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request));
 
@@ -48,7 +50,7 @@ public class ChangeAvailabilityRequestHandlerTest {
     void shouldCallChangeEvseAvailability() {
         when(availabilityStateMapperMock.mapFrom(eq(OPERATIVE))).thenReturn(AVAILABLE);
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);
 
         changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
@@ -61,7 +63,7 @@ public class ChangeAvailabilityRequestHandlerTest {
     void shouldCallChangeStationAvailability() {
         when(availabilityStateMapperMock.mapFrom(eq(OPERATIVE))).thenReturn(AVAILABLE);
 
-        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withEvseId(EVSE_ID_ZERO).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest request = new ChangeAvailabilityRequest().withOperationalStatus(OPERATIVE);
 
         changeAvailabilityRequestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
