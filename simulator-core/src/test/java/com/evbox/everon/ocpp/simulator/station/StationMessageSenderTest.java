@@ -145,9 +145,9 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
-                () -> assertThat(actualTransactionEventPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED),
+                () -> assertThat(actualTransactionEventPayload.getEventType()).isEqualTo(TransactionEvent.STARTED),
                 () -> assertThat(actualTransactionEventPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
-                () -> assertThat(actualTransactionEventPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualTransactionEventPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualTransactionEventPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
                 () -> assertThat(actualNotifyEVChargingNeedsPayload.getEvseId()).isEqualTo(DEFAULT_EVSE_ID),
                 () -> assertThat(actualNotifyEVChargingNeedsPayload.getChargingNeeds()).isNotNull()

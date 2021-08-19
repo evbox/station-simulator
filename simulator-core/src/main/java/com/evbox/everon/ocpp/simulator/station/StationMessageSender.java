@@ -447,7 +447,9 @@ public class StationMessageSender {
     }
 
     private void sendTransactionEventStart(Integer evseId, Integer connectorId, Integer remoteStartId, TriggerReason reason, String tokenId, ChargingState chargingState) {
-        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationStore.getStationId(), stationStore.findEvse(evseId),
+        String stationId = stationStore.getStationId();
+
+        TransactionEventRequest transactionEvent = payloadFactory.createTransactionEventStart(stationId, stationStore.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, remoteStartId, stationStore.getCurrentTime());
 
         sendPayloadOfType(ActionType.TRANSACTION_EVENT, transactionEvent);
