@@ -17,6 +17,7 @@ import com.evbox.everon.ocpp.v201.message.station.ChargingState;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +59,7 @@ public class AvailableState extends AbstractEvseState {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                 evse.createTransaction(transactionId);
 
-                stationMessageSender.sendTransactionEventStart(evseId, connectorId, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED); //TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
+                stationMessageSender.sendTransactionEventStart(evseId, connectorId, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
             }
             future.complete(UserMessageResult.SUCCESSFUL);
         });
@@ -75,18 +76,19 @@ public class AvailableState extends AbstractEvseState {
         log.info("in authorizeToken {}", tokenId);
 
         CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
-        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
+        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, (request, response) -> {
             if (response.getIdTokenInfo().getStatus() == AuthorizationStatus.ACCEPTED) {
                 List<Evse> authorizedEvses = hasEvses(response) ? getEvseList(response, stationStore) : singletonList(stationStore.getDefaultEvse());
 
-                authorizedEvses.forEach(evse -> evse.setToken(tokenId));
+                authorizedEvses.stream().filter(Objects::nonNull).forEach(evse -> evse.setToken(tokenId));
 
                 OptionList<TxStartStopPointVariableValues> startPoints = stationStore.getTxStartPointValues();
                 if (startPoints.contains(TxStartStopPointVariableValues.AUTHORIZED) && !startPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                     String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                    authorizedEvses.forEach(evse -> evse.createTransaction(transactionId));
-
-                    authorizedEvses.forEach(evse -> stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId));
+                    authorizedEvses.stream().filter(Objects::nonNull).forEach(evse -> {
+                        evse.createTransaction(transactionId);
+                        stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId);
+                    });
                 }
                 stateManager.setStateForEvse(evseId, new WaitingForPlugState());
 
@@ -133,10 +135,10 @@ public class AvailableState extends AbstractEvseState {
     }
 
     private List<Evse> getEvseList(AuthorizeResponse response, StationStore stationStore) {
-        return response.getIdTokenInfo().getEvseId().stream().map(stationStore::findEvse).collect(toList());//TODO OCPP 2.0 used to have evseIds on response, now inside idToken, is this correct???
+        return response.getIdTokenInfo().getEvseId().stream().map(stationStore::findEvse).collect(toList());
     }
 
     private boolean hasEvses(AuthorizeResponse response) {
-        return response.getIdTokenInfo().getEvseId() != null && !response.getIdTokenInfo().getEvseId().isEmpty();//TODO OCPP 2.0 used to have evseIds on response, now inside idToken, is this correct???
+        return response.getIdTokenInfo().getEvseId() != null && !response.getIdTokenInfo().getEvseId().isEmpty();
     }
 }

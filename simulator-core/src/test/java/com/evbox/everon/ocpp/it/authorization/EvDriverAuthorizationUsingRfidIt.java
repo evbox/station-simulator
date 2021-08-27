@@ -37,7 +37,6 @@ public class EvDriverAuthorizationUsingRfidIt extends StationSimulatorSetUp {
                 .when(TransactionEvent.request(STARTED, seqNo, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
                 .thenReturn(TransactionEvent.response());
 
-        //TODO Check replacement of EV_DETECTED with ChargingState.EV_CONNECTED which is the closest match,
         ocppMockServer
                 .when(TransactionEvent.request(UPDATED, seqNo + 1, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID, EV_CONNECTED, CABLE_PLUGGED_IN))
                 .thenReturn(TransactionEvent.response());

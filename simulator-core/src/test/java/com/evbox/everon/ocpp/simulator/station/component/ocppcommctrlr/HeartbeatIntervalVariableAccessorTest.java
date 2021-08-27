@@ -47,7 +47,7 @@ class HeartbeatIntervalVariableAccessorTest {
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
                 arguments(ACTUAL_ATTRIBUTE, DEFAULT_HEARTBEAT_INTERVAL, SetVariableStatus.ACCEPTED),
-                arguments(ACTUAL_ATTRIBUTE, -DEFAULT_HEARTBEAT_INTERVAL, SetVariableStatus.REJECTED), //TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
+                arguments(ACTUAL_ATTRIBUTE, -DEFAULT_HEARTBEAT_INTERVAL, SetVariableStatus.REJECTED),
                 arguments(MAX_SET_ATTRIBUTE, DEFAULT_HEARTBEAT_INTERVAL, SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
                 arguments(MIN_SET_ATTRIBUTE, DEFAULT_HEARTBEAT_INTERVAL, SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
                 arguments(TARGET_ATTRIBUTE, DEFAULT_HEARTBEAT_INTERVAL, SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE)

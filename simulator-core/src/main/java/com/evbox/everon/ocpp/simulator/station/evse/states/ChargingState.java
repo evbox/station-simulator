@@ -49,7 +49,7 @@ public class ChargingState extends AbstractEvseState {
 
         CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
-        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId),
+        stationMessageSender.sendAuthorizeAndSubscribe(tokenId,
                 (request, response) -> handleAuthorizeResponse(evseId, tokenId, response, future));
 
         return future;
@@ -125,7 +125,7 @@ public class ChargingState extends AbstractEvseState {
 
         evse.stopCharging();
         Integer connectorId = evse.tryUnlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, REMOTE_STOP, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);//TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
+        stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, REMOTE_STOP, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
 
         stateManager.setStateForEvse(evseId, new RemotelyStoppedState());
     }
@@ -133,7 +133,7 @@ public class ChargingState extends AbstractEvseState {
     private int stopCharging(StationMessageSender stationMessageSender, Evse evse) {
         evse.stopCharging();
         Integer connectorId = evse.unlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);//TODO check this. Previously in OCPP 2.0 it was EV_DETECTED, which is now found in TriggerReason, not ChargingState
+        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
         return connectorId;
     }
 

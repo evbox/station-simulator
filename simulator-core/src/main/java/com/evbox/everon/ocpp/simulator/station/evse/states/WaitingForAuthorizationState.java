@@ -43,7 +43,7 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
 
         StationMessageSender stationMessageSender = stateManager.getStationMessageSender();
         CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
-        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId),
+        stationMessageSender.sendAuthorizeAndSubscribe(tokenId,
                 (request, response) -> handleAuthorizeResponse(evseId, tokenId, response, future));
 
         return future;

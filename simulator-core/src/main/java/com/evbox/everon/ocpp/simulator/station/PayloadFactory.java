@@ -40,12 +40,8 @@ public class PayloadFactory {
                 .withCertificateType(CertificateSigningUse.CHARGING_STATION_CERTIFICATE);
     }
 
-    //TODO: this evseIds was removed from AuthorizeRequest in OCPP 2.0.1, remove from method signature
-    AuthorizeRequest createAuthorizeRequest(String tokenId, @SuppressWarnings("unused") List<Integer> evseIds) {
+    AuthorizeRequest createAuthorizeRequest(String tokenId) {
         AuthorizeRequest payload = new AuthorizeRequest();
-//        if (!evseIds.isEmpty()) {
-//            payload.setEvseId(evseIds);
-//        }
 
         IdToken idToken = new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443);
         payload.setIdToken(idToken);
@@ -206,15 +202,12 @@ public class PayloadFactory {
         return transaction;
     }
 
-    //TODO check if old SignedMeterValue in src/main/resources/schemas/v201/json/common/types/MeterValueType.json still relevant ???
     private SignedMeterValue createSignedMeterValues(String stationId, TransactionEvent eventType) {
         if (stationId.toUpperCase().contains(EICHRECHT) && eventType != UPDATED) {
             SignedMeterValue signedMeterValue =  new SignedMeterValue()
-                    .withEncodingMethod(new CiString.CiString50("Other")) //TODO check: Previously:   .withEncodingMethod(SignedMeterValue.EncodingMethod.OTHER)
-                    //TODO check: No longer needed: .withEncodedMeterValue(new CiString.CiString512(powerConsumed.toString()))
-                   .withSigningMethod(new CiString.CiString50("ECDSA192SHA256"))//TODO check: Previously.withSignatureMethod(SignedMeterValue.SignatureMethod.ECDSA_192_SHA_256);
-                   .withPublicKey(new CiString.CiString2500(PUBLIC_KEY));//TODO check: is the public key value correct?
-
+                    .withEncodingMethod(new CiString.CiString50("Other"))
+                    .withSigningMethod(new CiString.CiString50("ECDSA192SHA256"))
+                    .withPublicKey(new CiString.CiString2500(PUBLIC_KEY));
             if (eventType == STARTED) {
                 signedMeterValue.withSignedMeterData(new CiString.CiString2500(SIGNED_METER_START));
             } else {

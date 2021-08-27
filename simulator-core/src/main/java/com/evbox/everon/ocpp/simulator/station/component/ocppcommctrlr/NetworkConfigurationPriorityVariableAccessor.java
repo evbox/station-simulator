@@ -15,8 +15,10 @@ import com.evbox.everon.ocpp.v201.message.station.*;
 import com.evbox.everon.ocpp.v201.message.station.Component;
 import com.evbox.everon.ocpp.v201.message.station.Variable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.v201.message.station.Data.SEQUENCE_LIST;
 import static java.util.Collections.singletonList;
@@ -90,12 +92,13 @@ public class NetworkConfigurationPriorityVariableAccessor extends VariableAccess
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()));
 
-        if (!isNumeric(attributeValue.toString())) {
-            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);//TODO check that this corresponds to INVALID_VALUE in OCPP 2.0
+        String[] values = attributeValue.toString().split(",");
+        if(Arrays.stream(values).parallel().anyMatch(value -> !isNumeric(value))){
+            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);
         }
 
-        if (!getStationStore().getNetworkConnectionProfiles().containsKey(Integer.parseInt(attributeValue.toString()))) {
-            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);//TODO check that this corresponds to INVALID_VALUE in OCPP 2.0
+        if(Arrays.stream(values).parallel().anyMatch(value -> !getStationStore().getNetworkConnectionProfiles().containsKey(Integer.parseInt(value)))){
+            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);
         }
 
         return setVariableResult.withAttributeStatus(SetVariableStatus.ACCEPTED);

@@ -37,7 +37,6 @@ class SendLocalListRequestHandlerTest {
         SendLocalListResponse response = responseCaptor.getValue();
 
         assertThat(response.getStatus()).isEqualTo(SendLocalListStatus.ACCEPTED);
-        //assertThat(response.getAdditionalProperties()).isEmpty();//TODO confirm SendLocalListResponse has no additional properties in spec
 
     }
 

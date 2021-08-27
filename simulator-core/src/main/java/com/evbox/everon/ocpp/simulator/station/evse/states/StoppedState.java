@@ -83,7 +83,7 @@ public class StoppedState extends AbstractEvseState {
         log.info("in authorizeToken {}", tokenId);
 
         CompletableFuture<UserMessageResult> future = new CompletableFuture<>();
-        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, singletonList(evseId), (request, response) -> {
+        stationMessageSender.sendAuthorizeAndSubscribe(tokenId, (request, response) -> {
             if (response.getIdTokenInfo().getStatus() == AuthorizationStatus.ACCEPTED) {
                 evse.setToken(tokenId);
                 if (!evse.hasOngoingTransaction()) {

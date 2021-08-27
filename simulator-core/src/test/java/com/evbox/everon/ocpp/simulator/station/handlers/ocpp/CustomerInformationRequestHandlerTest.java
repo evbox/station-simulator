@@ -58,7 +58,6 @@ class CustomerInformationRequestHandlerTest {
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationStatus.REJECTED);
 
         assertThat(notifyCustomerInformationRequest.getData()).isEqualTo(NO_CUSTOMER_DATA_FOUND);
-        // assertThat(notifyCustomerInformationRequest.getAdditionalProperties()).isEmpty(); //TODO check why this was being tested
         assertThat(notifyCustomerInformationRequest.getRequestId()).isEqualTo(123);
         assertThat(notifyCustomerInformationRequest.getSeqNo()).isEqualTo(0);
         assertThat(notifyCustomerInformationRequest.getTbc()).isFalse();
@@ -83,7 +82,6 @@ class CustomerInformationRequestHandlerTest {
         assertCustomerInformationResponse(customerInformationResponse, CustomerInformationStatus.ACCEPTED);
 
         assertThat(notifyCustomerInformationRequest.getData()).isEqualTo(CustomerDataUtils.getCustomerInformation(customerIdentification.toString(), "", "").get(0));
-        // assertThat(notifyCustomerInformationRequest.getAdditionalProperties()).isEmpty(); //TODO check why this was being tested
         assertThat(notifyCustomerInformationRequest.getRequestId()).isEqualTo(123);
         assertThat(notifyCustomerInformationRequest.getSeqNo()).isZero();
         assertThat(notifyCustomerInformationRequest.getTbc()).isFalse();
@@ -128,7 +126,6 @@ class CustomerInformationRequestHandlerTest {
         data.remove(lastElement);
 
         assertThat(notifyCustomerInformationRequest.getData()).isEqualTo(lastElement);
-        // assertThat(notifyCustomerInformationRequest.getAdditionalProperties()).isEmpty(); //TODO check why this was being tested
         assertThat(notifyCustomerInformationRequest.getTbc()).isFalse();
         assertThat(notifyCustomerInformationRequest.getSeqNo()).isEqualTo(data.size());
         assertThat(notifyCustomerInformationRequest.getRequestId()).isEqualTo(123);
@@ -178,13 +175,11 @@ class CustomerInformationRequestHandlerTest {
 
     private void assertCustomerInformationResponse(CustomerInformationResponse customerInformationResponse, CustomerInformationStatus status) {
         assertThat(customerInformationResponse.getStatus()).isEqualTo(status);
-        // assertThat(customerInformationResponse.getAdditionalProperties()).isEmpty(); //TODO check why this was being tested
     }
 
     private void assertDataCleared(CiString.CiString64 customerIdentification, NotifyCustomerInformationRequest notifyCustomerInformationRequest) {
         assertThat(CustomerDataUtils.getCustomerInformation(customerIdentification.toString(), "", "").size()).isZero();
         assertThat(notifyCustomerInformationRequest.getData()).isEqualTo(CUSTOMER_DATA_CLEARED);
-        // assertThat(notifyCustomerInformationRequest.getAdditionalProperties()).isEmpty(); //TODO check why this was being tested
         assertThat(notifyCustomerInformationRequest.getRequestId()).isEqualTo(123);
         assertThat(notifyCustomerInformationRequest.getSeqNo()).isZero();
         assertThat(notifyCustomerInformationRequest.getTbc()).isFalse();

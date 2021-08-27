@@ -97,7 +97,7 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
                 .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()));
 
         if (invalidLength(attributeValue) || isNotHex(attributeValue.toString()) || isOdd(attributeValue)) {
-            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED); //TODO check that this corresponds to INVALID_VALUE in OCPP 2.0
+            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);
         }
 
         return setVariableResult.withAttributeStatus(SetVariableStatus.ACCEPTED);

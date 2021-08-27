@@ -121,7 +121,7 @@ class StationMessageSenderTest {
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
                 () -> assertThat(actualPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
-                () -> assertThat(signedMeterValue.getSignedMeterData().toString()).isNotEmpty() //TODO verifiy that this has the same effect in OCPP 2.0.1 as getEncodedMeterValue() in OCPP 2.0
+                () -> assertThat(signedMeterValue.getSignedMeterData().toString()).isNotEmpty()
         );
 
     }
@@ -224,14 +224,14 @@ class StationMessageSenderTest {
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
                 () -> assertThat(actualPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getTransactionInfo().getStoppedReason()).isEqualTo(Reason.STOPPED_BY_EV),
-                () -> assertThat(signedMeterValue.getSignedMeterData().toString()).isNotEmpty() //TODO verifiy that this has the same effect in OCPP 2.0.1 as getEncodedMeterValue() in OCPP 2.0
+                () -> assertThat(signedMeterValue.getSignedMeterData().toString()).isNotEmpty()
         );
     }
 
     @Test
     void verifyAuthorize() throws InterruptedException {
 
-        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
+        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, DEFAULT_SUBSCRIBER);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -240,7 +240,6 @@ class StationMessageSenderTest {
         AuthorizeRequest actualPayload = (AuthorizeRequest) actualCall.getPayload();
 
         assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID));
-        //assertThat(actualPayload.getEvseId()).containsExactly(DEFAULT_EVSE_ID)//TODO confirm EVSE id is not present in authorisation request OCPP 2.0 to OCPP 2.0.1
     }
 
     @Test
