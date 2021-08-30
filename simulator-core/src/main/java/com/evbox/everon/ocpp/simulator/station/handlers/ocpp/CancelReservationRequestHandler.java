@@ -12,6 +12,7 @@ import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -39,10 +40,18 @@ public class CancelReservationRequestHandler implements OcppRequestHandler<Cance
     }
 
     private boolean isConnectorReserved(Reservation reservation) {
-        return ofNullable(reservation.getEvse()).map(Evse::getId).map(id -> true).orElse(false) && stationStore.tryFindConnectors(reservation.getEvse().getId())
+        return ofNullable(reservation.getEvse())
+                .map(Evse::getId)
+                .map(evseId -> stationStore.tryFindConnectors(evseId))
+                .map(this::isAnyReserved)
+                .orElse(false);
+    }
+
+    private boolean isAnyReserved(List<Connector> connectors) {
+        return connectors
                 .parallelStream()
-                    .map(Connector::getConnectorStatus)
-                    .anyMatch(status -> ConnectorStatus.RESERVED.equals(status));
+                .map(Connector::getConnectorStatus)
+                .anyMatch(status -> ConnectorStatus.RESERVED.equals(status));
     }
 
     private void makeConnectorAvailable(Reservation reservation) {
