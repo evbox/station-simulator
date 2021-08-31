@@ -41,10 +41,9 @@ class StateManagerTest {
 
     private final AuthorizeResponse authorizeResponse = new AuthorizeResponse()
                                                             .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)
-                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
+                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
     private final AuthorizeResponse notAuthorizeResponse = new AuthorizeResponse()
-                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.INVALID)
-                                                            .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));//TODO EVSE id was removed from Authorization request but present IdTokenInfo from OCPP 2.0 to OCPP 2.0.1
+                                                            .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.INVALID));
 
     @BeforeEach
     void setUp() {
@@ -130,7 +129,7 @@ class StateManagerTest {
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), notAuthorizeResponse);
 
         // Verify that state did not change
@@ -147,7 +146,7 @@ class StateManagerTest {
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), notAuthorizeResponse);
 
         // Verify that state did not change
@@ -179,7 +178,7 @@ class StateManagerTest {
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
 
-        verify(stationMessageSenderMock, times(2)).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock, times(2)).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 
         checkStateIs(StoppedState.NAME);
@@ -219,14 +218,14 @@ class StateManagerTest {
     private void triggerAuthorizeAndGetResponse() {
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
 
-        verify(stationMessageSenderMock, atLeastOnce()).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock, atLeastOnce()).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
     }
 
     private void checkStateDidNotChangeAfterAuth() {
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), notAuthorizeResponse);
 
         // Verify that state did not change

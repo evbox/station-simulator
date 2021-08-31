@@ -179,7 +179,7 @@ public class ServerMessageHandlerTest {
     @Test
     void verifyCallMessageWithChangeAvailabilityPayload() throws JsonProcessingException {
 
-        ChangeAvailabilityRequest payload = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);//TODO check that EVSE with Id is still neeeded
+        ChangeAvailabilityRequest payload = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);
 
         String callJson = createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)

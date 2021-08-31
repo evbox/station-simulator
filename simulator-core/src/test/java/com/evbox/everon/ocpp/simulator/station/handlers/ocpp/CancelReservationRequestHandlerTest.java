@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +52,7 @@ public class CancelReservationRequestHandlerTest {
 
     @Test
     public void testCancelReservationAcceptedWithNoConnectorId() {
-        Reservation reservation = buildReservation(EVSE_ID, RESERVATION_ID, null);
+        Reservation reservation = buildReservation(EVSE_ID, RESERVATION_ID);
 
         when(stationStore.tryFindReservationById(anyInt())).thenReturn(Optional.of(reservation));
 
@@ -60,11 +61,11 @@ public class CancelReservationRequestHandlerTest {
 
     @Test
     public void testCancelReservationAcceptedWithConnectorId() {
-        Reservation reservation = buildReservation(EVSE_ID, RESERVATION_ID, CONNECTOR_ID);
+        Reservation reservation = buildReservation(EVSE_ID, RESERVATION_ID);
         Connector connector = new Connector(CONNECTOR_ID, CableStatus.PLUGGED, ConnectorStatus.RESERVED);
 
         when(stationStore.tryFindReservationById(anyInt())).thenReturn(Optional.of(reservation));
-        when(stationStore.tryFindConnector(anyInt(), anyInt())).thenReturn(Optional.of(connector));
+        when(stationStore.tryFindConnectors(anyInt())).thenReturn(List.of(connector));
 
         assertCancelReservationStatus(CancelReservationStatus.ACCEPTED);
         verify(stationMessageSender).sendStatusNotification(EVSE_ID, CONNECTOR_ID, ConnectorStatus.AVAILABLE);
@@ -79,11 +80,10 @@ public class CancelReservationRequestHandlerTest {
         CancelReservationResponse response = cancelReservationResponseArgumentCaptor.getValue();
 
         assertThat(response.getStatus()).isEqualTo(status);
-//        assertThat(response.getAdditionalProperties()).isEmpty(); //TODO confirm CancelReservationResponse has no additional properties in spec
     }
 
-    private Reservation buildReservation(Integer evseId, Integer reservationId, Integer connectorId) {
-        Evse evse = new Evse().withId(evseId).withConnectorId(connectorId);
+    private Reservation buildReservation(Integer evseId, Integer reservationId) {
+        Evse evse = new Evse().withId(evseId);
         return new Reservation(reservationId, evse);
     }
 }

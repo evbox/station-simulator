@@ -37,7 +37,6 @@ public class StartTransactionIdTokenFirstIt extends StationSimulatorSetUp {
                 .when(TransactionEvent.request(STARTED, seqNo, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
                 .thenReturn(TransactionEvent.response());
 
-        //TODO check ChargingState was changed from EV_DETECTED in OCPP 2.0 to EV_CONNECTED in OCPP 2.0.1
         ocppMockServer
                 .when(TransactionEvent.request(UPDATED, seqNo + 1, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID, EV_CONNECTED, CABLE_PLUGGED_IN))
                 .thenReturn(TransactionEvent.response());

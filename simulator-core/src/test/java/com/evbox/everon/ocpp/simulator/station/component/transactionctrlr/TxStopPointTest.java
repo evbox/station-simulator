@@ -74,8 +74,8 @@ public class TxStopPointTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED))); //TODO remove .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.DE_AUTHORIZED, 0);
         verify(evseMock, times(1)).stopTransaction();
@@ -122,8 +122,8 @@ public class TxStopPointTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));//TODO remove .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
         verify(evseMock, never()).stopTransaction();
@@ -155,8 +155,8 @@ public class TxStopPointTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED))); //TODO remove .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
         verify(evseMock, never()).stopTransaction();
@@ -170,8 +170,8 @@ public class TxStopPointTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED))); //TODO remove .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
         verify(evseMock, never()).stopTransaction();
@@ -196,8 +196,8 @@ public class TxStopPointTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED))); //TODO remove .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.DE_AUTHORIZED, 0);
         verify(evseMock, times(1)).stopTransaction();
@@ -227,8 +227,8 @@ public class TxStopPointTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));//TODO remove .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
         verify(evseMock, never()).createTransaction(anyString());
@@ -269,8 +269,8 @@ public class TxStopPointTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
         stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), authorizeCaptor.capture());
-        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED))); //TODO remove .withEvseId(Collections.singletonList(DEFAULT_EVSE_ID)));
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
+        authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
         verify(evseMock, never()).stopTransaction();

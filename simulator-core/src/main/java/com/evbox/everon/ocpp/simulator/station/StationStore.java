@@ -265,6 +265,12 @@ public class StationStore {
                         .findAny());
     }
 
+    public List<Connector> tryFindConnectors(int evseId) {
+        return tryFindEvse(evseId)
+                .map(Evse::getConnectors)
+                .orElse(Collections.emptyList());
+    }
+
     public OptionList<TxStartStopPointVariableValues> getTxStartPointValues() {
         return txStartPointValues;
     }

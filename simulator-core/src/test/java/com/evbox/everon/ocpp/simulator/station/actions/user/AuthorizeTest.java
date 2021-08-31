@@ -56,7 +56,7 @@ public class AuthorizeTest {
 
         authorizeResponse = new AuthorizeResponse()
                 .withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)
-                .withEvseId(Collections.singletonList(EVSE_ID)) //TODO this a VERY crude fix to failing test, consider refactoring
+                .withEvseId(Collections.singletonList(EVSE_ID))
                 );
 
     }
@@ -71,7 +71,7 @@ public class AuthorizeTest {
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
 
         subscriberCaptor.getValue().onResponse(new AuthorizeRequest(), authorizeResponse);
 
@@ -87,7 +87,7 @@ public class AuthorizeTest {
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
 
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -105,7 +105,7 @@ public class AuthorizeTest {
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
 
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(evseMock.hasOngoingTransaction()).thenReturn(false);
@@ -127,7 +127,7 @@ public class AuthorizeTest {
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
 
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -145,7 +145,7 @@ public class AuthorizeTest {
 
         ArgumentCaptor<Subscriber<AuthorizeRequest, AuthorizeResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), anyList(), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), subscriberCaptor.capture());
 
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
 
@@ -165,6 +165,6 @@ public class AuthorizeTest {
         when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
         new Authorize(wrongToken, DEFAULT_EVSE_ID).perform(stateManagerMock);
 
-        verify(stationMessageSenderMock, never()).sendAuthorizeAndSubscribe(anyString(), anyList(), any());
+        verify(stationMessageSenderMock, never()).sendAuthorizeAndSubscribe(anyString(), any());
     }
 }

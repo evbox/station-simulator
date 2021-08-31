@@ -135,7 +135,7 @@ public class BasicAuthPasswordVariableAccessorTest {
 
         SetVariableResult result = setVariableValidator.validate(attributePath(), invalidPassword);
 
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);//TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class BasicAuthPasswordVariableAccessorTest {
 
         SetVariableResult result = setVariableValidator.validate(attributePath(), invalidPassword);
 
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);//TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
     }
 
     @Test
@@ -157,7 +157,7 @@ public class BasicAuthPasswordVariableAccessorTest {
 
         SetVariableResult result = setVariableValidator.validate(attributePath(), invalidPassword);
 
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);//TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
     }
 
     private AttributePath attributePath() {

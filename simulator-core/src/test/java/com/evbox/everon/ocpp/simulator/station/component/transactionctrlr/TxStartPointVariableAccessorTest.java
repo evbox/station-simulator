@@ -74,7 +74,7 @@ public class TxStartPointVariableAccessorTest {
 
         SetVariableResult result = setVariableValidator.validate(attributePath(), invalidValues);
 
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);//TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
     }
 
     private AttributePath attributePath() {

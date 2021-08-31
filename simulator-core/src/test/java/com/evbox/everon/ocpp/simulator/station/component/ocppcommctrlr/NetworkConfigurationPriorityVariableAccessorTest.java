@@ -96,7 +96,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
 
         final SetVariableResult result = variableAccessor.validate(attributePath(), NETWORK_CONFIGURATION_PRIORITY_ATTRIBUTE_SINGLE);
 
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);//TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
 
         verify(stationStore).getNetworkConnectionProfiles();
         verifyZeroInteractions(station);
@@ -110,7 +110,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
 
         SetVariableResult result = variableAccessor.validate(attributePath(), new CiString.CiString1000("asd"));
 
-        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);//TODO check that this replaces INVALID_VALUE from OCPP 2.0 to OCPP 2.0.1
+        assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
 
         verifyZeroInteractions(stationStore);
         verifyZeroInteractions(station);

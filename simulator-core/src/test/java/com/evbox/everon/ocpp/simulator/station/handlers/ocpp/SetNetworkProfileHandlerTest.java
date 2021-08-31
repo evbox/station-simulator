@@ -44,7 +44,6 @@ class SetNetworkProfileHandlerTest {
         SetNetworkProfileResponse response = responseCaptor.getValue();
 
         assertThat(response.getStatus()).isEqualTo(SetNetworkProfileStatus.ACCEPTED);
-        //assertThat(response.getAdditionalProperties()).isEmpty();//TODO confirm SetNetworkProfileResponse has no additional properties in spec
     }
 
     @Test
@@ -75,6 +74,5 @@ class SetNetworkProfileHandlerTest {
         SetNetworkProfileResponse response = responseCaptor.getValue();
 
         assertThat(response.getStatus()).isEqualTo(SetNetworkProfileStatus.REJECTED);
-        //assertThat(response.getAdditionalProperties()).isEmpty();//TODO confirm SetNetworkProfileResponse has no additional properties in spec
     }
 }

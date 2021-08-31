@@ -229,11 +229,10 @@ public class StationMessageSender {
      * Send Authorize event and subscribe on response.
      *
      * @param tokenId    token identity
-     * @param evseIds    evse identity
      * @param subscriber callback that will be executed after receiving a response from OCPP server
      */
-    public void sendAuthorizeAndSubscribe(String tokenId, List<Integer> evseIds, Subscriber<AuthorizeRequest, AuthorizeResponse> subscriber) {
-        AuthorizeRequest payload = payloadFactory.createAuthorizeRequest(tokenId, evseIds);
+    public void sendAuthorizeAndSubscribe(String tokenId, Subscriber<AuthorizeRequest, AuthorizeResponse> subscriber) {
+        AuthorizeRequest payload = payloadFactory.createAuthorizeRequest(tokenId);
 
         Call call = createAndRegisterCall(ActionType.AUTHORIZE, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);

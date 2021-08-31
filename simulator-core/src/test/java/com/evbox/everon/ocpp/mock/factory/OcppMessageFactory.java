@@ -298,7 +298,6 @@ public class OcppMessageFactory {
         public AuthorizeRequest build() {
             return new AuthorizeRequest()
                     .withIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443));
-            //TODO: check removed evse id here. Present in OCPP 2.0 but not in OCPP 2.0.1
         }
     }
 

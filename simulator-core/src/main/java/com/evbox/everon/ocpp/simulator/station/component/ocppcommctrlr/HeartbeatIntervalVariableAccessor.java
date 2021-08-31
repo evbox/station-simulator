@@ -96,7 +96,7 @@ public class HeartbeatIntervalVariableAccessor extends VariableAccessor {
                 .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()));
 
         if (!isNumeric(attributeValue.toString())) {
-            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED); //TODO double check that this corresponds to INVALID in OCPP 2.0.0
+            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);
         } else {
             return setVariableResult.withAttributeStatus(SetVariableStatus.ACCEPTED);
         }

@@ -28,7 +28,6 @@ public class RemoteStopTransactionIt extends StationSimulatorSetUp {
                 .when(Authorize.request(DEFAULT_TOKEN_ID, ISO_14443))
                 .thenReturn(Authorize.response());
 
-        //TODO check ChargingState EV_DETECTED replaced by EV_CONNECTED
         ocppMockServer
                 .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.UPDATED, ChargingState.EV_CONNECTED, DEFAULT_TRANSACTION_ID, TriggerReason.REMOTE_STOP))
                 .thenReturn(TransactionEvent.response());

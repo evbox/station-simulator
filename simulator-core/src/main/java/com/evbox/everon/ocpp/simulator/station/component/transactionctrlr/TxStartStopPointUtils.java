@@ -23,7 +23,7 @@ class TxStartStopPointUtils {
         if (attributeValue.toString().isEmpty() || TxStartStopPointVariableValues.validateStringOfValues(attributeValue.toString())) {
             return setVariableResult.withAttributeStatus(SetVariableStatus.ACCEPTED);
         } else {
-            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED); //TODO check that this correlates to INVALID_VALUE in OCPP 2.0
+            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);
         }
     }
 
