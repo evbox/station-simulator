@@ -268,7 +268,7 @@ public class StationStore {
     public List<Connector> tryFindConnectors(int evseId) {
         return tryFindEvse(evseId)
                 .map(Evse::getConnectors)
-                .orElse(new ArrayList<Connector>());
+                .orElse(Collections.emptyList());
     }
 
     public OptionList<TxStartStopPointVariableValues> getTxStartPointValues() {
