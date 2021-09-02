@@ -11,11 +11,13 @@ import com.evbox.everon.ocpp.simulator.station.exceptions.BadServerResponseExcep
 import com.evbox.everon.ocpp.simulator.station.exceptions.UnknownActionException;
 import com.evbox.everon.ocpp.simulator.station.handlers.ocpp.*;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
-import com.evbox.everon.ocpp.v20.message.centralserver.GetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariablesRequest;
-import com.evbox.everon.ocpp.v20.message.station.BootNotificationResponse;
-import com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.GetVariablesRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.Reset;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetVariablesRequest;
+import com.evbox.everon.ocpp.v201.message.station.BootNotificationResponse;
+import com.evbox.everon.ocpp.v201.message.station.ChangeAvailabilityRequest;
+import com.evbox.everon.ocpp.v201.message.station.EVSE;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +35,7 @@ import static com.evbox.everon.ocpp.mock.ReflectionUtils.injectMock;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.*;
 import static com.evbox.everon.ocpp.mock.factory.OcppMessageFactory.*;
-import static com.evbox.everon.ocpp.v20.message.station.ChangeAvailabilityRequest.OperationalStatus.OPERATIVE;
+import static com.evbox.everon.ocpp.v201.message.station.OperationalStatus.OPERATIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -151,7 +153,7 @@ public class ServerMessageHandlerTest {
     @Test
     void verifyCallMessageWithResetPayload() throws JsonProcessingException {
 
-        ResetRequest payload = createResetRequest().withType(ResetRequest.Type.IMMEDIATE).build();
+        ResetRequest payload = createResetRequest().withType(Reset.IMMEDIATE).build();
 
         String callJson = createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)
@@ -169,7 +171,7 @@ public class ServerMessageHandlerTest {
         assertAll(
                 () -> assertThat(messageIdCaptor.getValue()).isEqualTo(DEFAULT_MESSAGE_ID),
                 () -> assertThat(requestCaptor.getValue()).isInstanceOf(ResetRequest.class),
-                () -> assertThat(requestCaptor.getValue().getType()).isEqualTo(ResetRequest.Type.IMMEDIATE)
+                () -> assertThat(requestCaptor.getValue().getType()).isEqualTo(Reset.IMMEDIATE)
         );
 
     }
@@ -177,7 +179,7 @@ public class ServerMessageHandlerTest {
     @Test
     void verifyCallMessageWithChangeAvailabilityPayload() throws JsonProcessingException {
 
-        ChangeAvailabilityRequest payload = new ChangeAvailabilityRequest().withEvseId(DEFAULT_EVSE_ID).withOperationalStatus(OPERATIVE);
+        ChangeAvailabilityRequest payload = new ChangeAvailabilityRequest().withEvse(new EVSE().withId(DEFAULT_EVSE_ID)).withOperationalStatus(OPERATIVE);
 
         String callJson = createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)
@@ -277,7 +279,7 @@ public class ServerMessageHandlerTest {
     @Test
     void verifyCallCallError() {
 
-        ResetRequest payload = createResetRequest().withType(ResetRequest.Type.IMMEDIATE).build();
+        ResetRequest payload = createResetRequest().withType(Reset.IMMEDIATE).build();
 
         String callJson = createCall()
                 .withMessageId(DEFAULT_MESSAGE_ID)

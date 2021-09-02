@@ -3,10 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.ComponentVariable;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetMonitoringDatum;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -43,12 +43,12 @@ class StationComponentsHolderTest {
         ComponentVariable cv2 = getComponentVariable("component2", "variable2");
 
         for (int i = 0; i < size; i++) {
-            victim.monitorComponent(1, cv, generateDatum(1, SetMonitoringDatum.Type.DELTA, cv.getComponent(), cv.getVariable()));
-            victim.monitorComponent(2, cv2, generateDatum(2, SetMonitoringDatum.Type.DELTA, cv2.getComponent(), cv2.getVariable()));
-            victim.monitorComponent(2, cv, generateDatum(3, SetMonitoringDatum.Type.PERIODIC, cv.getComponent(), cv.getVariable()));
+            victim.monitorComponent(1, cv, generateDatum(1, Monitor.DELTA, cv.getComponent(), cv.getVariable()));
+            victim.monitorComponent(2, cv2, generateDatum(2, Monitor.DELTA, cv2.getComponent(), cv2.getVariable()));
+            victim.monitorComponent(2, cv, generateDatum(3, Monitor.PERIODIC, cv.getComponent(), cv.getVariable()));
         }
 
-        Map<ComponentVariable, List<SetMonitoringDatum>> result = victim.getAllMonitoredComponents();
+        Map<ComponentVariable, List<SetMonitoringData>> result = victim.getAllMonitoredComponents();
         assertTrue(result.containsKey(cv));
         assertTrue(result.containsKey(cv2));
         assertThat(result).hasSize(2);
@@ -61,8 +61,8 @@ class StationComponentsHolderTest {
         ComponentVariable cv = getComponentVariable("component", "variable");
         ComponentVariable cv2 = getComponentVariable("component2", "variable2");
 
-        victim.monitorComponent(1, cv, generateDatum(1, SetMonitoringDatum.Type.DELTA, cv.getComponent(), cv.getVariable()));
-        victim.monitorComponent(2, cv2, generateDatum(2, SetMonitoringDatum.Type.DELTA, cv2.getComponent(), cv2.getVariable()));
+        victim.monitorComponent(1, cv, generateDatum(1, Monitor.DELTA, cv.getComponent(), cv.getVariable()));
+        victim.monitorComponent(2, cv2, generateDatum(2, Monitor.DELTA, cv2.getComponent(), cv2.getVariable()));
 
         assertFalse(victim.clearMonitor(3));
         assertTrue(victim.clearMonitor(2));
@@ -78,12 +78,12 @@ class StationComponentsHolderTest {
         ComponentVariable cv2 = getComponentVariable("component2", "variable2");
 
         for (int i = 0; i < size; i++) {
-            victim.monitorComponent(1, cv, generateDatum(1, SetMonitoringDatum.Type.DELTA, cv.getComponent(), cv.getVariable()));
-            victim.monitorComponent(2, cv2, generateDatum(2, SetMonitoringDatum.Type.DELTA, cv2.getComponent(), cv2.getVariable()));
-            victim.monitorComponent(2, cv, generateDatum(3, SetMonitoringDatum.Type.PERIODIC, cv.getComponent(), cv.getVariable()));
+            victim.monitorComponent(1, cv, generateDatum(1, Monitor.DELTA, cv.getComponent(), cv.getVariable()));
+            victim.monitorComponent(2, cv2, generateDatum(2, Monitor.DELTA, cv2.getComponent(), cv2.getVariable()));
+            victim.monitorComponent(2, cv, generateDatum(3, Monitor.PERIODIC, cv.getComponent(), cv.getVariable()));
         }
 
-        Map<ComponentVariable, List<SetMonitoringDatum>> result = victim.getByComponentAndVariable(Collections.singletonList(cv));
+        Map<ComponentVariable, List<SetMonitoringData>> result = victim.getByComponentAndVariable(Collections.singletonList(cv));
 
         assertThat(result).hasSize(1);
         assertThat(result.get(cv)).hasSize(2 * size);
@@ -100,8 +100,8 @@ class StationComponentsHolderTest {
                 .withVariable(new Variable().withName(new CiString.CiString50(variableName)));
     }
 
-    private SetMonitoringDatum generateDatum(int id, SetMonitoringDatum.Type type, Component component, Variable variable) {
-        return new SetMonitoringDatum()
+    private SetMonitoringData generateDatum(int id, Monitor type, Component component, Variable variable) {
+        return new SetMonitoringData()
                 .withId(id)
                 .withComponent(component)
                 .withVariable(variable)

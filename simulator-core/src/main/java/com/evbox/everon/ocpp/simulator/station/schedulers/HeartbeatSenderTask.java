@@ -3,8 +3,8 @@ package com.evbox.everon.ocpp.simulator.station.schedulers;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
-import com.evbox.everon.ocpp.v20.message.station.HeartbeatRequest;
-import com.evbox.everon.ocpp.v20.message.station.HeartbeatResponse;
+import com.evbox.everon.ocpp.v201.message.station.HeartbeatRequest;
+import com.evbox.everon.ocpp.v201.message.station.HeartbeatResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;

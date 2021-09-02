@@ -9,9 +9,9 @@ import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.securityctrlr.SecurityCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxCtrlrComponent;
-import com.evbox.everon.ocpp.v20.message.centralserver.ComponentVariable;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetMonitoringDatum;
-import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v201.message.centralserver.ComponentVariable;
+import com.evbox.everon.ocpp.v201.message.centralserver.SetMonitoringData;
+import com.evbox.everon.ocpp.v201.message.station.ReportData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Contains station components (OCPP 2.0 Appendix 3. Standardized Components) that are supported at the moment
@@ -58,9 +58,9 @@ public class StationComponentsHolder {
         return Optional.ofNullable(components.get(componentName));
     }
 
-    public void monitorComponent(int monitorId, ComponentVariable componentVariable, SetMonitoringDatum datum) {
+    public void monitorComponent(int monitorId, ComponentVariable componentVariable, SetMonitoringData data) {
         MonitoredComponent monitored = monitoredComponents.getOrDefault(monitorId, new MonitoredComponent());
-        monitored.addMonitoredComponent(componentVariable, datum);
+        monitored.addMonitoredComponent(componentVariable, data);
         monitoredComponents.put(monitorId, monitored);
     }
 
@@ -72,9 +72,9 @@ public class StationComponentsHolder {
      *
      * @return map with all monitoring details grouped by ComponentVariable
      */
-    public Map<ComponentVariable, List<SetMonitoringDatum>> getAllMonitoredComponents() {
-        Map<ComponentVariable, List<SetMonitoringDatum>> result = new HashMap<>();
-        for (Map<ComponentVariable, List<SetMonitoringDatum>> map : getAllMaps()) {
+    public Map<ComponentVariable, List<SetMonitoringData>> getAllMonitoredComponents() {
+        Map<ComponentVariable, List<SetMonitoringData>> result = new HashMap<>();
+        for (Map<ComponentVariable, List<SetMonitoringData>> map : getAllMaps()) {
             map.forEach((key, value) -> result.merge(key, value, (first, second) -> {
                     first.addAll(second);
                     return first;
@@ -95,13 +95,13 @@ public class StationComponentsHolder {
      * @param componentVariables list of ComponentVariables to match against
      * @return map with all monitoring details grouped by ComponentVariable
      */
-    public Map<ComponentVariable, List<SetMonitoringDatum>> getByComponentAndVariable(List<ComponentVariable> componentVariables) {
-        Map<ComponentVariable, List<SetMonitoringDatum>> result = new HashMap<>();
-        for (Map<ComponentVariable, List<SetMonitoringDatum>> map : getAllMaps()) {
+    public Map<ComponentVariable, List<SetMonitoringData>> getByComponentAndVariable(List<ComponentVariable> componentVariables) {
+        Map<ComponentVariable, List<SetMonitoringData>> result = new HashMap<>();
+        for (Map<ComponentVariable, List<SetMonitoringData>> map : getAllMaps()) {
             map.forEach((key, value) -> {
                     if (componentVariables.contains(key)) {
                         result.merge(key, value, (first, second) -> {
-                            List<SetMonitoringDatum> list = new ArrayList<>(first);
+                            List<SetMonitoringData> list = new ArrayList<>(first);
                             list.addAll(second);
                             return list;
                         });
@@ -128,31 +128,31 @@ public class StationComponentsHolder {
      * Generates report data for all components in the holder
      *
      * @param onlyMutableVariables if true, returns only those variables that can be set by the operator
-     * @return list of {@link ReportDatum}
+     * @return list of {@link ReportData}
      */
-    public List<ReportDatum> generateReportData(boolean onlyMutableVariables) {
+    public List<ReportData> generateReportData(boolean onlyMutableVariables) {
         return components
                 .values().stream()
                 .flatMap(component -> component.generateReportData(onlyMutableVariables).stream())
                 .collect(toList());
     }
 
-    private List<Map<ComponentVariable, List<SetMonitoringDatum>>> getAllMaps() {
+    private List<Map<ComponentVariable, List<SetMonitoringData>>> getAllMaps() {
         return monitoredComponents.values().stream().map(MonitoredComponent::getMonitoredDetails).collect(toList());
     }
 
 
     public static class MonitoredComponent {
 
-        private Map<ComponentVariable, List<SetMonitoringDatum>> monitoredDetails = new HashMap<>();
+        private Map<ComponentVariable, List<SetMonitoringData>> monitoredDetails = new HashMap<>();
 
-        public void addMonitoredComponent(ComponentVariable componentVariable, SetMonitoringDatum datum) {
-            List<SetMonitoringDatum> list = monitoredDetails.getOrDefault(componentVariable, new ArrayList<>());
-            list.add(datum);
+        public void addMonitoredComponent(ComponentVariable componentVariable, SetMonitoringData data) {
+            List<SetMonitoringData> list = monitoredDetails.getOrDefault(componentVariable, new ArrayList<>());
+            list.add(data);
             monitoredDetails.put(componentVariable, list);
         }
 
-        public Map<ComponentVariable, List<SetMonitoringDatum>> getMonitoredDetails() {
+        public Map<ComponentVariable, List<SetMonitoringData>> getMonitoredDetails() {
             return monitoredDetails;
         }
 

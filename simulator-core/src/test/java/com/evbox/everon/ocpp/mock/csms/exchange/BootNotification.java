@@ -2,7 +2,8 @@ package com.evbox.everon.ocpp.mock.csms.exchange;
 
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.BootNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.BootReason;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -22,7 +23,7 @@ public class BootNotification {
      * @param reason reason for sending the signal
      * @return checks whether an incoming request is BootNotification or not.
      */
-    public static Predicate<Call> request(BootNotificationRequest.Reason reason) {
+    public static Predicate<Call> request(BootReason reason) {
         return request -> equalsType(request, BOOT_NOTIFICATION) && equalsReason(request, reason);
     }
 
@@ -40,7 +41,7 @@ public class BootNotification {
                 .toJson();
     }
 
-    private static boolean equalsReason(Call request, BootNotificationRequest.Reason reason) {
+    private static boolean equalsReason(Call request, BootReason reason) {
         return ((BootNotificationRequest) request.getPayload()).getReason() == reason;
     }
 }

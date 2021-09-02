@@ -9,11 +9,14 @@ import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
-import com.evbox.everon.ocpp.v20.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
+import com.evbox.everon.ocpp.v201.message.station.UnlockConnectorRequest;
+import com.evbox.everon.ocpp.v201.message.station.UnlockConnectorResponse;
+import com.evbox.everon.ocpp.v201.message.station.UnlockStatus;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.v20.message.common.IdToken.Type.ISO_14443;
+import static com.evbox.everon.ocpp.v201.message.station.IdTokenType.ISO_14443;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -27,15 +30,15 @@ public class RemotelyUnlockConnectorIt extends StationSimulatorSetUp {
                 .thenReturn(Authorize.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.STARTED))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.STARTED))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.AVAILABLE))
+                .when(StatusNotification.request(ConnectorStatus.AVAILABLE))
                 .thenReturn(StatusNotification.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.OCCUPIED))
+                .when(StatusNotification.request(ConnectorStatus.OCCUPIED))
                 .thenReturn(StatusNotification.response());
 
         stationSimulatorRunner.run();
@@ -55,7 +58,7 @@ public class RemotelyUnlockConnectorIt extends StationSimulatorSetUp {
         Call call = new Call(DEFAULT_CALL_ID, ActionType.UNLOCK_CONNECTOR, new UnlockConnectorRequest().withEvseId(DEFAULT_EVSE_ID).withConnectorId(DEFAULT_CONNECTOR_ID));
         UnlockConnectorResponse response = ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson(), UnlockConnectorResponse.class);
 
-        await().untilAsserted(() -> assertThat(response.getStatus()).isEqualTo(UnlockConnectorResponse.Status.UNLOCKED));
+        await().untilAsserted(() -> assertThat(response.getStatus()).isEqualTo(UnlockStatus.UNLOCKED));
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().findEvse(DEFAULT_EVSE_ID).getConnectors().get(0).getCableStatus()).isEqualTo(CableStatus.PLUGGED));
     }
 
@@ -67,15 +70,15 @@ public class RemotelyUnlockConnectorIt extends StationSimulatorSetUp {
                 .thenReturn(Authorize.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(TransactionEventRequest.EventType.STARTED))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.STARTED))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.AVAILABLE))
+                .when(StatusNotification.request(ConnectorStatus.AVAILABLE))
                 .thenReturn(StatusNotification.response());
 
         ocppMockServer
-                .when(StatusNotification.request(StatusNotificationRequest.ConnectorStatus.OCCUPIED))
+                .when(StatusNotification.request(ConnectorStatus.OCCUPIED))
                 .thenReturn(StatusNotification.response());
 
         stationSimulatorRunner.run();
@@ -90,7 +93,7 @@ public class RemotelyUnlockConnectorIt extends StationSimulatorSetUp {
         Call call = new Call(DEFAULT_CALL_ID, ActionType.UNLOCK_CONNECTOR, new UnlockConnectorRequest().withEvseId(DEFAULT_EVSE_ID).withConnectorId(DEFAULT_CONNECTOR_ID));
         UnlockConnectorResponse response = ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson(), UnlockConnectorResponse.class);
 
-        await().untilAsserted(() -> assertThat(response.getStatus()).isEqualTo(UnlockConnectorResponse.Status.UNLOCK_FAILED));
+        await().untilAsserted(() -> assertThat(response.getStatus()).isEqualTo(UnlockStatus.UNLOCK_FAILED));
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().findEvse(DEFAULT_EVSE_ID).getConnectors().get(0).getCableStatus()).isEqualTo(CableStatus.LOCKED));
     }
 }

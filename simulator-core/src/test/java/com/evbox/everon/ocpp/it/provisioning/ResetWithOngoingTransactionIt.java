@@ -7,14 +7,15 @@ import com.evbox.everon.ocpp.mock.csms.exchange.TransactionEvent;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.Reset;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetRequest;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.atLeastOnce;
 import static com.evbox.everon.ocpp.mock.expect.ExpectedCount.times;
-import static com.evbox.everon.ocpp.v20.message.common.IdToken.Type.ISO_14443;
-import static com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest.Reason.REMOTE_RESET;
+import static com.evbox.everon.ocpp.v201.message.station.BootReason.REMOTE_RESET;
+import static com.evbox.everon.ocpp.v201.message.station.IdTokenType.ISO_14443;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
@@ -45,7 +46,7 @@ public class ResetWithOngoingTransactionIt extends StationSimulatorSetUp {
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(1)).isTrue());
 
-        Call call = new Call(DEFAULT_CALL_ID, ActionType.RESET, new ResetRequest().withType(ResetRequest.Type.IMMEDIATE));
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.RESET, new ResetRequest().withType(Reset.IMMEDIATE));
 
         ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
 
