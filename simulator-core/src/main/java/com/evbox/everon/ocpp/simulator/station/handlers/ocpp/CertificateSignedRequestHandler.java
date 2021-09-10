@@ -1,25 +1,27 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
+import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.v20.message.station.CertificateSignedRequest;
-import com.evbox.everon.ocpp.v20.message.station.CertificateSignedResponse;
+import com.evbox.everon.ocpp.v201.message.station.CertificateSignedRequest;
+import com.evbox.everon.ocpp.v201.message.station.CertificateSignedResponse;
+import com.evbox.everon.ocpp.v201.message.station.CertificateSignedStatus;
+import com.evbox.everon.ocpp.v201.message.station.CertificateSigningUse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.util.encoders.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Handler for {@link CertificateSignedRequest} request.
@@ -40,35 +42,37 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
     }
 
     @Override
-    public void handle(String callId, CertificateSignedRequest request) {
-        if (request.getTypeOfCertificate() == CertificateSignedRequest.TypeOfCertificate.V_2_G_CERTIFICATE) {
-            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedResponse.Status.REJECTED));
+    public void handle(String callId, CertificateSignedRequest request){
+        if (request.getCertificateType() == CertificateSigningUse.V_2_G_CERTIFICATE) {
+            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.REJECTED));
             return;
         }
 
-        List<String> chain = new ArrayList<>();
-        request.getCert().forEach(c -> chain.add(c.toString()));
-
+        String chain = Optional.ofNullable(request.getCertificateChain()).map(CiString::toString).orElse("");
         if (chain.isEmpty()) {
-            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedResponse.Status.REJECTED));
+            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.REJECTED));
             return;
         }
 
+        List<X509Certificate> stationCertificates = convertStringToCertificates(chain);
 
-        X509Certificate stationCertificate = convertStringToCertificate(chain.get(0));
-        if (stationCertificate != null && isCertificateValid(stationCertificate)) {
-            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedResponse.Status.ACCEPTED));
-            stationStore.setStationCertificate(stationCertificate);
-            startCertificateRenewerTask(stationCertificate);
+        if (!stationCertificates.isEmpty()) {
+            X509Certificate first = stationCertificates.get(0);
+            if(isCertificateValid(first)) {
+                stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.ACCEPTED));
+                stationStore.setStationCertificate(first);
+                startCertificateRenewerTask(first);
 
-            if (chain.size() > 1) {
-                List<X509Certificate> stationCertificateChain = new ArrayList<>();
-                chain.subList(1, chain.size()).forEach(c -> stationCertificateChain.add(convertStringToCertificate(c)));
-                stationStore.setStationCertificateChain(stationCertificateChain);
+                if (stationCertificates.size() > 1) {
+                    List<X509Certificate> stationCertificateChain = new ArrayList<>();
+                    stationCertificates.subList(1, stationCertificates.size()).forEach(c -> stationCertificateChain.add(c));
+                    stationStore.setStationCertificateChain(stationCertificateChain);
+                }
+                return;
             }
-        } else {
-            stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedResponse.Status.REJECTED));
         }
+        stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.REJECTED));
+
     }
 
     private void startCertificateRenewerTask(X509Certificate certificate) {
@@ -85,17 +89,18 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
         return scheduledFuture;
     }
 
-    private X509Certificate convertStringToCertificate(String cert) {
+    private List<X509Certificate> convertStringToCertificates(String chain) {
         try {
-            byte[] bytes = Hex.decode(cert);
+            byte[] bytes = chain.getBytes();
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             InputStream in = new ByteArrayInputStream(bytes);
-            return (X509Certificate) factory.generateCertificate(in);
+            return factory.generateCertificates(in).stream().map(certificate -> ((X509Certificate) certificate)).collect(Collectors.toList());
         } catch (Exception e) {
             log.debug("Invalid certificate", e);
         }
-        return null;
+        return Collections.emptyList();
     }
+
 
     private boolean isCertificateValid(X509Certificate certificate) {
         try {

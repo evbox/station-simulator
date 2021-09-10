@@ -5,10 +5,7 @@ import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -47,38 +44,38 @@ class IdentityVariableAccessorTest {
 
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
-                arguments(ACTUAL_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.REJECTED),
-                arguments(MAX_SET_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
-                arguments(MIN_SET_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
-                arguments(TARGET_ATTRIBUTE, "some_value", SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE)
+                arguments(ACTUAL_ATTRIBUTE, "some_value", SetVariableStatus.REJECTED),
+                arguments(MAX_SET_ATTRIBUTE, "some_value", SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
+                arguments(MIN_SET_ATTRIBUTE, "some_value", SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
+                arguments(TARGET_ATTRIBUTE, "some_value", SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE)
         );
     }
 
     static Stream<Arguments> getVariableDatumProvider() {
         return Stream.of(
-                arguments(ACTUAL_ATTRIBUTE, GetVariableResult.AttributeStatus.ACCEPTED, STATION_IDENTITY_CODE),
-                arguments(MAX_SET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
-                arguments(MIN_SET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
-                arguments(TARGET_ATTRIBUTE, GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null)
+                arguments(ACTUAL_ATTRIBUTE, GetVariableStatus.ACCEPTED, STATION_IDENTITY_CODE),
+                arguments(MAX_SET_ATTRIBUTE, GetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
+                arguments(MIN_SET_ATTRIBUTE, GetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null),
+                arguments(TARGET_ATTRIBUTE, GetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE, null)
         );
     }
 
     @ParameterizedTest
     @MethodSource("setVariableDatumProvider")
-    void shouldValidateSetVariableDatum(AttributePath attributePath, String value, SetVariableResult.AttributeStatus expectedAttributeStatus) {
+    void shouldValidateSetVariableDatum(AttributePath attributePath, String value, SetVariableStatus expectedAttributeStatus) {
         //when
         SetVariableResult result = variableAccessor.validate(attributePath, new CiString.CiString1000(value));
 
         //then
         assertCiString(result.getComponent().getName()).isEqualTo(attributePath.getComponent().getName());
         assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
-        assertThat(result.getAttributeType()).isEqualTo(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
+        assertThat(result.getAttributeType()).isEqualTo(Attribute.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
     }
 
     @ParameterizedTest
     @MethodSource("getVariableDatumProvider")
-    void shouldGetVariableDatum(AttributePath attributePath, GetVariableResult.AttributeStatus expectedAttributeStatus, String expectedValue) {
+    void shouldGetVariableDatum(AttributePath attributePath, GetVariableStatus expectedAttributeStatus, String expectedValue) {
         //given
         initStationMockIdentityCode(expectedValue);
 
@@ -88,7 +85,7 @@ class IdentityVariableAccessorTest {
         //then
         assertCiString(result.getComponent().getName()).isEqualTo(attributePath.getComponent().getName());
         assertCiString(result.getVariable().getName()).isEqualTo(attributePath.getVariable().getName());
-        assertThat(result.getAttributeType()).isEqualTo(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()));
+        assertThat(result.getAttributeType()).isEqualTo(Attribute.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
         assertCiString(result.getAttributeValue()).isEqualTo(expectedValue);
     }

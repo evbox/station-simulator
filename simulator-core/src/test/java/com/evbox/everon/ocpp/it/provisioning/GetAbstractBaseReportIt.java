@@ -4,14 +4,14 @@ import com.evbox.everon.ocpp.mock.StationSimulatorSetUp;
 import com.evbox.everon.ocpp.mock.csms.exchange.NotifyReport;
 import com.evbox.everon.ocpp.simulator.message.ActionType;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest;
-import com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse;
+import com.evbox.everon.ocpp.v201.message.station.GetBaseReportRequest;
+import com.evbox.everon.ocpp.v201.message.station.GetBaseReportResponse;
 import org.junit.jupiter.api.Test;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportRequest.ReportBase.*;
-import static com.evbox.everon.ocpp.v20.message.station.GetBaseReportResponse.Status.ACCEPTED;
+import static com.evbox.everon.ocpp.v201.message.station.GenericDeviceModelStatus.ACCEPTED;
+import static com.evbox.everon.ocpp.v201.message.station.ReportBase.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 

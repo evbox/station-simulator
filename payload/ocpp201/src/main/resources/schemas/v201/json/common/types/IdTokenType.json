@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id": "urn:OCPP:Cp:2:2018:4:IdTokenType",
+    "comment": "OCPP 2.0 - v1p0",
+    "AdditionalInfoType": {
+        "additionalProperties": true,
+        "properties": {
+            "additionalIdToken": {
+                "type": "string",
+                "maxLength": 36
+            },
+            "type": {
+                "type": "string",
+                "maxLength": 50
+            }
+        },
+        "required": [
+            "additionalIdToken",
+            "type"
+        ]
+    },
+    "IdTokenEnumType": {
+      "description": "Enumeration of possible idToken types.\r\n",
+      "javaType": "com.evbox.everon.ocpp.v201.message.station.IdTokenType",
+      "type": "string",
+      "additionalProperties": false,
+      "enum": [
+        "Central",
+        "eMAID",
+        "ISO14443",
+        "ISO15693",
+        "KeyCode",
+        "Local",
+        "MacAddress",
+        "NoAuthorization"
+      ]
+    },
+    "IdTokenType": {
+        "javaType": "com.evbox.everon.ocpp.v201.message.common.IdToken",
+        "additionalProperties": true,
+        "properties": {
+            "additionalInfo": {
+                "type": "array",
+                "additionalItems": false,
+                "items": {
+                    "$ref": "#AdditionalInfoType"
+                },
+                "minItems": 1
+            },
+            "idToken": {
+                "type": "string",
+                "maxLength": 36
+            },
+            "type": {
+                "$ref": "#/definitions/IdTokenEnumType"
+            }
+        },
+        "required": [
+            "idToken",
+            "type"
+        ]
+    }
+}
+

@@ -3,16 +3,19 @@ package com.evbox.everon.ocpp.simulator.station.actions.user;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
-import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
+import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.StoppedState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForAuthorizationState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationResponse;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
+import com.evbox.everon.ocpp.v201.message.station.StatusNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.StatusNotificationResponse;
+import com.evbox.everon.ocpp.v201.message.station.TriggerReason;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,8 +82,8 @@ public class UnplugTest {
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
-        verify(stationMessageSenderMock).sendTransactionEventEnded(anyInt(), anyInt(), any(TransactionEventRequest.TriggerReason.class),
-                nullable(TransactionData.StoppedReason.class), anyLong());
+        verify(stationMessageSenderMock).sendTransactionEventEnded(anyInt(), anyInt(), any(TriggerReason.class),
+                nullable(Reason.class), anyLong());
 
     }
 

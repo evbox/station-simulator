@@ -1,7 +1,7 @@
 package com.evbox.everon.ocpp.mock.csms.exchange;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.v20.message.station.NotifyReportRequest;
+import com.evbox.everon.ocpp.v201.message.station.NotifyReportRequest;
 
 import java.util.function.Function;
 import java.util.function.Predicate;

@@ -10,10 +10,7 @@ import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketMessageInbox;
-import com.evbox.everon.ocpp.v20.message.common.SignedMeterValue;
-import com.evbox.everon.ocpp.v20.message.station.*;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData.ChargingState;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +62,7 @@ class StationMessageSenderTest {
     void shouldIncreaseMessageIdForConsequentCalls() {
 
         int numberOfMessages = 3;
-        IntStream.range(0, numberOfMessages).forEach(c -> stationMessageSender.sendBootNotification(BootNotificationRequest.Reason.POWER_UP));
+        IntStream.range(0, numberOfMessages).forEach(c -> stationMessageSender.sendBootNotification(BootReason.POWER_UP));
 
         Map<String, Call> sentCalls = stationMessageSender.getSentCalls();
 
@@ -94,9 +91,9 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
-                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED),
+                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEvent.STARTED),
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
-                () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
                 () -> assertThat(signedMeterValue).isNull()
         );
@@ -120,11 +117,11 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
-                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED),
+                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEvent.STARTED),
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
-                () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
-                () -> assertThat(signedMeterValue.getEncodedMeterValue().toString()).isNotEmpty()
+                () -> assertThat(signedMeterValue.getSignedMeterData().toString()).isNotEmpty()
         );
 
     }
@@ -148,9 +145,9 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
-                () -> assertThat(actualTransactionEventPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.STARTED),
+                () -> assertThat(actualTransactionEventPayload.getEventType()).isEqualTo(TransactionEvent.STARTED),
                 () -> assertThat(actualTransactionEventPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
-                () -> assertThat(actualTransactionEventPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualTransactionEventPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualTransactionEventPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
                 () -> assertThat(actualNotifyEVChargingNeedsPayload.getEvseId()).isEqualTo(DEFAULT_EVSE_ID),
                 () -> assertThat(actualNotifyEVChargingNeedsPayload.getChargingNeeds()).isNotNull()
@@ -175,9 +172,9 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
-                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.UPDATED),
+                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEvent.UPDATED),
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
-                () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
                 () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
                 () -> assertThat(signedMeterValue).isNull()
         );
@@ -189,7 +186,7 @@ class StationMessageSenderTest {
 
         mockStationPersistenceLayer();
 
-        stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV, 0L);
+        stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, Reason.STOPPED_BY_EV, 0L);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -199,10 +196,10 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
-                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.ENDED),
+                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEvent.ENDED),
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
-                () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
-                () -> assertThat(actualPayload.getTransactionData().getStoppedReason()).isEqualTo(TransactionData.StoppedReason.STOPPED_BY_EV)
+                () -> assertThat(actualPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualPayload.getTransactionInfo().getStoppedReason()).isEqualTo(Reason.STOPPED_BY_EV)
         );
     }
 
@@ -212,7 +209,7 @@ class StationMessageSenderTest {
         mockStationPersistenceLayer();
         when(stationStoreMock.getStationId()).thenReturn("EVB-Eichrecht");
 
-        stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, TransactionData.StoppedReason.STOPPED_BY_EV, 0L);
+        stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, Reason.STOPPED_BY_EV, 0L);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -223,18 +220,18 @@ class StationMessageSenderTest {
 
         assertAll(
                 () -> assertThat(actualCall.getMessageId()).isEqualTo(DEFAULT_MESSAGE_ID),
-                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEventRequest.EventType.ENDED),
+                () -> assertThat(actualPayload.getEventType()).isEqualTo(TransactionEvent.ENDED),
                 () -> assertThat(actualPayload.getTriggerReason()).isEqualTo(TriggerReason.AUTHORIZED),
-                () -> assertThat(actualPayload.getTransactionData().getId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
-                () -> assertThat(actualPayload.getTransactionData().getStoppedReason()).isEqualTo(TransactionData.StoppedReason.STOPPED_BY_EV),
-                () -> assertThat(signedMeterValue.getEncodedMeterValue().toString()).isNotEmpty()
+                () -> assertThat(actualPayload.getTransactionInfo().getTransactionId()).isEqualTo(new CiString.CiString36(DEFAULT_TRANSACTION_ID)),
+                () -> assertThat(actualPayload.getTransactionInfo().getStoppedReason()).isEqualTo(Reason.STOPPED_BY_EV),
+                () -> assertThat(signedMeterValue.getSignedMeterData().toString()).isNotEmpty()
         );
     }
 
     @Test
     void verifyAuthorize() throws InterruptedException {
 
-        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, singletonList(DEFAULT_EVSE_ID), DEFAULT_SUBSCRIBER);
+        stationMessageSender.sendAuthorizeAndSubscribe(DEFAULT_TOKEN_ID, DEFAULT_SUBSCRIBER);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -242,16 +239,13 @@ class StationMessageSenderTest {
 
         AuthorizeRequest actualPayload = (AuthorizeRequest) actualCall.getPayload();
 
-        assertAll(
-                () -> assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID)),
-                () -> assertThat(actualPayload.getEvseId()).containsExactly(DEFAULT_EVSE_ID)
-        );
+        assertThat(actualPayload.getIdToken().getIdToken()).isEqualTo(new CiString.CiString36(DEFAULT_TOKEN_ID));
     }
 
     @Test
     void verifyBootNotification() throws InterruptedException {
 
-        stationMessageSender.sendBootNotification(BootNotificationRequest.Reason.POWER_UP);
+        stationMessageSender.sendBootNotification(BootReason.POWER_UP);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -260,8 +254,8 @@ class StationMessageSenderTest {
         BootNotificationRequest actualPayload = (BootNotificationRequest) actualCall.getPayload();
 
         assertAll(
-                () -> assertThat(actualPayload.getReason()).isEqualTo(BootNotificationRequest.Reason.POWER_UP),
-                () -> assertThat(actualPayload.getChargingStation().getSerialNumber()).isEqualTo(new CiString.CiString20(DEFAULT_SERIAL_NUMBER)),
+                () -> assertThat(actualPayload.getReason()).isEqualTo(BootReason.POWER_UP),
+                () -> assertThat(actualPayload.getChargingStation().getSerialNumber()).isEqualTo(new CiString.CiString25(DEFAULT_SERIAL_NUMBER)),
                 () -> assertThat(actualPayload.getChargingStation().getFirmwareVersion()).isEqualTo(new CiString.CiString50(DEFAULT_FIRMWARE_VERSION)),
                 () -> assertThat(actualPayload.getChargingStation().getModel()).isEqualTo(new CiString.CiString20(DEFAULT_MODEL))
         );
@@ -285,7 +279,7 @@ class StationMessageSenderTest {
         StatusNotificationRequest actualPayload = (StatusNotificationRequest) actualCall.getPayload();
 
         assertAll(
-                () -> assertThat(actualPayload.getConnectorStatus()).isEqualTo(StatusNotificationRequest.ConnectorStatus.AVAILABLE),
+                () -> assertThat(actualPayload.getConnectorStatus()).isEqualTo(ConnectorStatus.AVAILABLE),
                 () -> assertThat(actualPayload.getEvseId()).isEqualTo(DEFAULT_EVSE_ID),
                 () -> assertThat(actualPayload.getConnectorId()).isEqualTo(DEFAULT_EVSE_CONNECTORS)
         );
@@ -312,7 +306,7 @@ class StationMessageSenderTest {
 
     @Test
     void verifyNotifyReportAsync() throws InterruptedException, JsonProcessingException {
-        List<ReportDatum> reportData = singletonList(new ReportDatum());
+        List<ReportData> reportData = singletonList(new ReportData());
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
         NotifyReportRequest request = new NotifyReportRequest()

@@ -5,11 +5,8 @@ import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.GetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.SetVariableResult;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
-import com.evbox.everon.ocpp.v20.message.station.ReportDatum;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
+import com.evbox.everon.ocpp.v201.message.station.ReportData;
 
 import java.util.List;
 import java.util.Map;
@@ -28,21 +25,21 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
             new GetVariableResult()
                     .withComponent(attributePath.getComponent())
                     .withVariable(attributePath.getVariable())
-                    .withAttributeType(GetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                    .withAttributeStatus(GetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
+                    .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
+                    .withAttributeStatus(GetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
 
     private static final SetVariableValidator NOT_SUPPORTED_ATTRIBUTE_TYPE_VALIDATOR = (attributePath, attributeValue) ->
             new SetVariableResult()
                     .withComponent(attributePath.getComponent())
                     .withVariable(attributePath.getVariable())
-                    .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
-                    .withAttributeStatus(SetVariableResult.AttributeStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
+                    .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
+                    .withAttributeStatus(SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE);
 
     protected static final SetVariableResultCreator RESULT_CREATOR = (attributePath, attributeValue, attributeStatus) ->
             new SetVariableResult()
                     .withComponent(attributePath.getComponent())
                     .withVariable(attributePath.getVariable())
-                    .withAttributeType(SetVariableResult.AttributeType.fromValue(attributePath.getAttributeType().getName()))
+                    .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
                     .withAttributeStatus(attributeStatus);
 
     private final Station station;
@@ -69,7 +66,7 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
 
     public abstract Map<AttributeType, SetVariableValidator> getVariableValidators();
 
-    public abstract List<ReportDatum> generateReportData(String componentName);
+    public abstract List<ReportData> generateReportData(String componentName);
 
     public abstract boolean isMutable();
 

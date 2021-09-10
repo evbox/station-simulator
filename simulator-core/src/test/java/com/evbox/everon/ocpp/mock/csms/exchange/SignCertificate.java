@@ -2,14 +2,14 @@ package com.evbox.everon.ocpp.mock.csms.exchange;
 
 import com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.v20.message.station.SignCertificateResponse;
+import com.evbox.everon.ocpp.v201.message.station.SignCertificateResponse;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.evbox.everon.ocpp.mock.csms.exchange.Common.equalsType;
 import static com.evbox.everon.ocpp.simulator.message.ActionType.SIGN_CERTIFICATE;
-import static com.evbox.everon.ocpp.v20.message.station.SignCertificateResponse.Status.ACCEPTED;
+import static com.evbox.everon.ocpp.v201.message.station.GenericStatus.ACCEPTED;
 
 public class SignCertificate {
 

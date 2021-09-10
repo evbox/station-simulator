@@ -1,6 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station;
 
-import com.evbox.everon.ocpp.v20.message.centralserver.DataTransferRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.DataTransferRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

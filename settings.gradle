@@ -1,5 +1,5 @@
 include 'payload:ocpp-data-types',
-        'payload:ocpp20',
+        'payload:ocpp201',
         'simulator-core'
 
 rootProject.name = 'station-simulator'

@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.AVAILABLE;
-import static com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus.OCCUPIED;
+import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIED;
 
 /**
  * Represents a Connector of the EVSE.

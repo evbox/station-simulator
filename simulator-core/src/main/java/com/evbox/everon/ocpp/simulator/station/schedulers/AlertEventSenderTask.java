@@ -2,9 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.schedulers;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.v20.message.centralserver.Component;
-import com.evbox.everon.ocpp.v20.message.centralserver.Variable;
-import com.evbox.everon.ocpp.v20.message.station.EventDatum;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import lombok.AllArgsConstructor;
 
 import java.time.ZoneOffset;
@@ -22,14 +20,15 @@ public class AlertEventSenderTask implements Runnable {
         stationMessageSender.sendNotifyEvent(Collections.singletonList(generateEventDatum()));
     }
 
-    private EventDatum generateEventDatum() {
-        return new EventDatum()
+    private EventData generateEventDatum() {
+        return new EventData()
                 .withEventId(ThreadLocalRandom.current().nextInt(100))
                 .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
-                .withTrigger(EventDatum.Trigger.ALERTING)
-                .withActualValue(new CiString.CiString1000("999"))
+                .withTrigger(EventTrigger.ALERTING)
+                .withActualValue(new CiString.CiString2500("999"))
                 .withCleared(true)
                 .withComponent(new Component().withName(new CiString.CiString50("component")))
+                .withEventNotificationType(EventNotification.CUSTOM_MONITOR)
                 .withVariable(new Variable().withName(new CiString.CiString50("variable")));
     }
 }

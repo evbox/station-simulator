@@ -4,8 +4,8 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
+import com.evbox.everon.ocpp.v201.message.station.TriggerReason;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -30,8 +30,8 @@ public class RemotelyStoppedState extends StoppedState {
 
         stationMessageSender.sendStatusNotification(evse, evse.findConnector(connectorId));
         stationMessageSender.sendTransactionEventEnded(evseId, connectorId,
-                                                        TransactionEventRequest.TriggerReason.EV_DEPARTED,
-                                                        TransactionData.StoppedReason.REMOTE,
+                                                        TriggerReason.EV_DEPARTED,
+                                                        Reason.REMOTE,
                                                         evse.getWattConsumedLastSession());
 
         stateManager.setStateForEvse(evseId, new AvailableState());
