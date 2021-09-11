@@ -2,15 +2,6 @@ const path = require('path')
 const {spawn} = require('child_process')
 import store from './store.js'
 
-
-// java -jar packr-all-4.0.0.jar --platform mac --jdk OpenJDK11U-jre_x64_mac_openj9_11.0.11_9_openj9-0.26.0.tar.gz --classpath dependencies/simulator.jar --output out-mac --executable simulator --mainclass com.evbox.everon.ocpp.simulator
-// https://github.com/AdoptOpenJDK/openjdk11-binaries/releases?after=jdk11u-2019-01-22-14-45
-// https://github.com/libgdx/packr/releases
-
-// issue https://github.com/eclipse-openj9/openj9/issues/3795
-
-
-
 let sim = undefined
 let state = ''
 
@@ -55,11 +46,13 @@ function writeStateToStore(state) {
 
 }
 
+// $ ./gradlew run -Parguments="ws://everon.io/ocpp --configuration {'stations':[{'id':'EVB-P17390866','evse':{'count':1,'connectors':1}}]}"
+
 function startSim(ws, configuration) {
     console.log('dir',__dirname)
-    const command = './simulator'
+    const command = '../dependencies/jre/bin/java -jar simulator.jar'
     const args = [`${ws} --configuration "${configuration}"`]
-    const dir = path.join(__dirname, '../out-mac/Contents/MacOS')
+    const dir = path.join(__dirname, '../dependencies')
     sim = spawn(command, args, {cwd: dir, shell: true});
     store.state.simulator.started = 'starting'
 
