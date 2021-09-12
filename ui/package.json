@@ -2,15 +2,17 @@
   "name": "ui-evse-simulator",
   "version": "1.0.0",
   "description": "Ui for EVSE CLI",
-  "main": "src/main.js",
+  "main": "main.js",
   "icon": "src/icon.svg",
   "frame": false,
   "scripts": {
+    "preinstall": "bash download-java.sh && npm run build-simulator && npm run copy-jre-mac",
+    "copy-jre-mac": "cp -R build-resources/jre/mac/x64/Contents/Home/ dependencies/jre",
     "build-simulator": "cd .. && ./gradlew build && cp simulator-core/build/libs/simulator-core-*.jar ./ui/dependencies/simulator.jar",
-    "start": "electron-forge start",
+    "start": "electron ./src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "author": "carlos rodrigues",
   "license": "UNLICENCED",
@@ -18,40 +20,53 @@
     "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.59",
-    "@electron-forge/maker-deb": "^6.0.0-beta.59",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.59",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.59",
-    "@electron-forge/maker-zip": "^6.0.0-beta.59",
-    "electron": "^13.1.9"
+    "electron": "^14.0.0",
+    "electron-builder": "^22.11.7"
   },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "extraResource": []
-      },
-      "makers": [
+  "build": {
+    "productName": "EVSESimulator",
+    "appId": "org.erb.EVSESimulator",
+    "asar": true,
+    "asarUnpack": "**\\*.{node,dll}",
+    "files": [
+      "**/*"
+    ],
+    "mac": {
+      "type": "development",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "contents": [
         {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "ui_evse_simulator"
-          }
+          "x": 130,
+          "y": 220
         },
         {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
         }
       ]
-    }
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "directories": {
+      "app": "src",
+      "output": "build"
+    },
+    "extraResources": [
+      "dependencies"
+    ]
   }
 }
