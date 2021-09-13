@@ -1,0 +1,66 @@
+:root {
+    /* Font family */
+    --font-family: 'Source Sans Pro', sans-serif;
+
+    /* Font size */
+    --font-size-xs: 0.75rem;
+    --font-size-s: 0.875rem;
+    --font-size-m: 1rem;
+    --font-size-l: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-xxl: 1.5rem;
+    --font-size-3xl: 1.75rem;
+    --font-size-4xl: 2rem;
+    --font-size-5xl: 2.5rem;
+
+    /* Font weight */
+    --font-weight-regular: 400;
+    --font-weight-semi-bold: 600;
+    --font-weight-bold: 700;
+
+    /* Line Height */
+    --line-height-1: 1;
+    --line-height-2: 1.125;
+    --line-height-3: 1.25;
+    --line-height-4: 1.5;
+
+    /*spacing*/
+    --spacing-xxxs: calc(var(--spacing-m) * .25); /* ≈ 4px Small button padding, space between list rows */
+    --spacing-xxs: calc(var(--spacing-m) * .375); /* ≈ 6px Spacing between labels and text inputs */
+    --spacing-xs: calc(var(--spacing-m) * .5); /* ≈ 8px Input and buttons vertical padding */
+    --spacing-s: calc(var(--spacing-m) * .75); /* ≈ 12px Vertical padding in bigger components, space between icon and text*/
+    --spacing-m: 1rem; /* ≈ 16px Button horizontal padding, min horizontal left and right padding  */
+    --spacing-l: calc(var(--spacing-m) * 1.5); /* ≈ 24px Space between form elements (horizontal and vertical) */
+    --spacing-xl: calc(var(--spacing-m) * 2); /* ≈ 32px Spacing between blocks of content. */
+    --spacing-xxl: calc(var(--spacing-m) * 3); /* ≈ 48px Spacing between blocks of content.  */
+    --spacing-xxxl: calc(var(--spacing-m) * 4);
+    /*color*/
+    --color-primary: #101d83;
+    --color-2: #101d5a;
+    --color-3: #505dc3;
+    --color-4: #8f9cff;
+    --color-5: #bfbbf9;
+
+    --color-neutral-1: #ffffff;
+    --color-neutral-2: #f9f9f9;
+    --color-neutral-3: #ebebef;
+    --color-neutral-4: #ceced3;
+    --color-neutral-5: #92929b;
+    --color-neutral-6: #62616a;
+    --color-neutral-7: #262628;
+
+    --color-neutral-1-code: 255, 255, 255;
+
+    --color-feedback-danger: #cc3a39;
+    --color-feedback-danger-light: #f3e6e5;
+    --color-feedback-danger-dark: #9b1f13;
+    --color-feedback-info: #0070e0;
+    --color-feedback-info-light: #dfecfc;
+    --color-feedback-info-dark: #004d99;
+    --color-feedback-success: #27aa5e;
+    --color-feedback-success-light: #e7f3ed;
+    --color-feedback-success-dark: #186839;
+    --color-feedback-warning: #e3b900;
+    --color-feedback-warning-light: #f7eeca;
+    --color-feedback-warning-dark: #81690c;
+}

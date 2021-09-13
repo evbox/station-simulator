@@ -1,6 +1,6 @@
 {
   "name": "ui-evse-simulator",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Ui for EVSE CLI",
   "main": "main.js",
   "icon": "src/icon.svg",
@@ -15,8 +15,6 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
-  "author": "carlos rodrigues",
-  "license": "UNLICENCED",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"
   },
@@ -34,7 +32,7 @@
     ],
     "mac": {
       "type": "development",
-      "hardenedRuntime": true,
+      "hardenedRuntime": false,
       "gatekeeperAssess": false
     },
     "dmg": {
