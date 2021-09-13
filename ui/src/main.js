@@ -1,5 +1,6 @@
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const isDev = require('electron-is-dev');
 
 
 function createWindow() {
@@ -18,7 +19,13 @@ function createWindow() {
     })
 
     win.loadFile(path.join(__dirname, 'index.html'))
-    win.webContents.openDevTools()
+
+    if (isDev) {
+        win.webContents.openDevTools()
+    }
+
+
+
     return win
 }
 
