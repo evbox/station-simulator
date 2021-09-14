@@ -12,9 +12,10 @@ export default reactive({
         config: {
             ws: '',
             cliConfiguration: '',
+            adhoc:'',
             wsOptions: {
                 production: 'ws://everon.io/ocpp',
-                test: 'ws://ocpp.test.everon.io/${environment}/ocpp',
+                test: 'ws://ocpp.test.everon.io/${adhoc}/ocpp',
                 staging: 'ws://ocpp.staging.everon.io/ocpp'
             }
         }

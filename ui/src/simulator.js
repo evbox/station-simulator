@@ -48,6 +48,9 @@ function writeStateToStore(state) {
 
 // $ ./gradlew run -Parguments="ws://everon.io/ocpp --configuration {'stations':[{'id':'EVB-P17390866','evse-state.js':{'count':1,'connectors':1}}]}"
 
+// ./gradlew run -Parguments="ws://ocpp.test.everon.io/ad3136a1/ocpp --configuration {'stations':[{'id':'EVB-P17390866','evse':{'count':1,'connectors':1}}]}"
+
+
 function startSim(ws, configuration) {
     console.log('dir',__dirname)
     const command = '../dependencies/jre/bin/java -jar simulator.jar'

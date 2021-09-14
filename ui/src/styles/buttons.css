@@ -1,0 +1,29 @@
+.btn-icon {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: var(--spacing-xxs);
+    font-size: 0;
+    width: var(--spacing-xxl);
+    height: var(--spacing-xxl);
+    color: #fff;
+}
+
+.btn-icon:not(.btn):hover {
+    color: var(--color-4);
+}
+
+.btn-icon:not(.btn):active,
+.btn-icon:not(.btn):focus {
+    outline: none;
+    filter: brightness(60%);
+}
+
+/* makes button transparent to see an icon with disabled state */
+.btn-icon.btn:disabled {
+    background: transparent !important;
+}
+
+.btn-icon:disabled {
+    color: rgba(255, 255, 255, 05);
+}

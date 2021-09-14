@@ -64,3 +64,17 @@
     --color-feedback-warning-light: #f7eeca;
     --color-feedback-warning-dark: #81690c;
 }
+
+svg use {
+    fill: currentColor;
+}
+
+.icon {
+    width: var(--spacing-xl);
+    height: var(--spacing-xl);
+    margin: var(--spacing-xs);
+}
+
+.fill-neutral-1 {
+    fill: var(--color-neutral-1);
+}

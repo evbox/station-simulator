@@ -1,4 +1,8 @@
 @import "tokens.css";
+@import "buttons.css";
+@import "./../components/evse-header.css";
+@import "./../components/evse-config.css";
+@import "./../components/evse-state.css";
 
 * {
     -webkit-box-sizing: border-box;
@@ -24,8 +28,8 @@ body {
     -webkit-text-size-adjust: 100%;
 }
 
-header {
-    padding: var(--spacing-s) var(--spacing-s);
-    background: var(--color-3);
-    color: var(--color-neutral-3);
+#app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }

@@ -1,26 +1,25 @@
 import * as Vue from './../dependencies/vue.esm-browser.prod.js';
+import store from './store.js'
 import evseConfig from './components/evse-config.js'
 import evseState from './components/evse-state.js'
+import evseHeader from './components/evse-header.js'
 
 //language=HTML
 const template = `
+    <evseHeader></evseHeader>
     <evseConfig></evseConfig>
-    <evseState></evseState>
+    <evseState  v-if="store.state.simulator.started"></evseState>
 `
 
 const app = {
     name: 'App',
     components: {
         evseConfig,
-        evseState
+        evseState,
+        evseHeader
     },
-
     setup() {
-        const {onMounted} = Vue;
-
-        // onMounted(() => {
-        //     console.log('mounted')
-        // })
+        return {store}
     },
     template: template
 };
