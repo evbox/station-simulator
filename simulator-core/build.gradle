@@ -145,17 +145,17 @@ publishing {
             def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username = findProperty("OSSRH_USER") ?: System.getenv("OSSRH_USER")
-                password = findProperty("OSSRH_PASSWORD") ?: System.getenv("OSSRH_PASSWORD")
+                username = System.getenv("OSSRH_USER")
+                password = System.getenv("OSSRH_PASSWORD")
             }
         }
     }
 }
 
 signing {
-    String signingKeyId = findProperty("SIGNING_KEY_ID") ?: System.getenv("SIGNING_KEY_ID")
-    String signingKey = findProperty("SIGNING_KEY") ?: System.getenv("SIGNING_KEY")
-    String signingPassword = findProperty("SIGNING_PASSWORD") ?: System.getenv("SIGNING_PASSWORD")
+    String signingKeyId = System.getenv("SIGNING_KEY_ID")
+    String signingKey = System.getenv("SIGNING_KEY")
+    String signingPassword = System.getenv("SIGNING_PASSWORD")
 
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign publishing.publications.mavenJava
