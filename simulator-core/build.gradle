@@ -2,19 +2,17 @@ buildscript {
     repositories {
         jcenter()
     }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-    }
 }
 
 plugins {
     id 'io.franzbecker.gradle-lombok'   version '2.0'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'jacoco'
+    id 'signing'
+    id 'java-library'
 }
 
 apply plugin: 'application'
-apply plugin: 'com.jfrog.bintray'
 apply plugin: 'jacoco'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -36,34 +34,35 @@ lombok {
 }
 
 dependencies {
-    compile 'io.everon:ocpp-payload:2.0.2'
 
-    compile 'info.picocli:picocli:3.9.2'
-    compile 'com.squareup.okhttp3:okhttp:3.12.1'
-    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
-    compile 'ch.qos.logback:logback-core:1.2.3'
-    compile 'ch.qos.logback:logback-classic:1.2.3'
+    api project(':payload:ocpp201')
+
+    api 'info.picocli:picocli:3.9.2'
+    api 'com.squareup.okhttp3:okhttp:3.12.1'
+    api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    api "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    api 'ch.qos.logback:logback-core:1.2.3'
+    api 'ch.qos.logback:logback-classic:1.2.3'
 
     // BouncyCastle
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.64'
+    api 'org.bouncycastle:bcpkix-jdk15on:1.64'
 
-    compile 'org.apache.commons:commons-lang3:3.9'
-    compile "com.google.guava:guava:${guavaVersion}"
+    api 'org.apache.commons:commons-lang3:3.9'
+    api "com.google.guava:guava:${guavaVersion}"
 
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.12'
+    api group: 'commons-codec', name: 'commons-codec', version: '1.12'
 
-    testCompile 'org.assertj:assertj-core:3.13.0'
-    testCompile 'io.undertow:undertow-core:2.0.17.Final'
-    testCompile 'org.awaitility:awaitility:3.1.5'
+    testImplementation 'org.assertj:assertj-core:3.13.0'
+    testImplementation 'io.undertow:undertow-core:2.0.17.Final'
+    testImplementation 'org.awaitility:awaitility:3.1.5'
 
-    testCompile 'org.mockito:mockito-junit-jupiter:3.0.0'
-    testCompile 'org.mockito:mockito-core:2.23.0'
-    testCompile("org.junit.jupiter:junit-jupiter-api:${junit5Version}")
-    testCompile("org.junit.jupiter:junit-jupiter-params:${junit5Version}")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junit5Version}")
-    testRuntime("org.junit.vintage:junit-vintage-engine:${junit5Version}")
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.0.0'
+    testImplementation 'org.mockito:mockito-core:2.23.0'
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junit5Version}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${junit5Version}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junit5Version}")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:${junit5Version}")
 }
 
 test {
@@ -98,39 +97,66 @@ task javadocJar(type: Jar) {
     from javadoc
     archiveClassifier = 'javadoc'
 }
-version '0.4.4'
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+version '0.5.0'
 
 publishing {
     publications {
-        StationSimulator(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
             artifact sourcesJar
             artifact javadocJar
             groupId 'io.everon'
             artifactId 'ocpp-station-simulator'
             version project.version
+            pom {
+                name = 'ocpp-station-simulator'
+                packaging  = 'jar'
+                description = 'The simulator tool is designed to simulate charging station. It implements OCPP protocol and talks to Charging Station Management System (CSMS) via WebSocket protocol.'
+                url = 'https://github.com/everonhq/station-simulator'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/everonhq/station-simulator/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Rawan-Abdelaal'
+                        name = 'Rawan Abdelaal'
+                        email = 'rawan.abdelaal@everon.io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/everonhq/station-simulator.git'
+                    developerConnection = 'scm:git:ssh://github.com:everonhq/station-simulator.git'
+                    url = 'https://github.com/everonhq/station-simulator/tree/master'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = findProperty("OSSRH_USER") ?: System.getenv("OSSRH_USER")
+                password = findProperty("OSSRH_PASSWORD") ?: System.getenv("OSSRH_PASSWORD")
+            }
         }
     }
 }
 
-bintray {
-    user = System.getenv('BINTRAY_USERNAME')
-    key = System.getenv('BINTRAY_API_KEY')
-    publications = ['StationSimulator']
+signing {
+    String signingKeyId = findProperty("SIGNING_KEY_ID") ?: System.getenv("SIGNING_KEY_ID")
+    String signingKey = findProperty("SIGNING_KEY") ?: System.getenv("SIGNING_KEY")
+    String signingPassword = findProperty("SIGNING_PASSWORD") ?: System.getenv("SIGNING_PASSWORD")
 
-    pkg {
-        repo = 'maven'
-        name = 'ocpp-station-simulator'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/evbox/station-simulator.git'
-        publicDownloadNumbers = true
-
-        version {
-            name = project.version
-            desc = 'OCPP 2.0 Station Simulator'
-            vcsTag = project.version
-        }
-    }
-
-    publish = true
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign publishing.publications.mavenJava
 }
