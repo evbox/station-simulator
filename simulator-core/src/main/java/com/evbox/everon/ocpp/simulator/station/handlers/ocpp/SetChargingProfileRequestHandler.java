@@ -1,8 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.v20.message.station.SetChargingProfileRequest;
-import com.evbox.everon.ocpp.v20.message.station.SetChargingProfileResponse;
+import com.evbox.everon.ocpp.v201.message.station.ChargingProfileStatus;
+import com.evbox.everon.ocpp.v201.message.station.SetChargingProfileRequest;
+import com.evbox.everon.ocpp.v201.message.station.SetChargingProfileResponse;
 
 public class SetChargingProfileRequestHandler implements OcppRequestHandler<SetChargingProfileRequest> {
 
@@ -20,6 +21,6 @@ public class SetChargingProfileRequestHandler implements OcppRequestHandler<SetC
      */
     @Override
     public void handle(String callId, SetChargingProfileRequest request) {
-        stationMessageSender.sendCallResult(callId, new SetChargingProfileResponse().withStatus(SetChargingProfileResponse.Status.REJECTED));
+        stationMessageSender.sendCallResult(callId, new SetChargingProfileResponse().withStatus(ChargingProfileStatus.REJECTED));
     }
 }

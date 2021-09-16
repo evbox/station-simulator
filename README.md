@@ -13,7 +13,7 @@
 ## Introduction
 
 The simulator tool is designed to simulate charging station. It implements [OCPP protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol) and talks to Charging Station Management 
-System (CSMS) via WebSocket protocol. At the moment only OCPP 2.0 (download [here](https://www.openchargealliance.org/protocols/ocpp-20/)) is supported.
+System (CSMS) via WebSocket protocol.
 
 ## Pre-requisites
 * JRE 8 or above
@@ -36,7 +36,7 @@ Add the following to your project `POM` file:
 <dependency>
   <groupId>io.everon</groupId>
   <artifactId>ocpp-station-simulator</artifactId>
-  <version>0.4.4</version>
+  <version>0.5.0</version>
   <type>pom</type>                                                                         
 </dependency>
 ```
@@ -45,7 +45,7 @@ Add the following to your project `POM` file:
 
 Add the following to your `build.gradle` file
 ```groovy
-compile 'io.everon:ocpp-station-simulator:0.4.4'
+compile 'io.everon:ocpp-station-simulator:0.5.0'
 ```
 
 ## Build

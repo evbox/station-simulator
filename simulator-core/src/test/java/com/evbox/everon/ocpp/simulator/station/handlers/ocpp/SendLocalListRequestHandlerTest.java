@@ -1,8 +1,9 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
-import com.evbox.everon.ocpp.v20.message.station.SendLocalListRequest;
-import com.evbox.everon.ocpp.v20.message.station.SendLocalListResponse;
+import com.evbox.everon.ocpp.v201.message.station.SendLocalListRequest;
+import com.evbox.everon.ocpp.v201.message.station.SendLocalListResponse;
+import com.evbox.everon.ocpp.v201.message.station.SendLocalListStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,8 +36,7 @@ class SendLocalListRequestHandlerTest {
 
         SendLocalListResponse response = responseCaptor.getValue();
 
-        assertThat(response.getStatus()).isEqualTo(SendLocalListResponse.Status.ACCEPTED);
-        assertThat(response.getAdditionalProperties()).isEmpty();
+        assertThat(response.getStatus()).isEqualTo(SendLocalListStatus.ACCEPTED);
 
     }
 

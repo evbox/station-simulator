@@ -8,9 +8,10 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest.ConnectorStatus;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
-import com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest;
+import com.evbox.everon.ocpp.v201.message.station.ChargingState;
+import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
+import com.evbox.everon.ocpp.v201.message.station.TriggerReason;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,8 +57,8 @@ class AuthorizeHelperTest {
 
         verify(stationMessageSenderMock).sendTransactionEventUpdate(eq(1),
                 eq(1),
-                eq(TransactionEventRequest.TriggerReason.DEAUTHORIZED),
-                eq(TransactionData.ChargingState.SUSPENDED_EVSE),
+                eq(TriggerReason.DEAUTHORIZED),
+                eq(ChargingState.SUSPENDED_EVSE),
                 anyLong());
     }
 
@@ -69,8 +70,8 @@ class AuthorizeHelperTest {
 
         verify(stationMessageSenderMock).sendTransactionEventEnded(eq(1),
                 eq(1),
-                eq(TransactionEventRequest.TriggerReason.DEAUTHORIZED),
-                eq(TransactionData.StoppedReason.DE_AUTHORIZED),
+                eq(TriggerReason.DEAUTHORIZED),
+                eq(Reason.DE_AUTHORIZED),
                 eq(0L));
     }
 }

@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id": "urn:OCPP:Cp:2:2018:4:EvseType",
+    "comment": "OCPP 2.0 - v1p0",
+    "EVSEType": {
+        "javaType": "com.evbox.everon.ocpp.v201.message.common.Evse",
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+            "id": {
+                "type": "integer"
+            },
+            "connectorId": {
+                "type": "integer"
+            }
+        },
+        "required": [
+            "id"
+        ]
+    }
+}

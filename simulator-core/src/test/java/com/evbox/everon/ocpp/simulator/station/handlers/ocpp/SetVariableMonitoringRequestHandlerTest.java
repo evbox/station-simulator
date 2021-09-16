@@ -4,10 +4,13 @@ import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.StationComponentsHolder;
-import com.evbox.everon.ocpp.v20.message.centralserver.*;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
@@ -15,7 +18,8 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SetVariableMonitoringRequestHandlerTest {
@@ -35,7 +39,7 @@ class SetVariableMonitoringRequestHandlerTest {
     @Test
     void verifyCorrectNumberOfResponses() {
         final int size = 5;
-        List<SetMonitoringDatum> datums = new ArrayList<>();
+        List<SetMonitoringData> datums = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             datums.add(createdMonitoringDatum("component" + i, "variable"+i));
         }
@@ -46,7 +50,7 @@ class SetVariableMonitoringRequestHandlerTest {
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         SetVariableMonitoringResponse response = responseCaptor.getValue();
         assertThat(response.getSetMonitoringResult().size()).isEqualTo(size);
-        assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getStatus() == SetMonitoringResult.Status.UNKNOWN_COMPONENT));
+        assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getStatus() == SetMonitoringStatus.UNKNOWN_COMPONENT));
         assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getId() == null));
     }
 
@@ -55,7 +59,7 @@ class SetVariableMonitoringRequestHandlerTest {
         when(stationComponent.getVariableNames()).thenReturn(Collections.emptySet());
         when(stationComponentsHolder.getComponent(any())).thenReturn(Optional.of(stationComponent));
 
-        List<SetMonitoringDatum> datums = new ArrayList<>();
+        List<SetMonitoringData> datums = new ArrayList<>();
         datums.add(createdMonitoringDatum("component", "variable"));
         SetVariableMonitoringRequest request = new SetVariableMonitoringRequest().withSetMonitoringData(datums);
 
@@ -63,7 +67,7 @@ class SetVariableMonitoringRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         SetVariableMonitoringResponse response = responseCaptor.getValue();
-        assertThat(response.getSetMonitoringResult().get(0).getStatus()).isEqualTo(SetMonitoringResult.Status.UNKNOWN_VARIABLE);
+        assertThat(response.getSetMonitoringResult().get(0).getStatus()).isEqualTo(SetMonitoringStatus.UNKNOWN_VARIABLE);
         assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getId() == null));
     }
 
@@ -72,7 +76,7 @@ class SetVariableMonitoringRequestHandlerTest {
         when(stationComponent.getVariableNames()).thenReturn(new HashSet<>(Arrays.asList("variable1", "variable2")));
         when(stationComponentsHolder.getComponent(any())).thenReturn(Optional.of(stationComponent));
 
-        List<SetMonitoringDatum> datums = new ArrayList<>();
+        List<SetMonitoringData> datums = new ArrayList<>();
         datums.add(createdMonitoringDatum("component", "variable1"));
         datums.add(createdMonitoringDatum("component", "variable2"));
         SetVariableMonitoringRequest request = new SetVariableMonitoringRequest().withSetMonitoringData(datums);
@@ -81,17 +85,17 @@ class SetVariableMonitoringRequestHandlerTest {
 
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
         SetVariableMonitoringResponse response = responseCaptor.getValue();
-        assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getStatus() == SetMonitoringResult.Status.ACCEPTED));
+        assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getStatus() == SetMonitoringStatus.ACCEPTED));
         assertTrue(response.getSetMonitoringResult().stream().allMatch(r -> r.getId() == 1));
 
         verify(stationComponentsHolder).monitorComponent(eq(1), argThat(cv -> "component".equals(cv.getComponent().getName().toString()) && "variable1".equals(cv.getVariable().getName().toString())), eq(datums.get(0)));
         verify(stationComponentsHolder).monitorComponent(eq(1), argThat(cv -> "component".equals(cv.getComponent().getName().toString()) && "variable2".equals(cv.getVariable().getName().toString())), eq(datums.get(1)));
     }
 
-    private SetMonitoringDatum createdMonitoringDatum(String componentName, String variableName) {
-        return new SetMonitoringDatum()
+    private SetMonitoringData createdMonitoringDatum(String componentName, String variableName) {
+        return new SetMonitoringData()
                 .withId(1)
-                .withType(SetMonitoringDatum.Type.LOWER_THRESHOLD)
+                .withType(Monitor.LOWER_THRESHOLD)
                 .withSeverity(0)
                 .withComponent(new Component().withName(new CiString.CiString50(componentName)))
                 .withVariable(new Variable().withName(new CiString.CiString50(variableName)));

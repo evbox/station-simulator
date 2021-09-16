@@ -1,7 +1,8 @@
 package com.evbox.everon.ocpp.mock.csms.exchange;
 
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.v20.message.station.StatusNotificationRequest;
+import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
+import com.evbox.everon.ocpp.v201.message.station.StatusNotificationRequest;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -26,7 +27,7 @@ public class StatusNotification {
      *
      * @return checks whether an incoming request is StatusNotification or not.
      */
-    public static Predicate<Call> request(StatusNotificationRequest.ConnectorStatus status) {
+    public static Predicate<Call> request(ConnectorStatus status) {
         return request -> equalsType(request, STATUS_NOTIFICATION) && equalsStatus(request, status);
     }
 
@@ -39,7 +40,7 @@ public class StatusNotification {
         return emptyResponse();
     }
 
-    private static boolean equalsStatus(Call request, StatusNotificationRequest.ConnectorStatus status) {
+    private static boolean equalsStatus(Call request, ConnectorStatus status) {
         return ((StatusNotificationRequest) request.getPayload()).getConnectorStatus() == status;
     }
 }

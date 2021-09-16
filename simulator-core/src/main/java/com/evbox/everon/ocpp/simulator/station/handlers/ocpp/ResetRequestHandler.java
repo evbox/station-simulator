@@ -4,16 +4,18 @@ import com.evbox.everon.ocpp.simulator.message.CallResult;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetRequest;
-import com.evbox.everon.ocpp.v20.message.centralserver.ResetResponse;
-import com.evbox.everon.ocpp.v20.message.station.BootNotificationRequest;
-import com.evbox.everon.ocpp.v20.message.station.TransactionData;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetRequest;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetResponse;
+import com.evbox.everon.ocpp.v201.message.centralserver.ResetStatus;
+import com.evbox.everon.ocpp.v201.message.station.BootReason;
+import com.evbox.everon.ocpp.v201.message.station.Reason;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-import static com.evbox.everon.ocpp.v20.message.station.TransactionEventRequest.TriggerReason.REMOTE_STOP;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.REMOTE_STOP;
+import static java.util.Objects.nonNull;
 
 /**
  * Handler for {@link ResetRequest} request.
@@ -33,9 +35,12 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
      */
     @Override
     public void handle(String callId, ResetRequest request) {
-        sendResponse(callId, new ResetResponse().withStatus(ResetResponse.Status.ACCEPTED));
-        resetStation();
-
+        sendResponse(callId, new ResetResponse().withStatus(ResetStatus.ACCEPTED));
+        if (nonNull(request.getEvseId())) {
+            resetEvse(request.getEvseId());
+        } else {
+            resetStation();
+        }
     }
 
     private void sendResponse(String callId, Object payload) {
@@ -51,11 +56,26 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
                 state.stopCharging(evseId);
                 long powerConsumed = state.findEvse(evseId).getWattConsumedLastSession();
                 Integer connectorId = state.unlockConnector(evseId);
-                stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, TransactionData.StoppedReason.IMMEDIATE_RESET, powerConsumed, (request, response) -> reboot());
-            } else {
-                reboot();
+                stationMessageSender.sendTransactionEventEnded(evseId, connectorId, REMOTE_STOP, Reason.IMMEDIATE_RESET, powerConsumed);
             }
         });
+        reboot();
+    }
+
+    void resetEvse(int evseId) {
+        if (state.hasOngoingTransaction(evseId)) {
+            state.stopCharging(evseId);
+            long powerConsumed = state.findEvse(evseId).getWattConsumedLastSession();
+            Integer connectorId = state.unlockConnector(evseId);
+            stationMessageSender.sendTransactionEventEndedAndSubscribe(evseId, connectorId, REMOTE_STOP, Reason.IMMEDIATE_RESET, powerConsumed, (request, response) -> rebootEvse(evseId));
+        } else {
+            rebootEvse(evseId);
+        }
+    }
+
+    private void rebootEvse(int evseId) {
+        state.clearTokens(evseId);
+        state.clearTransactions(evseId);
     }
 
     private void reboot() {
@@ -63,6 +83,6 @@ public class ResetRequestHandler implements OcppRequestHandler<ResetRequest> {
         state.clearTransactions();
         stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.Disconnect());
         stationMessageSender.sendMessage(new AbstractWebSocketClientInboxMessage.Connect());
-        stationMessageSender.sendBootNotification(BootNotificationRequest.Reason.REMOTE_RESET);
+        stationMessageSender.sendBootNotification(BootReason.REMOTE_RESET);
     }
 }

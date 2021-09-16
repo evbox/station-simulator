@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$id": "urn:OCPP:Cp:2:2018:4:ComponentType",
+    "comment": "OCPP 2.0 - v1p0",
+    "ComponentType": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+            "evse": {
+                "$ref": "EvseType.json#/EVSEType"
+            },
+            "name": {
+                "type": "string",
+                "maxLength": 50
+            },
+            "instance": {
+                "type": "string",
+                "maxLength": 50
+            }
+        },
+        "required": [
+            "name"
+        ]
+    }
+}

@@ -3,7 +3,7 @@ version: 2.1
 jobs: 
   build:
     docker:
-    - image: circleci/openjdk:11-jdk-browsers
+    - image: cimg/openjdk:11.0-browsers
 
     steps: 
     - checkout
@@ -26,7 +26,7 @@ jobs:
 
   sonar-static-analysis:
     docker:
-    - image: circleci/openjdk:11-jdk-browsers
+    - image: cimg/openjdk:11.0-browsers
     
     steps:
     - checkout
@@ -36,7 +36,7 @@ jobs:
 
   publish-to-maven-center:
     docker:
-    - image: circleci/openjdk:11-jdk-browsers
+    - image: cimg/openjdk:11.0-browsers
 
     steps:
     - checkout
