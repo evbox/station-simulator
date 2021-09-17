@@ -1,6 +1,6 @@
 # OCPP Station Simulator
 
-[Download](https://bintray.com/everon/maven/ocpp-station-simulator/_latestVersion)
+[Download](https://search.maven.org/artifact/io.everon/ocpp-station-simulator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=bugs)](https://sonarcloud.io/dashboard?id=station-simulator)

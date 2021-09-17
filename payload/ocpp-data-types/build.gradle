@@ -1,11 +1,12 @@
 plugins {
     id 'java'
+    id 'java-library'
 }
 
 dependencies {
-    compile 'javax.validation:validation-api:2.0.1.Final'
-    compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    compile "com.google.guava:guava:${guavaVersion}"
+    api 'javax.validation:validation-api:2.0.1.Final'
+    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    api "com.google.guava:guava:${guavaVersion}"
 }
 
 apply plugin: 'java'
