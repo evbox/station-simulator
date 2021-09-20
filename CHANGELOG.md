@@ -1,4 +1,9 @@
 # Station Simulator Releases #
+
+### Version 0.5.1
+
+- Minor improvements
+
 ### Version 0.5.0
 
 - Moving the OCPP 2.0.1 support to the master branch

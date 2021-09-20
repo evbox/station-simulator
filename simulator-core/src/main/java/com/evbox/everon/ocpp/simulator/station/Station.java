@@ -333,6 +333,7 @@ public class Station {
             X509TrustManager trustManager = SecurityUtils.createTrustManager(trustStore);
             SSLContext sslContext = SecurityUtils.prepareSSLContext(trustStore);
 
+            this.defaultHttpClientBuilder.hostnameVerifier(new NullHostNameVerifier());
             this.defaultHttpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
             this.okHttpWebSocketClient.setClient(this.defaultHttpClientBuilder.build());
 
