@@ -1,5 +1,9 @@
 # Station Simulator Releases #
 
+### Version 0.5.2
+
+- Minor bug fix
+
 ### Version 0.5.1
 
 - Minor improvements
