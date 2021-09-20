@@ -95,10 +95,26 @@ public final class SecurityUtils {
     public static SSLContext prepareSSLContext(KeyStore trustStore) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
         KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyFactory.init(trustStore, EMPTY_PASSWORD);
-        KeyManager[] keyManagers = keyFactory.getKeyManagers();
+
+        // trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[0];
+                    }
+
+                    public void checkClientTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
 
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-        sslContext.init(keyManagers, null, new SecureRandom());
+        sslContext.init(keyFactory.getKeyManagers(), trustAllCerts, new SecureRandom());
         SSLContext.setDefault(sslContext);
 
         return sslContext;

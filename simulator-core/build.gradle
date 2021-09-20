@@ -102,7 +102,7 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-version '0.5.0'
+version '0.5.1'
 
 publishing {
     publications {
@@ -145,17 +145,17 @@ publishing {
             def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username = System.getenv("OSSRH_USER")
-                password = System.getenv("OSSRH_PASSWORD")
+                username = System.getenv("OSSRH_USER") ?: 'return@configure'
+                password = System.getenv("OSSRH_PASSWORD") ?: 'return@configure'
             }
         }
     }
 }
 
 signing {
-    String signingKeyId = System.getenv("SIGNING_KEY_ID")
-    String signingKey = System.getenv("SIGNING_KEY")
-    String signingPassword = System.getenv("SIGNING_PASSWORD")
+    String signingKeyId = System.getenv("SIGNING_KEY_ID") ?: 'your-key-id'
+    String signingKey = System.getenv("SIGNING_KEY") ?: ''
+    String signingPassword = System.getenv("SIGNING_PASSWORD") ?: ''
 
     useInMemoryPgpKeys(signingKeyId, new String(signingKey.decodeBase64()), new String(signingPassword.decodeBase64()))
     sign publishing.publications.mavenJava
