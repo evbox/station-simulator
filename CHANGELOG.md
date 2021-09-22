@@ -1,5 +1,9 @@
 # Station Simulator Releases #
 
+### Version 0.5.3
+
+- Publish ocpp-payload to maven central
+
 ### Version 0.5.2
 
 - Minor bug fix
