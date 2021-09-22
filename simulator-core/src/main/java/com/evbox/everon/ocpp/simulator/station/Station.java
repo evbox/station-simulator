@@ -19,8 +19,6 @@ import com.evbox.everon.ocpp.simulator.station.support.SecurityUtils;
 import com.evbox.everon.ocpp.simulator.websocket.LoggingInterceptor;
 import com.evbox.everon.ocpp.simulator.websocket.OkHttpWebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
-import com.evbox.everon.ocpp.v201.message.station.BootNotificationRequest;
-import com.evbox.everon.ocpp.v201.message.station.BootNotificationResponse;
 import com.evbox.everon.ocpp.v201.message.station.BootReason;
 import com.evbox.everon.ocpp.v201.message.station.RegistrationStatus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -240,6 +238,7 @@ public class Station {
 
     /**
      * Updates station heartbeat interval
+     *
      * @param newHeartbeatInterval heartbeat interval in seconds
      */
     public void updateHeartbeat(int newHeartbeatInterval) {
@@ -248,7 +247,17 @@ public class Station {
     }
 
     /**
+     * Updates station Authorization state
+     *
+     * @param authState boolean enabled/disabled
+     */
+    public void setAuthorizeState(boolean authState) {
+        state.setAuthorizeState(authState);
+    }
+
+    /**
      * Updates station connection timeout interval
+     *
      * @param newEVConnectionTimeOut ev connection timeout interval in seconds
      */
     public void updateEVConnectionTimeOut(int newEVConnectionTimeOut) {

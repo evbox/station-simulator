@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.component;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.component.authctrlr.AuthCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.chargingstation.ChargingStationComponent;
 import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComponent;
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
@@ -47,6 +48,7 @@ public class StationComponentsHolder {
                 .add(new ConnectorComponent(station, stationStore))
                 .add(new SecurityCtrlrComponent(station, stationStore))
                 .add(new TxCtrlrComponent(station, stationStore))
+                .add(new AuthCtrlrComponent(station, stationStore))
                 .build();
 
         components = ImmutableMap.copyOf(componentsList.stream().collect(
