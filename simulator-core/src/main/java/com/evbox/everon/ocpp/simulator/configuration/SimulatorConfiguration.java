@@ -95,6 +95,12 @@ public class SimulatorConfiguration {
          */
         @Builder.Default
         private TransactionComponentConfiguration txCtrlr = TransactionComponentConfiguration.builder().build();
+
+        /**
+         * Authorisation controller componenet
+         */
+        @Builder.Default
+        private AuthComponentConfiguration authCtrl = AuthComponentConfiguration.builder().build();
     }
 
     @Data
@@ -106,6 +112,18 @@ public class SimulatorConfiguration {
          * Authentication password used for HTTP basic authentication
          */
         private String basicAuthPassword;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AuthComponentConfiguration {
+        /**
+         * Station transaction authorisation toggle
+         */
+        @Builder.Default
+        private boolean authEnabled = true;
     }
 
     @Data

@@ -134,6 +134,18 @@ public class StationMessageSender {
     }
 
     /**
+     * Send TransactionEventStart event.
+     *
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
+     * @param chargingState charging state of the station
+     */
+    public void sendTransactionEventAutoStart(Integer evseId, Integer connectorId, TriggerReason reason, ChargingState chargingState) {
+        sendTransactionEventStart(evseId, connectorId, null, reason, "", chargingState);
+    }
+
+    /**
      * Send TransactionEventUpdate event.
      *
      * @param evseId        evse identity
