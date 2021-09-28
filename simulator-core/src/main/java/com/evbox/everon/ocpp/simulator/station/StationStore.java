@@ -46,6 +46,7 @@ public class StationStore {
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private int evConnectionTimeOut;
+    private boolean authEnabled;
     private Map<Integer, Evse> evses;
     private OptionList<TxStartStopPointVariableValues> txStartPointValues;
     private OptionList<TxStartStopPointVariableValues> txStopPointValues;
@@ -64,6 +65,7 @@ public class StationStore {
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
         this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoints()));
+        this.authEnabled = true;
     }
 
     public StationStore(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
@@ -90,6 +92,14 @@ public class StationStore {
 
     public int getHeartbeatInterval() {
         return heartbeatInterval;
+    }
+
+    public boolean isAuthEnabled() {
+        return authEnabled;
+    }
+
+    public void setAuthorizeState(boolean authState) {
+        authEnabled = authState;
     }
 
     public void setHeartbeatInterval(int heartbeatInterval) {
