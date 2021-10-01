@@ -22,6 +22,7 @@ import static com.evbox.everon.ocpp.simulator.message.ObjectMapperHolder.JSON_OB
 import static com.evbox.everon.ocpp.v201.message.station.TransactionEvent.*;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class PayloadFactory {
 
@@ -33,6 +34,7 @@ public class PayloadFactory {
     public static final String PUBLIC_KEY = "30 5A 30 14 06 07 2A 86 48 CE 3D 02 01 06 09 2B 24 03 03 02 08 01 01 07 03 42 00 04 6F 04 84 E2 06 4D 66 2C 66 0D B5 FE 7F AA 29 2A 42 B6 AF 02 81 B1 96 1C 87 CA 57 E1 43 8E C7 35 26 DA D8 48 6D C9 FB 5A 56 B7 35 A5 41 DD 69 A2 96 8D 10 82 7B 4F 98 9F C2 74 26 A2 24 AF 9E 0F";
     public static final CiString.CiString255 GENERAL_CONFIGURATION = new CiString.CiString255("generalConfiguration");
     public static final CiString.CiString50 SET_METER_CONFIGURATION = new CiString.CiString50("setMeterConfiguration");
+    private static final String EMPTY_TOKENID = "";
 
     SignCertificateRequest createSignCertificateRequest(String csr) {
         return new SignCertificateRequest()
@@ -103,8 +105,10 @@ public class PayloadFactory {
 
         TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionInfo, STARTED, currentDateTime, evse.getSeqNoAndIncrement(), 0L);
 
-        if (tokenId != null) {
+        if (isNotBlank(tokenId)) {
             payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443));
+        } else if (EMPTY_TOKENID.equals(tokenId)) {
+            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.NO_AUTHORIZATION));
         }
 
         return payload;
@@ -125,9 +129,10 @@ public class PayloadFactory {
                 .withChargingState(chargingState);
 
         TransactionEventRequest payload = createTransactionEvent(stationId, evse.getId(), connectorId, reason, transactionInfo, TransactionEvent.UPDATED, currentDateTime, evse.getSeqNoAndIncrement(), powerConsumed);
-
-        if (tokenId != null) {
+        if (isNotBlank(tokenId)) {
             payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.ISO_14443));
+        } else if (EMPTY_TOKENID.equals(tokenId)) {
+            payload.setIdToken(new IdToken().withIdToken(new CiString.CiString36(tokenId)).withType(IdTokenType.NO_AUTHORIZATION));
         }
 
         return payload;
