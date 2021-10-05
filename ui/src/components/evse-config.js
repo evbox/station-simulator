@@ -2,18 +2,9 @@ import store from './../store.js'
 
 //language=HTML
 const template = `
-    <div class="config">
+    <div class="config" v-if="store.state.simulator.started === false">
         
-        <div class="tip">
-            <svg class="icon">
-                <use class="fill-neutral-1" href="#icon-info"></use>
-            </svg>
-            <span v-if="store.state.simulator.started === false">Check the config and then click the flash to start</span>
-            <span v-if="store.state.simulator.started  === 'starting'">Simulator starting connected to {{store.state.config.ws}}</span>
-            <span v-if="store.state.simulator.started === 'started'">Simulator running connected to {{store.state.config.ws}}</span>
-        </div>
-        
-        <div class="config-ws" v-if="store.state.simulator.started === false">
+        <div class="config-ws">
             <label for="wsUrl">
                 <svg class="icon">
                     <use class="fill-neutral-5" href="#icon-upload"></use>

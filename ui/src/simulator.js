@@ -121,6 +121,7 @@ function selectEvse(evseIndex) {
 }
 
 function auth(tokenId, evseIndex) {
+    console.log('Starting transaction', tokenId, evseIndex)
     state = ''
     sim.stdin.write(`auth ${tokenId} ${evseIndex}\r\n`);
 }

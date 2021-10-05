@@ -4,41 +4,49 @@ import store from "./../store.js";
 //language=HTML
 const template = `
     <header>
-        <h1>EVSE Simulator UI</h1>
-        <div>
-            <button @click="start(store.state.config.ws, store.state.config.adhoc)"
-                    v-if="!store.state.simulator.started"
-                    type="button"
-                    class="btn-icon"
-                    title="Start"
-            >
-                <svg class="icon">
-                    <use class="fill-neutral-1" href="#icon-energy"></use>
-                </svg>
-            </button>
-            
-            <button @click="getSimState()" v-if="store.state.simulator.started"
-                    type="button"
-                    class="btn-icon"
-                    title="Update state"
-            >
-                <svg class="icon">
-                    <use class="fill-neutral-1" href="#icon-sync"></use>
-                </svg>
+        <div class="top">
+            <h1>EVSE Simulator UI</h1>
+            <div class="controls">
+                <button @click="start(store.state.config.ws, store.state.config.adhoc)"
+                        v-if="!store.state.simulator.started"
+                        type="button"
+                        class="btn-icon"
+                        title="Start"
+                >
+                    <svg class="icon">
+                        <use class="fill-neutral-1" href="#icon-energy"></use>
+                    </svg>
+                </button>
 
-            </button>
+                <button @click="getSimState()" v-if="store.state.simulator.started"
+                        type="button"
+                        class="btn-icon"
+                        title="Update state"
+                >
+                    <svg class="icon">
+                        <use class="fill-neutral-1" href="#icon-sync"></use>
+                    </svg>
+                </button>
 
-            <button @click="stopSim()" v-if="store.state.simulator.started"
-                    type="button"
-                    class="btn-icon"
-                    title="Stop"
-            >
-                <svg class="icon">
-                    <use class="fill-neutral-1" href="#icon-energy-disabled"></use>
-                </svg>
-            </button>
+                <button @click="stopSim()" v-if="store.state.simulator.started"
+                        type="button"
+                        class="btn-icon"
+                        title="Stop"
+                >
+                    <svg class="icon">
+                        <use class="fill-neutral-1" href="#icon-energy-disabled"></use>
+                    </svg>
+                </button>
+            </div>
         </div>
-
+        <div class="tip">
+            <svg class="icon">
+                <use class="fill-neutral-1" href="#icon-info"></use>
+            </svg>
+            <span v-if="store.state.simulator.started === false">Check the config and then click the flash to start</span>
+            <span v-if="store.state.simulator.started  === 'starting'">Simulator starting connected to {{store.state.config.ws}}</span>
+            <span v-if="store.state.simulator.started === 'started'">Simulator running connected to {{store.state.config.ws}}</span>
+        </div>
     </header>
 `
 
@@ -48,7 +56,7 @@ const evseHeader = {
         function start(ws, adhoc) {
             // https://myevbox.atlassian.net/wiki/spaces/EV/pages/2053931047/Configure+station
             if (ws.includes('${adhoc}')) {
-                ws = ws.replace('${adhoc}',  adhoc)
+                ws = ws.replace('${adhoc}', adhoc)
             }
 
             // the simulator only accepts single quoted JSON ¯\_(ツ)_/¯

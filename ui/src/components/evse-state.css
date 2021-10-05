@@ -1,0 +1,28 @@
+.state {
+    display: flex;
+    flex-direction: column;
+}
+
+.state-status {
+    display: flex;
+    align-items: center;
+    background: var(--color-4);
+    color: var(--color-neutral-1);
+    justify-content: space-between;
+    padding: var(--spacing-s) var(--spacing-s) var(--spacing-s) 0;
+}
+
+.state-status-simulator {
+    display: flex;
+    align-items: center;
+
+}
+
+.state-status-simulator__active {
+    display: flex;
+    align-items: center;
+}
+
+.state-status-simulator__inactive {
+
+}
