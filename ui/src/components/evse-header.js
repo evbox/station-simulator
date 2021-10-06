@@ -44,8 +44,8 @@ const template = `
                 <use class="fill-neutral-1" href="#icon-info"></use>
             </svg>
             <span v-if="store.state.simulator.started === false">Check the config and then click the flash to start</span>
-            <span v-if="store.state.simulator.started  === 'starting'">Simulator starting connected to {{store.state.config.ws}}</span>
-            <span v-if="store.state.simulator.started === 'started'">Simulator running connected to {{store.state.config.ws}}</span>
+            <span v-if="store.state.simulator.started  === 'starting'">Simulator starting, connecting to {{store.state.config.ws}}</span>
+            <span v-if="store.state.simulator.started === 'started'">Simulator started, connected to {{store.state.config.ws}}</span>
         </div>
     </header>
 `

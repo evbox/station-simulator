@@ -26,3 +26,46 @@
 .state-status-simulator__inactive {
 
 }
+
+.state-control {
+    margin: 0;
+    padding: var(--spacing-xxs) 0
+}
+
+.state-connector {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs) 0;
+    justify-content: space-between;
+}
+
+.state-connector-info, .state-connector-control {
+    display: flex;
+    align-items: center;
+}
+
+.state-connector-control {
+    flex-grow: 0.5;
+    justify-content: space-between;
+}
+
+.state-connector-control-start {
+    display: flex;
+    align-items: center;
+    flex-grow: 0.1;
+    justify-content: space-between;
+}
+
+.connecting {
+    fill: var(--color-feedback-warning);
+}
+
+.connected {
+    fill: var(--color-feedback-info);
+}
+
+.charging {
+    fill: var(--color-feedback-success);
+}
+

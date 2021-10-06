@@ -85,7 +85,6 @@ function startSim(ws, configuration) {
 
     sim.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
-        // writeStateToView('Stopped')
     });
 }
 
@@ -103,13 +102,13 @@ function stopSim() {
 }
 
 function plug(evse, connector) {
-    console.log('Pluging', evse, connector)
+    console.log('Plugging', evse, connector)
     state = ''
     sim.stdin.write(`plug ${evse} ${connector}\r\n`);
 }
 
 function unplug(evse, connector) {
-    console.log('Unpluging', evse, connector)
+    console.log('Unplugging', evse, connector)
     state = ''
     sim.stdin.write(`unplug ${evse} ${connector}\r\n`);
 }

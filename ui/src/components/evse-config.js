@@ -28,7 +28,7 @@ const template = `
         </div>
         <div class="config-simulator" v-if="store.state.simulator.started === false">
             <label for="configuration">JSON configuration</label>
-            <textarea name=configuration""
+            <textarea name=configuration"
                       id=""
                       v-model="store.configuration"></textarea>
         </div>
