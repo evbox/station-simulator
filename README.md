@@ -67,7 +67,7 @@ Starts the simulator with one station, which has a single EVSE and a single conn
 
 ### Guide for Instant charging transaction with Everon
 
-Follow [Readme](https://github.com/everonhq/station-simulator/autostart/Autostart.md) for detailed steps
+Follow [Readme](autostart/Autostart.md) for detailed steps
 
 ## Full Documentation
 
