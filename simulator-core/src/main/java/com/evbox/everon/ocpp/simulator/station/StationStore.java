@@ -43,6 +43,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class StationStore {
 
     private String stationId;
+    private String stationVendor;
+    private String stationModel;
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private int evConnectionTimeOut;
@@ -61,6 +63,8 @@ public class StationStore {
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.stationId = configuration.getId();
+        this.stationVendor = configuration.getHardwareConfiguration().getVendor();
+        this.stationModel = configuration.getHardwareConfiguration().getModel();
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors(), configuration.getEvse().getStatus());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
@@ -204,6 +208,14 @@ public class StationStore {
 
     public boolean hasOngoingTransaction(Integer evseId) {
         return findEvse(evseId).hasOngoingTransaction();
+    }
+
+    public String getStationVendor() {
+        return stationVendor;
+    }
+
+    public String getStationModel() {
+        return stationModel;
     }
 
     /**

@@ -77,7 +77,7 @@ public class PayloadFactory {
         return payload;
     }
 
-    BootNotificationRequest createBootNotification(BootReason reason) {
+    BootNotificationRequest createBootNotification(BootReason reason, String stationVendor, String stationModel) {
         Modem modem = new Modem();
         modem.setIccid(new CiString.CiString20(StationHardwareData.MODEM_ICCID));
         modem.setImsi(new CiString.CiString20(StationHardwareData.MODEM_IMSI));
@@ -85,8 +85,8 @@ public class PayloadFactory {
         ChargingStation chargingStation = new ChargingStation()
                 .withModem(modem);
 
-        chargingStation.setVendorName(new CiString.CiString50(StationHardwareData.VENDOR_NAME));
-        chargingStation.setModel(new CiString.CiString20(StationHardwareData.MODEL));
+        chargingStation.setVendorName(new CiString.CiString50(stationVendor));
+        chargingStation.setModel(new CiString.CiString20(stationModel));
         chargingStation.setSerialNumber(new CiString.CiString25(StationHardwareData.SERIAL_NUMBER));
         chargingStation.setFirmwareVersion(new CiString.CiString50(StationHardwareData.FIRMWARE_VERSION));
 

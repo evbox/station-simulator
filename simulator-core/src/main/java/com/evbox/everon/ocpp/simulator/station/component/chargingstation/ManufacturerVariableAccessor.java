@@ -2,7 +2,6 @@ package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
-import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
@@ -10,11 +9,11 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import com.evbox.everon.ocpp.v201.message.centralserver.Attribute;
-import com.evbox.everon.ocpp.v201.message.station.*;
+import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import com.evbox.everon.ocpp.v201.message.station.Component;
 import com.evbox.everon.ocpp.v201.message.station.Variable;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
@@ -65,7 +64,7 @@ public class ManufacturerVariableAccessor extends VariableAccessor {
                 .withName(new CiString.CiString50(componentName));
 
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString2500(StationHardwareData.VENDOR_NAME))
+                .withValue(new CiString.CiString2500(getStationStore().getStationVendor()))
                 .withPersistent(true)
                 .withConstant(true)
                 .withMutability(Mutability.READ_ONLY);
@@ -95,7 +94,7 @@ public class ManufacturerVariableAccessor extends VariableAccessor {
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeValue(new CiString.CiString2500(StationHardwareData.VENDOR_NAME))
+                .withAttributeValue(new CiString.CiString2500(getStationStore().getStationVendor()))
                 .withAttributeStatus(GetVariableStatus.ACCEPTED);
     }
 }

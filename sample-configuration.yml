@@ -13,6 +13,9 @@ stations:
           - Authorized
         txStopPoints:
           - Authorized
+    hardwareConfiguration:
+      vendor: EvBox
+      model: G5
   - id: EVB-P18090564
     evse:
       count: 2
