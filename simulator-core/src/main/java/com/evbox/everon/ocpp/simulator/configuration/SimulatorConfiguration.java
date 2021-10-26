@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.simulator.configuration;
 
+import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,7 @@ public class SimulatorConfiguration {
         private Evse evse;
         private MeterValuesConfiguration meterValuesConfiguration = MeterValuesConfiguration.builder().build();
         private ComponentsConfiguration componentsConfiguration = ComponentsConfiguration.builder().build();
+        private HardwareConfiguration hardwareConfiguration = HardwareConfiguration.builder().build();
     }
 
     @Data
@@ -185,5 +187,23 @@ public class SimulatorConfiguration {
          */
         @Builder.Default
         private long pingIntervalMs = DEFAULT_PING_INTERVAL;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class HardwareConfiguration {
+        /**
+         * Station Vendor
+         */
+        @Builder.Default
+        private String vendor = StationHardwareData.VENDOR_NAME;
+
+        /**
+         * Station Model
+         */
+        @Builder.Default
+        private String model = StationHardwareData.MODEL;
     }
 }

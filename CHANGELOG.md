@@ -1,5 +1,9 @@
 # Station Simulator Releases #
 
+### Version 0.5.5
+
+- Exposed station Vendor and Model as configuration
+
 ### Version 0.5.4
 
 - Support for instant charging transaction
