@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Ui for EVSE CLI",
   "main": "main.js",
-  "icon": "src/icon.svg",
+  "icon": "./src/icon.png",
   "frame": false,
   "scripts": {
     "preinstall": "npm run download-vue && bash download-java.sh && npm run build-simulator && npm run copy-jre-mac && npm i src",
@@ -12,7 +12,6 @@
     "build-simulator": "cd .. && ./gradlew build && cp simulator-core/build/libs/simulator-core-*.jar ./ui/dependencies/simulator.jar",
     "start": "electron ./src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
   "dependencies": {
@@ -35,7 +34,8 @@
     "mac": {
       "type": "development",
       "hardenedRuntime": false,
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "icon": "./src/icon.png"
     },
     "dmg": {
       "contents": [

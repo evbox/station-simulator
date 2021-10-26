@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Ui for EVSE CLI",
   "main": "main.js",
-  "icon": "src/icon.svg",
+  "icon": "icon.png",
   "frame": false,
   "author": "carlos rodrigues",
   "license": "UNLICENCED",
