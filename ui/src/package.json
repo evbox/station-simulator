@@ -1,5 +1,5 @@
 {
-  "name": "ui-evse-simulator",
+  "name": "ui-evse-simulator-web",
   "version": "0.0.1",
   "description": "Ui for EVSE CLI",
   "main": "main.js",

@@ -15,7 +15,7 @@ export default reactive({
             adhoc:'',
             wsOptions: {
                 production: 'ws://everon.io/ocpp',
-                test: 'ws://ocpp.test.everon.io/${adhoc}/ocpp',
+                test: 'ws://ocpp-legacy.test.everon.io/${adhoc}/ocpp',
                 staging: 'ws://ocpp.staging.everon.io/ocpp'
             }
         }
