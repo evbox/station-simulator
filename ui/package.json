@@ -1,6 +1,6 @@
 {
   "name": "ui-evse-simulator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Ui for EVSE CLI",
   "main": "main.js",
   "icon": "./src/icon.png",
@@ -49,11 +49,6 @@
           "type": "link",
           "path": "/Applications"
         }
-      ]
-    },
-    "win": {
-      "target": [
-        "nsis"
       ]
     },
     "linux": {
