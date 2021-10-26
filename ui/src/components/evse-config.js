@@ -21,7 +21,7 @@ const template = `
 
             <span v-if="!adhoc.url"> {{store.state.config.ws}}</span>
             <span v-if="adhoc.url"> {{adhoc.url}}
-                <input type="text" v-model="store.state.config.adhoc" placeholder="adxxxxx" style="width: 5em">
+                <input type="text" v-model="store.state.config.adhoc" placeholder="adxxxxx" style="width: 6em">
                 {{adhoc.path}}
             </span>
 

@@ -50,16 +50,6 @@ const template = `
                             <span v-show="connector.cableStatus === 'UNPLUGGING'">Unplugging..</span>
                         </button>
                         
-                       
-                        
-
-
-<!--                        :disabled="connector.cableStatus === 'PLUGGING'"-->
-
-                        
-                        
-               
-
                         <div class="state-connector-control-start">
                             <input type="text"
                                    name="rfid"

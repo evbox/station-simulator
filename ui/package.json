@@ -16,11 +16,13 @@
     "dist": "electron-builder"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "src": "^1.1.2",
+    "ui-evse-simulator-web": "file:src"
   },
   "devDependencies": {
-    "electron": "^14.0.0",
-    "electron-builder": "^22.11.7"
+    "electron": "^15.3.0",
+    "electron-builder": "^22.13.1"
   },
   "build": {
     "productName": "EVSESimulator",
