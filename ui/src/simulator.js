@@ -51,7 +51,6 @@ function writeStateToStore(state) {
 
 
 function startSim(ws, configuration) {
-    console.log('dir',__dirname)
     const command = '../dependencies/jre/bin/java -jar simulator.jar'
     const args = [`${ws} --configuration "${configuration}"`]
     const dir = path.join(__dirname, '../dependencies')

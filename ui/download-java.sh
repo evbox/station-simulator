@@ -16,7 +16,7 @@ function verify_checksum() {
 
     rm -f $API_CHECKSUM_FILE
 
-    RESPONSE=$(curl --write-out %{http_code} https://api.adoptopenjdk.net/v3/assets/latest/8/hotspot -o $API_CHECKSUM_FILE)
+    RESPONSE=$(curl --write-out %{http_code} https://api.adoptopenjdk.net/v3/assets/latest/11/hotspot -o $API_CHECKSUM_FILE)
     if [ "${RESPONSE}" != "200" ]; then
         echo "Failed to get asset information"
         return 1
@@ -72,7 +72,7 @@ for os in "${OS[@]}"; do
     for arch in "${ARCH[@]}"; do
         JRE="https://api.adoptopenjdk.net/v3/binary/latest/11/ga/${os}/${arch}/jre/hotspot/normal/adoptopenjdk?project=jdk"
         JRE_FOLDER="./build-resources/jre/${os}/${arch}"
-        JRE_TARGET="${JRE_FOLDER}/jre1.8.${ext}"
+        JRE_TARGET="${JRE_FOLDER}/jre1.11.${ext}"
 
         if [ ! -d "$JRE_FOLDER" ]; then
             mkdir -p "${JRE_FOLDER}"
