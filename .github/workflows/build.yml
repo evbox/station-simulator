@@ -8,9 +8,9 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest
-#          , ubuntu-latest
-#          , windows-latest
+        os: [ macos-latest
+          #          , ubuntu-latest
+          #          , windows-latest
         ]
 
     steps:
@@ -21,6 +21,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt' # See 'Supported distributions' for available options
+          java-version: '11'
 
       - name: Electron Builder Action
         uses: samuelmeuli/action-electron-builder@v1.6.0
