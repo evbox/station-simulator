@@ -7,20 +7,19 @@ let state = ''
 
 function writeStateToStore(state) {
     const stateString = state.match(/START EVSE state([\s\S]*)END EVSE state/);
-    console.log('stateString', stateString)
+    console.log('stateUpdate', stateString)
 
     const stationsString = state.match(/List of stations:([\s\S]*?)Select another/);
-    console.log('stationsString', stationsString)
+    console.log('stationsUpdate', stationsString)
 
     const pluggedString = state.match(/evse([\s\S]*?)plugged/);
-    console.log('pluggedString', pluggedString)
+    console.log('pluggedUpdate', pluggedString)
 
     const unpluggedString = state.match(/evse([\s\S]*?)unplugged/);
-    console.log('unpluggedString', unpluggedString)
+    console.log('unpluggedUpdate', unpluggedString)
 
     if (stationsString?.length > 0) {
         store.state.simulator.evses = stationsString[1].trim().split('\n').map(evse => {
-            console.log('evseLine', evse)
             const evseModel = evse.split(':')
             return {
                 id: evseModel[1],
@@ -75,7 +74,7 @@ function startSim(ws, configuration) {
         stdOutTimer = stdoutWatcher()
     });
 
-    sim.stdout.on('end', (data) => {
+    sim.stdout.on('end', () => {
         console.log(`stdoutEnded!!!!!!!!!!!`);
     });
 
