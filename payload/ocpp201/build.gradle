@@ -4,21 +4,17 @@ import com.sun.codemodel.JType
 import org.jsonschema2pojo.gradle.JsonSchemaPlugin
 import org.jsonschema2pojo.rules.RuleFactory
 
-// In case you want to update a new version of this package, uncomment the commented lines, and comment the same ones
-// in the simulator-core gradle file
-
-//buildscript {
-//    repositories {
-//        jcenter()
-//    }
-//    dependencies {
-//        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-//    }
-//}
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
 
 plugins {
-//    id 'com.github.johnrengelman.shadow' version '5.1.0'
     id 'java'
+    id 'java-library'
+    id 'signing'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 apply plugin: 'java'
@@ -75,62 +71,87 @@ jsonSchema2Pojo {
 }
 
 dependencies {
-    compile project(':payload:ocpp-data-types')
-    compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    api project(':payload:ocpp-data-types')
+    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
 }
 
-//apply plugin: 'com.jfrog.bintray'
-//apply plugin: 'maven-publish'
-//
-//
-//task sourcesJar(type: Jar) {
-//    from sourceSets.main.java
-//    archiveClassifier = 'sources'
-//}
-//
-//task javadocJar(type: Jar) {
-//    from javadoc
-//    archiveClassifier = 'javadoc'
-//}
-//version '2.0.2'
-//
-//shadowJar {
-//    baseName = 'ocpp-payload'
-//    classifier = null
-//    version = project.version
-//}
-//
-//publishing {
-//    publications {
-//        shadow(MavenPublication) { publications ->
-//            publications.artifact(sourcesJar)
-//            publications.artifact(javadocJar)
-//            publications.groupId('io.everon')
-//            publications.artifactId('ocpp-payload')
-//            publications.version(project.version)
-//            project.shadow.component(publications)
-//        }
-//    }
-//}
-//
-//bintray {
-//    user = System.getenv('BINTRAY_USERNAME')
-//    key = System.getenv('BINTRAY_API_KEY')
-//    publications = ['shadow']
-//
-//    pkg {
-//        repo = 'maven'
-//        name = 'ocpp-payload'
-//        licenses = ['MIT']
-//        vcsUrl = 'https://github.com/evbox/station-simulator.git'
-//        publicDownloadNumbers = true
-//
-//        version {
-//            name = project.version
-//            desc = 'OCPP 2.0 payload'
-//            vcsTag = project.version
-//        }
-//    }
-//
-//    publish = true
-//}
+apply plugin: 'maven-publish'
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc.destinationDir
+    archiveClassifier = 'javadoc'
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+version '2.1.0'
+
+shadowJar {
+    baseName = 'ocpp-payload'
+    classifier = null
+    version = project.version
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) { publication ->
+            from project.shadow.component(publication)
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'io.everon'
+            artifactId 'ocpp-payload'
+            version project.version
+            pom {
+                name = 'ocpp-payload'
+                packaging  = 'jar'
+                description = 'Occp version 2.0.1 messages payload'
+                url = 'https://github.com/everonhq/station-simulator'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/everonhq/station-simulator/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Rawan-Abdelaal'
+                        name = 'Rawan Abdelaal'
+                        email = 'rawan.abdelaal@everon.io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/everonhq/station-simulator.git'
+                    developerConnection = 'scm:git:ssh://github.com:everonhq/station-simulator.git'
+                    url = 'https://github.com/everonhq/station-simulator/tree/master'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = System.getenv("OSSRH_USER") ?: 'return@configure'
+                password = System.getenv("OSSRH_PASSWORD") ?: 'return@configure'
+            }
+        }
+    }
+}
+
+signing {
+   String signingKeyId = System.getenv("SIGNING_KEY_ID") ?: 'your-key-id'
+   String signingKey = System.getenv("SIGNING_KEY") ?: ''
+   String signingPassword = System.getenv("SIGNING_PASSWORD") ?: ''
+
+    useInMemoryPgpKeys(signingKeyId, new String(signingKey.decodeBase64()), new String(signingPassword.decodeBase64()))
+    sign publishing.publications.mavenJava
+}

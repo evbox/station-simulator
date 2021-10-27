@@ -12,8 +12,8 @@ import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.support.TransactionIdGenerator;
-import com.evbox.everon.ocpp.v201.message.station.*;
 import com.evbox.everon.ocpp.v201.message.station.ChargingState;
+import com.evbox.everon.ocpp.v201.message.station.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.AUTHORIZED;
-import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.REMOTE_START;
+import static com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING;
+import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.*;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
@@ -34,6 +34,7 @@ import static java.util.stream.Collectors.toList;
 public class AvailableState extends AbstractEvseState {
 
     public static final String NAME = "AVAILABLE";
+    private static final String EMPTY_TOKENID = "";
 
     @Override
     public String getStateName() {
@@ -61,10 +62,26 @@ public class AvailableState extends AbstractEvseState {
 
                 stationMessageSender.sendTransactionEventStart(evseId, connectorId, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
             }
+
+            if (!stateManager.getStationStore().isAuthEnabled()) {
+                if (!evse.hasOngoingTransaction()) {
+                    String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
+                    evse.createTransaction(transactionId);
+                    stationMessageSender.sendTransactionEventAutoStart(evseId, connectorId, AUTHORIZED, ChargingState.EV_CONNECTED);
+                } else {
+                    stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, AUTHORIZED, EMPTY_TOKENID, ChargingState.EV_CONNECTED);
+                }
+                evse.lockPluggedConnector();
+                evse.startCharging();
+                stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CHARGING_STATE_CHANGED, CHARGING);
+            }
             future.complete(UserMessageResult.SUCCESSFUL);
         });
-
-        stateManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
+        if (!stateManager.getStationStore().isAuthEnabled()) {
+            stateManager.setStateForEvse(evseId, new EvDisconnectedState());
+        } else {
+            stateManager.setStateForEvse(evseId, new WaitingForAuthorizationState());
+        }
         return future;
     }
 

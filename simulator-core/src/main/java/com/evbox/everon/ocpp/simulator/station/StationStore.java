@@ -43,9 +43,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class StationStore {
 
     private String stationId;
+    private String stationVendor;
+    private String stationModel;
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private int evConnectionTimeOut;
+    private boolean authEnabled;
     private Map<Integer, Evse> evses;
     private OptionList<TxStartStopPointVariableValues> txStartPointValues;
     private OptionList<TxStartStopPointVariableValues> txStopPointValues;
@@ -60,10 +63,13 @@ public class StationStore {
 
     public StationStore(SimulatorConfiguration.StationConfiguration configuration) {
         this.stationId = configuration.getId();
+        this.stationVendor = configuration.getHardwareConfiguration().getVendor();
+        this.stationModel = configuration.getHardwareConfiguration().getModel();
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors(), configuration.getEvse().getStatus());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
         this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoints()));
+        this.authEnabled = configuration.getComponentsConfiguration().getAuthCtrl().isAuthEnabled();
     }
 
     public StationStore(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
@@ -90,6 +96,14 @@ public class StationStore {
 
     public int getHeartbeatInterval() {
         return heartbeatInterval;
+    }
+
+    public boolean isAuthEnabled() {
+        return authEnabled;
+    }
+
+    public void setAuthorizeState(boolean authState) {
+        authEnabled = authState;
     }
 
     public void setHeartbeatInterval(int heartbeatInterval) {
@@ -194,6 +208,14 @@ public class StationStore {
 
     public boolean hasOngoingTransaction(Integer evseId) {
         return findEvse(evseId).hasOngoingTransaction();
+    }
+
+    public String getStationVendor() {
+        return stationVendor;
+    }
+
+    public String getStationModel() {
+        return stationModel;
     }
 
     /**

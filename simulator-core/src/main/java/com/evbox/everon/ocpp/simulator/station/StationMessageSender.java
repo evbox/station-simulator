@@ -134,6 +134,18 @@ public class StationMessageSender {
     }
 
     /**
+     * Send TransactionEventStart event.
+     *
+     * @param evseId        evse identity
+     * @param connectorId   connector identity
+     * @param reason        reason why it was triggered
+     * @param chargingState charging state of the station
+     */
+    public void sendTransactionEventAutoStart(Integer evseId, Integer connectorId, TriggerReason reason, ChargingState chargingState) {
+        sendTransactionEventStart(evseId, connectorId, null, reason, "", chargingState);
+    }
+
+    /**
      * Send TransactionEventUpdate event.
      *
      * @param evseId        evse identity
@@ -247,7 +259,7 @@ public class StationMessageSender {
      * @param subscriber callback that will be executed after receiving a response from OCPP server
      */
     public void sendBootNotificationAndSubscribe(BootReason reason, Subscriber<BootNotificationRequest, BootNotificationResponse> subscriber) {
-        BootNotificationRequest payload = payloadFactory.createBootNotification(reason);
+        BootNotificationRequest payload = payloadFactory.createBootNotification(reason, stationStore.getStationVendor(), stationStore.getStationModel());
 
         Call call = createAndRegisterCall(ActionType.BOOT_NOTIFICATION, payload);
         callRegistry.addSubscription(call.getMessageId(), payload, subscriber);
@@ -261,7 +273,7 @@ public class StationMessageSender {
      * @param reason reason why it was triggered
      */
     public void sendBootNotification(BootReason reason) {
-        BootNotificationRequest payload = payloadFactory.createBootNotification(reason);
+        BootNotificationRequest payload = payloadFactory.createBootNotification(reason, stationStore.getStationVendor(), stationStore.getStationModel());
 
         sendPayloadOfType(ActionType.BOOT_NOTIFICATION, payload);
     }

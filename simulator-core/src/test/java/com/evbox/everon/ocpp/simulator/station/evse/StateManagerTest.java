@@ -56,6 +56,7 @@ class StateManagerTest {
     void verifyFullStateFlowPlugThenAuthorize() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
+        when(stationStoreMock.isAuthEnabled()).thenReturn(true);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
@@ -164,6 +165,7 @@ class StateManagerTest {
     void verifyStopChargingAndRestart() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
+        when(stationStoreMock.isAuthEnabled()).thenReturn(true);
         when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
@@ -213,6 +215,34 @@ class StateManagerTest {
 
         stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(AvailableState.NAME);
+    }
+
+    @Test
+    void verifyFullStateAutostartFlow() {
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.isAuthEnabled()).thenReturn(false);
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+
+        stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        checkStateIs(EvDisconnectedState.NAME);
+        when(evseMock.getEvseState()).thenReturn(new EvDisconnectedState());
+
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        checkStateIs(AvailableState.NAME);
+    }
+
+    @Test
+    void verifyFullStateAutostartWithRemoteStopFlow() {
+        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        when(stationStoreMock.isAuthEnabled()).thenReturn(false);
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+
+        stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        checkStateIs(EvDisconnectedState.NAME);
+        when(evseMock.getEvseState()).thenReturn(new EvDisconnectedState());
+
+        stateManager.remoteStop(DEFAULT_EVSE_ID);
+        checkStateIs(RemotelyStoppedState.NAME);
     }
 
     private void triggerAuthorizeAndGetResponse() {

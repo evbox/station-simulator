@@ -60,6 +60,8 @@ class StationMessageSenderTest {
 
     @Test
     void shouldIncreaseMessageIdForConsequentCalls() {
+        when(stationStoreMock.getStationVendor()).thenReturn(StationHardwareData.VENDOR_NAME);
+        when(stationStoreMock.getStationModel()).thenReturn(StationHardwareData.MODEL);
 
         int numberOfMessages = 3;
         IntStream.range(0, numberOfMessages).forEach(c -> stationMessageSender.sendBootNotification(BootReason.POWER_UP));
@@ -244,6 +246,8 @@ class StationMessageSenderTest {
 
     @Test
     void verifyBootNotification() throws InterruptedException {
+        when(stationStoreMock.getStationVendor()).thenReturn(StationHardwareData.VENDOR_NAME);
+        when(stationStoreMock.getStationModel()).thenReturn(StationHardwareData.MODEL);
 
         stationMessageSender.sendBootNotification(BootReason.POWER_UP);
 
@@ -257,7 +261,8 @@ class StationMessageSenderTest {
                 () -> assertThat(actualPayload.getReason()).isEqualTo(BootReason.POWER_UP),
                 () -> assertThat(actualPayload.getChargingStation().getSerialNumber()).isEqualTo(new CiString.CiString25(DEFAULT_SERIAL_NUMBER)),
                 () -> assertThat(actualPayload.getChargingStation().getFirmwareVersion()).isEqualTo(new CiString.CiString50(DEFAULT_FIRMWARE_VERSION)),
-                () -> assertThat(actualPayload.getChargingStation().getModel()).isEqualTo(new CiString.CiString20(DEFAULT_MODEL))
+                () -> assertThat(actualPayload.getChargingStation().getModel()).isEqualTo(new CiString.CiString20(DEFAULT_MODEL)),
+                () -> assertThat(actualPayload.getChargingStation().getVendorName()).isEqualTo(new CiString.CiString50(StationHardwareData.VENDOR_NAME))
         );
 
     }

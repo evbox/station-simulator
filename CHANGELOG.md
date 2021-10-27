@@ -1,4 +1,26 @@
 # Station Simulator Releases #
+
+### Version 0.5.5
+
+- Exposed station Vendor and Model as configuration
+
+### Version 0.5.4
+
+- Support for instant charging transaction
+- Get and set for AuthEnabled station configuration
+
+### Version 0.5.3
+
+- Publish ocpp-payload to maven central
+
+### Version 0.5.2
+
+- Minor bug fix
+
+### Version 0.5.1
+
+- Minor improvements
+
 ### Version 0.5.0
 
 - Moving the OCPP 2.0.1 support to the master branch

@@ -1,4 +1,4 @@
-package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
+package com.evbox.everon.ocpp.simulator.station.component.authctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
@@ -9,31 +9,34 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
-import com.evbox.everon.ocpp.v201.message.centralserver.Attribute;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
-import com.evbox.everon.ocpp.v201.message.station.Component;
-import com.evbox.everon.ocpp.v201.message.station.Variable;
-import com.evbox.everon.ocpp.v201.message.station.*;
+import com.evbox.everon.ocpp.v201.message.station.ReportData;
+import com.evbox.everon.ocpp.v201.message.station.VariableAttribute;
+import com.evbox.everon.ocpp.v201.message.station.VariableCharacteristics;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.evbox.everon.ocpp.v201.message.station.Data.BOOLEAN;
 import static java.util.Collections.singletonList;
 
-public class ModelVariableAccessor extends VariableAccessor {
+public class AuthorizeStateVariableAccessor extends VariableAccessor {
 
-    public static final String NAME = "Model";
+    public static final String NAME = "Enabled";
     private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
             .put(AttributeType.ACTUAL, this::getActualValue)
             .build();
 
     private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::rejectVariable)
+            .put(AttributeType.ACTUAL, this::validateActualValue)
             .build();
 
-    public ModelVariableAccessor(Station station, StationStore stationStore) {
+    private final Map<AttributeType, VariableSetter> variableSetters = ImmutableMap.<AttributeType, VariableSetter>builder()
+            .put(AttributeType.ACTUAL, this::setActualValue)
+            .build();
+
+    public AuthorizeStateVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);
     }
 
@@ -49,7 +52,7 @@ public class ModelVariableAccessor extends VariableAccessor {
 
     @Override
     public Map<AttributeType, VariableSetter> getVariableSetters() {
-        return Collections.emptyMap();
+        return variableSetters;
     }
 
     @Override
@@ -59,22 +62,22 @@ public class ModelVariableAccessor extends VariableAccessor {
 
     @Override
     public List<ReportData> generateReportData(String componentName) {
-        Component component = new Component()
+        com.evbox.everon.ocpp.v201.message.station.Component component = new com.evbox.everon.ocpp.v201.message.station.Component()
                 .withName(new CiString.CiString50(componentName));
 
+        boolean authEnabled = getStationStore().isAuthEnabled();
         VariableAttribute variableAttribute = new VariableAttribute()
-                .withValue(new CiString.CiString2500(getStationStore().getStationModel()))
-                .withPersistent(true)
-                .withConstant(true)
-                .withMutability(Mutability.READ_ONLY);
+                .withValue(new CiString.CiString2500(String.valueOf(authEnabled)))
+                .withPersistent(false)
+                .withConstant(false);
 
         VariableCharacteristics variableCharacteristics = new VariableCharacteristics()
-                .withDataType(Data.STRING)
+                .withDataType(BOOLEAN)
                 .withSupportsMonitoring(false);
 
         ReportData reportDatum = new ReportData()
                 .withComponent(component)
-                .withVariable(new Variable().withName(new CiString.CiString50(NAME)))
+                .withVariable(new com.evbox.everon.ocpp.v201.message.station.Variable().withName(new CiString.CiString50(NAME)))
                 .withVariableCharacteristics(variableCharacteristics)
                 .withVariableAttribute(singletonList(variableAttribute));
 
@@ -82,18 +85,36 @@ public class ModelVariableAccessor extends VariableAccessor {
     }
 
     @Override
-    public boolean isMutable() { return false; }
+    public boolean isMutable() {
+        return true;
+    }
 
-    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
-        return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableStatus.REJECTED);
+    private SetVariableResult validateActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+        SetVariableResult setVariableResult = new SetVariableResult()
+                .withComponent(attributePath.getComponent())
+                .withVariable(attributePath.getVariable())
+                .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()));
+        String value = attributeValue.toString();
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            return setVariableResult.withAttributeStatus(SetVariableStatus.ACCEPTED);
+        } else {
+            return setVariableResult.withAttributeStatus(SetVariableStatus.REJECTED);
+        }
+    }
+
+    public void setActualValue(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+        Station station = getStation();
+        station.setAuthorizeState(Boolean.parseBoolean(attributeValue.toString()));
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
+        boolean authEnabled = getStationStore().isAuthEnabled();
+
         return new GetVariableResult()
+                .withAttributeStatus(GetVariableStatus.ACCEPTED)
                 .withComponent(attributePath.getComponent())
                 .withVariable(attributePath.getVariable())
                 .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeValue(new CiString.CiString2500(getStationStore().getStationModel()))
-                .withAttributeStatus(GetVariableStatus.ACCEPTED);
+                .withAttributeValue(new CiString.CiString2500(String.valueOf(authEnabled)));
     }
 }
