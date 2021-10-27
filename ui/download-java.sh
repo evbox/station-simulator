@@ -93,7 +93,7 @@ for os in "${OS[@]}"; do
                 echo "Checksum verification passed"
             else
                 echo "Downloaded JRE and expected checksum doesn't match"
-#                exit 1
+                exit 1
             fi
 
             if [[ ${os} == "windows" ]]; then
