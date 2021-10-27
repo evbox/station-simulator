@@ -1,6 +1,6 @@
 {
   "name": "ui-evse-simulator",
-  "version": "1",
+  "version": "0.0.1-beta.3",
   "description": "Ui for EVSE CLI",
   "main": "main.js",
   "icon": "./src/icon.png",
