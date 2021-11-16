@@ -99,14 +99,6 @@ public class EnabledVariableAccessor extends VariableAccessor {
     @Override
     public boolean isMutable() { return false; }
 
-    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 ciString1000) {
-        return new SetVariableResult()
-                .withComponent(attributePath.getComponent())
-                .withVariable(attributePath.getVariable())
-                .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeStatus(SetVariableStatus.REJECTED);
-    }
-
     private GetVariableResult getActualValue(AttributePath attributePath) {
         Integer evseId = attributePath.getComponent().getEvse().getId();
 

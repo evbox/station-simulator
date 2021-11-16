@@ -50,7 +50,7 @@ class OCPPCommCtrlComponentTest {
     void setUp() throws Exception {
         ocppCommCtrlrComponent = new OCPPCommCtrlrComponent(stationMock, stationStore);
         Map<CiString.CiString50, VariableAccessor> variableAccessors
-                = ImmutableMap.of(new CiString.CiString50(HeartbeatIntervalVariableAccessor.NAME), heartbeatIntervalVariableAccessorMock);
+                = ImmutableMap.of(new CiString.CiString50(ocppCommCtrlrComponent.getComponentName() + "-" + HeartbeatIntervalVariableAccessor.NAME), heartbeatIntervalVariableAccessorMock);
 
         FieldUtils.writeField(ocppCommCtrlrComponent, "variableAccessors", variableAccessors, true);
     }

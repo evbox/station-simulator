@@ -91,4 +91,12 @@ public abstract class VariableAccessor implements VariableGetter, VariableSetter
                 .orElseThrow(() -> new SetVariableNotSupportedException(componentName, variableName, attributeTypeName))
                 .set(attributePath, attributeValue);
     }
+
+    protected SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 ciString1000) {
+        return new SetVariableResult()
+                .withComponent(attributePath.getComponent())
+                .withVariable(attributePath.getVariable())
+                .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
+                .withAttributeStatus(SetVariableStatus.REJECTED);
+    }
 }

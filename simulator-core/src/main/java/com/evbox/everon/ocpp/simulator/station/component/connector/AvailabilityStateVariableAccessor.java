@@ -125,7 +125,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
         return getVariableResult.withAttributeStatus(GetVariableStatus.REJECTED);
     }
 
-    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+    protected SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableStatus.REJECTED);
     }
 }

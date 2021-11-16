@@ -32,7 +32,7 @@ import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_MESS
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CertificateSignedRequestHandlerTest {
@@ -121,9 +121,10 @@ public class CertificateSignedRequestHandlerTest {
     }
 
     @Test
-    @Disabled
+    @Disabled("Disabled until Certificate is replaced with non expired one")
     @DisplayName("should handle certificate chain")
     void verifyValidCertificateChainIsAccepted() {
+
         requestHandler.handle(DEFAULT_MESSAGE_ID, new CertificateSignedRequest().withCertificateChain(new CiString.CiString10000(chainCertificate)));
 
         verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());

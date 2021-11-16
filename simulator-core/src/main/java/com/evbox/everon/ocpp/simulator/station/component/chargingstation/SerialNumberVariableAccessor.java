@@ -86,7 +86,7 @@ public class SerialNumberVariableAccessor extends VariableAccessor {
     @Override
     public boolean isMutable() { return false; }
 
-    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+    protected SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableStatus.REJECTED);
     }
 

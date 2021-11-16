@@ -19,7 +19,8 @@ public class ChargingStationComponent extends StationComponent {
                 new ModelVariableAccessor(station, stationStore),
                 new SerialNumberVariableAccessor(station, stationStore),
                 new ChargeProtocolVariableAccessor(station, stationStore),
-                new AvailabilityStateVariableAccessor(station, stationStore)
+                new AvailabilityStateVariableAccessor(station, stationStore),
+                new VendorNameVariableAccessor(station, stationStore)
         ));
     }
 
