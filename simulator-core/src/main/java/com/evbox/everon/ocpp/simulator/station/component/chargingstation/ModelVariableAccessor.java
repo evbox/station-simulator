@@ -25,13 +25,10 @@ import static java.util.Collections.singletonList;
 public class ModelVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "Model";
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::rejectVariable)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters = Map.of(AttributeType.ACTUAL, this::getActualValue);
+
+    private final Map<AttributeType, SetVariableValidator> variableValidators = Map.of(AttributeType.ACTUAL, this::rejectVariable);
 
     public ModelVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);

@@ -32,13 +32,10 @@ public class LifeTimeVariableAccessor extends VariableAccessor {
     public static final String NAME = "LifeTime";
     public static final String AUTH_CACHE_LIFE_TIME = "2592000";
 
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters = Map.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::rejectVariable)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators = Map.of(AttributeType.ACTUAL, this::rejectVariable);
+
     public LifeTimeVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);
     }

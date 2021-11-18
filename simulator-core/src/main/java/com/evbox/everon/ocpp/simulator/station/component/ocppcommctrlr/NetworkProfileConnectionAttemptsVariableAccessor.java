@@ -31,13 +31,10 @@ public class NetworkProfileConnectionAttemptsVariableAccessor extends VariableAc
     public static final String NAME = "NetworkProfileConnectionAttempts";
     public static final String NETWORK_PROFILE_CONNECTION_ATTEMPS_NUMBER = "2";
 
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters =  Map.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::rejectVariable)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators =  Map.of(AttributeType.ACTUAL, this::rejectVariable);
+
     public NetworkProfileConnectionAttemptsVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);
     }
