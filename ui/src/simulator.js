@@ -2,6 +2,10 @@ const path = require('path')
 const {spawn} = require('child_process')
 import store from './store.js'
 
+const os = require('os');
+
+console.log(`This platform is ${os.platform()}`);
+
 let sim = undefined
 let state = ''
 

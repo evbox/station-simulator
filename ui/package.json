@@ -1,17 +1,17 @@
 {
   "name": "ui-evse-simulator",
-  "version": "0.0.1-beta.3",
+  "version": "0.0.1",
   "description": "Ui for EVSE CLI",
   "main": "main.js",
   "icon": "./src/icon.png",
   "frame": false,
   "repository": "https://github.com/vampaz/station-simulator",
   "scripts": {
-    "preinstall": "npm run download-vue && bash download-java.sh && npm run build-simulator && npm run copy-jre-mac && npm i ./src",
+    "preinstall": "npm run download-vue && bash download-java.sh && npm run build-simulator && npm i ./src",
     "download-vue": "curl --create-dirs https://cdn.jsdelivr.net/npm/vue@3.2.11/dist/vue.esm-browser.prod.js --output dependencies/vue.esm-browser.prod.js",
     "copy-jre-mac": "cp -R build-resources/jre/mac/x64/Contents/Home/ dependencies/jre",
     "build-simulator": "cd .. && ./gradlew build && cp ./simulator-core/build/libs/simulator-core-*[0-9].jar ./ui/dependencies/simulator.jar",
-    "start": "electron ./src",
+    "start": "npm run copy-jre-mac && electron ./src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dist": "electron-builder"
   },
@@ -21,7 +21,7 @@
     "ui-evse-simulator-web": "file:src"
   },
   "devDependencies": {
-    "electron": "^15.3.0",
+    "electron": "^16.0.0",
     "electron-builder": "^22.13.1"
   },
   "build": {
@@ -32,11 +32,27 @@
     "files": [
       "**/*"
     ],
+    "extraResources": [
+      {
+        "from": "dependencies/simulator.jar",
+        "to": "dependencies/simulator.jar"
+      },
+      {
+        "from": "dependencies/vue.esm-browser.prod.js",
+        "to": "dependencies/vue.esm-browser.prod.js"
+      }
+    ],
     "mac": {
       "type": "development",
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
-      "icon": "./src/icon.png"
+      "icon": "./src/icon.png",
+      "extraResources": [
+        {
+          "from": "build-resources/jre/mac/x64/Contents/Home/",
+          "to": "dependencies/jre/"
+        }
+      ]
     },
     "dmg": {
       "contents": [
@@ -61,9 +77,6 @@
     "directories": {
       "app": "src",
       "output": "build"
-    },
-    "extraResources": [
-      "dependencies"
-    ]
+    }
   }
 }
