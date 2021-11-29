@@ -10,6 +10,7 @@ import com.evbox.everon.ocpp.v201.message.station.CertificateSigningUse;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -120,6 +121,7 @@ public class CertificateSignedRequestHandlerTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("should handle certificate chain")
     void verifyValidCertificateChainIsAccepted() {
         requestHandler.handle(DEFAULT_MESSAGE_ID, new CertificateSignedRequest().withCertificateChain(new CiString.CiString10000(chainCertificate)));
