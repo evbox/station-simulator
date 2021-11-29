@@ -44,8 +44,8 @@ const template = `
                 <use class="fill-neutral-1" href="#icon-info"></use>
             </svg>
             <span v-if="store.state.simulator.started === false">Check the config and then click the flash to start</span>
-            <span v-if="store.state.simulator.started  === 'starting'">Simulator starting, connecting to {{store.state.config.ws}}</span>
-            <span v-if="store.state.simulator.started === 'started'">Simulator started, connected to {{store.state.config.ws}}</span>
+            <span v-if="store.state.simulator.started  === 'starting'">Simulator starting, connecting to {{adhoc || store.state.config.ws}}</span>
+            <span v-if="store.state.simulator.started === 'started'">Simulator started, connected to {{ adhoc || store.state.config.ws}}</span>
         </div>
     </header>
 `
@@ -53,15 +53,18 @@ const template = `
 const evseHeader = {
     name: 'Evse-header',
     setup() {
+
+
         function start(ws, adhoc) {
             // https://myevbox.atlassian.net/wiki/spaces/EV/pages/2053931047/Configure+station
             if (ws.includes('${adhoc}')) {
-                ws = ws.replace('${adhoc}', adhoc)
+                console.log(ws)
+                store.state.config.ws = ws.replace('${adhoc}', adhoc)
             }
 
             // the simulator only accepts single quoted JSON ¯\_(ツ)_/¯
             startSim(ws, JSON.stringify(JSON.parse(store.configuration)).replaceAll('\"', '\''))
-            console.log('Connecting to:', ws, adhoc)
+            console.log('Connecting to:', ws, adhoc,   store.state.config.ws )
         }
 
         store.state.config.ws = store.state.config.wsOptions['production']
