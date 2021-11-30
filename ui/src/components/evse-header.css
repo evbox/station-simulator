@@ -1,11 +1,16 @@
-header {
+.app-header {
     background: var(--color-2);
     color: var(--color-neutral-3);
-    position: sticky;
-    top: 0
+}
+.title > h1 > small {
+    display: block;
+    font-size: var(--spacing-s);
+    text-align: end;
 }
 
-.top {
+
+
+.title {
     display: flex;
     align-items: center;
     justify-content: space-between;

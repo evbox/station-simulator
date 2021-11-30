@@ -1,11 +1,15 @@
-import {getSimState, startSim, stopSim} from "./../simulator.js";
-import store from "./../store.js";
+import {getSimState, startSim, stopSim} from './../simulator.js';
+import store from './../store.js';
+import packageJson from '../package.json' assert {type: 'json'};
 
 //language=HTML
 const template = `
-    <header>
-        <div class="top">
-            <h1>EVSE Simulator UI</h1>
+    <header class="app-header">
+        <div class="title">
+            <h1>EVSE Simulator UI
+                <small>{{version}}</small>
+            </h1>
+
             <div class="controls">
                 <button @click="start(store.state.config.ws, store.state.config.adhoc)"
                         v-if="!store.state.simulator.started"
@@ -39,6 +43,7 @@ const template = `
                 </button>
             </div>
         </div>
+
         <div class="tip">
             <svg class="icon">
                 <use class="fill-neutral-1" href="#icon-info"></use>
@@ -64,11 +69,13 @@ const evseHeader = {
 
             // the simulator only accepts single quoted JSON ¯\_(ツ)_/¯
             startSim(ws, JSON.stringify(JSON.parse(store.configuration)).replaceAll('\"', '\''))
-            console.log('Connecting to:', ws, adhoc,   store.state.config.ws )
+            console.log('Connecting to:', ws, adhoc, store.state.config.ws)
         }
 
+        const version = packageJson.version
+
         store.state.config.ws = store.state.config.wsOptions['production']
-        return {start, store, getSimState, stopSim}
+        return {start, store, getSimState, stopSim, version}
     },
     template: template
 };

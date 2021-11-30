@@ -8,7 +8,6 @@ import evseHeader from './components/evse-header.js'
 const template = `
     <evseHeader></evseHeader>
     <evseConfig></evseConfig>
-<!--    <evseState  v-if="store.state.simulator.started"></evseState>-->
     <evseState></evseState>
 `
 

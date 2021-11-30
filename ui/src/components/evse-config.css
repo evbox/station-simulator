@@ -1,11 +1,8 @@
 .config {
     color: var(--color-neutral-7);
-    resize: vertical;
-    overflow: hidden;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    /*display: none; // TODO: remove*/
 }
 
 .config-ws {

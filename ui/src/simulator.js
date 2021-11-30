@@ -93,7 +93,8 @@ function getSimState() {
 
 function stopSim() {
     console.log('STOP')
-    sim.kill('SIGINT');
+    sim.stdin.pause();
+    sim.kill('SIGKILL');
     store.state.simulator.started = false
     store.state.simulator.evses = null
     store.state.evse = null
