@@ -7,7 +7,7 @@ const template = `
     <header class="app-header">
         <div class="title">
             <h1>EVSE Simulator UI
-                <small>{{version}}</small>
+                <small>v{{version}}</small>
             </h1>
 
             <div class="controls">
