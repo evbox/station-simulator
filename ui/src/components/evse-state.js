@@ -1,6 +1,11 @@
 import {getSimState, stopSim, plug, unplug, selectEvse, auth} from './../simulator.js'
 import store from './../store.js'
 
+
+// Mock state simulator started(useful for development)
+// import mock from './../mock-store.js'
+// mock(store)
+
 //language=HTML
 const template = `
     <div class="state-evses" v-if="store.state.evse">
@@ -78,53 +83,6 @@ const template = `
     </div>
 `
 
-const mock = model => {
-    model.state.simulator.started = true
-    model.state.evse = {
-        "heartbeatInterval": 86400,
-        "evConnectionTimeOut": 120,
-        "evses": [
-            {
-                "id": 1,
-                "connectors": [
-                    {
-                        "id": 1,
-                        "cableStatus": "UNPLUGGED",
-                        "connectorStatus": "Available"
-                    },
-                    {
-                        "id": 2,
-                        "cableStatus": "UNPLUGGED",
-                        "connectorStatus": "Available"
-                    }
-                ],
-                "tokenId": null,
-                "charging": false,
-                "seqNo": 0,
-                "evseStatus": "AVAILABLE",
-                "transaction": {
-                    "transactionId": null,
-                    "status": "NONE"
-                },
-                "scheduledNewEvseStatus": null,
-                "totalConsumedWattHours": 0
-            }
-        ],
-        "currentTime": "2021-09-22 08:19:54"
-    }
-
-
-    model.state.simulator.evses = [
-        {
-            "id": " EVB-X000001",
-            "selected": true
-        },
-        {
-            "id": " EVB-X000002",
-            "selected": false
-        }
-    ]
-}
 
 const evseState = {
     name: 'Evse-state',
@@ -133,8 +91,6 @@ const evseState = {
     },
     setup() {
 
-        // Mock state simulator started(useful for development)
-        // mock(store)
         function cable(evseId, connector) {
 
             if (connector.cableStatus === 'UNPLUGGED') {

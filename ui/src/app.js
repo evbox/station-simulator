@@ -19,7 +19,6 @@ const app = {
         evseHeader
     },
     setup() {
-        // store.state.simulator.started = true
         return {store}
     },
     template: template
