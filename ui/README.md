@@ -5,7 +5,7 @@ A GUI for the EVSE simulator.
 Uses [Electron](https://www.electronjs.org/) to package the app, Vue3 for the UI and a node bridge to the java simulator.
 The JRE is packaged and there is no local JAVA dependencies needed.
 The UI only depends on VueJs. This dependency is downloaded and integrated as a ES module, there is no build step for it. This is intended to keep it simple and maintainable in the long term.
-The app comes preloaded with an example configuration(json) and doesn't support YAML yet
+The app comes preloaded with an example configuration(JSON), YAML support planned
 
 ## Building
 For now only OSX is supported for development and building.
@@ -22,13 +22,15 @@ For now only OSX is supported for development and building.
 
 ## Release
 A github action is used to build and release packages, [electron-builder-action](https://github.com/marketplace/actions/electron-builder-action)
+
 #### Steps
 1. Update the version in the app [package.json](./src/package.json) file (e.g. 1.2.3)
 2. Commit that change (git commit -am v1.2.3)
-3. Tag your commit (git tag v1.2.3). Make sure your tag name's format is v*.*.*. Your workflow will use this tag to detect when to create a release
+3. Tag your commit (c v1.2.3). Make sure your tag name's format is v*.*.*. Your workflow will use this tag to detect when to create a release
 4. Push your changes to GitHub (git push && git push --tags)
 
 ##Roadmap
-* [ ] yaml config 
-* [ ] Save configs
+* [ ] Support YAML config 
+* [ ] Manage multiple configs
+* [ ] Linux build(Universal, AppImage or snap)
 * [ ] Windows build
