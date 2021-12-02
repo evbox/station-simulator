@@ -73,6 +73,12 @@
       "target": [
         "AppImage"
       ],
+      "extraResources": [
+        {
+          "from": "build-resources/jre/linux/x64/",
+          "to": "dependencies/jre/"
+        }
+      ],
       "category": "Development"
     },
     "directories": {
