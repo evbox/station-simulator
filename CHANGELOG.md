@@ -1,6 +1,6 @@
 # Station Simulator Releases #
 
-### Version 0.5.6
+### Version 0.5.7
 
 - Support more station variables, batch notify report messages in bulks of 7.
 
