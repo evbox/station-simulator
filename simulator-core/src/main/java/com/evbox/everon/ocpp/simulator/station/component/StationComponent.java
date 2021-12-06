@@ -110,8 +110,8 @@ public abstract class StationComponent {
      * @param name name of the Variable
      * @return requested variable accessor
      */
-    public VariableAccessor getVariableAccessorByName(CiString.CiString50 name) {
-        return variableAccessors.get(getComponentName() + "-" + name);
+    public VariableAccessor getVariableAccessorByName(String name) {
+       return variableAccessors.get(new CiString.CiString50(getComponentName() + "-" + name));
     }
 
     /**

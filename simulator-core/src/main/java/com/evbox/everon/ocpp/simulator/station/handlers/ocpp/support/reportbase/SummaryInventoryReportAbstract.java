@@ -46,7 +46,7 @@ public class SummaryInventoryReportAbstract extends AbstractBaseReport {
         List<ReportData> reportData = new ArrayList<>();
         if (optComponent.isPresent()) {
             StationComponent component = optComponent.get();
-            reportData.addAll(component.getVariableAccessorByName(new CiString.CiString50(AVAILABILITY_STATE_NAME)).generateReportData(component.getComponentName()));
+            reportData.addAll(component.getVariableAccessorByName(AVAILABILITY_STATE_NAME).generateReportData(component.getComponentName()));
         }
         return reportData;
     }
