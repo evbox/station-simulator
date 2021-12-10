@@ -28,13 +28,9 @@ public class BasicAuthPasswordVariableAccessor extends VariableAccessor {
     private static final String NAME = "BasicAuthPassword";
     private static final long RECONNECT_TIMEOUT = 5;
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::validateActualValue)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators =  Map.of(AttributeType.ACTUAL, this::validateActualValue);
 
-    private final Map<AttributeType, VariableSetter> variableSetters = ImmutableMap.<AttributeType, VariableSetter>builder()
-            .put(AttributeType.ACTUAL, this::setActualValue)
-            .build();
+    private final Map<AttributeType, VariableSetter> variableSetters =  Map.of(AttributeType.ACTUAL, this::setActualValue);
 
     public BasicAuthPasswordVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);

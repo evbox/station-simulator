@@ -15,7 +15,8 @@ public class EVSEComponent extends StationComponent {
     public EVSEComponent(Station station, StationStore stationStore) {
         super(ImmutableList.of(
                 new AvailabilityStateVariableAccessor(station, stationStore),
-                new EnabledVariableAccessor(station, stationStore)
+                new EnabledVariableAccessor(station, stationStore),
+                new AllowResetVariableAccessor(station, stationStore)
         ));
     }
 

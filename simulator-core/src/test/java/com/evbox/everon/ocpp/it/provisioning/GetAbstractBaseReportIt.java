@@ -17,7 +17,8 @@ import static org.awaitility.Awaitility.await;
 
 public class GetAbstractBaseReportIt extends StationSimulatorSetUp {
 
-        private static final int NOTIFY_REPORT_VARIABLES_LESS_ONE = 15;
+        private static final int NOTIFY_REPORT_VARIABLES_LESS_ONE = 47;
+        private static final int BATCH_SIZE = 7;
 
     @Test
     void shouldReplyToGetBaseReportRequest() {
@@ -57,16 +58,13 @@ public class GetAbstractBaseReportIt extends StationSimulatorSetUp {
 
     @Test
     void shouldSendNotifyReportOnGetBaseReportRequest() {
-
-        for (int i = 0; i < NOTIFY_REPORT_VARIABLES_LESS_ONE; i++) {
+        int lastBatch = NOTIFY_REPORT_VARIABLES_LESS_ONE % BATCH_SIZE == 0 ?
+                NOTIFY_REPORT_VARIABLES_LESS_ONE / BATCH_SIZE : NOTIFY_REPORT_VARIABLES_LESS_ONE / BATCH_SIZE + 1;
+        for (int i = 0; i < lastBatch ; i++) {
             ocppMockServer
-                    .when(NotifyReport.request(i, true))
+                    .when(NotifyReport.request(i, i != lastBatch -1))
                     .thenReturn(NotifyReport.response());
         }
-
-        ocppMockServer
-                .when(NotifyReport.request(NOTIFY_REPORT_VARIABLES_LESS_ONE, false))
-                .thenReturn(NotifyReport.response());
 
         stationSimulatorRunner.run();
 

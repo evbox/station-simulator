@@ -21,6 +21,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_MESSAGE_ID;
 import static com.evbox.everon.ocpp.v201.message.station.GenericDeviceModelStatus.ACCEPTED;
@@ -75,8 +76,7 @@ public class GetAbstractBaseReportRequestHandlerTest {
         requestHandler.handle(DEFAULT_MESSAGE_ID, request);
 
         verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());
-        verify(stationMessageSenderMock).sendNotifyReport(REQUEST_ID, true, 0, now(), singletonList(REPORT_DATUM));
-        verify(stationMessageSenderMock).sendNotifyReport(REQUEST_ID, false, 1, now(), singletonList(REPORT_DATUM));
+        verify(stationMessageSenderMock).sendNotifyReport(REQUEST_ID, false, 0, now(), List.of(REPORT_DATUM, REPORT_DATUM));
         assertThat(messageCaptor.getValue().getStatus()).isEqualTo(ACCEPTED);
     }
 

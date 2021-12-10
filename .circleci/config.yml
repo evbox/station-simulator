@@ -44,6 +44,16 @@ jobs:
         name: publish artifact
         command: ./gradlew publish
 
+  publish-simulator-core-to-maven-center:
+    docker:
+      - image: cimg/openjdk:11.0-browsers
+
+    steps:
+      - checkout
+      - run:
+          name: publish artifact
+          command: ./gradlew simulator-core:publish
+
 workflows:
   default:
     jobs:
@@ -57,3 +67,11 @@ workflows:
     - publish-to-maven-center:
         requires:
             - publish-to-maven-center-approval
+    - publish-simulator-core-to-maven-center-approval:
+        requires:
+          - build
+          - sonar-static-analysis
+        type: approval
+    - publish-simulator-core-to-maven-center:
+        requires:
+            - publish-simulator-core-to-maven-center-approval

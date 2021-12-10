@@ -20,7 +20,16 @@ public class OCPPCommCtrlrComponent extends StationComponent {
     public OCPPCommCtrlrComponent(Station station, StationStore stationStore) {
         super(ImmutableList.of(
                 new HeartbeatIntervalVariableAccessor(station, stationStore),
-                new NetworkConfigurationPriorityVariableAccessor(station, stationStore)
+                new NetworkConfigurationPriorityVariableAccessor(station, stationStore),
+                new FileTransferProtocolsVariableAccessor(station, stationStore),
+                new MessageAttemptsVariableAccessor(station, stationStore),
+                new MessageAttemptIntervalVariableAccessor(station, stationStore),
+                new OfflineThresholdVariableAccessor(station, stationStore),
+                new RetryBackOffRepeatTimesVariableAccessor(station, stationStore),
+                new RetryBackOffWaitMinimumVariableAccessor(station, stationStore),
+                new UnlockOnEVSideDisconnectVariableAccessor(station, stationStore),
+                new ResetRetriesVariableAccessor(station, stationStore),
+                new NetworkProfileConnectionAttemptsVariableAccessor(station, stationStore)
         ));
     }
 }

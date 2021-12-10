@@ -31,7 +31,7 @@ public abstract class StationComponent {
 
     public StationComponent(List<VariableAccessor> variableAccessors) {
         this.variableAccessors = ImmutableMap.copyOf(variableAccessors.stream().collect(
-                toMap(va -> new CiString.CiString50(va.getVariableName()), identity())));
+                toMap(va -> new CiString.CiString50(getComponentName() + "-" + va.getVariableName()), identity())));
     }
 
     public abstract String getComponentName();
@@ -48,7 +48,7 @@ public abstract class StationComponent {
         Attribute attributeType = getVariableDatum.getAttributeType();
         Variable variable = getVariableDatum.getVariable();
 
-        VariableAccessor accessor = variableAccessors.get(variable.getName());
+        VariableAccessor accessor = variableAccessors.get(new CiString.CiString50(getComponentName() + "-" + variable.getName()));
 
         if (isNull(accessor)) {
             return UNKNOWN_VARIABLE;
@@ -63,7 +63,7 @@ public abstract class StationComponent {
      * @return Set with name of variables
      */
     public Set<String> getVariableNames() {
-        return variableAccessors.keySet().stream().map(CiString::toString).collect(Collectors.toSet());
+        return variableAccessors.keySet().stream().map(CiString::toString).map(key -> key.split("-")[0]).collect(Collectors.toSet());
     }
 
     /**
@@ -76,7 +76,7 @@ public abstract class StationComponent {
         Component component = setVariableData.getComponent();
         Variable variable = setVariableData.getVariable();
 
-        VariableAccessor accessor = variableAccessors.get(variable.getName());
+        VariableAccessor accessor = variableAccessors.get(new CiString.CiString50(getComponentName() + "-" + variable.getName()));
 
         accessor.set(new AttributePath(component, variable, setVariableData.getAttributeType()), setVariableData.getAttributeValue());
     }
@@ -90,7 +90,7 @@ public abstract class StationComponent {
      * @return result which contains status of variable modification
      */
     public SetVariableValidationResult validate(SetVariableData setVariableData) {
-        Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(setVariableData.getVariable().getName()));
+        Optional<VariableAccessor> optionalVariableAccessor = Optional.ofNullable(variableAccessors.get(new CiString.CiString50(getComponentName() + "-" + setVariableData.getVariable().getName())));
 
         SetVariableResult validationResult = optionalVariableAccessor
                 .map(accessor -> accessor.validate(new AttributePath(setVariableData.getComponent(), setVariableData.getVariable(), setVariableData.getAttributeType()), setVariableData.getAttributeValue()))
@@ -110,8 +110,8 @@ public abstract class StationComponent {
      * @param name name of the Variable
      * @return requested variable accessor
      */
-    public VariableAccessor getVariableAccessorByName(CiString.CiString50 name) {
-        return variableAccessors.get(name);
+    public VariableAccessor getVariableAccessorByName(String name) {
+       return variableAccessors.get(new CiString.CiString50(getComponentName() + "-" + name));
     }
 
     /**

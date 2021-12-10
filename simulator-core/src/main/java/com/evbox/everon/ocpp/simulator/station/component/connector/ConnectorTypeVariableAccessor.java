@@ -32,13 +32,9 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
     public static final String NAME = "ConnectorType";
     public static final String CONNECTOR_TYPE = "CHAdeMO";
 
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters = Map.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::validateActualValue)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators = Map.of(AttributeType.ACTUAL, this::validateActualValue);
 
     public ConnectorTypeVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);

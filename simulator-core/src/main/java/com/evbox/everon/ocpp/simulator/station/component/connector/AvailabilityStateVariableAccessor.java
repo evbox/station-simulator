@@ -32,13 +32,9 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
     public static final String NAME = "AvailabilityState";
     public static final String CONNECTOR_AVAILABILITY = "Available";
 
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters = Map.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::rejectVariable)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators = Map.of(AttributeType.ACTUAL, this::rejectVariable);
 
     public AvailabilityStateVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);
@@ -125,7 +121,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
         return getVariableResult.withAttributeStatus(GetVariableStatus.REJECTED);
     }
 
-    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
+    protected SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 attributeValue) {
         return RESULT_CREATOR.createResult(attributePath, attributeValue, SetVariableStatus.REJECTED);
     }
 }
