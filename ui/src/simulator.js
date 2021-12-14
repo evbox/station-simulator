@@ -125,11 +125,3 @@ function auth(tokenId, evseIndex) {
 }
 
 export {startSim, getSimState, stopSim, plug, unplug, selectEvse, auth}
-
-
-
-
-
-
-
-

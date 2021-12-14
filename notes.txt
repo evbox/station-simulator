@@ -1,1 +1,0 @@
-./gradlew run -Parguments="ws://everon.io/ocpp --configurationFile ./../configuration.yml"
