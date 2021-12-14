@@ -32,5 +32,6 @@ A github action is used to build and release packages, [electron-builder-action]
 ##Roadmap
 * [ ] Support YAML config 
 * [ ] Store and manage multiple configs
+* [ ] Sign the OSX build
 * [ ] Linux build(Universal, AppImage or snap)
 * [ ] Windows build
