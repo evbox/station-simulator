@@ -1,5 +1,5 @@
 # EVSE GUI
-A GUI for the EVSE simulator.
+A GUI for the EVSE simulator CLI.
 
 ## Design
 Uses [Electron](https://www.electronjs.org/) to package the app, Vue3 for the UI and a node bridge to the java simulator.
@@ -31,6 +31,6 @@ A github action is used to build and release packages, [electron-builder-action]
 
 ##Roadmap
 * [ ] Support YAML config 
-* [ ] Manage multiple configs
+* [ ] Store and manage multiple configs
 * [ ] Linux build(Universal, AppImage or snap)
 * [ ] Windows build
