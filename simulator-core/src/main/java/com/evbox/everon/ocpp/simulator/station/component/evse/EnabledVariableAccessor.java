@@ -30,13 +30,9 @@ public class EnabledVariableAccessor extends VariableAccessor {
     public static final String NAME = "Enabled";
     public static final String EVSE_ENABLED_STATUS = "true";
 
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters = Map.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::rejectVariable)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators = Map.of(AttributeType.ACTUAL, this::rejectVariable);
 
     public EnabledVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);
@@ -98,14 +94,6 @@ public class EnabledVariableAccessor extends VariableAccessor {
 
     @Override
     public boolean isMutable() { return false; }
-
-    private SetVariableResult rejectVariable(AttributePath attributePath, CiString.CiString1000 ciString1000) {
-        return new SetVariableResult()
-                .withComponent(attributePath.getComponent())
-                .withVariable(attributePath.getVariable())
-                .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
-                .withAttributeStatus(SetVariableStatus.REJECTED);
-    }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {
         Integer evseId = attributePath.getComponent().getEvse().getId();

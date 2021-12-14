@@ -16,7 +16,9 @@ public class TxCtrlrComponent extends StationComponent {
         super(ImmutableList.of(
                 new EVConnectionTimeOutVariableAccessor(station, stationStore),
                 new TxStartPointVariableAccessor(station, stationStore),
-                new TxStopPointVariableAccessor(station, stationStore)
+                new TxStopPointVariableAccessor(station, stationStore),
+                new StopTxOnEVSideDisconnectVariableAccessor(station, stationStore),
+                new StopTxOnInvalidIdVariableAccessor(station, stationStore)
         ));
     }
 

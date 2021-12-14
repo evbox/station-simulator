@@ -20,7 +20,11 @@ public class AuthCtrlrComponent extends StationComponent {
 
     public AuthCtrlrComponent(Station station, StationStore stationStore) {
         super(List.of(
-                new AuthorizeStateVariableAccessor(station, stationStore)
+                new AuthorizeStateVariableAccessor(station, stationStore),
+                new OfflineTxForUnknownIdEnabledVariableAccessor(station, stationStore),
+                new LocalPreAuthorizeVariableAccessor(station, stationStore),
+                new AuthorizeRemoteStartVariableAccessor(station, stationStore),
+                new LocalAuthorizeOfflineVariableAccessor(station, stationStore)
         ));
     }
 }

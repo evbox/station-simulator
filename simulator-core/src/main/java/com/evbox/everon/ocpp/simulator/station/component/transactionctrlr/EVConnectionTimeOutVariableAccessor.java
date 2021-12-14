@@ -26,17 +26,11 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 public class EVConnectionTimeOutVariableAccessor extends VariableAccessor {
 
     public static final String NAME = "EVConnectionTimeOut";
-    private final Map<AttributeType, VariableGetter> variableGetters = ImmutableMap.<AttributeType, VariableGetter>builder()
-            .put(AttributeType.ACTUAL, this::getActualValue)
-            .build();
+    private final Map<AttributeType, VariableGetter> variableGetters =  Map.of(AttributeType.ACTUAL, this::getActualValue);
 
-    private final Map<AttributeType, SetVariableValidator> variableValidators = ImmutableMap.<AttributeType, SetVariableValidator>builder()
-            .put(AttributeType.ACTUAL, this::validateActualValue)
-            .build();
+    private final Map<AttributeType, SetVariableValidator> variableValidators =  Map.of(AttributeType.ACTUAL, this::validateActualValue);
 
-    private final Map<AttributeType, VariableSetter> variableSetters = ImmutableMap.<AttributeType, VariableSetter>builder()
-            .put(AttributeType.ACTUAL, this::setActualValue)
-            .build();
+    private final Map<AttributeType, VariableSetter> variableSetters =  Map.of(AttributeType.ACTUAL, this::setActualValue);
 
     public EVConnectionTimeOutVariableAccessor(Station station, StationStore stationStore) {
         super(station, stationStore);

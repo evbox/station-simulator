@@ -3,11 +3,17 @@ package com.evbox.everon.ocpp.simulator.station.component;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.component.authcashectrlr.AuthCacheCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.authctrlr.AuthCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.chargingstation.ChargingStationComponent;
+import com.evbox.everon.ocpp.simulator.station.component.clockctrlr.ClockCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.connector.ConnectorComponent;
+import com.evbox.everon.ocpp.simulator.station.component.devicedatactrlr.DeviceDataCtrlrComponent;
+import com.evbox.everon.ocpp.simulator.station.component.electricalfield.ElectricalFieldComponent;
 import com.evbox.everon.ocpp.simulator.station.component.evse.EVSEComponent;
+import com.evbox.everon.ocpp.simulator.station.component.localauthlistctrlr.LocalAuthListCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.OCPPCommCtrlrComponent;
+import com.evbox.everon.ocpp.simulator.station.component.sampleddatactrlr.SampledDataCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.securityctrlr.SecurityCtrlrComponent;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxCtrlrComponent;
 import com.evbox.everon.ocpp.v201.message.centralserver.ComponentVariable;
@@ -49,6 +55,12 @@ public class StationComponentsHolder {
                 .add(new SecurityCtrlrComponent(station, stationStore))
                 .add(new TxCtrlrComponent(station, stationStore))
                 .add(new AuthCtrlrComponent(station, stationStore))
+                .add(new AuthCacheCtrlrComponent(station, stationStore))
+                .add(new ClockCtrlrComponent(station, stationStore))
+                .add(new DeviceDataCtrlrComponent(station, stationStore))
+                .add(new ElectricalFieldComponent(station, stationStore))
+                .add(new LocalAuthListCtrlrComponent(station, stationStore))
+                .add(new SampledDataCtrlrComponent(station, stationStore))
                 .build();
 
         components = ImmutableMap.copyOf(componentsList.stream().collect(

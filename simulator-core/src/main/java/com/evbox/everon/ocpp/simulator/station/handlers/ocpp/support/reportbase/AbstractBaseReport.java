@@ -10,9 +10,11 @@ import java.util.List;
 
 import static java.time.ZonedDateTime.ofInstant;
 import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.math.NumberUtils.min;
 
 public abstract class AbstractBaseReport {
 
+    private static final int BATCH_SIZE = 7;
     protected final StationMessageSender stationMessageSender;
     protected final Clock clock;
 
@@ -25,13 +27,14 @@ public abstract class AbstractBaseReport {
 
     protected void sendNotifyReportRequests(List<ReportData> reportData, GetBaseReportRequest request) {
         int size = reportData.size();
-        for (int seqNo = 0; seqNo < size; seqNo++) {
+        for (int seqNo = 0, startIndex = 0; startIndex < size; seqNo++, startIndex += BATCH_SIZE) {
             ZonedDateTime now = ofInstant(clock.instant(), clock.getZone());
-            stationMessageSender.sendNotifyReport(request.getRequestId(), isLastMessage(seqNo, size), seqNo, now, singletonList(reportData.get(seqNo)));
+            int endIndex = min(startIndex + BATCH_SIZE, size);
+            stationMessageSender.sendNotifyReport(request.getRequestId(), isLastMessage(endIndex, size), seqNo, now, reportData.subList(startIndex, endIndex));
         }
     }
 
-    private boolean isLastMessage(int seqNo, int size) {
-        return seqNo != size - 1;
+    private boolean isLastMessage(int endIndex, int size) {
+        return endIndex != size;
     }
 }
