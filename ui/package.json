@@ -5,7 +5,7 @@
   "main": "main.js",
   "icon": "./src/icon.png",
   "frame": false,
-  "repository": "https://github.com/vampaz/station-simulator",
+  "repository": "https://github.com/everonhq/station-simulator",
   "scripts": {
     "preinstall": "npm run download-vue && bash download-java.sh && npm run build-simulator",
     "postinstall": "electron-builder install-app-deps",
