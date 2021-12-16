@@ -1,0 +1,84 @@
+button, input {
+    font-size: inherit;
+    padding: var(--spacing-xs);
+}
+
+.btn {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 1.125rem;
+    padding: .5rem 1rem;
+    margin: 0;
+    height: auto;
+    border: 1px solid transparent;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    background-color: var(--color-neutral-1);
+    color: var(--color-neutral-6);
+}
+
+.btn:hover {
+    text-decoration: none;
+    background-color: var(--color-neutral-3);
+    color: var(--color-primary);
+}
+
+.btn:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, .125);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, .25);
+}
+
+::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+    font-size: inherit;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.btn-icon {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: var(--spacing-xxs);
+    font-size: 0;
+    width: var(--spacing-xxl);
+    height: var(--spacing-xxl);
+    color: #fff;
+}
+
+.btn-icon:not(.btn):hover {
+    color: var(--color-4);
+}
+
+.btn-icon:not(.btn):active,
+.btn-icon:not(.btn):focus {
+    outline: none;
+    filter: brightness(60%);
+}
+
+/* makes button transparent to see an icon with disabled state */
+.btn:disabled {
+    cursor: progress;
+}
+
+.btn-icon.btn:disabled {
+    background: transparent !important;
+    cursor: progress;
+}
+
+.btn-icon:disabled {
+    color: rgba(255, 255, 255, 05);
+}

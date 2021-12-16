@@ -1,0 +1,16 @@
+{
+  "name": "ui-evse-simulator-web",
+  "version": "0.0.1-beta.12",
+  "description": "Ui for EVSE CLI",
+  "main": "main.js",
+  "icon": "icon.png",
+  "frame": false,
+  "author": "carlos rodrigues",
+  "license": "UNLICENCED",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0"
+  }
+}

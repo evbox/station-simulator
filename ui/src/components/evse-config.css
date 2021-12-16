@@ -1,0 +1,50 @@
+.config {
+    color: var(--color-neutral-7);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.config-ws {
+    display: flex;
+    align-items: center;
+    background: var(--color-4);
+}
+
+.config-ws > select {
+    border: none;
+    background: none;
+    font-size: var(--font-size-l);
+    margin-right: 0;
+}
+
+.config-simulator {
+    margin: 0 0;
+    flex-grow: 1;
+    position: relative;
+    background: var(--color-4);
+}
+
+.config-simulator label[for="configuration"] {
+    position: absolute;
+    top: 0;
+    background: rgba(0, 0, 0, .5);
+    color: var(--color-neutral-3);
+    margin: 0;
+    width: 100%;
+    padding: var(--spacing-s);
+    font-size: var(--font-size-s);
+}
+
+.config-simulator textarea {
+    width: 100%;
+    margin: 0 0;
+    padding: var(--spacing-xxl) var(--spacing-s) var(--spacing-s) var(--spacing-s);
+    box-sizing: border-box;
+    border: 0;
+    height: 100%;
+    background: var(--color-neutral-7);
+    color: var(--color-neutral-3);
+    outline: none;
+    font-size: var(--font-size-l);
+}

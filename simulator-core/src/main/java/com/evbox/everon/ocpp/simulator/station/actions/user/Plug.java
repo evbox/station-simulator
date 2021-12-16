@@ -25,6 +25,7 @@ public class Plug implements UserMessage {
      */
     @Override
     public CompletableFuture<UserMessageResult> perform(StateManager stateManager) {
+        System.out.println("evse" + evseId + " Connector " + connectorId + " plugged"); //NOSONAR
         return stateManager.cablePlugged(evseId, connectorId);
     }
 }

@@ -1,0 +1,96 @@
+.state-evses {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.state-evse {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.state-header {
+    position: sticky;
+    top: 0;
+    background: var(--color-neutral-7);
+}
+
+.state-status {
+    display: flex;
+    align-items: center;
+    background: var(--color-4);
+    color: var(--color-neutral-1);
+    justify-content: space-between;
+    padding: var(--spacing-s) var(--spacing-s) var(--spacing-s) 0;
+}
+
+.state-status-simulator {
+    display: flex;
+    align-items: center;
+}
+
+.state-status-simulator__active {
+    display: flex;
+    align-items: center;
+}
+
+.state-control {
+    margin: 0;
+    padding: var(--spacing-xxs) 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.state-connector {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs) 0;
+    justify-content: space-between;
+}
+
+.state-connector-info, .state-connector-control {
+    display: flex;
+    align-items: center;
+}
+
+.state-connector-control {
+    flex-grow: 0.5;
+    justify-content: space-between;
+}
+
+.state-connector-control-start {
+    display: flex;
+    align-items: center;
+    flex-grow: 0.1;
+    justify-content: space-between;
+}
+
+.connecting {
+    fill: var(--color-feedback-warning);
+}
+
+.connected {
+    fill: var(--color-feedback-info);
+}
+
+.charging {
+    fill: var(--color-feedback-success);
+}
+
+.state-toggle-raw {
+    color: var(--color-neutral-3);
+    padding: var(--spacing-s);
+    align-self: start;
+}
+
+.state-raw {
+    background: var(--color-neutral-6);
+    padding: var(--spacing-s);
+    flex-grow: 1;
+}
+
+

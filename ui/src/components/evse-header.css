@@ -1,0 +1,26 @@
+.app-header {
+    background: var(--color-2);
+    color: var(--color-neutral-3);
+}
+.title > h1 > small {
+    display: block;
+    font-size: var(--spacing-s);
+    text-align: end;
+}
+
+
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-s) var(--spacing-s);
+}
+
+.tip {
+    background: var(--color-3);
+    color: var(--color-neutral-4);
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-s) 0;
+}

@@ -31,8 +31,13 @@ hs_err_pid*
 build/
 build-cache
 
-# Out  
+# Out
 payload/ocpp20/out*
 simulator-core/out*
 
 *.DS_Store
+
+
+node_modules
+/ui/build-resources/
+/ui/dependencies/jre/

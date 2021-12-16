@@ -23,6 +23,7 @@ public class Unplug implements UserMessage {
      */
     @Override
     public CompletableFuture<UserMessageResult> perform(StateManager stateManager) {
+        System.out.println("evse" + evseId + " Connector " + connectorId + " unplugged"); //NOSONAR
         return stateManager.cableUnplugged(evseId, connectorId);
     }
 }

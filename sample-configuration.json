@@ -1,0 +1,51 @@
+{
+  "stations": [
+    {
+      "id": "EVB-X000001",
+      "evse": {
+        "count": 1,
+        "connectors": 2,
+        "status": "Available"
+      },
+      "meterValuesConfiguration": {
+        "sendMeterValuesIntervalSec": 10,
+        "consumptionWattHour": 100
+      },
+      "componentsConfiguration": {
+        "txCtrlr": {
+          "evConnectionTimeOutSec": 120,
+          "txStartPoints": [
+            "Authorized",
+            "EVConnected"
+          ],
+          "txStopPoints": [
+            "Authorized"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EVB-X000002",
+      "evse": {
+        "count": 1,
+        "connectors": 2
+      },
+      "meterValuesConfiguration": {
+        "sendMeterValuesIntervalSec": 20,
+        "consumptionWattHour": 150
+      },
+      "componentsConfiguration": {
+        "txCtrlr": {
+          "evConnectionTimeOutSec": 120
+        }
+      }
+    }
+  ],
+  "socketConfiguration": {
+    "callTimeoutMs": 1000,
+    "connectTimeoutMs": 1000,
+    "readTimeoutMs": 1000,
+    "writeTimeoutMs": 1000,
+    "pingIntervalMs": 1000
+  }
+}

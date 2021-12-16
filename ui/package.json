@@ -1,0 +1,89 @@
+{
+  "name": "ui-evse-simulator",
+  "version": "1.0.0",
+  "description": "Ui for EVSE CLI",
+  "main": "main.js",
+  "icon": "./src/icon.png",
+  "frame": false,
+  "repository": "https://github.com/vampaz/station-simulator",
+  "scripts": {
+    "preinstall": "npm run download-vue && bash download-java.sh && npm run build-simulator",
+    "postinstall": "electron-builder install-app-deps",
+    "download-vue": "curl --create-dirs https://cdn.jsdelivr.net/npm/vue@3.2.23/dist/vue.esm-browser.prod.js --output dependencies/vue.esm-browser.prod.js",
+    "copy-jre-mac": "cp -af build-resources/jre/mac/x64/Contents/Home dependencies/jre",
+    "build-simulator": "cd .. && ./gradlew build && cp ./simulator-core/build/libs/simulator-core-*[0-9].jar ./ui/dependencies/simulator.jar",
+    "start": "npm run copy-jre-mac && electron ./src",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "src": "^1.1.2",
+    "ui-evse-simulator-web": "file:src"
+  },
+  "devDependencies": {
+    "electron": "^16.0.4",
+    "electron-builder": "^22.14.5"
+  },
+  "build": {
+    "productName": "EVSESimulator",
+    "appId": "org.evb.EVSESimulator",
+    "asar": true,
+    "asarUnpack": "**\\*.{node,dll}",
+    "files": [
+      "**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "dependencies/simulator.jar",
+        "to": "dependencies/simulator.jar"
+      },
+      {
+        "from": "dependencies/vue.esm-browser.prod.js",
+        "to": "dependencies/vue.esm-browser.prod.js"
+      }
+    ],
+    "mac": {
+      "type": "development",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "icon": "./src/icon.png",
+      "extraResources": [
+        {
+          "from": "build-resources/jre/mac/x64/Contents/Home/",
+          "to": "dependencies/jre/"
+        }
+      ]
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "extraResources": [
+        {
+          "from": "build-resources/jre/linux/x64/",
+          "to": "dependencies/jre/"
+        }
+      ],
+      "category": "Development"
+    },
+    "directories": {
+      "app": "src",
+      "output": "build"
+    }
+  }
+}
