@@ -1,4 +1,6 @@
 # Station Simulator Releases #
+### Version 0.5.9
+- Implement Command ‘history’ to show last 10 commands entered by a user.
 
 ### Version 0.5.8
 

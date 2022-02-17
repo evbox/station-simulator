@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -27,11 +28,22 @@ public class ConsoleReader {
 
     private static final String SHOW_STATION_STORE_CMD = "stat";
     private static final String SHOW_STATION_CERTIFICATE_CMD = "cert";
+    private static final String SHOW_COMMAND_HISTORY = "history";
+    private static final int HISTORY_SIZE = 10;
 
     private int selectedStation;
 
     private final List<Station> stations;
     private final ExecutorService consoleReaderExecutorService = Executors.newSingleThreadExecutor();
+    private final LinkedList<String> commandHistory = new LinkedList<>() {
+        @Override
+        public void addFirst(String command) {
+            if (this.size() == HISTORY_SIZE) {
+                    this.removeLast();
+            }
+            super.addFirst(command);
+        }
+    };
 
     public ConsoleReader(List<Station> stations) {
 
@@ -49,6 +61,7 @@ public class ConsoleReader {
             String rawCommand;
 
             while ((rawCommand = in.nextLine()) != null) {
+                commandHistory.addFirst(rawCommand);
                 LOGGER.debug("Received command: {}", rawCommand);
                 try {
                     processCommand(asList(rawCommand.split("\\s")));
@@ -68,6 +81,7 @@ public class ConsoleReader {
         boolean selectStationCommand = commandArgs.size() == 1 && StringUtils.isNumeric(commandName);
         boolean showStationStoreCommand = commandArgs.size() == 1 && SHOW_STATION_STORE_CMD.equalsIgnoreCase(commandName);
         boolean showStationCertificateCommand = commandArgs.size() == 1 && SHOW_STATION_CERTIFICATE_CMD.equalsIgnoreCase(commandName);
+        boolean listHistoryCommand = commandArgs.size() == 1 && SHOW_COMMAND_HISTORY.equalsIgnoreCase(commandName);
 
         if (selectStationCommand) {
             selectNewStation(Integer.parseInt(commandName));
@@ -82,6 +96,8 @@ public class ConsoleReader {
             showStationStore();
         } else if (showStationCertificateCommand) {
             showStationCertificate();
+        }else if (listHistoryCommand) {
+            commandHistory.forEach(System.out::println);
         } else if (isNotBlank(commandName)) {
             System.out.println("Unknown command: " + commandName); //NOSONAR
         }
@@ -127,7 +143,8 @@ public class ConsoleReader {
         commands += "\tauth {tokenId} {evseId} - authorize token at given EVSE\n";
         commands += "\tprofile3 {endpoint} - switch to security profile 3\n";
         commands += "\tcert - print certificate of the station\n";
-        commands += "\tstat - show state of selected station";
+        commands += "\tstat - show state of selected station\n";
+        commands += "\thistory - list previous commands";
 
         System.out.println(commands); //NOSONAR
     }
