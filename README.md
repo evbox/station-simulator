@@ -64,7 +64,12 @@ Starts the simulator with one station, which has a single EVSE and a single conn
 ```bash
  $ ./gradlew run -Parguments="ws://{ocpp_endpoint_url} --configuration {'stations':[{'id':'EVB-P17390866','evse':{'count':1,'connectors':1}}]}"
 ````
-
+To start the simulator with a certificate installed on startup, follow the following steps:
+- generate keypair and save the private/public keys as **private.key/public.key** under the same directory and provide the path to the station configuration using property named **keyPairPath**
+- using the generated keypair, create a csr, sign it be your CA, then provide the path of your certificate to the station configuration using property named **manufacturerCertificatePath**
+```bash
+ $ ./gradlew run -Parguments="ws://{ocpp_endpoint_url} --configuration {'stations':[{'id':'EVB-P17390866','evse':{'count':1,'connectors':1},'manufacturerCertificatePath':'{path_to_certificate}','keyPairPath':'{path_to_key_pair}'}]}"
+````
 ### Guide for Instant charging transaction with Everon
 
 Follow [Readme](autostart/Autostart.md) for detailed steps

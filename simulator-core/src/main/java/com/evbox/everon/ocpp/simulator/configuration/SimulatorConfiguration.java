@@ -39,6 +39,8 @@ public class SimulatorConfiguration {
     public static class StationConfiguration {
         private String id;
         private Evse evse;
+        private String manufacturerCertificatePath;
+        private String keyPairPath;
         private MeterValuesConfiguration meterValuesConfiguration = MeterValuesConfiguration.builder().build();
         private ComponentsConfiguration componentsConfiguration = ComponentsConfiguration.builder().build();
         private HardwareConfiguration hardwareConfiguration = HardwareConfiguration.builder().build();
