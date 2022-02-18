@@ -1,7 +1,6 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.common.CiString;
-import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.v201.message.station.CertificateSignedRequest;
@@ -9,11 +8,7 @@ import com.evbox.everon.ocpp.v201.message.station.CertificateSignedResponse;
 import com.evbox.everon.ocpp.v201.message.station.CertificateSignedStatus;
 import com.evbox.everon.ocpp.v201.message.station.CertificateSigningUse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.util.*;
@@ -21,7 +16,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+
+import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.convertStringToCertificates;
+import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.isCertificateValid;
 
 /**
  * Handler for {@link CertificateSignedRequest} request.
@@ -58,7 +55,7 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
 
         if (!stationCertificates.isEmpty()) {
             X509Certificate first = stationCertificates.get(0);
-            if(isCertificateValid(first)) {
+            if(isCertificateValid(first, false)) {
                 stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.ACCEPTED));
                 stationStore.setStationCertificate(first);
                 startCertificateRenewerTask(first);
@@ -87,32 +84,5 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
 
     ScheduledFuture getScheduledFuture() {
         return scheduledFuture;
-    }
-
-    private List<X509Certificate> convertStringToCertificates(String chain) {
-        try {
-            byte[] bytes = chain.getBytes();
-            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-            InputStream in = new ByteArrayInputStream(bytes);
-            return factory.generateCertificates(in).stream().map(certificate -> ((X509Certificate) certificate)).collect(Collectors.toList());
-        } catch (Exception e) {
-            log.debug("Invalid certificate", e);
-        }
-        return Collections.emptyList();
-    }
-
-
-    private boolean isCertificateValid(X509Certificate certificate) {
-        try {
-            certificate.checkValidity();
-            String serialCode = StringUtils.removeStart(certificate.getSubjectDN().getName(), "CN=");
-            if (!StationHardwareData.SERIAL_NUMBER.equals(serialCode)) {
-                return false;
-            }
-        } catch (Exception e) {
-            log.debug("Exception while checking certificate validity", e);
-            return false;
-        }
-        return true;
     }
 }

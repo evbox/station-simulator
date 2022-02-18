@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.support;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.ssl.SSLContexts;
 import org.bouncycastle.asn1.DERBMPString;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
@@ -92,16 +93,10 @@ public final class SecurityUtils {
         return (X509TrustManager) trustManagers[0];
     }
 
-    public static SSLContext prepareSSLContext(KeyStore trustStore) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
-        KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        keyFactory.init(trustStore, EMPTY_PASSWORD);
-        KeyManager[] keyManagers = keyFactory.getKeyManagers();
-
-        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-        sslContext.init(keyManagers, null, new SecureRandom());
-        SSLContext.setDefault(sslContext);
-
-        return sslContext;
+    public static SSLContext prepareSSLContext(KeyStore trustStore) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        return SSLContexts.custom()
+                .loadKeyMaterial(trustStore, new char[0])
+                .build();
     }
 
 }

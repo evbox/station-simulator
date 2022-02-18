@@ -26,12 +26,14 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.time.*;
 import java.util.*;
 
+import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.*;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -70,6 +72,36 @@ public class StationStore {
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
         this.txStopPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStopPoints()));
         this.authEnabled = configuration.getComponentsConfiguration().getAuthCtrl().isAuthEnabled();
+        Optional.ofNullable(configuration.getManufacturerCertificatePath()).ifPresent(this::prepareManufacturerCertificate);
+        Optional.ofNullable(configuration.getKeyPairPath()).ifPresent(this::prepareStationKeyPair);
+    }
+
+    private void prepareManufacturerCertificate(String certificatePath){
+        extractCertificateDetails(loadCertificateChain(certificatePath));
+    }
+
+    private void prepareStationKeyPair(String keyPairPath) {
+        try {
+            KeyPair keyPair = loadKeyPair(keyPairPath);
+            this.stationPublicKey = keyPair.getPublic();
+            this.stationPrivateKey = keyPair.getPrivate();
+        } catch (Exception e) {
+            log.error("Couldn't load key pair", e);
+        }
+    }
+
+
+    private void extractCertificateDetails(String certificateChain) {
+        List<X509Certificate> stationCertificates = convertStringToCertificates(certificateChain);
+        if (!stationCertificates.isEmpty()) {
+            X509Certificate first = stationCertificates.get(0);
+            if (isCertificateValid(first, true)) {
+                this.stationCertificate = first;
+                if (stationCertificates.size() > 1) {
+                    this.stationCertificateChain = new ArrayList<>(stationCertificates.subList(1, stationCertificates.size()));
+                }
+            }
+        }
     }
 
     public StationStore(Clock clock, int heartbeatInterval, int evConnectionTimeOut, Map<Integer, Evse> evses) {
