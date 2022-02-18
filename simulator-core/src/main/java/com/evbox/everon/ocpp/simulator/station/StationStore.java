@@ -81,9 +81,8 @@ public class StationStore {
     }
 
     private void prepareStationKeyPair(String keyPairPath) {
-        KeyPair keyPair;
         try {
-            keyPair = loadKeyPair(keyPairPath);
+            KeyPair keyPair = loadKeyPair(keyPairPath);
             this.stationPublicKey = keyPair.getPublic();
             this.stationPrivateKey = keyPair.getPrivate();
         } catch (Exception e) {
@@ -99,9 +98,7 @@ public class StationStore {
             if (isCertificateValid(first, true)) {
                 this.stationCertificate = first;
                 if (stationCertificates.size() > 1) {
-                    List<X509Certificate> stationCertificateChain = new ArrayList<>();
-                    stationCertificates.subList(1, stationCertificates.size()).forEach(c -> stationCertificateChain.add(c));
-                    this.stationCertificateChain = stationCertificateChain;
+                    this.stationCertificateChain = new ArrayList<>(stationCertificates.subList(1, stationCertificates.size()));
                 }
             }
         }

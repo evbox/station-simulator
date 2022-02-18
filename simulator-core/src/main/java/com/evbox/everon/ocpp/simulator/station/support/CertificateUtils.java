@@ -66,12 +66,7 @@ public class CertificateUtils {
              InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
              BufferedReader reader = new BufferedReader(isr)
         ) {
-
-            String str;
-            while ((str = reader.readLine()) != null) {
-                certificateChain.append(str).append(System.lineSeparator());
-            }
-
+            certificateChain.append(reader.lines().collect(Collectors.joining(System.lineSeparator())));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,13 +80,12 @@ public class CertificateUtils {
         JcaContentSignerBuilder csBuilder = new JcaContentSignerBuilder(SIGNATURE_ALG);
         ContentSigner signer = csBuilder.build(privateKey);
         PKCS10CertificationRequest csr = p10Builder.build(signer);
-
-        StringWriter stringWriter = new StringWriter();
-        JcaPEMWriter pemWriter = new JcaPEMWriter(stringWriter);
-        pemWriter.writeObject(csr);
-        pemWriter.close();
-        stringWriter.close();
-        return stringWriter.toString();
+        try (StringWriter stringWriter = new StringWriter()){
+            try (JcaPEMWriter pemWriter = new JcaPEMWriter(stringWriter)){
+                pemWriter.writeObject(csr);
+            }
+            return stringWriter.toString();
+        }
     }
 
     public static KeyPair generateKeyPair() {
@@ -113,18 +107,18 @@ public class CertificateUtils {
             InvalidKeySpecException, NoSuchProviderException {
         // Read Public Key.
         File filePublicKey = new File(path + "/public.key");
-        FileInputStream fis = new FileInputStream(path + "/public.key");
-        byte[] encodedPublicKey = new byte[(int) filePublicKey.length()];
-        fis.read(encodedPublicKey);
-        fis.close();
-
+        byte[] encodedPublicKey;
+        try(FileInputStream fis = new FileInputStream(path + "/public.key")) {
+            encodedPublicKey = new byte[(int) filePublicKey.length()];
+            fis.read(encodedPublicKey);
+        }
         // Read Private Key.
         File filePrivateKey = new File(path + "/private.key");
-        fis = new FileInputStream(path + "/private.key");
-        byte[] encodedPrivateKey = new byte[(int) filePrivateKey.length()];
-        fis.read(encodedPrivateKey);
-        fis.close();
-
+        byte[] encodedPrivateKey;
+        try(FileInputStream fis = new FileInputStream(path + "/private.key")){
+            encodedPrivateKey = new byte[(int) filePrivateKey.length()];
+            fis.read(encodedPrivateKey);
+        }
         // Generate KeyPair.
         Security.addProvider(new BouncyCastleProvider());
         KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
