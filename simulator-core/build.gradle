@@ -103,7 +103,7 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-version '0.5.8'
+version '0.5.9'
 
 publishing {
     publications {
