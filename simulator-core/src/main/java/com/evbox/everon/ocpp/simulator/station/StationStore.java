@@ -47,6 +47,7 @@ public class StationStore {
     private String stationId;
     private String stationVendor;
     private String stationModel;
+    private String stationSerialNumber;
     private Clock clock = Clock.system(ZoneOffset.UTC);
     private int heartbeatInterval;
     private int evConnectionTimeOut;
@@ -67,6 +68,7 @@ public class StationStore {
         this.stationId = configuration.getId();
         this.stationVendor = configuration.getHardwareConfiguration().getVendor();
         this.stationModel = configuration.getHardwareConfiguration().getModel();
+        this.stationSerialNumber = configuration.getHardwareConfiguration().getSerialNumber();
         this.evses = initEvses(configuration.getEvse().getCount(), configuration.getEvse().getConnectors(), configuration.getEvse().getStatus());
         this.evConnectionTimeOut = configuration.getComponentsConfiguration().getTxCtrlr().getEvConnectionTimeOutSec();
         this.txStartPointValues = new OptionList<>(TxStartStopPointVariableValues.fromValues(configuration.getComponentsConfiguration().getTxCtrlr().getTxStartPoints()));
@@ -95,7 +97,7 @@ public class StationStore {
         List<X509Certificate> stationCertificates = convertStringToCertificates(certificateChain);
         if (!stationCertificates.isEmpty()) {
             X509Certificate first = stationCertificates.get(0);
-            if (isCertificateValid(first, true)) {
+            if (isCertificateValid(first, true, stationSerialNumber)) {
                 this.stationCertificate = first;
                 if (stationCertificates.size() > 1) {
                     this.stationCertificateChain = new ArrayList<>(stationCertificates.subList(1, stationCertificates.size()));
@@ -248,6 +250,10 @@ public class StationStore {
 
     public String getStationModel() {
         return stationModel;
+    }
+
+    public String getStationSerialNumber(){
+        return stationSerialNumber;
     }
 
     /**

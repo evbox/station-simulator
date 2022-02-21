@@ -24,7 +24,7 @@ public class SignCertificateRequestHandler implements Runnable {
     public void run() {
         try {
             KeyPair keyPair = generateKeyPair();
-            String csr = generatePKCS10(keyPair.getPublic(), keyPair.getPrivate());
+            String csr = generatePKCS10(keyPair.getPublic(), keyPair.getPrivate(), stationStore.getStationSerialNumber());
 
             stationStore.setStationPublicKey(keyPair.getPublic());
             stationStore.setStationPrivateKey(keyPair.getPrivate());

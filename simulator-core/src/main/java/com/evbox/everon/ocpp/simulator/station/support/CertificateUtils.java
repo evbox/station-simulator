@@ -44,13 +44,13 @@ public class CertificateUtils {
         return Collections.emptyList();
     }
 
-    public static boolean isCertificateValid(X509Certificate certificate, boolean isHardwareCertificate) {
+    public static boolean isCertificateValid(X509Certificate certificate, boolean isHardwareCertificate, String stationSerialNumber) {
         try {
             if(!isHardwareCertificate){
                 certificate.checkValidity();
             }
             String serialCode = StringUtils.removeStart(certificate.getSubjectDN().getName(), "CN=");
-            if (!StationHardwareData.SERIAL_NUMBER.equals(serialCode)) {
+            if (!stationSerialNumber.equals(serialCode)) {
                 return false;
             }
         } catch (Exception e) {
@@ -74,8 +74,8 @@ public class CertificateUtils {
         return certificateChain.toString();
     }
 
-    public static String generatePKCS10(PublicKey publicKey, PrivateKey privateKey) throws IOException, OperatorCreationException {
-        X500Principal principal = new X500Principal( "CN=" + StationHardwareData.SERIAL_NUMBER);
+    public static String generatePKCS10(PublicKey publicKey, PrivateKey privateKey, String stationSerialNumber) throws IOException, OperatorCreationException {
+        X500Principal principal = new X500Principal( "CN=" + stationSerialNumber);
         PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(principal, publicKey);
         JcaContentSignerBuilder csBuilder = new JcaContentSignerBuilder(SIGNATURE_ALG);
         ContentSigner signer = csBuilder.build(privateKey);

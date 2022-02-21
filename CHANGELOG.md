@@ -1,4 +1,7 @@
 # Station Simulator Releases #
+### Version 0.5.10
+- Exposed station serial number as configuration
+
 ### Version 0.5.9
 - Implement Command ‘history’ to show last 10 commands entered by a user.
 
