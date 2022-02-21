@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.handlers.ocpp;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.v201.message.station.CertificateSignedRequest;
@@ -104,6 +105,8 @@ public class CertificateSignedRequestHandlerTest {
     @Test
     @DisplayName("Correct certificate type should be accepted")
     void verifyValidCertificateTypeIsCorrectlySet() {
+        when(stationStoreMock.getStationSerialNumber()).thenReturn(StationHardwareData.SERIAL_NUMBER);
+
         requestHandler.handle(DEFAULT_MESSAGE_ID, new CertificateSignedRequest().withCertificateChain(new CiString.CiString10000(validCertificate)));
 
         verify(stationMessageSenderMock).sendCallResult(any(), messageCaptor.capture());

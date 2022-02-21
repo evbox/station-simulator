@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SignCertificateRequestHandlerTest {
@@ -35,6 +36,8 @@ class SignCertificateRequestHandlerTest {
 
     @Test
     void verifyCSRCorrectlyCreated() throws Exception {
+        when(stationStoreMock.getStationSerialNumber()).thenReturn(StationHardwareData.SERIAL_NUMBER);
+
         requestHandler.run();
 
         verify(stationStoreMock).setStationPublicKey(any());

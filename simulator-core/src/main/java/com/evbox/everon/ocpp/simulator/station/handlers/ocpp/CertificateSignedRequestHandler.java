@@ -55,7 +55,7 @@ public class CertificateSignedRequestHandler implements OcppRequestHandler<Certi
 
         if (!stationCertificates.isEmpty()) {
             X509Certificate first = stationCertificates.get(0);
-            if(isCertificateValid(first, false)) {
+            if(isCertificateValid(first, false, stationStore.getStationSerialNumber())) {
                 stationMessageSender.sendCallResult(callId, new CertificateSignedResponse().withStatus(CertificateSignedStatus.ACCEPTED));
                 stationStore.setStationCertificate(first);
                 startCertificateRenewerTask(first);

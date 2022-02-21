@@ -207,5 +207,11 @@ public class SimulatorConfiguration {
          */
         @Builder.Default
         private String model = StationHardwareData.MODEL;
+
+        /**
+         * Station Serial Number
+         */
+        @Builder.Default
+        private String serialNumber = StationHardwareData.SERIAL_NUMBER;
     }
 }

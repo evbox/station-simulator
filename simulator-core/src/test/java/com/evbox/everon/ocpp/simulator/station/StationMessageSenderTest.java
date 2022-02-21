@@ -62,6 +62,7 @@ class StationMessageSenderTest {
     void shouldIncreaseMessageIdForConsequentCalls() {
         when(stationStoreMock.getStationVendor()).thenReturn(StationHardwareData.VENDOR_NAME);
         when(stationStoreMock.getStationModel()).thenReturn(StationHardwareData.MODEL);
+        when(stationStoreMock.getStationSerialNumber()).thenReturn(StationHardwareData.SERIAL_NUMBER);
 
         int numberOfMessages = 3;
         IntStream.range(0, numberOfMessages).forEach(c -> stationMessageSender.sendBootNotification(BootReason.POWER_UP));
@@ -248,6 +249,7 @@ class StationMessageSenderTest {
     void verifyBootNotification() throws InterruptedException {
         when(stationStoreMock.getStationVendor()).thenReturn(StationHardwareData.VENDOR_NAME);
         when(stationStoreMock.getStationModel()).thenReturn(StationHardwareData.MODEL);
+        when(stationStoreMock.getStationSerialNumber()).thenReturn(StationHardwareData.SERIAL_NUMBER);
 
         stationMessageSender.sendBootNotification(BootReason.POWER_UP);
 
