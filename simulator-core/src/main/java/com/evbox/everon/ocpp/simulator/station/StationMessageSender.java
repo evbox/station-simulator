@@ -285,7 +285,7 @@ public class StationMessageSender {
      * @param connector  {@link Connector}
      * @param subscriber callback that will be executed after receiving a response from OCPP server
      */
-    public void sendStatusNotificationAndSubscribe(Evse evse, Connector connector, Subscriber<StatusNotificationRequest, StatusNotificationResponse> subscriber) {
+    public void sendStatusNotificationAndSubscribe(Evse evse, Connector.ConnectorView connector, Subscriber<StatusNotificationRequest, StatusNotificationResponse> subscriber) {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evse, connector, stationStore.getCurrentTime());
 
         Call call = createAndRegisterCall(ActionType.STATUS_NOTIFICATION, payload);
@@ -337,7 +337,7 @@ public class StationMessageSender {
      * @param evse      {@link Evse}
      * @param connector {@link Connector}
      */
-    public void sendStatusNotification(Evse evse, Connector connector) {
+    public void sendStatusNotification(Evse evse, Connector.ConnectorView connector) {
         StatusNotificationRequest payload = payloadFactory.createStatusNotification(evse, connector, stationStore.getCurrentTime());
 
         sendPayloadOfType(ActionType.STATUS_NOTIFICATION, payload);

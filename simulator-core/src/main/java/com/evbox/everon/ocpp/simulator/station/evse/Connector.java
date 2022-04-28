@@ -117,7 +117,8 @@ public class Connector {
 
     @Getter
     @AllArgsConstructor
-    public class ConnectorView {
+    @EqualsAndHashCode
+    public static class ConnectorView {
 
         private final Integer id;
         private final CableStatus cableStatus;

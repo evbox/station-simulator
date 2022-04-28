@@ -125,7 +125,7 @@ public class AvailabilityManager {
     private void sendNotificationRequest(Evse evse) {
 
         // for every connector send StatusNotification request
-        for (Connector connector : evse.getConnectors()) {
+        for (Connector.ConnectorView connector : evse.getConnectors()) {
             stationMessageSender.sendStatusNotification(evse, connector);
         }
 

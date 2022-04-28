@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class TxStartPointTest {
 
     @Mock
-    Connector connectorMock;
+    Connector.ConnectorView connectorMock;
 
     @Mock
     Evse evseMock;

@@ -67,7 +67,7 @@ public class PayloadFactory {
                     .withTimestamp(currentTime.atZone(ZoneOffset.UTC));
     }
 
-    StatusNotificationRequest createStatusNotification(Evse evse, Connector connector, Instant currentTime) {
+    StatusNotificationRequest createStatusNotification(Evse evse, Connector.ConnectorView connector, Instant currentTime) {
         StatusNotificationRequest payload = new StatusNotificationRequest();
         payload.setEvseId(evse.getId());
         payload.setConnectorId(connector.getId());

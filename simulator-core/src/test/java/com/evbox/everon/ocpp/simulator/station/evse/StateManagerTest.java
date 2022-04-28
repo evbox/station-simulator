@@ -57,7 +57,7 @@ class StateManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
         when(stationStoreMock.isAuthEnabled()).thenReturn(true);
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector.ConnectorView(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
@@ -83,7 +83,7 @@ class StateManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStartPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector.ConnectorView(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         triggerAuthorizeAndGetResponse();
 
@@ -166,7 +166,7 @@ class StateManagerTest {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.emptyList()));
         when(stationStoreMock.isAuthEnabled()).thenReturn(true);
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector.ConnectorView(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(WaitingForAuthorizationState.NAME);
@@ -208,7 +208,7 @@ class StateManagerTest {
     @Test
     void verifyPlugAndUnplug() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector.ConnectorView(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
@@ -221,7 +221,7 @@ class StateManagerTest {
     void verifyFullStateAutostartFlow() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.isAuthEnabled()).thenReturn(false);
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector.ConnectorView(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(EvDisconnectedState.NAME);
@@ -235,7 +235,7 @@ class StateManagerTest {
     void verifyFullStateAutostartWithRemoteStopFlow() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
         when(stationStoreMock.isAuthEnabled()).thenReturn(false);
-        when(evseMock.findConnector(anyInt())).thenReturn(new Connector(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
+        when(evseMock.findConnector(anyInt())).thenReturn(new Connector.ConnectorView(DEFAULT_CONNECTOR_ID, CableStatus.UNPLUGGED, ConnectorStatus.AVAILABLE));
 
         stateManager.cablePlugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         checkStateIs(EvDisconnectedState.NAME);

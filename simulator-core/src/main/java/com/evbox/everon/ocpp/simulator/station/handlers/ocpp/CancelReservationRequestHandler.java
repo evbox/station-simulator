@@ -27,41 +27,26 @@ public class CancelReservationRequestHandler implements OcppRequestHandler<Cance
     @Override
     public void handle(String callId, CancelReservationRequest request) {
         Optional<Reservation> reservationOpt = stationStore.tryFindReservationById(request.getReservationId());
-        CancelReservationResponse cancelReservationResponse = reservationOpt.map(reservation -> new CancelReservationResponse().withStatus(CancelReservationStatus.ACCEPTED))
-                .orElseGet(() -> new CancelReservationResponse().withStatus(CancelReservationStatus.REJECTED));
-
-        reservationOpt.ifPresent(reservation -> {
-            if(isConnectorReserved(reservation)) {
-                makeConnectorAvailable(reservation);
-            }
-            stationStore.removeReservation(reservation);
-         });
-        stationMessageSender.sendCallResult(callId, cancelReservationResponse);
+        reservationOpt.ifPresentOrElse(
+                r -> cancelReservation(callId, r),
+                ()-> respondWithReject(callId));
     }
 
-    private boolean isConnectorReserved(Reservation reservation) {
-        return ofNullable(reservation.getEvse())
+    private void cancelReservation(String callId, Reservation reservation) {
+        ofNullable(reservation.getEvse())
                 .map(Evse::getId)
-                .map(evseId -> stationStore.tryFindConnectors(evseId))
-                .map(this::isAnyReserved)
-                .orElse(false);
+                .flatMap(stationStore::tryFindEvse)
+                .ifPresent(evse -> evse.getConnectorsInStatus(ConnectorStatus.RESERVED)
+                        .forEach(connector -> {
+                            evse.setConnectorAvailable(connector.getId());
+                            stationMessageSender.sendStatusNotification(evse.getId(), connector.getId(), ConnectorStatus.AVAILABLE);
+                        }));
+
+        stationStore.removeReservation(reservation);
+        stationMessageSender.sendCallResult(callId, new CancelReservationResponse().withStatus(CancelReservationStatus.ACCEPTED));
     }
 
-    private boolean isAnyReserved(List<Connector> connectors) {
-        return connectors
-                .parallelStream()
-                .map(Connector::getConnectorStatus)
-                .anyMatch(status -> ConnectorStatus.RESERVED.equals(status));
-    }
-
-    private void makeConnectorAvailable(Reservation reservation) {
-        stationStore.tryFindConnectors(reservation.getEvse().getId())
-                .stream()
-                .filter(connector -> ConnectorStatus.RESERVED.equals(connector.getConnectorStatus()))
-                .forEach(connector -> {
-                    connector.setConnectorStatus(ConnectorStatus.AVAILABLE);
-                    stationMessageSender.sendStatusNotification(reservation.getEvse().getId().intValue(), connector.getId(), ConnectorStatus.AVAILABLE);
-
-                });
+    private void respondWithReject(String callId) {
+        stationMessageSender.sendCallResult(callId, new CancelReservationResponse().withStatus(CancelReservationStatus.REJECTED));
     }
 }

@@ -318,14 +318,12 @@ public class StationStore {
                 .findAny();
     }
 
-    public Optional<Connector> tryFindConnector(int evseId, int connectorId) {
+    public Optional<Connector.ConnectorView> tryFindConnector(int evseId, int connectorId) {
         return tryFindEvse(evseId)
-                .flatMap(evse -> evse.getConnectors().stream()
-                        .filter(connector -> connector.getId().equals(connectorId))
-                        .findAny());
+                .flatMap(e->e.tryToFindConnector(connectorId));
     }
 
-    public List<Connector> tryFindConnectors(int evseId) {
+    public List<Connector.ConnectorView> tryFindConnectors(int evseId) {
         return tryFindEvse(evseId)
                 .map(Evse::getConnectors)
                 .orElse(Collections.emptyList());

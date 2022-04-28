@@ -65,7 +65,7 @@ public class ConnectorTypeVariableAccessor extends VariableAccessor {
         List<ReportData> reportData = new ArrayList<>();
 
         for (Evse evse : getStationStore().getEvses()) {
-            for (Connector connector : evse.getConnectors()) {
+            for (Connector.ConnectorView connector : evse.getConnectors()) {
                 EVSE componentEvse = new EVSE()
                         .withConnectorId(connector.getId())
                         .withId(evse.getId());

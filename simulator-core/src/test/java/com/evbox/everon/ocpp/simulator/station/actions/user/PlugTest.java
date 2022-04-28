@@ -42,7 +42,7 @@ public class PlugTest {
     @Mock
     Evse evseMock;
     @Mock
-    Connector connectorMock;
+    Connector.ConnectorView connectorMock;
 
     Plug plug;
 
@@ -81,7 +81,7 @@ public class PlugTest {
         // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(Evse.class), any(Connector.class), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(Evse.class), any(Connector.ConnectorView.class), subscriberCaptor.capture());
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
@@ -105,7 +105,7 @@ public class PlugTest {
         // then
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(Evse.class), any(Connector.class), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(Evse.class), any(Connector.ConnectorView.class), subscriberCaptor.capture());
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 

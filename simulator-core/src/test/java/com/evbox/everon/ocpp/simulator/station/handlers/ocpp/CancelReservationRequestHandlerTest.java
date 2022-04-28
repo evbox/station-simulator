@@ -63,9 +63,10 @@ public class CancelReservationRequestHandlerTest {
     public void testCancelReservationAcceptedWithConnectorId() {
         Reservation reservation = buildReservation(EVSE_ID, RESERVATION_ID);
         Connector connector = new Connector(CONNECTOR_ID, CableStatus.PLUGGED, ConnectorStatus.RESERVED);
+        var evse = new com.evbox.everon.ocpp.simulator.station.evse.Evse(EVSE_ID, List.of(connector));
 
         when(stationStore.tryFindReservationById(anyInt())).thenReturn(Optional.of(reservation));
-        when(stationStore.tryFindConnectors(anyInt())).thenReturn(List.of(connector));
+        when(stationStore.tryFindEvse(anyInt())).thenReturn(Optional.of(evse));
 
         assertCancelReservationStatus(CancelReservationStatus.ACCEPTED);
         verify(stationMessageSender).sendStatusNotification(EVSE_ID, CONNECTOR_ID, ConnectorStatus.AVAILABLE);

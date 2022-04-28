@@ -68,7 +68,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
 
             EVSE componentEvse = new EVSE()
                     .withId(evse.getId());
-            for (Connector connector : evse.getConnectors()) {
+            for (Connector.ConnectorView connector : evse.getConnectors()) {
                 if (!connector.getConnectorStatus().value().equals(evse.getEvseStatus().toString())) {
                     Component component = new Component()
                             .withName(new CiString.CiString50(componentName))
@@ -111,7 +111,7 @@ public class AvailabilityStateVariableAccessor extends VariableAccessor {
                 .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()));
 
         if (getStationStore().hasEvse(evseId)) {
-            Connector connector = getStationStore().findEvse(evseId).getConnectors().stream().filter(c -> c.getId().equals(connectorId)).findAny().orElse(null);
+            Connector.ConnectorView connector = getStationStore().findEvse(evseId).getConnectors().stream().filter(c -> c.getId().equals(connectorId)).findAny().orElse(null);
             if (connector != null) {
                 return getVariableResult
                         .withAttributeValue(new CiString.CiString2500(connector.getConnectorStatus().value()))

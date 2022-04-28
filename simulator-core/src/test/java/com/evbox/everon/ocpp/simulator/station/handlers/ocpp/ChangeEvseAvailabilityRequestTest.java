@@ -119,7 +119,7 @@ public class ChangeEvseAvailabilityRequestTest {
 
         assertThat(response.getStatus()).isEqualTo(ChangeAvailabilityStatus.ACCEPTED);
 
-        Connector connector = evse.getConnectors().get(0);
+        Connector.ConnectorView connector = evse.getConnectors().get(0);
 
         verify(stationMessageSenderMock).sendStatusNotification(eq(evse), eq(connector));
 

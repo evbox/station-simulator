@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
 public class UnplugTest {
 
     @Mock
-    Connector connectorMock;
+    Connector.ConnectorView connectorMock;
     @Mock
     Evse evseMock;
     @Mock
@@ -78,7 +78,7 @@ public class UnplugTest {
 
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 
-        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(Evse.class), any(Connector.class), subscriberCaptor.capture());
+        verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(Evse.class), any(Connector.ConnectorView.class), subscriberCaptor.capture());
 
         subscriberCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 

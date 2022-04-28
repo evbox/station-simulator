@@ -34,7 +34,7 @@ public class TxStopPointTest {
     Station stationMock;
 
     @Mock
-    Connector connectorMock;
+    Connector.ConnectorView connectorMock;
 
     @Mock
     Evse evseMock;

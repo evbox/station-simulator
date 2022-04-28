@@ -5,7 +5,6 @@ import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction.EvseTransact
 import com.evbox.everon.ocpp.simulator.station.evse.states.AbstractEvseState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
-import com.evbox.everon.ocpp.v201.message.station.StatusNotificationRequest;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -52,13 +51,13 @@ public class Evse {
     private EvseStatus scheduledNewEvseStatus;
 
     /**
-     *  Total power consumed by the evse in watt hour
+     * Total power consumed by the evse in watt hour
      */
     private long totalConsumedWattHours;
 
 
     /**
-     *  Current state of the evse
+     * Current state of the evse
      */
     private AbstractEvseState evseState;
 
@@ -115,7 +114,7 @@ public class Evse {
         return lockedConnector.getId();
     }
 
-    public Integer getPluggedConnector(){
+    public Integer getPluggedConnector() {
         return connectors.stream()
                 .filter(Connector::isCablePlugged)
                 .findAny()
@@ -163,6 +162,7 @@ public class Evse {
 
     /**
      * Getter for the current evse state.
+     *
      * @return evseState
      */
     public AbstractEvseState getEvseState() {
@@ -171,6 +171,7 @@ public class Evse {
 
     /**
      * Sets the current state of the evse.
+     *
      * @param evseState new state fro the evse
      */
     public void setEvseState(AbstractEvseState evseState) {
@@ -257,9 +258,7 @@ public class Evse {
      * @param connectorId connector identity
      */
     public void plug(Integer connectorId) {
-
-        Connector connector = findConnector(connectorId);
-        connector.plug();
+        findConnectorInternal(connectorId).ifPresent(Connector::plug);
     }
 
     /**
@@ -268,9 +267,7 @@ public class Evse {
      * @param connectorId connector identity
      */
     public void unplug(Integer connectorId) {
-
-        Connector connector = findConnector(connectorId);
-        connector.unplug();
+        findConnectorInternal(connectorId).ifPresent(Connector::unplug);
     }
 
 
@@ -299,7 +296,6 @@ public class Evse {
      * Find any LOCKED connector and switch to PLUGGED status.
      *
      * @return identity of the connector.
-     *
      */
     public Integer unlockConnector() {
 
@@ -339,7 +335,7 @@ public class Evse {
      * @return true if cable plugged otherwise false
      */
     public boolean isCablePlugged() {
-        return getConnectors().stream().anyMatch(Connector::isCablePlugged);
+        return connectors.stream().anyMatch(Connector::isCablePlugged);
     }
 
     /**
@@ -352,6 +348,7 @@ public class Evse {
                 .filter(connector -> ConnectorStatus.AVAILABLE.equals(connector.getConnectorStatus()))
                 .findAny();
     }
+
     /**
      * Find an instance of a plugged {@link Connector}.
      *
@@ -363,17 +360,26 @@ public class Evse {
                 .findAny();
     }
 
+    public List<ConnectorView> getConnectorsInStatus(ConnectorStatus status) {
+        return connectors.stream().map(Connector::createView).filter(c -> c.getConnectorStatus().equals(status)).collect(toList());
+    }
+
     /**
      * Find an instance of {@link Connector} by connector_id.
      *
      * @param connectorId connector identity
      * @return {@link Connector} instance
      */
-    public Connector findConnector(int connectorId) {
+    public ConnectorView findConnector(int connectorId) {
+        return findConnectorInternal(connectorId)
+                .map(Connector::createView)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
+    }
+
+    private Optional<Connector> findConnectorInternal(int connectorId) {
         return connectors.stream()
                 .filter(connector -> connector.getId().equals(connectorId))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("No connector with ID: %s", connectorId)));
+                .findAny();
     }
 
     /**
@@ -430,6 +436,24 @@ public class Evse {
             // clean
             scheduledNewEvseStatus = null;
         }
+    }
+
+    public List<ConnectorView> getConnectors() {
+        return this.connectors.stream().map(Connector::createView).collect(toList());
+    }
+
+    public Optional<ConnectorView> tryToFindConnector(int connectorId) {
+        return this.connectors.stream().
+                filter(c -> c.getId().equals(connectorId))
+                .map(Connector::createView)
+                .findFirst();
+    }
+
+    public void setConnectorAvailable(Integer connectorId) {
+        this.connectors.stream()
+                .filter(x -> x.getId().equals(connectorId))
+                .findFirst()
+                .ifPresent(x -> x.setConnectorStatus(ConnectorStatus.AVAILABLE));
     }
 
     @Getter
