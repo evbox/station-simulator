@@ -58,16 +58,21 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
 
             if (!evse.hasOngoingTransaction()) {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                evse.createTransaction(transactionId);
+                var chargingState = evse.createTransaction(transactionId)
+                        .updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
 
-                stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId);
+                stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId, chargingState);
             }
 
             int connectorId = evse.getPluggedConnector();
-            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+            var newChargingState = evse.getTransaction()
+                    .updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, newChargingState);
 
             connectorId = startCharging(evse);
-            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, CHARGING_STATE_CHANGED, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
+            var maybeChargingStateChaged = evse.getTransaction()
+                    .updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
+            stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, CHARGING_STATE_CHANGED, tokenId, maybeChargingStateChaged);
 
             stateManager.setStateForEvse(evseId, new ChargingState());
             future.complete(UserMessageResult.SUCCESSFUL);
@@ -111,7 +116,8 @@ public class WaitingForAuthorizationState extends AbstractEvseState {
         evse.setToken(tokenId);
 
         startCharging(evse);
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connector.getId(), REMOTE_START, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
+        var chargingState = evse.getTransaction().updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
+        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connector.getId(), REMOTE_START, tokenId, chargingState);
         stateManager.setStateForEvse(evseId, new ChargingState());
     }
 

@@ -40,7 +40,8 @@ public class MeterValuesSenderTask implements Runnable {
             for (Evse evse : stationStore.getEvses()) {
                 if (shouldSendMeterValue(now, evse.getId(), stationStore.createView())) {
                     long powerUsed = evse.incrementPowerConsumed(powerIncreasedPerInterval);
-                    stationMessageSender.sendTransactionEventUpdate(evse.getId(), null, TriggerReason.METER_VALUE_PERIODIC, ChargingState.CHARGING, powerUsed);
+                    ChargingState chargingState = evse.getTransaction().updateChargingStateIfChanged(ChargingState.CHARGING);
+                    stationMessageSender.sendTransactionEventUpdate(evse.getId(), null, TriggerReason.METER_VALUE_PERIODIC, chargingState, powerUsed);
                     timeOfLastMeterValuePerEVSE.put(evse.getId(), now);
                 }
             }

@@ -58,22 +58,26 @@ public class AvailableState extends AbstractEvseState {
             OptionList<TxStartStopPointVariableValues> startPoints = stateManager.getStationStore().getTxStartPointValues();
             if (startPoints.contains(TxStartStopPointVariableValues.EV_CONNECTED) && !startPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                evse.createTransaction(transactionId);
+                ChargingState chargingState = evse.createTransaction(transactionId)
+                        .updateChargingStateIfChanged(ChargingState.EV_CONNECTED);
 
-                stationMessageSender.sendTransactionEventStart(evseId, connectorId, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
+                stationMessageSender.sendTransactionEventStart(evseId, connectorId, TriggerReason.CABLE_PLUGGED_IN, chargingState);
             }
 
             if (!stateManager.getStationStore().isAuthEnabled()) {
                 if (!evse.hasOngoingTransaction()) {
                     String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                    evse.createTransaction(transactionId);
-                    stationMessageSender.sendTransactionEventAutoStart(evseId, connectorId, AUTHORIZED, ChargingState.EV_CONNECTED);
+                    ChargingState chargingState = evse.createTransaction(transactionId)
+                            .updateChargingStateIfChanged(ChargingState.EV_CONNECTED);
+                    stationMessageSender.sendTransactionEventAutoStart(evseId, connectorId, AUTHORIZED, chargingState);
                 } else {
-                    stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, AUTHORIZED, EMPTY_TOKENID, ChargingState.EV_CONNECTED);
+                    ChargingState chargingState = evse.getTransaction().updateChargingStateIfChanged(ChargingState.EV_CONNECTED);
+                    stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, AUTHORIZED, EMPTY_TOKENID, chargingState);
                 }
                 evse.lockPluggedConnector();
                 evse.startCharging();
-                stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CHARGING_STATE_CHANGED, CHARGING);
+                ChargingState chargingState = evse.getTransaction().updateChargingStateIfChanged(ChargingState.CHARGING);
+                stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CHARGING_STATE_CHANGED, chargingState);
             }
             future.complete(UserMessageResult.SUCCESSFUL);
         });
@@ -103,8 +107,8 @@ public class AvailableState extends AbstractEvseState {
                 if (startPoints.contains(TxStartStopPointVariableValues.AUTHORIZED) && !startPoints.contains(TxStartStopPointVariableValues.POWER_PATH_CLOSED)) {
                     String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
                     authorizedEvses.stream().filter(Objects::nonNull).forEach(evse -> {
-                        evse.createTransaction(transactionId);
-                        stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId);
+                        ChargingState chargingState = evse.createTransaction(transactionId).updateChargingStateIfChanged(ChargingState.EV_CONNECTED);
+                        stationMessageSender.sendTransactionEventStart(evse.getId(), AUTHORIZED, tokenId, chargingState);
                     });
                 }
                 stateManager.setStateForEvse(evseId, new WaitingForPlugState());

@@ -105,8 +105,8 @@ public class StationMessageSender {
      * @param reason  reason why it was triggered
      * @param tokenId token identity
      */
-    public void sendTransactionEventStart(Integer evseId, TriggerReason reason, String tokenId) {
-        sendTransactionEventStart(evseId, null, null, reason, tokenId, null);
+    public void sendTransactionEventStart(Integer evseId, TriggerReason reason, String tokenId, ChargingState state) {
+        sendTransactionEventStart(evseId, null, null, reason, tokenId, state);
     }
 
     /**
@@ -193,7 +193,7 @@ public class StationMessageSender {
      * @param chargingState charging state of the station
      * @param powerConsumed power consumed by the evse
      */
-    public void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TriggerReason reason, String tokenId, ChargingState chargingState, Long powerConsumed) {
+    private void sendTransactionEventUpdate(Integer evseId, Integer connectorId, TriggerReason reason, String tokenId, ChargingState chargingState, Long powerConsumed) {
         TransactionEventRequest payload = payloadFactory.createTransactionEventUpdate(stationStore.getStationId(), stationStore.findEvse(evseId),
                 connectorId, reason, tokenId, chargingState, stationStore.getCurrentTime(), Optional.ofNullable(powerConsumed).orElse(0L));
 
