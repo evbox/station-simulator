@@ -10,6 +10,8 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=security_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
 
+[GitHub](https://github.com/evbox/station-simulator) repository is readonly, for contribution please use [GitLab](https://gitlab.com/evbox/open-source/station-simulator)
+
 ## Introduction
 
 The simulator tool is designed to simulate charging station. It implements [OCPP protocol](https://en.wikipedia.org/wiki/Open_Charge_Point_Protocol) and talks to Charging Station Management 
