@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UpdateChargingStationCertificateByRequestOfCSMSIt extends StationSimulatorSetUp {
 
     @Test
-    void shouldRequestNewCertificate() throws IOException {
+    void shouldRequestNewCertificate() throws IOException, InterruptedException {
         final String certificate = Resources.toString(Resources.getResource("pemCertificates/validCertificate.pem"), Charsets.UTF_8);
         final String pemCertificate = Resources.toString(Resources.getResource("pemCertificates/validCertificate.pem"), Charsets.UTF_8).replaceAll("\n", "");
 
@@ -46,6 +46,7 @@ public class UpdateChargingStationCertificateByRequestOfCSMSIt extends StationSi
         assertThat(certificateResponse).isNotNull();
         assertThat(certificateResponse.getStatus().value()).isEqualTo(CertificateSignedStatus.ACCEPTED.value());
 
+        Thread.sleep(1000);
         String storedCertificate = stationSimulatorRunner.getStation(STATION_ID).getStateView().getStationCertificate();
         assertThat(storedCertificate.replaceAll("\n", "")).isEqualTo(pemCertificate);
     }

@@ -40,11 +40,26 @@ sonar:
       - ./*/build
       - .gradle
 
-publish:
+publish-simulator-core:
   stage: deploy
   needs: [sonar]
+  when: manual
   script:
     - ./gradlew simulator-core:publish
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    when: always
+    paths:
+      - ./*/build
+      - .gradle
+
+publish-ocpp-model-201:
+  stage: deploy
+  needs: [sonar]
+  when: manual
+  script:
+    - ./gradlew payload:ocpp201:publish
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
