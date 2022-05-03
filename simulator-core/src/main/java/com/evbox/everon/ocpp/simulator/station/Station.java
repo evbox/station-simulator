@@ -154,7 +154,7 @@ public class Station {
 
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("station-consumer-" + getConfiguration().getId()).build();
 
-        StationMessageConsumer.runSingleThreaded(this, stationMessageInbox, stationMessageRouter, threadFactory);
+        StationMessageConsumer.runSingleThreaded(stationMessageInbox, stationMessageRouter, threadFactory);
     }
 
     private void sendInitialBootNotification() {
