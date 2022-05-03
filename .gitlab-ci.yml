@@ -5,9 +5,10 @@ variables:
 
 default:
   image:
-    name: cimg/openjdk:11.0-browsers
+    name: openjdk:11-jre-slim-buster
 
 build:
+  stage: build
   script:
     - ./gradlew build
     - mkdir -p ./junit/ && find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ./junit/ \;
