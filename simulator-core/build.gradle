@@ -28,10 +28,6 @@ run {
     standardInput = System.in
 }
 
-lombok {
-    version = "1.18.4"
-    sha256 = "39f3922deb679b1852af519eb227157ef2dd0a21eec3542c8ce1b45f2df39742"
-}
 
 dependencies {
 
@@ -53,6 +49,12 @@ dependencies {
     api "com.google.guava:guava:${guavaVersion}"
 
     api group: 'commons-codec', name: 'commons-codec', version: '1.12'
+    
+    // Lombok
+	compileOnly 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'	
+	testCompileOnly 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     testImplementation 'org.assertj:assertj-core:3.13.0'
     testImplementation 'io.undertow:undertow-core:2.0.17.Final'
@@ -77,7 +79,7 @@ jacocoTestReport {
 }
 
 jacoco {
-    toolVersion = '0.8.5'
+    toolVersion = '0.8.8'
 }
 tasks['test'].finalizedBy 'jacocoTestReport'
 
