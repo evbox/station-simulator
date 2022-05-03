@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Represents websocket communication between station and CSMS.
@@ -23,7 +24,7 @@ public class WebSocketClient implements ChannelListener {
     private final WebSocketMessageSender messageSender;
     private final WebSocketMessageInbox webSocketMessageInbox;
 
-    private volatile String webSocketConnectionUrl;
+    private AtomicReference<String> webSocketConnectionUrl = new AtomicReference<>();
 
     public WebSocketClient(StationMessageInbox stationMessageInbox, String stationId, OkHttpWebSocketClient webSocketClientAdapter) {
         this(stationMessageInbox, stationId, webSocketClientAdapter, WebSocketClientConfiguration.DEFAULT_CONFIGURATION);
@@ -43,13 +44,13 @@ public class WebSocketClient implements ChannelListener {
 
     public void connect(String webSocketUrl) {
 
-        this.webSocketConnectionUrl = webSocketUrl;
+        this.webSocketConnectionUrl.set(webSocketUrl);
 
         getInbox().offer(new AbstractWebSocketClientInboxMessage.Connect());
     }
 
     public void reconnect() {
-        webSocketClientAdapter.reconnect(webSocketConnectionUrl);
+        webSocketClientAdapter.reconnect(webSocketConnectionUrl.get());
     }
 
     public void disconnect() {
@@ -73,7 +74,7 @@ public class WebSocketClient implements ChannelListener {
     }
 
     public String getWebSocketConnectionUrl() {
-        return webSocketConnectionUrl;
+        return webSocketConnectionUrl.get();
     }
 
     public OkHttpWebSocketClient getWebSocketClientAdapter() {
@@ -107,7 +108,7 @@ public class WebSocketClient implements ChannelListener {
                 log.error(e.getMessage(), e);
             }
 
-            webSocketClientAdapter.connect(webSocketConnectionUrl);
+            webSocketClientAdapter.connect(webSocketConnectionUrl.get());
         }
     }
 
