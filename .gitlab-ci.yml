@@ -7,21 +7,47 @@ default:
   image:
     name: cimg/openjdk:11.0-browsers
 
-service-build:
+build:
   script:
     - ./gradlew build
     - mkdir -p ./junit/ && find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ./junit/ \;
-    - ./gradlew sonarqube -Dsonar.login=$SONAR_TOKEN -Dsonar.branch.name=$CI_COMMIT_BRANCH
-    - ./gradlew simulator-core:publish
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     when: on_success
     paths:
       - ./.gradle
+      - ./*/build
   artifacts:
     when: always
     paths:
       - reports
     reports:
       junit: ./junit/TEST-*.xml
+
+
+sonar:
+  stage: test
+  needs: [build]
+  script:
+    - ./gradlew sonarqube -Dsonar.login=$SONAR_TOKEN -Dsonar.branch.name=$CI_COMMIT_BRANCH
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    when: always
+    paths:
+      - ./*/build
+      - .gradle
+
+publish:
+  stage: deploy
+  needs: [sonar]
+  script:
+    - ./gradlew simulator-core:publish
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    when: always
+    paths:
+      - ./*/build
+      - .gradle
