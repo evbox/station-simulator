@@ -5,7 +5,7 @@ variables:
 
 default:
   image:
-    name: openjdk:11-jre-slim-buster
+    name: adoptopenjdk/openjdk-11:alpine-slim
 
 build:
   stage: build
