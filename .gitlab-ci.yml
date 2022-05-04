@@ -1,0 +1,69 @@
+
+variables:
+  SONAR_TOKEN: $SONAR_TOKEN
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+
+default:
+  image:
+    name: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine-slim
+
+build:
+  stage: build
+  script:
+    - ./gradlew build
+    - mkdir -p ./junit/ && find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ./junit/ \;
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    when: on_success
+    paths:
+      - ./.gradle
+      - ./*/build
+  artifacts:
+    when: always
+    paths:
+      - reports
+    reports:
+      junit: ./junit/TEST-*.xml
+
+
+sonar:
+  stage: test
+  needs: [build]
+  script:
+    - ./gradlew sonarqube -Dsonar.login=$SONAR_TOKEN -Dsonar.branch.name=$CI_COMMIT_BRANCH
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    when: always
+    paths:
+      - ./*/build
+      - .gradle
+
+publish-simulator-core:
+  stage: deploy
+  needs: [sonar]
+  when: manual
+  script:
+    - ./gradlew simulator-core:publish
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    when: always
+    paths:
+      - ./*/build
+      - .gradle
+
+publish-ocpp-model-201:
+  stage: deploy
+  needs: [sonar]
+  when: manual
+  script:
+    - ./gradlew payload:ocpp201:publish
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    when: always
+    paths:
+      - ./*/build
+      - .gradle
