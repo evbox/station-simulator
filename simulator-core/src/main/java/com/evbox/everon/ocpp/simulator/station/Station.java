@@ -53,7 +53,6 @@ public class Station {
     private final SimulatorConfiguration.StationConfiguration configuration;
 
     private final StationStore state;
-    private volatile StationStoreView stationStoreView; // NOSONAR
 
     private final WebSocketClient webSocketClient;
 
@@ -155,7 +154,7 @@ public class Station {
 
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("station-consumer-" + getConfiguration().getId()).build();
 
-        StationMessageConsumer.runSingleThreaded(this, stationMessageInbox, stationMessageRouter, threadFactory);
+        StationMessageConsumer.runSingleThreaded(stationMessageInbox, stationMessageRouter, threadFactory);
     }
 
     private void sendInitialBootNotification() {
@@ -221,10 +220,7 @@ public class Station {
      * @return {@link StationStore}
      */
     public StationStoreView getStateView() {
-        if (stationStoreView == null) {
-            refreshStateView();
-        }
-        return stationStoreView;
+        return state.createView();
     }
 
     /**
@@ -317,13 +313,6 @@ public class Station {
         }
         reconnect();
         sendInitialBootNotification();
-    }
-
-    /**
-     * Refresh state view.
-     */
-    void refreshStateView() {
-        this.stationStoreView = state.createView();
     }
 
     /**
