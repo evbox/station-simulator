@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage.OcppMessage;
@@ -51,7 +52,7 @@ public class StationMessageSender {
 
     private final Map<String, Call> sentCallsCache = new LRUCache<>(MAX_CALLS);
 
-    private volatile LocalDateTime timeOfLastMessageSent;
+    private AtomicReference<LocalDateTime> timeOfLastMessageSent = new AtomicReference<>();
 
     private final CallIdGenerator callIdGenerator = new CallIdGenerator();
 
@@ -59,7 +60,7 @@ public class StationMessageSender {
         this.stationStore = stationStore;
         this.callRegistry = subscriptionRegistry;
         this.webSocketClient = webSocketClient;
-        this.timeOfLastMessageSent = LocalDateTime.MIN;
+        this.timeOfLastMessageSent.set(LocalDateTime.MIN);
     }
 
     /**
@@ -398,7 +399,7 @@ public class StationMessageSender {
      */
     public void sendMessage(AbstractWebSocketClientInboxMessage message) {
         webSocketClient.getInbox().offer(message);
-        timeOfLastMessageSent = LocalDateTime.now();
+        timeOfLastMessageSent.set(LocalDateTime.now());
     }
 
     /**
@@ -440,7 +441,7 @@ public class StationMessageSender {
      *
      * @return timestamp in milliseconds
      */
-    public LocalDateTime getTimeOfLastMessageSent() { return timeOfLastMessageSent; }
+    public LocalDateTime getTimeOfLastMessageSent() { return timeOfLastMessageSent.get(); }
 
     private static MonitoringData toMonitoringData(Map.Entry<ComponentVariable, List<SetMonitoringData>> entry) {
         return new MonitoringData()

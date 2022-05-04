@@ -11,15 +11,16 @@ import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CALL_ID;
-import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class UpdateChargingStationCertificateByRequestOfCSMSIt extends StationSimulatorSetUp {
 
     @Test
-    void shouldRequestNewCertificate() throws IOException {
+    void shouldRequestNewCertificate() throws IOException, InterruptedException {
         final String certificate = Resources.toString(Resources.getResource("pemCertificates/validCertificate.pem"), Charsets.UTF_8);
         final String pemCertificate = Resources.toString(Resources.getResource("pemCertificates/validCertificate.pem"), Charsets.UTF_8).replaceAll("\n", "");
 
@@ -46,8 +47,10 @@ public class UpdateChargingStationCertificateByRequestOfCSMSIt extends StationSi
         assertThat(certificateResponse).isNotNull();
         assertThat(certificateResponse.getStatus().value()).isEqualTo(CertificateSignedStatus.ACCEPTED.value());
 
-        String storedCertificate = stationSimulatorRunner.getStation(STATION_ID).getStateView().getStationCertificate();
-        assertThat(storedCertificate.replaceAll("\n", "")).isEqualTo(pemCertificate);
+        await().atMost(500, TimeUnit.MILLISECONDS).untilAsserted(() -> {
+            String storedCertificate = stationSimulatorRunner.getStation(STATION_ID).getStateView().getStationCertificate();
+            assertThat(storedCertificate.replaceAll("\n", "")).isEqualTo(pemCertificate);
+        });
     }
 
 }

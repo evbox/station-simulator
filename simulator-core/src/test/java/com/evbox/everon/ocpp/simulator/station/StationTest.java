@@ -45,7 +45,6 @@ class StationTest {
 
     @Test
     void verifyStatOutputFields() throws IOException {
-        station.refreshStateView();
 
         ObjectMapper objectMapper = new ObjectMapper();
         String statOutput = station.getStateView().toString();
@@ -92,7 +91,6 @@ class StationTest {
         stationConfiguration.getComponentsConfiguration().getSecurityCtrlr().setBasicAuthPassword(basicPassword);
 
         station = new Station(stationConfiguration);
-        station.refreshStateView();
 
         assertThat(station.getStateView().getEvConnectionTimeOut()).isEqualTo(evConnectionTimeOut);
         assertThat(station.getStateView().getEvses().size()).isEqualTo(DEFAULT_EVSE_COUNT);

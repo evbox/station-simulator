@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.mock.csms;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A client that holds websocket senders.
@@ -12,7 +13,7 @@ public class OcppServerClient {
 
     // maps station_id -> websocket sender
     private final Map<String, WebSocketSender> webSocketChannelMap = new ConcurrentHashMap<>();
-    private volatile boolean connected;
+    private AtomicBoolean connected = new AtomicBoolean();
 
     /**
      * Puts a new entry to the map. If exists then return the associated websocket sender.
@@ -31,11 +32,11 @@ public class OcppServerClient {
      * @return true if connected otherwise false
      */
     public boolean isConnected() {
-        return connected;
+        return connected.get();
     }
 
     public void setConnected(boolean connected) {
-        this.connected = connected;
+        this.connected.set(connected);
     }
 
     /**
