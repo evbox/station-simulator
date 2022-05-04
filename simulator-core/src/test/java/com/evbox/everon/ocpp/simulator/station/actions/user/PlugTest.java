@@ -4,10 +4,7 @@ import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
-import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
-import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
+import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.WaitingForPlugState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
@@ -23,10 +20,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CONNECTOR_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -50,6 +49,9 @@ public class PlugTest {
     void setUp() {
         this.plug = new Plug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
+        EvseTransaction transaction = new EvseTransaction(UUID.randomUUID().toString());
+        lenient().when(evseMock.createTransaction(anyString())).thenReturn(transaction);
+        lenient().when(evseMock.getTransaction()).thenReturn(transaction);
         when(evseMock.getEvseState()).thenReturn(new AvailableState());
     }
 

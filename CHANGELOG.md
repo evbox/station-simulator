@@ -1,4 +1,8 @@
 # Station Simulator Releases #
+
+### Version 0.5.11
+- Send ChargingState in TransactionEvent only if it has changed 
+
 ### Version 0.5.10
 - Exposed station serial number as configuration
 

@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -48,6 +49,9 @@ class StateManagerTest {
     @BeforeEach
     void setUp() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        EvseTransaction transaction = new EvseTransaction(UUID.randomUUID().toString());
+        lenient().when(evseMock.createTransaction(anyString())).thenReturn(transaction);
+        lenient().when(evseMock.getTransaction()).thenReturn(transaction);
         when(evseMock.getEvseState()).thenReturn(new AvailableState());
         this.stateManager = new StateManager(null, stationStoreMock, stationMessageSenderMock);
     }

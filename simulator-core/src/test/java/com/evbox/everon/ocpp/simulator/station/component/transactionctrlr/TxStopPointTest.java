@@ -6,6 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.ChargingState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.StoppedState;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -61,6 +63,9 @@ public class TxStopPointTest {
     @BeforeEach
     void setUp() {
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        EvseTransaction transaction = new EvseTransaction(UUID.randomUUID().toString());
+//        lenient().when(evseMock.createTransaction(anyString())).thenReturn(transaction);
+        lenient().when(evseMock.getTransaction()).thenReturn(transaction);
         when(evseMock.getEvseState()).thenReturn(new ChargingState());
         this.stateManagerMock = new StateManager(stationMock, stationStoreMock, stationMessageSenderMock);
     }

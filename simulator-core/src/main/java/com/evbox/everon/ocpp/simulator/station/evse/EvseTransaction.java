@@ -1,5 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.evse;
 
+import com.evbox.everon.ocpp.v201.message.station.ChargingState;
+import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +13,6 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 public class EvseTransaction {
 
     /**
@@ -21,6 +22,7 @@ public class EvseTransaction {
 
     private String transactionId;
     private EvseTransactionStatus status;
+    private ChargingState chargingState;
 
     /**
      * Create transaction with the given identity.
@@ -46,6 +48,11 @@ public class EvseTransaction {
         this.status = status;
     }
 
+    public EvseTransaction(String transactionId, EvseTransactionStatus status) {
+        this.transactionId = transactionId;
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return transactionId;
@@ -53,6 +60,17 @@ public class EvseTransaction {
 
     EvseTransactionView createView() {
         return new EvseTransactionView(this.transactionId, this.status);
+    }
+
+    public ChargingState updateChargingStateIfChanged(ChargingState newState) {
+        Preconditions.checkNotNull(newState);
+
+        boolean stateChanged = chargingState == null || !chargingState.equals(newState);
+        if (stateChanged) {
+            chargingState = newState;
+            return newState;
+        }
+        return null;
     }
 
     @Getter

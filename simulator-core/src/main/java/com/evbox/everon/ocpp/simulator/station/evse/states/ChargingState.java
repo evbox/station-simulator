@@ -125,7 +125,9 @@ public class ChargingState extends AbstractEvseState {
 
         evse.stopCharging();
         Integer connectorId = evse.tryUnlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, REMOTE_STOP, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+        var chargingState = evse.getTransaction()
+                .updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+        stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, REMOTE_STOP, chargingState);
 
         stateManager.setStateForEvse(evseId, new RemotelyStoppedState());
     }
@@ -133,7 +135,9 @@ public class ChargingState extends AbstractEvseState {
     private int stopCharging(StationMessageSender stationMessageSender, Evse evse) {
         evse.stopCharging();
         Integer connectorId = evse.unlockConnector();
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+        var chargingState = evse.getTransaction()
+                .updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, STOP_AUTHORIZED, chargingState);
         return connectorId;
     }
 

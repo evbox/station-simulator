@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.CompletableFuture;
 
 import static com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING;
+import static com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED;
 import static com.evbox.everon.ocpp.v201.message.station.TriggerReason.AUTHORIZED;
 import static java.util.Collections.singletonList;
 
@@ -88,9 +89,8 @@ public class StoppedState extends AbstractEvseState {
                 evse.setToken(tokenId);
                 if (!evse.hasOngoingTransaction()) {
                     String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                    evse.createTransaction(transactionId);
-
-                    stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId);
+                    var chargingState = evse.createTransaction(transactionId).updateChargingStateIfChanged(EV_CONNECTED);
+                    stationMessageSender.sendTransactionEventStart(evseId, AUTHORIZED, tokenId, chargingState);
                 }
 
                 startCharging(stationMessageSender, evse, tokenId);
@@ -107,6 +107,7 @@ public class StoppedState extends AbstractEvseState {
     private void startCharging(StationMessageSender stationMessageSender, Evse evse, String tokenId) {
         Integer connectorId = evse.lockPluggedConnector();
         evse.startCharging();
-        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, CHARGING);
+        var chargingState = evse.getTransaction().updateChargingStateIfChanged(CHARGING);
+        stationMessageSender.sendTransactionEventUpdate(evse.getId(), connectorId, AUTHORIZED, tokenId, chargingState);
     }
 }
