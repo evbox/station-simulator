@@ -68,9 +68,6 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    testLogging {
-        showStandardStreams = true
-    }
 }
 
 jacocoTestReport {
@@ -106,7 +103,7 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-version '0.5.10'
+version '0.5.11'
 
 publishing {
     publications {

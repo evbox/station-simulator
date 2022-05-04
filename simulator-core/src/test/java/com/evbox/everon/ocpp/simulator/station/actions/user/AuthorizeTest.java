@@ -5,6 +5,7 @@ import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
+import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.ChargingState;
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_TOKEN_ID;
@@ -52,6 +54,9 @@ public class AuthorizeTest {
         this.authorize = new Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID);
         this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
         when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        EvseTransaction transaction = new EvseTransaction(UUID.randomUUID().toString());
+        lenient().when(evseMock.createTransaction(anyString())).thenReturn(transaction);
+        lenient().when(evseMock.getTransaction()).thenReturn(transaction);
         when(evseMock.getEvseState()).thenReturn(new AvailableState());
 
         authorizeResponse = new AuthorizeResponse()

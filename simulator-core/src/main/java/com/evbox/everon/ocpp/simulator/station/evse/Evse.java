@@ -240,8 +240,9 @@ public class Evse {
      *
      * @param transactionId transaction identity
      */
-    public void createTransaction(String transactionId) {
+    public EvseTransaction createTransaction(String transactionId) {
         transaction = new EvseTransaction(transactionId);
+        return transaction;
     }
 
     /**

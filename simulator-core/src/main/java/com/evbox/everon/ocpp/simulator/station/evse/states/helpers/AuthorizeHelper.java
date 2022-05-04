@@ -30,10 +30,11 @@ public final class AuthorizeHelper {
             evse.stopCharging();
 
             if (!stopPoints.contains(TxStartStopPointVariableValues.AUTHORIZED)) {
+                ChargingState chargingState = evse.getTransaction().updateChargingStateIfChanged(ChargingState.SUSPENDED_EVSE);
                 stationMessageSender.sendTransactionEventUpdate(evse.getId(),
                         connector.map(Connector::getId).orElse(null),
                         TriggerReason.DEAUTHORIZED,
-                        ChargingState.SUSPENDED_EVSE,
+                        chargingState,
                         evse.getTotalConsumedWattHours());
             } else {
                 stationMessageSender.sendTransactionEventEnded(evse.getId(),

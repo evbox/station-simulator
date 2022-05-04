@@ -83,7 +83,7 @@ class StationMessageSenderTest {
 
         mockStationPersistenceLayer();
 
-        stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -109,7 +109,7 @@ class StationMessageSenderTest {
         mockStationPersistenceLayer();
         when(stationStoreMock.getStationId()).thenReturn("EVB-Eichrecht");
 
-        stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
 
@@ -135,7 +135,7 @@ class StationMessageSenderTest {
         mockStationPersistenceLayer();
         when(stationStoreMock.getStationId()).thenReturn("ISO-Station");
 
-        stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID);
+        stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
 
         AbstractWebSocketClientInboxMessage actualMessage = queue.take();
         AbstractWebSocketClientInboxMessage actualNextMessage = queue.take();

@@ -50,17 +50,19 @@ public class WaitingForPlugState extends AbstractEvseState {
 
             if (!evse.hasOngoingTransaction()) {
                 String transactionId = TransactionIdGenerator.getInstance().getAndIncrement();
-                evse.createTransaction(transactionId);
+                var chargingState = evse.createTransaction(transactionId).
+                        updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
 
-                stationMessageSender.sendTransactionEventStart(evseId, connectorId, CABLE_PLUGGED_IN, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+                stationMessageSender.sendTransactionEventStart(evseId, connectorId, CABLE_PLUGGED_IN, chargingState);
             } else {
-                stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CABLE_PLUGGED_IN, tokenId, com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+                var chargingState = evse.getTransaction().updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.EV_CONNECTED);
+                stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CABLE_PLUGGED_IN, tokenId, chargingState);
             }
 
             startCharging(evse);
 
-            stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CHARGING_STATE_CHANGED, tokenId,
-                    com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
+            var chargingState = evse.getTransaction().updateChargingStateIfChanged(com.evbox.everon.ocpp.v201.message.station.ChargingState.CHARGING);
+            stationMessageSender.sendTransactionEventUpdate(evseId, connectorId, CHARGING_STATE_CHANGED, tokenId, chargingState);
             future.complete(UserMessageResult.SUCCESSFUL);
         });
 
