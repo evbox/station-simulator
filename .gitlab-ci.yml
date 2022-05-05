@@ -53,6 +53,8 @@ publish-simulator-core:
     paths:
       - ./*/build
       - .gradle
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
 
 publish-ocpp-model-201:
   stage: deploy
@@ -67,3 +69,5 @@ publish-ocpp-model-201:
     paths:
       - ./*/build
       - .gradle
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
