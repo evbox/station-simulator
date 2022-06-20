@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.component;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr.HeartbeatIntervalVariableAccessor;
@@ -10,47 +11,47 @@ import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableVal
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.util.List;
 import java.util.Map;
 
 import static com.evbox.everon.ocpp.mock.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 class OCPPCommCtrlComponentTest {
 
-    @Mock
-    HeartbeatIntervalVariableAccessor heartbeatIntervalVariableAccessorMock;
-    @Mock
-    Station stationMock;
-    @Mock
+    HeartbeatIntervalVariableAccessor heartbeatIntervalVariableAccessor;
+    Station station;
     StationStore stationStore;
-    @Captor
-    ArgumentCaptor<CiString.CiString1000> ciStringCaptor;
-    @Captor
-    ArgumentCaptor<AttributePath> attributePathCaptor;
 
     OCPPCommCtrlrComponent ocppCommCtrlrComponent;
 
     @BeforeEach
     void setUp() throws Exception {
-        ocppCommCtrlrComponent = new OCPPCommCtrlrComponent(stationMock, stationStore);
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        station = new Station(stationConfiguration);
+        stationStore = new StationStore(Clock.systemUTC(), DEFAULT_HEARTBEAT_INTERVAL, 100,
+                Map.of(DEFAULT_EVSE_ID, new Evse(DEFAULT_EVSE_ID, List.of(new Connector(1, UNPLUGGED, AVAILABLE)))));
+        heartbeatIntervalVariableAccessor = new HeartbeatIntervalVariableAccessor(station, stationStore);
+        ocppCommCtrlrComponent = new OCPPCommCtrlrComponent(station, stationStore);
         Map<CiString.CiString50, VariableAccessor> variableAccessors
-                = ImmutableMap.of(new CiString.CiString50(ocppCommCtrlrComponent.getComponentName() + "-" + HeartbeatIntervalVariableAccessor.NAME), heartbeatIntervalVariableAccessorMock);
+                = ImmutableMap.of(new CiString.CiString50(ocppCommCtrlrComponent.getComponentName() + "-" + HeartbeatIntervalVariableAccessor.NAME), heartbeatIntervalVariableAccessor);
 
         FieldUtils.writeField(ocppCommCtrlrComponent, "variableAccessors", variableAccessors, true);
     }
@@ -70,8 +71,6 @@ class OCPPCommCtrlComponentTest {
                 .withComponent(component)
                 .withVariable(variable)
                 .withAttributeType(attributeType);
-
-        initGetHeartbeatVariableMock(new AttributePath(component, variable, attributeType), String.valueOf(variableValue));
 
         //when
         GetVariableResult result = ocppCommCtrlrComponent.getVariable(getVariableDatum);
@@ -103,14 +102,10 @@ class OCPPCommCtrlComponentTest {
         //when
         ocppCommCtrlrComponent.setVariable(setVariableDatum);
 
-        verify(heartbeatIntervalVariableAccessorMock).set(attributePathCaptor.capture(), ciStringCaptor.capture());
-
         //then
-        AttributePath actualAttributePath = attributePathCaptor.getValue();
-        assertCiString(actualAttributePath.getComponent().getName()).isEqualTo(componentName);
-        assertCiString(actualAttributePath.getVariable().getName()).isEqualTo(variableName);
-        assertThat(actualAttributePath.getAttributeType()).isEqualTo(attributeType);
-        assertCiString(ciStringCaptor.getValue()).isEqualTo(String.valueOf(variableValue));
+        CiString.CiString2500 attributeActualValue = ocppCommCtrlrComponent.getVariableAccessorByName(variableName)
+                .get(new AttributePath(component, variable, Attribute.fromValue(attributeType.getName()))).getAttributeValue();
+        assertCiString(attributeActualValue).isEqualTo(String.valueOf(variableValue));
     }
 
     @Test
@@ -120,13 +115,6 @@ class OCPPCommCtrlComponentTest {
         String variableName = HeartbeatIntervalVariableAccessor.NAME;
         AttributeType attributeType = AttributeType.ACTUAL;
         int variableValue = StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
-
-        given(heartbeatIntervalVariableAccessorMock.validate(any(AttributePath.class), eq(new CiString.CiString1000(String.valueOf(variableValue)))))
-                .willAnswer(invocation -> new SetVariableResult()
-                        .withComponent(((AttributePath)invocation.getArgument(0)).getComponent())
-                        .withVariable(((AttributePath)invocation.getArgument(0)).getVariable())
-                        .withAttributeType(Attribute.fromValue(((AttributePath)invocation.getArgument(0)).getAttributeType().getName()))
-                        .withAttributeStatus(SetVariableStatus.ACCEPTED));
 
         Component component = new Component().withName(new CiString.CiString50(componentName));
         Variable variable = new Variable().withName(new CiString.CiString50(variableName));
@@ -174,17 +162,6 @@ class OCPPCommCtrlComponentTest {
         assertCiString(validationResult.getSetVariableData().getAttributeValue()).isEqualTo(String.valueOf(variableValue));
         assertThat(validationResult.getSetVariableData().getAttributeType()).isEqualTo(Attribute.ACTUAL);
         assertThat(validationResult.getResult().getAttributeStatus()).isEqualTo(SetVariableStatus.UNKNOWN_VARIABLE);
-    }
-
-    private void initGetHeartbeatVariableMock(AttributePath attributePath, String returnValue) {
-        CiString.CiString2500 attributeValue = new CiString.CiString2500(returnValue);
-
-        given(heartbeatIntervalVariableAccessorMock.get(any(AttributePath.class)))
-                .willReturn(new GetVariableResult()
-                        .withComponent(attributePath.getComponent())
-                        .withVariable(attributePath.getVariable())
-                        .withAttributeType(Attribute.fromValue(attributePath.getAttributeType().getName()))
-                        .withAttributeValue(attributeValue));
     }
 
 }

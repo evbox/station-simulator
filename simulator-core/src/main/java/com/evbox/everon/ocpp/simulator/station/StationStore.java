@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
@@ -44,7 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @ToString
 public class StationStore {
 
-    private String stationId;
+    @Setter private String stationId;
     private String stationVendor;
     private String stationModel;
     private String stationSerialNumber;
@@ -52,7 +53,7 @@ public class StationStore {
     private int heartbeatInterval;
     private int evConnectionTimeOut;
     private boolean authEnabled;
-    private Map<Integer, Evse> evses;
+    @Setter private Map<Integer, Evse> evses;
     private OptionList<TxStartStopPointVariableValues> txStartPointValues;
     private OptionList<TxStartStopPointVariableValues> txStopPointValues;
 

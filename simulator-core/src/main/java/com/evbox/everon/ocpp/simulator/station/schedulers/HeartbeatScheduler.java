@@ -2,6 +2,7 @@ package com.evbox.everon.ocpp.simulator.station.schedulers;
 
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +16,7 @@ public class HeartbeatScheduler {
     private static final int INITIAL_TASK_DELAY_IN_SECONDS = 5;
     private static final int TASK_PERIOD_IN_SECONDS = 1;
 
+    @Getter
     private HeartbeatSenderTask heartbeatTask;
 
     public HeartbeatScheduler(StationStore stationStore, StationMessageSender stationMessageSender) {

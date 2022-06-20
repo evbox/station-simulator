@@ -1,28 +1,24 @@
 package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.mock.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class ManufacturerVariableAccessorTest {
 
     private static final String COMPONENT_NAME = ChargingStationComponent.NAME;
@@ -33,15 +29,20 @@ class ManufacturerVariableAccessorTest {
     private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.MIN_SET).build();
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.TARGET).build();
 
-    @Mock(lenient = true)
-    StationStore stationStoreMock;
+    StationStore stationStore;
 
-    @InjectMocks
     ManufacturerVariableAccessor variableAccessor;
 
     @BeforeEach
     void setup() {
-        when(stationStoreMock.getStationVendor()).thenReturn(StationHardwareData.VENDOR_NAME);
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        stationStore = new StationStore(stationConfiguration);
+        variableAccessor = new ManufacturerVariableAccessor(null, stationStore);
     }
 
     static Stream<Arguments> setVariableDatumProvider() {

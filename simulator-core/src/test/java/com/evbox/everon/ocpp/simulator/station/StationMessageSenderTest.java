@@ -1,11 +1,10 @@
 package com.evbox.everon.ocpp.simulator.station;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.message.Call;
-import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus;
+import com.evbox.everon.ocpp.simulator.station.evse.*;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
 import com.evbox.everon.ocpp.simulator.websocket.AbstractWebSocketClientInboxMessage;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
@@ -20,20 +19,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.mock.factory.EvseCreator.createEvse;
 import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.createCall;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.LOCKED;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIED;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,8 +39,9 @@ class StationMessageSenderTest {
 
     private final String STATION_ID = "EVB-P123";
 
-    @Mock
-    StationStore stationStoreMock;
+    Connector connector;
+    Evse evse;
+    StationStore stationStore;
     @Mock
     SubscriptionRegistry subscriptionRegistryMock;
     @Mock
@@ -54,15 +53,21 @@ class StationMessageSenderTest {
 
     @BeforeEach
     void setUp() {
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        stationStore = new StationStore(stationConfiguration);
+        this.connector = stationStore.getDefaultEvse().findConnector(DEFAULT_EVSE_CONNECTORS);
+        this.evse = stationStore.getDefaultEvse();
         when(webSocketClientMock.getInbox()).thenReturn(queue);
-        this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStoreMock, webSocketClientMock);
+        this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStore, webSocketClientMock);
     }
 
     @Test
     void shouldIncreaseMessageIdForConsequentCalls() {
-        when(stationStoreMock.getStationVendor()).thenReturn(StationHardwareData.VENDOR_NAME);
-        when(stationStoreMock.getStationModel()).thenReturn(StationHardwareData.MODEL);
-        when(stationStoreMock.getStationSerialNumber()).thenReturn(StationHardwareData.SERIAL_NUMBER);
 
         int numberOfMessages = 3;
         IntStream.range(0, numberOfMessages).forEach(c -> stationMessageSender.sendBootNotification(BootReason.POWER_UP));
@@ -107,7 +112,7 @@ class StationMessageSenderTest {
     void verifyTransactionEventStartEichrecht() throws InterruptedException {
 
         mockStationPersistenceLayer();
-        when(stationStoreMock.getStationId()).thenReturn("EVB-Eichrecht");
+        stationStore.setStationId("EVB-Eichrecht");
 
         stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
 
@@ -133,7 +138,7 @@ class StationMessageSenderTest {
     void verifyTransactionEventStartISO() throws InterruptedException {
 
         mockStationPersistenceLayer();
-        when(stationStoreMock.getStationId()).thenReturn("ISO-Station");
+        stationStore.setStationId("ISO-Station");
 
         stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
 
@@ -210,7 +215,7 @@ class StationMessageSenderTest {
     void verifyTransactionEventEndedEichrecht() throws InterruptedException {
 
         mockStationPersistenceLayer();
-        when(stationStoreMock.getStationId()).thenReturn("EVB-Eichrecht");
+        stationStore.setStationId("EVB-Eichrecht");
 
         stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, Reason.STOPPED_BY_EV, 0L);
 
@@ -247,9 +252,6 @@ class StationMessageSenderTest {
 
     @Test
     void verifyBootNotification() throws InterruptedException {
-        when(stationStoreMock.getStationVendor()).thenReturn(StationHardwareData.VENDOR_NAME);
-        when(stationStoreMock.getStationModel()).thenReturn(StationHardwareData.MODEL);
-        when(stationStoreMock.getStationSerialNumber()).thenReturn(StationHardwareData.SERIAL_NUMBER);
 
         stationMessageSender.sendBootNotification(BootReason.POWER_UP);
 
@@ -271,11 +273,7 @@ class StationMessageSenderTest {
 
     @Test
     void verifyStatusNotification() throws InterruptedException {
-
-        when(stationStoreMock.getCurrentTime()).thenReturn(new Date().toInstant());
-        Evse evse = mock(Evse.class, RETURNS_DEEP_STUBS);
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evse);
-        when(evse.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.UNPLUGGED);
+        connector.setCableStatus(UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 
@@ -336,14 +334,10 @@ class StationMessageSenderTest {
     }
 
     private void mockStationPersistenceLayer() {
-        Evse evse = createEvse()
-                .withTransaction(new EvseTransaction(DEFAULT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS))
-                .withId(DEFAULT_EVSE_ID)
-                .build();
-        when(stationStoreMock.findEvse(eq(DEFAULT_EVSE_ID))).thenReturn(evse);
-        when(stationStoreMock.getStationId()).thenReturn(STATION_ID);
+        connector = new Connector(DEFAULT_CONNECTOR_ID, LOCKED, OCCUPIED);
+        evse = new Evse(DEFAULT_EVSE_ID, EvseStatus.UNAVAILABLE, new EvseTransaction(DEFAULT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS), List.of(connector));
+        stationStore.setEvses(Map.of(DEFAULT_EVSE_ID, evse));
 
-        when(stationStoreMock.getCurrentTime()).thenReturn(new Date().toInstant());
     }
 
 
