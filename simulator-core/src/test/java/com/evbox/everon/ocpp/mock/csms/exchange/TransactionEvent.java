@@ -52,15 +52,13 @@ public class TransactionEvent {
      *
      * @param type          transaction type
      * @param chargingState charging state
-     * @param transactionId id of the transaction
      * @param triggerReason trigger reason
      * @return checks whether an incoming request is TransactionEvent or not.
      */
-    public static Predicate<Call> request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent type, ChargingState chargingState, String transactionId, TriggerReason triggerReason) {
+    public static Predicate<Call> request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent type, ChargingState chargingState, TriggerReason triggerReason) {
         return request -> equalsType(request, TRANSACTION_EVENT) &&
                 equalsEventType(request, type) &&
                 equalsChargingState(request, chargingState) &&
-                equalsTransactionId(request, transactionId) &&
                 equalsTriggerReason(request, triggerReason);
     }
 
@@ -69,15 +67,13 @@ public class TransactionEvent {
      *
      * @param type          transaction type
      * @param seqNo         sequence number
-     * @param transactionId id of the transaction
      * @param evseId        evse id
      * @return checks whether an incoming request is TransactionEvent or not.
      */
-    public static Predicate<Call> request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent type, int seqNo, String transactionId, int evseId) {
+    public static Predicate<Call> request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent type, int seqNo, int evseId) {
         return request -> equalsType(request, TRANSACTION_EVENT) &&
                 equalsEventType(request, type) &&
                 equalsSeqNo(request, seqNo) &&
-                equalsTransactionId(request, transactionId) &&
                 equalsEvseId(request, evseId);
     }
 
@@ -105,7 +101,6 @@ public class TransactionEvent {
      *
      * @param type          transaction type
      * @param seqNo         sequence number
-     * @param transactionId id of the transaction
      * @param evseId        evse id
      * @param tokenId       id of the auth token
      * @param chargingState charging satte
@@ -115,7 +110,6 @@ public class TransactionEvent {
     public static Predicate<Call> request(
             com.evbox.everon.ocpp.v201.message.station.TransactionEvent type,
             int seqNo,
-            String transactionId,
             int evseId,
             String tokenId,
             ChargingState chargingState,
@@ -124,7 +118,6 @@ public class TransactionEvent {
         return request -> equalsType(request, TRANSACTION_EVENT) &&
                 equalsEventType(request, type) &&
                 equalsSeqNo(request, seqNo) &&
-                equalsTransactionId(request, transactionId) &&
                 equalsEvseId(request, evseId) &&
                 equalsTokenId(request, tokenId) &&
                 equalsChargingState(request, chargingState) &&
