@@ -19,7 +19,7 @@ import static com.evbox.everon.ocpp.v201.message.station.IdTokenType.ISO_14443;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-public class RemoteStopTransactionIt extends StationSimulatorSetUp {
+class RemoteStopTransactionIt extends StationSimulatorSetUp {
 
     @Test
     void shouldRemotelyStopTransaction() {
@@ -29,7 +29,7 @@ public class RemoteStopTransactionIt extends StationSimulatorSetUp {
                 .thenReturn(Authorize.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.UPDATED, ChargingState.EV_CONNECTED, DEFAULT_TRANSACTION_ID, TriggerReason.REMOTE_STOP))
+                .when(TransactionEvent.request(com.evbox.everon.ocpp.v201.message.station.TransactionEvent.UPDATED, ChargingState.EV_CONNECTED, TriggerReason.REMOTE_STOP))
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
@@ -47,8 +47,9 @@ public class RemoteStopTransactionIt extends StationSimulatorSetUp {
         triggerUserAction(STATION_ID, new com.evbox.everon.ocpp.simulator.station.actions.user.Authorize(DEFAULT_TOKEN_ID, DEFAULT_EVSE_ID));
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isTrue());
+        String transactionId = stationSimulatorRunner.getStation(STATION_ID).getStateView().findEvse(DEFAULT_EVSE_ID).getTransaction().getTransactionId();
 
-        Call call = new Call(DEFAULT_CALL_ID, ActionType.REQUEST_STOP_TRANSACTION, new RequestStopTransactionRequest().withTransactionId(new CiString.CiString36(DEFAULT_TRANSACTION_ID)));
+        Call call = new Call(DEFAULT_CALL_ID, ActionType.REQUEST_STOP_TRANSACTION, new RequestStopTransactionRequest().withTransactionId(new CiString.CiString36(transactionId)));
         ocppServerClient.findStationSender(STATION_ID).sendMessage(call.toJson());
 
         await().untilAsserted(() -> assertThat(stationSimulatorRunner.getStation(STATION_ID).getStateView().isCharging(DEFAULT_EVSE_ID)).isFalse());

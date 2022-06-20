@@ -5,7 +5,6 @@ import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction.EvseTransact
 import com.evbox.everon.ocpp.simulator.station.evse.states.AbstractEvseState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AvailableState;
 import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
-import com.evbox.everon.ocpp.v201.message.station.StatusNotificationRequest;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -146,7 +145,7 @@ public class Evse {
     /**
      * Setter for tokenId.
      *
-     * @param tokenId
+     * @param tokenId the tokenId
      */
     public void setToken(String tokenId) {
         this.tokenId = tokenId;
@@ -180,7 +179,7 @@ public class Evse {
     /**
      * Change EVSE status and status of connectors.
      *
-     * @param evseStatus
+     * @param evseStatus the Evse status
      */
     public void changeStatus(EvseStatus evseStatus) {
         this.evseStatus = evseStatus;
@@ -192,7 +191,7 @@ public class Evse {
     /**
      * Setter for scheduled evse status.
      *
-     * @param scheduledNewEvseStatus
+     * @param scheduledNewEvseStatus true when new status is scheduled
      */
     public void setScheduledNewEvseStatus(EvseStatus scheduledNewEvseStatus) {
         this.scheduledNewEvseStatus = scheduledNewEvseStatus;

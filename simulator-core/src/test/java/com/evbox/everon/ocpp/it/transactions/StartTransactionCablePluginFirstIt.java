@@ -12,7 +12,7 @@ import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIE
 import static com.evbox.everon.ocpp.v201.message.station.TransactionEvent.STARTED;
 import static org.awaitility.Awaitility.await;
 
-public class StartTransactionCablePluginFirstIt extends StationSimulatorSetUp {
+class StartTransactionCablePluginFirstIt extends StationSimulatorSetUp {
 
     @Test
     void shouldSendConnectorStatusAndTransactionStartedWhenCablePluggedIn() {
@@ -22,7 +22,7 @@ public class StartTransactionCablePluginFirstIt extends StationSimulatorSetUp {
                 .thenReturn(TransactionEvent.response());
 
         ocppMockServer
-                .when(TransactionEvent.request(STARTED, DEFAULT_SEQ_NUMBER, DEFAULT_TRANSACTION_ID, DEFAULT_EVSE_ID))
+                .when(TransactionEvent.request(STARTED, DEFAULT_SEQ_NUMBER, DEFAULT_EVSE_ID))
                 .thenReturn(TransactionEvent.response());
 
         stationSimulatorRunner.run();
