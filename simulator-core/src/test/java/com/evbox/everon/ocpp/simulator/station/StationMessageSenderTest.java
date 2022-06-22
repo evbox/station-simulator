@@ -39,6 +39,7 @@ class StationMessageSenderTest {
 
     private final String STATION_ID = "EVB-P123";
 
+    SimulatorConfiguration.StationConfiguration stationConfiguration;
     Connector connector;
     Evse evse;
     StationStore stationStore;
@@ -53,7 +54,7 @@ class StationMessageSenderTest {
 
     @BeforeEach
     void setUp() {
-        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration = new SimulatorConfiguration.StationConfiguration();
         stationConfiguration.setId(STATION_ID);
         SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
         evse.setCount(DEFAULT_EVSE_COUNT);
@@ -63,7 +64,7 @@ class StationMessageSenderTest {
         this.connector = stationStore.getDefaultEvse().findConnector(DEFAULT_EVSE_CONNECTORS);
         this.evse = stationStore.getDefaultEvse();
         when(webSocketClientMock.getInbox()).thenReturn(queue);
-        this.stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStore, webSocketClientMock);
+        stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStore, webSocketClientMock);
     }
 
     @Test
@@ -110,9 +111,10 @@ class StationMessageSenderTest {
 
     @Test
     void verifyTransactionEventStartEichrecht() throws InterruptedException {
-
+        stationConfiguration.setId("Eichrecht");
+        stationStore = new StationStore(stationConfiguration);
+        stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStore, webSocketClientMock);
         mockStationPersistenceLayer();
-        stationStore.setStationId("EVB-Eichrecht");
 
         stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
 
@@ -136,9 +138,10 @@ class StationMessageSenderTest {
 
     @Test
     void verifyTransactionEventStartISO() throws InterruptedException {
-
+        stationConfiguration.setId("ISO-Station");
+        stationStore = new StationStore(stationConfiguration);
+        stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStore, webSocketClientMock);
         mockStationPersistenceLayer();
-        stationStore.setStationId("ISO-Station");
 
         stationMessageSender.sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
 
@@ -213,9 +216,10 @@ class StationMessageSenderTest {
 
     @Test
     void verifyTransactionEventEndedEichrecht() throws InterruptedException {
-
+        stationConfiguration.setId("EVB-Eichrecht");
+        stationStore = new StationStore(stationConfiguration);
+        stationMessageSender = new StationMessageSender(subscriptionRegistryMock, stationStore, webSocketClientMock);
         mockStationPersistenceLayer();
-        stationStore.setStationId("EVB-Eichrecht");
 
         stationMessageSender.sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, TriggerReason.AUTHORIZED, Reason.STOPPED_BY_EV, 0L);
 

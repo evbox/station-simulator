@@ -45,7 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @ToString
 public class StationStore {
 
-    @Setter private String stationId;
+    private String stationId;
     private String stationVendor;
     private String stationModel;
     private String stationSerialNumber;
