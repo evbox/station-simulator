@@ -72,7 +72,7 @@ jsonSchema2Pojo {
 
 dependencies {
     api project(':payload:ocpp-data-types')
-    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    api "com.fasterxml.jackson.core:jackson-annotations:2.13.3"
 }
 
 apply plugin: 'maven-publish'
@@ -90,7 +90,7 @@ task javadocJar(type: Jar) {
 artifacts {
     archives javadocJar, sourcesJar
 }
-version '2.1.0'
+version '2.1.1'
 
 shadowJar {
     baseName = 'ocpp-payload'
