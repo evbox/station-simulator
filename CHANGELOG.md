@@ -1,5 +1,11 @@
 # Station Simulator Releases #
 
+### Version 0.5.14
+- Maintenance release with updated dependencies
+
+### Version 0.5.12
+- Change transactionId to random UUID format
+
 ### Version 0.5.11
 - Send ChargingState in TransactionEvent only if it has changed 
 

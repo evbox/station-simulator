@@ -30,22 +30,22 @@ run {
 
 dependencies {
 
-    api 'org.apache.httpcomponents:httpclient:4.5.3'
-    api 'io.everon:ocpp-payload:2.1.0'
+    api 'org.apache.httpcomponents:httpclient:4.5.13'
+    api 'io.everon:ocpp-payload:2.1.1'
 
-    api 'info.picocli:picocli:3.9.2'
-    api 'com.squareup.okhttp3:okhttp:3.12.1'
-    api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    api "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
-    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
-    api 'ch.qos.logback:logback-core:1.2.3'
-    api 'ch.qos.logback:logback-classic:1.2.3'
+    api 'info.picocli:picocli:4.6.3'
+    api 'com.squareup.okhttp3:okhttp:4.10.0'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    api 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
+    api 'ch.qos.logback:logback-core:1.2.11'
+    api 'ch.qos.logback:logback-classic:1.2.11'
 
     // BouncyCastle
-    api 'org.bouncycastle:bcpkix-jdk15on:1.64'
+    api 'org.bouncycastle:bcpkix-jdk15on:1.70'
 
-    api 'org.apache.commons:commons-lang3:3.9'
-    api "com.google.guava:guava:${guavaVersion}"
+    api 'org.apache.commons:commons-lang3:3.12.0'
+    api 'com.google.guava:guava:31.1-jre'
 
     api group: 'commons-codec', name: 'commons-codec', version: '1.12'
 
@@ -55,16 +55,16 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-    testImplementation 'org.assertj:assertj-core:3.13.0'
-    testImplementation 'io.undertow:undertow-core:2.0.17.Final'
-    testImplementation 'org.awaitility:awaitility:3.1.5'
+    testImplementation 'org.assertj:assertj-core:3.23.1'
+    testImplementation 'io.undertow:undertow-core:2.2.17.Final'
+    testImplementation 'org.awaitility:awaitility:4.2.0'
 
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.0.0'
-    testImplementation 'org.mockito:mockito-core:2.23.0'
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junit5Version}")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:${junit5Version}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junit5Version}")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:${junit5Version}")
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.6.1'
+    testImplementation 'org.mockito:mockito-core:4.6.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.8.2'
 }
 
 test {
@@ -104,7 +104,7 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-version '0.5.12'
+version '0.5.14'
 
 publishing {
     publications {
