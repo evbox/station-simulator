@@ -61,7 +61,8 @@ public class UnplugTest {
     @Test
     void shouldThrowExceptionWhenStateIsLocked() {
         evse.setEvseState(new WaitingForAuthorizationState());
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
 
         assertThrows(IllegalStateException.class, () -> unplug.perform(stateManager));
 

@@ -22,7 +22,6 @@ import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
 import com.evbox.everon.ocpp.v201.message.station.BootReason;
 import com.evbox.everon.ocpp.v201.message.station.RegistrationStatus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
@@ -45,7 +44,6 @@ import static java.util.stream.Collectors.toList;
  * <p>Communication is done via web-socket transport layer using OCPP protocol.</p>
  */
 @Slf4j
-@Getter
 public class Station {
 
     private final OkHttpClient defaultHttpClient;

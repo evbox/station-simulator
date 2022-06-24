@@ -59,7 +59,6 @@ public class TxStartPointTest {
 
     @Test
     void verifyStartOnlyOnAuthorizedPlugAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
         stationStore.setAuthorizeState(true);
 
@@ -68,7 +67,7 @@ public class TxStartPointTest {
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
     }
 
     @Test
@@ -85,7 +84,6 @@ public class TxStartPointTest {
 
     @Test
     void verifyStartOnlyOnEVConnectedPlugAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
         stationStore.setAuthorizeState(true);
 
@@ -106,12 +104,11 @@ public class TxStartPointTest {
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
     }
 
     @Test
     void verifyStartOnlyOnPowerPathClosedPlugAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         stationStore.setAuthorizeState(true);
 
@@ -121,7 +118,7 @@ public class TxStartPointTest {
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
     }
 
     @Test
@@ -133,12 +130,11 @@ public class TxStartPointTest {
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
     }
 
     @Test
     void verifyStartOnlyOnPowerPathClosedAuthPlugAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
@@ -146,7 +142,7 @@ public class TxStartPointTest {
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
         assertEquals(WaitingForPlugState.NAME, evse.getEvseState().getStateName());
 
         evse.setEvseState(new WaitingForPlugState());
@@ -162,7 +158,6 @@ public class TxStartPointTest {
 
     @Test
     void verifyStartOnlyOnPowerPathClosedPlugAuthAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         stationStore.setAuthorizeState(true);
 
@@ -171,7 +166,7 @@ public class TxStartPointTest {
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
         assertEquals(WaitingForAuthorizationState.NAME, evse.getEvseState().getStateName());
 
         evse.setEvseState(new WaitingForAuthorizationState());
@@ -199,7 +194,6 @@ public class TxStartPointTest {
 
     @Test
     void verifyStartOnAuthorizedAndEVConnectedPlugAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED)));
         stationStore.setAuthorizeState(true);
 
@@ -213,7 +207,6 @@ public class TxStartPointTest {
 
     @Test
     void verifyStartOnAuthorizedAndPowerPathClosedAuthPlugAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
@@ -221,7 +214,7 @@ public class TxStartPointTest {
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
         assertEquals(WaitingForPlugState.NAME, evse.getEvseState().getStateName());
 
         evse.setEvseState(new WaitingForPlugState());
@@ -237,7 +230,6 @@ public class TxStartPointTest {
 
     @Test
     void verifyStartOnEVConnectedAndPowerPathClosedPlugAuthAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         stationStore.setAuthorizeState(true);
 
@@ -246,7 +238,7 @@ public class TxStartPointTest {
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
         assertEquals(WaitingForAuthorizationState.NAME, evse.getEvseState().getStateName());
 
         evse.setEvseState(new WaitingForAuthorizationState());
@@ -262,7 +254,6 @@ public class TxStartPointTest {
 
     @Test
     void verifyStartOnAuthorizedAndEVConnectedAndPowerPathClosedPlugAction() {
-        connector.setCableStatus(UNPLUGGED);
         stationStore.setTxStartPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
         stationStore.setAuthorizeState(true);
 
@@ -271,7 +262,7 @@ public class TxStartPointTest {
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.CABLE_PLUGGED_IN, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
     }
 
     @Test
@@ -283,7 +274,7 @@ public class TxStartPointTest {
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED).withEvseId(Collections.singletonList(DEFAULT_EVSE_ID))));
 
         verify(stationMessageSenderMock, times(0)).sendTransactionEventStart(DEFAULT_EVSE_ID, TriggerReason.AUTHORIZED, DEFAULT_TOKEN_ID, ChargingState.EV_CONNECTED);
-        assertEquals(evse.getTransaction(), EvseTransaction.NONE);
+        assertEquals(evse.getTransaction().getStatus(), EvseTransaction.NONE.getStatus());
     }
 
 }

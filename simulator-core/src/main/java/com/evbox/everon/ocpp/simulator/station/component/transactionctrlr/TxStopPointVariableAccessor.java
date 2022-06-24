@@ -91,6 +91,7 @@ public class TxStopPointVariableAccessor extends VariableAccessor {
 
         Station station = getStation();
         station.updateTxStopPointValues(new OptionList<>(stopPoints));
+        getStationStore().setTxStopPointValues(new OptionList<>(stopPoints));
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {

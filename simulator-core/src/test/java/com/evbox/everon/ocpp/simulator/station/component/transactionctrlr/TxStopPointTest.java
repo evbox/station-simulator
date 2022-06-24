@@ -21,8 +21,8 @@ import java.time.Clock;
 import java.util.*;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
-import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.LOCKED;
 import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.UNAVAILABLE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.NONE;
 import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
 import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
@@ -58,17 +58,17 @@ public class TxStopPointTest {
     @BeforeEach
     void setUp() {
         connector = new Connector(1, UNPLUGGED, AVAILABLE);
-        evse = new Evse(DEFAULT_EVSE_ID, List.of(connector));
+        evse = new Evse(DEFAULT_EVSE_ID, UNAVAILABLE, new EvseTransaction(EvseTransactionStatus.NONE), List.of(connector));
         stationStore = new StationStore(Clock.systemUTC(), 10, 100,
                 Map.of(DEFAULT_EVSE_ID, evse));
         evse.setEvseState(new ChargingState());
-        evse.setTransaction(new EvseTransaction(EvseTransactionStatus.NONE));
         stateManager = new StateManager(null, stationStore, stationMessageSenderMock);
     }
 
     @Test
     void verifyStopOnlyOnAuthorizedAuthAction() {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         evse.setToken(DEFAULT_TOKEN_ID);
         stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
@@ -108,7 +108,8 @@ public class TxStopPointTest {
 
     @Test
     void verifyStopOnlyOnEVConnectedAuthAction() {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         evse.setToken(DEFAULT_TOKEN_ID);
         stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
 
@@ -136,7 +137,8 @@ public class TxStopPointTest {
     @Test
     void verifyStopOnlyOnPowerPathClosedAuthAction() {
         evse.setToken((DEFAULT_TOKEN_ID));
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED )));
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
@@ -150,7 +152,8 @@ public class TxStopPointTest {
     @Test
     void verifyStopOnlyOnPowerPathClosedAuthUnplugAction() {
         evse.setToken(DEFAULT_TOKEN_ID);
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
         stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
@@ -160,8 +163,6 @@ public class TxStopPointTest {
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
         assertEquals(NONE, evse.getTransaction().getStatus());
         assertEquals(StoppedState.NAME, evse.getEvseState().getStateName());
-
-//        evse.setEvseState(new StoppedState());
 
         stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
@@ -173,7 +174,8 @@ public class TxStopPointTest {
 
     @Test
     void verifyStopOnAuthorizedAndEVConnectedAuthAction() {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         evse.setToken(DEFAULT_TOKEN_ID);
         stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
@@ -200,7 +202,8 @@ public class TxStopPointTest {
 
     @Test
     void verifyStartOnAuthorizedAndPowerPathClosedAuthUnplugAction() {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         evse.setToken(DEFAULT_TOKEN_ID);
         stationStore.setTxStopPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
@@ -238,7 +241,8 @@ public class TxStopPointTest {
 
     @Test
     void verifyStopOnAuthorizedAndEVConnectedAndPowerPathClosedAuthAction() {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         evse.setToken(DEFAULT_TOKEN_ID);
         stationStore.setTxStopPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 

@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
-import lombok.Setter;
 
 import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIED;
@@ -14,7 +13,6 @@ import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIE
  * Represents a Connector of the EVSE.
  */
 @Getter
-@Setter
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Connector {

@@ -3,10 +3,13 @@ package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v201.message.centralserver.Component;
 import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableStatus;
@@ -14,9 +17,15 @@ import com.evbox.everon.ocpp.v201.message.centralserver.Variable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.util.List;
+import java.util.Map;
+
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.TRANSACTION_COMPONENT_NAME;
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.TX_STOP_POINT_VARIABLE_NAME;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TxStopPointVariableAccessorTest {
@@ -25,6 +34,7 @@ public class TxStopPointVariableAccessorTest {
 
     private static final CiString.CiString1000 TX_STOP_POINT_ATTRIBUTE = new CiString.CiString1000(TX_STOP_POINT_VALUE);
 
+    StationStore stationStore;
     Station station;
 
     TxStopPointVariableAccessor txStoptPointVariableAccessor;
@@ -38,7 +48,9 @@ public class TxStopPointVariableAccessorTest {
         evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
         stationConfiguration.setEvse(evse);
         station = new Station(stationConfiguration);
-        txStoptPointVariableAccessor =new TxStopPointVariableAccessor(station, null);
+        stationStore = new StationStore(Clock.systemUTC(), DEFAULT_HEARTBEAT_INTERVAL, 100,
+                Map.of(DEFAULT_EVSE_ID, new Evse(DEFAULT_EVSE_ID, List.of(new Connector(1, UNPLUGGED, AVAILABLE)))));
+        txStoptPointVariableAccessor =new TxStopPointVariableAccessor(station, stationStore);
     }
     @Test
     void shouldUpdateTxStopPoint() {
@@ -46,7 +58,7 @@ public class TxStopPointVariableAccessorTest {
 
         variableSetter.set(attributePath(), TX_STOP_POINT_ATTRIBUTE);
 
-        assertThat(station.getState().getTxStartPointValues())
+        assertThat(txStoptPointVariableAccessor.getStationStore().getTxStopPointValues())
                 .hasSize(2)
                 .containsExactlyInAnyOrder(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED);
     }

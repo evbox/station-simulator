@@ -71,7 +71,7 @@ class StateManagerTest {
         triggerAuthorizeAndGetResponse();
 
         checkStateIs(ChargingState.NAME);
-        evse.setTokenId(DEFAULT_TOKEN_ID);
+        evse.setToken(DEFAULT_TOKEN_ID);
 
         triggerAuthorizeAndGetResponse();
 
@@ -122,7 +122,8 @@ class StateManagerTest {
 
     @Test
     void verifyDeathorizeInChargingStateSwitchToStopped() {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         evse.setEvseState(new ChargingState());
         evse.createTransaction("123");
         evse.setToken(DEFAULT_TOKEN_ID);
@@ -140,7 +141,8 @@ class StateManagerTest {
 
     @Test
     void verifyDeathorizeInChargingStateSwitchToWaitingForAutorization() {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
         evse.setEvseState(new ChargingState());
         evse.createTransaction("123");
         evse.setToken(DEFAULT_TOKEN_ID);

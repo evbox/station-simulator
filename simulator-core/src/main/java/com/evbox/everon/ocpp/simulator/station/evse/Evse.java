@@ -8,7 +8,6 @@ import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +25,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 @Slf4j
 @Getter
-@Setter
 @EqualsAndHashCode(of = "id")
 public class Evse {
 
@@ -81,7 +79,7 @@ public class Evse {
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, EvseStatus evseStatus, List<Connector> connectors) {
-        this(id, evseStatus, EvseTransaction.NONE, connectors);
+        this(id, evseStatus, new EvseTransaction(EvseTransactionStatus.NONE), connectors);
     }
 
     /**

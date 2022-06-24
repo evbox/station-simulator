@@ -27,10 +27,7 @@ import java.util.Map;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CONNECTOR_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
 import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.*;
-import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.IN_PROGRESS;
 import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
-import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIED;
-import static org.assertj.core.util.Lists.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -59,7 +56,8 @@ public class PlugTest {
 
     @Test
     void shouldFutureFailOnIllegalState() throws Exception {
-        connector.setCableStatus(LOCKED);
+        connector.plug();
+        connector.lock();
 
         assertEquals(UserMessageResult.FAILED, plug.perform(stateManager).get());
 
@@ -70,8 +68,7 @@ public class PlugTest {
 
         // given
         evse.setEvseState(new WaitingForPlugState());
-        evse.setTransaction(new EvseTransaction("1"));
-        connector.setCableStatus(UNPLUGGED);
+        evse.createTransaction("1");
 
         // when
         plug.perform(stateManager);
@@ -93,7 +90,6 @@ public class PlugTest {
 
         // given
         stationStore.setTxStartPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.EV_CONNECTED)));
-        connector.setCableStatus(UNPLUGGED);
 
         // when
         plug.perform(stateManager);

@@ -25,9 +25,6 @@ import java.util.stream.IntStream;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.mock.factory.JsonMessageTypeFactory.createCall;
-import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.LOCKED;
-import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
-import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIED;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -277,7 +274,6 @@ class StationMessageSenderTest {
 
     @Test
     void verifyStatusNotification() throws InterruptedException {
-        connector.setCableStatus(UNPLUGGED);
 
         stationMessageSender.sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS);
 
@@ -338,10 +334,7 @@ class StationMessageSenderTest {
     }
 
     private void mockStationPersistenceLayer() {
-        connector = new Connector(DEFAULT_CONNECTOR_ID, LOCKED, OCCUPIED);
-        evse = new Evse(DEFAULT_EVSE_ID, EvseStatus.UNAVAILABLE, new EvseTransaction(DEFAULT_TRANSACTION_ID, EvseTransactionStatus.IN_PROGRESS), List.of(connector));
-        stationStore.setEvses(Map.of(DEFAULT_EVSE_ID, evse));
-
+        stationStore.getDefaultEvse().createTransaction(DEFAULT_TRANSACTION_ID);
     }
 
 

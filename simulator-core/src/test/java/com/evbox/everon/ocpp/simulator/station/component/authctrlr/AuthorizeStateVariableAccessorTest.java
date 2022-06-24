@@ -121,7 +121,7 @@ class AuthorizeStateVariableAccessorTest {
         authorizeAccessor.setActualValue(new AttributePath(component, variable, attributeType), new CiString.CiString1000(String.valueOf(false)));
 
         //then
-        assertFalse(station.getState().isAuthEnabled());
+        assertFalse(stationStore.isAuthEnabled());
     }
 
     private void initStationMockAuthEnabled() {
