@@ -19,12 +19,6 @@ sonarqube.properties {
     property 'sonar.exclusions', 'payload/**/*.java'
 }
 
-ext {
-    guavaVersion = '31.1-jre'
-    jacksonVersion = '2.9.8'
-    junit5Version = '5.5.1'
-}
-
 subprojects {
     repositories {
         mavenCentral()
