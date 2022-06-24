@@ -49,8 +49,8 @@ class NetworkConfigurationPriorityVariableAccessorTest {
         final String variableName = variableAccessor.getVariableName();
         assertThat(variableName).isEqualTo(NetworkConfigurationPriorityVariableAccessor.NAME);
 
-        verifyZeroInteractions(station);
-        verifyZeroInteractions(stationStore);
+        verifyNoInteractions(station);
+        verifyNoInteractions(stationStore);
     }
 
     @Test
@@ -60,7 +60,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
         final VariableGetter variableGetter = variableAccessor.getVariableGetters().get(AttributeType.ACTUAL);
         assertThat(variableGetter.get(attributePath()).getAttributeValue()).isEqualTo(NETWORK_CONFIGURATION_PRIORITY_ATTRIBUTE_LIST);
 
-        verifyZeroInteractions(station);
+        verifyNoInteractions(station);
         verify(stationStore).getNetworkConfigurationPriority();
     }
 
@@ -71,7 +71,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
         variableSetter.set(attributePath(), NETWORK_CONFIGURATION_PRIORITY_ATTRIBUTE_SINGLE);
 
         verify(station).updateNetworkConfigurationPriorityValues(argThat(arg -> arg == 1));
-        verifyZeroInteractions(stationStore);
+        verifyNoInteractions(stationStore);
     }
 
     @Test
@@ -85,7 +85,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
         assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.ACCEPTED);
 
         verify(stationStore).getNetworkConnectionProfiles();
-        verifyZeroInteractions(station);
+        verifyNoInteractions(station);
     }
 
     @Test
@@ -99,7 +99,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
         assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
 
         verify(stationStore).getNetworkConnectionProfiles();
-        verifyZeroInteractions(station);
+        verifyNoInteractions(station);
     }
 
     @Test
@@ -112,8 +112,8 @@ class NetworkConfigurationPriorityVariableAccessorTest {
 
         assertThat(result.getAttributeStatus()).isEqualTo(SetVariableStatus.REJECTED);
 
-        verifyZeroInteractions(stationStore);
-        verifyZeroInteractions(station);
+        verifyNoInteractions(stationStore);
+        verifyNoInteractions(station);
     }
 
     @Test
@@ -125,7 +125,7 @@ class NetworkConfigurationPriorityVariableAccessorTest {
         assertThat(NETWORK_CONFIGURATION_PRIORITY_ATTRIBUTE_LIST).isEqualTo(reportData.get(0).getVariableAttribute().get(0).getValue());
 
         verify(stationStore).getNetworkConfigurationPriority();
-        verifyZeroInteractions(station);
+        verifyNoInteractions(station);
     }
 
     @Test

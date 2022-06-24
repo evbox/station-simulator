@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class SetNetworkProfileHandlerTest {
@@ -68,7 +68,7 @@ class SetNetworkProfileHandlerTest {
     }
 
     private void assertRejected() {
-        verifyZeroInteractions(stationStore);
+        verifyNoInteractions(stationStore);
         verify(stationMessageSender).sendCallResult(anyString(), responseCaptor.capture());
 
         SetNetworkProfileResponse response = responseCaptor.getValue();
