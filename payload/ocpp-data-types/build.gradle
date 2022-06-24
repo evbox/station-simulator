@@ -5,8 +5,8 @@ plugins {
 
 dependencies {
     api 'javax.validation:validation-api:2.0.1.Final'
-    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    api "com.google.guava:guava:${guavaVersion}"
+    api "com.fasterxml.jackson.core:jackson-annotations:2.13.3"
+    api "com.google.guava:guava:31.1-jre"
 }
 
 apply plugin: 'java'
