@@ -1,4 +1,6 @@
 # Station Simulator Releases #
+### Version 0.5.15
+- Minor bug fix
 
 ### Version 0.5.14
 - Maintenance release with updated dependencies
