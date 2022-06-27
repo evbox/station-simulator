@@ -4,7 +4,6 @@ import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
-import com.evbox.everon.ocpp.simulator.station.evse.CableStatus;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
@@ -23,10 +22,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CONNECTOR_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.*;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,46 +39,41 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UnplugTest {
 
-    @Mock
-    Connector connectorMock;
-    @Mock
-    Evse evseMock;
-    @Mock
-    StationStore stationStoreMock;
+    Connector connector;
+    Evse evse;
+    StationStore stationStore;
     @Mock
     StationMessageSender stationMessageSenderMock;
-    @Mock
-    StateManager stateManagerMock;
+    StateManager stateManager;
 
     Unplug unplug;
 
     @BeforeEach
     void setUp() {
+        connector = new Connector(1, UNPLUGGED, AVAILABLE);
+        evse = new Evse(DEFAULT_EVSE_ID, List.of(connector));
+        evse.setEvseState(new AvailableState());
+        stationStore = new StationStore(Clock.systemUTC(), 10, 100, Map.of(DEFAULT_EVSE_ID, evse));
         this.unplug = new Unplug(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
-        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
-        when(evseMock.getEvseState()).thenReturn(new AvailableState());
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        this.stateManager = new StateManager(null, stationStore, stationMessageSenderMock);
     }
 
     @Test
     void shouldThrowExceptionWhenStateIsLocked() {
+        evse.setEvseState(new WaitingForAuthorizationState());
+        connector.plug();
+        connector.lock();
 
-        when(evseMock.getEvseState()).thenReturn(new WaitingForAuthorizationState());
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-        when(evseMock.findConnector(anyInt()).getCableStatus()).thenReturn(CableStatus.LOCKED);
-
-        assertThrows(IllegalStateException.class, () -> unplug.perform(stateManagerMock));
+        assertThrows(IllegalStateException.class, () -> unplug.perform(stateManager));
 
     }
 
     @Test
     void verifyTransactionStatusNotification() {
+        evse.setEvseState(new StoppedState());
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
 
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
-
-        unplug.perform(stateManagerMock);
+        unplug.perform(stateManager);
 
         ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> subscriberCaptor = ArgumentCaptor.forClass(Subscriber.class);
 

@@ -3,25 +3,24 @@ package com.evbox.everon.ocpp.simulator.station.component.chargingstation;
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.util.HashMap;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.mock.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.BDDMockito.given;
 
-@ExtendWith(MockitoExtension.class)
 class IdentityVariableAccessorTest {
 
     private static final String STATION_IDENTITY_CODE = "EVB-12345678";
@@ -34,13 +33,23 @@ class IdentityVariableAccessorTest {
     private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.MIN_SET).build();
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.TARGET).build();
 
-    @Mock(lenient = true)
-    Station stationMock;
-    @Mock(lenient = true)
-    SimulatorConfiguration.StationConfiguration stationConfigurationMock;
+    Station station;
+    SimulatorConfiguration.StationConfiguration stationConfiguration;
 
-    @InjectMocks
     IdentityVariableAccessor variableAccessor;
+
+    @BeforeEach
+    void setUp() {
+        stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        station = new Station(stationConfiguration);
+        StationStore stationStore = new StationStore(Clock.systemUTC(), 10, 100, new HashMap<>());
+        variableAccessor = new IdentityVariableAccessor(station, stationStore);
+    }
 
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
@@ -91,8 +100,7 @@ class IdentityVariableAccessorTest {
     }
 
     private void initStationMockIdentityCode(String expectedValue) {
-        given(stationMock.getConfiguration()).willReturn(stationConfigurationMock);
-        given(stationConfigurationMock.getId()).willReturn(expectedValue);
+        stationConfiguration.setId(expectedValue);
     }
 
     static AttributePath.AttributePathBuilder attributePathBuilder() {

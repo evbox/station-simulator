@@ -1,31 +1,33 @@
 package com.evbox.everon.ocpp.simulator.station.component.ocppcommctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.mock.assertion.CiStringAssert.assertCiString;
-import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 class HeartbeatIntervalVariableAccessorTest {
 
     private static final String COMPONENT_NAME = OCPPCommCtrlrComponent.NAME;
@@ -36,13 +38,24 @@ class HeartbeatIntervalVariableAccessorTest {
     private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.MIN_SET).build();
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.TARGET).build();
 
-    @Mock(lenient = true)
-    Station stationMock;
-    @Mock(lenient = true)
-    StationStore stationStoreMock;
+    StationStore stationStore;
+    Station station;
 
-    @InjectMocks
     HeartbeatIntervalVariableAccessor variableAccessor;
+
+    @BeforeEach
+    void setup() {
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        station = new Station(stationConfiguration);
+        stationStore = new StationStore(Clock.systemUTC(), DEFAULT_HEARTBEAT_INTERVAL, 100,
+                Map.of(DEFAULT_EVSE_ID, new Evse(DEFAULT_EVSE_ID, List.of(new Connector(1, UNPLUGGED, AVAILABLE)))));
+        variableAccessor = new HeartbeatIntervalVariableAccessor(station, stationStore);
+    }
 
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
@@ -79,8 +92,6 @@ class HeartbeatIntervalVariableAccessorTest {
     @ParameterizedTest
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(AttributePath attributePath, GetVariableStatus expectedAttributeStatus, String expectedValue) {
-        //given
-        initStationMockHeartbeat();
 
         //when
         GetVariableResult result = variableAccessor.get(attributePath);
@@ -105,12 +116,10 @@ class HeartbeatIntervalVariableAccessorTest {
         variableAccessor.setActualValue(new AttributePath(component, variable, attributeType), new CiString.CiString1000(String.valueOf(heartbeatInterval)));
 
         //then
-        verify(stationMock).updateHeartbeat(eq(heartbeatInterval));
+//        assertEquals(station.getHeartbeatScheduler().getHeartbeatTask().getHeartBeatInterval(), heartbeatInterval);
+        assertEquals(station.getStateView().getHeartbeatInterval(), heartbeatInterval);
     }
 
-    private void initStationMockHeartbeat() {
-        given(stationStoreMock.getHeartbeatInterval()).willReturn(DEFAULT_HEARTBEAT_INTERVAL);
-    }
 
     static AttributePath.AttributePathBuilder attributePathBuilder() {
         return AttributePath.builder()

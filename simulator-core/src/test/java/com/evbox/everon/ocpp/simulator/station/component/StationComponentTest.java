@@ -1,23 +1,22 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
+import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableAccessor;
+import com.evbox.everon.ocpp.simulator.station.component.variable.VariableGetter;
+import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
+import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v201.message.station.ReportData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 public class StationComponentTest {
 
     private static final List<ReportData> REPORT_DATA = singletonList(new ReportData());
@@ -26,19 +25,14 @@ public class StationComponentTest {
 
     StationComponent stationComponent;
 
-    @Mock
     VariableAccessor mutableAccessorMock;
 
-    @Mock
     VariableAccessor immutableAccessorMock;
 
     @BeforeEach
     void initComponent() {
-        when(mutableAccessorMock.isMutable()).thenReturn(true);
-        when(immutableAccessorMock.isMutable()).thenReturn(false);
-        when(mutableAccessorMock.getVariableName()).thenReturn("MutableVariable");
-        when(immutableAccessorMock.getVariableName()).thenReturn("ImmutableVariable");
-        when(mutableAccessorMock.generateReportData(any())).thenReturn(REPORT_DATA);
+        mutableAccessorMock = createVariableAccessor(true, "MutableVariable");
+        immutableAccessorMock = createVariableAccessor(false, "ImmutableVariable");
 
         stationComponent = new StationComponent(asList(mutableAccessorMock, immutableAccessorMock)) {
             @Override
@@ -58,9 +52,42 @@ public class StationComponentTest {
     @Test
     @DisplayName("Generating base reports for all variables")
     void shouldGenerateBaseReportForAllVariables() {
-        when(immutableAccessorMock.generateReportData(any())).thenReturn(REPORT_DATA);
-
         List<ReportData> reportData = stationComponent.generateReportData(false);
         assertThat(reportData.size()).isEqualTo(2);
+    }
+
+
+    private VariableAccessor createVariableAccessor(boolean mutable, String variableName) {
+        return new VariableAccessor(null, null) {
+            @Override
+            public String getVariableName() {
+                return variableName;
+            }
+
+            @Override
+            public Map<AttributeType, VariableGetter> getVariableGetters() {
+                return null;
+            }
+
+            @Override
+            public Map<AttributeType, VariableSetter> getVariableSetters() {
+                return null;
+            }
+
+            @Override
+            public Map<AttributeType, SetVariableValidator> getVariableValidators() {
+                return null;
+            }
+
+            @Override
+            public List<ReportData> generateReportData(String componentName) {
+                return REPORT_DATA;
+            }
+
+            @Override
+            public boolean isMutable() {
+                return mutable;
+            }
+        };
     }
 }

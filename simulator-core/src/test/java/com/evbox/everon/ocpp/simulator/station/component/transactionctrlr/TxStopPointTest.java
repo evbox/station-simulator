@@ -1,13 +1,10 @@
 package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.evbox.everon.ocpp.common.OptionList;
-import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.*;
 import com.evbox.everon.ocpp.simulator.station.evse.Connector;
-import com.evbox.everon.ocpp.simulator.station.evse.Evse;
-import com.evbox.everon.ocpp.simulator.station.evse.EvseTransaction;
-import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import com.evbox.everon.ocpp.simulator.station.evse.states.ChargingState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.StoppedState;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
@@ -20,35 +17,33 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
+import java.time.Clock;
+import java.util.*;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseStatus.UNAVAILABLE;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.NONE;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TxStopPointTest {
 
-    @Mock
-    Station stationMock;
 
-    @Mock
-    Connector connectorMock;
+    private Connector connector;
 
-    @Mock
-    Evse evseMock;
+    private Evse evse;
 
-    @Mock
-    StationStore stationStoreMock;
+    private StationStore stationStore;
 
     @Mock
     StationMessageSender stationMessageSenderMock;
 
-    @Mock
-    StateManager stateManagerMock;
+    private StateManager stateManager;
 
     @Captor
     ArgumentCaptor<Subscriber<StatusNotificationRequest, StatusNotificationResponse>> statusNotificationCaptor;
@@ -62,223 +57,201 @@ public class TxStopPointTest {
 
     @BeforeEach
     void setUp() {
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-        EvseTransaction transaction = new EvseTransaction(UUID.randomUUID().toString());
-//        lenient().when(evseMock.createTransaction(anyString())).thenReturn(transaction);
-        lenient().when(evseMock.getTransaction()).thenReturn(transaction);
-        when(evseMock.getEvseState()).thenReturn(new ChargingState());
-        this.stateManagerMock = new StateManager(stationMock, stationStoreMock, stationMessageSenderMock);
+        connector = new Connector(1, UNPLUGGED, AVAILABLE);
+        evse = new Evse(DEFAULT_EVSE_ID, UNAVAILABLE, new EvseTransaction(EvseTransactionStatus.NONE), List.of(connector));
+        stationStore = new StationStore(Clock.systemUTC(), 10, 100,
+                Map.of(DEFAULT_EVSE_ID, evse));
+        evse.setEvseState(new ChargingState());
+        stateManager = new StateManager(null, stationStore, stationMessageSenderMock);
     }
 
     @Test
     void verifyStopOnlyOnAuthorizedAuthAction() {
-        when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
-        when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        connector.plug();
+        connector.lock();
+        evse.setToken(DEFAULT_TOKEN_ID);
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.DE_AUTHORIZED, 0);
-        verify(evseMock, times(1)).stopTransaction();
+        assertEquals(STOPPED, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnlyOnAuthorizedUnplugAction() {
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        evse.setEvseState(new StoppedState());
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-
-        stateManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_DEPARTED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, never()).stopTransaction();
+        assertEquals(NONE, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnlyOnEVConnectedUnplugAction() {
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        evse.setEvseState(new StoppedState());
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
 
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-
-        stateManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_DEPARTED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, times(1)).stopTransaction();
+        assertEquals(STOPPED, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnlyOnEVConnectedAuthAction() {
-        when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
-        when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        connector.plug();
+        connector.lock();
+        evse.setToken(DEFAULT_TOKEN_ID);
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.EV_CONNECTED)));
 
-        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, never()).stopTransaction();
+        assertEquals(NONE, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnlyOnPowerPathClosedUnplugAction() {
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        evse.setEvseState(new StoppedState());
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
-
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-
-        stateManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_DEPARTED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, times(1)).stopTransaction();
+        assertEquals(STOPPED, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnlyOnPowerPathClosedAuthAction() {
-        when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
-        when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED )));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        evse.setToken((DEFAULT_TOKEN_ID));
+        connector.plug();
+        connector.lock();
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED )));
 
-        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, never()).stopTransaction();
+        assertEquals(NONE, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnlyOnPowerPathClosedAuthUnplugAction() {
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        evse.setToken(DEFAULT_TOKEN_ID);
+        connector.plug();
+        connector.lock();
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
-        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, never()).stopTransaction();
-        verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(StoppedState.NAME)));
+        assertEquals(NONE, evse.getTransaction().getStatus());
+        assertEquals(StoppedState.NAME, evse.getEvseState().getStateName());
 
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
-
-        stateManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_DEPARTED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, times(1)).stopTransaction();
+        assertEquals(STOPPED, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnAuthorizedAndEVConnectedAuthAction() {
-        when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
-        when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        connector.plug();
+        connector.lock();
+        evse.setToken(DEFAULT_TOKEN_ID);
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.DE_AUTHORIZED, 0);
-        verify(evseMock, times(1)).stopTransaction();
+        assertEquals(STOPPED, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnAuthorizedAndEVConnectedUnplugAction() {
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        evse.setEvseState(new StoppedState());
+        stationStore.setTxStopPointValues(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Collections.singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-
-        stateManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_DEPARTED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, never()).stopTransaction();
+        assertEquals(NONE, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStartOnAuthorizedAndPowerPathClosedAuthUnplugAction() {
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        connector.plug();
+        connector.lock();
+        evse.setToken(DEFAULT_TOKEN_ID);
+        stationStore.setTxStopPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
-        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, never()).createTransaction(anyString());
-        verify(evseMock).setEvseState(argThat( s -> s.getStateName().equals(StoppedState.NAME)));
+        assertEquals(NONE, evse.getTransaction().getStatus());
+        assertEquals(StoppedState.NAME, evse.getEvseState().getStateName());
 
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        evse.setEvseState(new StoppedState());
 
-        stateManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_DEPARTED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, times(1)).stopTransaction();
+        assertEquals(STOPPED, evse.getTransaction().getStatus());
+
     }
 
     @Test
     void verifyStopOnAuthorizedAndEVConnectedAndPowerPathClosedUnplugAction() {
-        when(evseMock.getEvseState()).thenReturn(new StoppedState());
+        evse.setEvseState(new StoppedState());
+        stationStore.setTxStopPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
-        when(evseMock.findConnector(anyInt())).thenReturn(connectorMock);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
-
-        stateManagerMock.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
+        stateManager.cableUnplugged(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
         verify(stationMessageSenderMock).sendStatusNotificationAndSubscribe(any(), any(), statusNotificationCaptor.capture());
         statusNotificationCaptor.getValue().onResponse(new StatusNotificationRequest(), new StatusNotificationResponse());
 
         verify(stationMessageSenderMock, times(1)).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_DEPARTED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, times(1)).stopTransaction();
+        assertEquals(STOPPED, evse.getTransaction().getStatus());
     }
 
     @Test
     void verifyStopOnAuthorizedAndEVConnectedAndPowerPathClosedAuthAction() {
-        when(evseMock.getId()).thenReturn(DEFAULT_EVSE_ID);
-        when(evseMock.unlockConnector()).thenReturn(DEFAULT_CONNECTOR_ID);
-        when(evseMock.getTokenId()).thenReturn(DEFAULT_TOKEN_ID);
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        connector.plug();
+        connector.lock();
+        evse.setToken(DEFAULT_TOKEN_ID);
+        stationStore.setTxStopPointValues(new OptionList<>(Arrays.asList(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED, TxStartStopPointVariableValues.POWER_PATH_CLOSED)));
 
-        stateManagerMock.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
+        stateManager.authorized(DEFAULT_EVSE_ID, DEFAULT_TOKEN_ID);
         verify(stationMessageSenderMock).sendAuthorizeAndSubscribe(anyString(), authorizeCaptor.capture());
         authorizeCaptor.getValue().onResponse(new AuthorizeRequest(), new AuthorizeResponse().withIdTokenInfo(new IdTokenInfo().withStatus(AuthorizationStatus.ACCEPTED)));
 
         verify(stationMessageSenderMock, never()).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.STOP_AUTHORIZED, Reason.EV_DISCONNECTED, 0L);
-        verify(evseMock, never()).stopTransaction();
+        assertEquals(NONE, evse.getTransaction().getStatus());
     }
 
 }

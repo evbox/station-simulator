@@ -3,6 +3,9 @@
 ### Version 0.5.14
 - Maintenance release with updated dependencies
 
+### Version 0.5.13
+- Update tests to use less mocks
+
 ### Version 0.5.12
 - Change transactionId to random UUID format
 

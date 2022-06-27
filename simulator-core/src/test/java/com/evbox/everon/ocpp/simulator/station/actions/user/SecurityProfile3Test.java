@@ -17,12 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(MockitoExtension.class)
 public class SecurityProfile3Test {
 
-    @Mock
-    StationStore stationStoreMock;
+    StationStore stationStore;
     @Mock
     StationMessageSender stationMessageSenderMock;
-    @Mock
-    StateManager stateManagerMock;
+    StateManager stateManager;
 
     Station station;
     SecurityProfile3 securityProfile3;
@@ -38,11 +36,11 @@ public class SecurityProfile3Test {
 
         this.station = new Station(stationConfiguration);
         this.securityProfile3 = new SecurityProfile3("url");
-        this.stateManagerMock = new StateManager(station, stationStoreMock, stationMessageSenderMock);
+        this.stateManager = new StateManager(station, stationStore, stationMessageSenderMock);
     }
 
     @Test
     void shouldThrowExceptionOnIllegalState() {
-        assertThrows(IllegalArgumentException.class, () -> securityProfile3.perform(stateManagerMock));
+        assertThrows(IllegalArgumentException.class, () -> securityProfile3.perform(stateManager));
     }
 }

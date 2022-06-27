@@ -42,7 +42,7 @@ public class EvseTransaction {
      *
      * @param status transaction status
      */
-    private EvseTransaction(EvseTransactionStatus status) {
+    public EvseTransaction(EvseTransactionStatus status) {
         Objects.requireNonNull(status);
 
         this.status = status;

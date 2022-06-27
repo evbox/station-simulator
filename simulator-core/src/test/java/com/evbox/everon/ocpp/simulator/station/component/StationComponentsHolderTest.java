@@ -1,37 +1,44 @@
 package com.evbox.everon.ocpp.simulator.station.component;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
 class StationComponentsHolderTest {
-
-    @Mock
-    Station station;
-    @Mock
-    StationStore stationStore;
-
     private StationComponentsHolder victim;
 
     @BeforeEach
     void setup() {
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        Station station = new Station(stationConfiguration);
+        StationStore stationStore = new StationStore(Clock.systemUTC(), DEFAULT_HEARTBEAT_INTERVAL, 100,
+                Map.of(DEFAULT_EVSE_ID, new Evse(DEFAULT_EVSE_ID, List.of(new Connector(1, UNPLUGGED, AVAILABLE)))));
         victim = new StationComponentsHolder(station, stationStore);
     }
 

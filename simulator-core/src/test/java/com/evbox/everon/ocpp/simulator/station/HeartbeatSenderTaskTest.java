@@ -18,16 +18,13 @@ public class HeartbeatSenderTaskTest {
     private static final int HEARTBEAT_INTERVAL = 30;
 
     @Mock
-    StationStore stationStore;
-
-    @Mock
     StationMessageSender stationMessageSender;
 
     HeartbeatSenderTask task;
 
     @BeforeEach
     void setUp() {
-        this.task = new HeartbeatSenderTask(stationStore, stationMessageSender);
+        this.task = new HeartbeatSenderTask(null, stationMessageSender);
         task.updateHeartBeatInterval(HEARTBEAT_INTERVAL);
     }
 
