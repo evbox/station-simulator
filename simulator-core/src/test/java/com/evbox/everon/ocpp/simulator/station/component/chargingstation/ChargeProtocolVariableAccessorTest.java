@@ -5,12 +5,9 @@ import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
@@ -18,7 +15,6 @@ import static com.evbox.everon.ocpp.mock.assertion.CiStringAssert.assertCiString
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@ExtendWith(MockitoExtension.class)
 class ChargeProtocolVariableAccessorTest {
 
     private static final String COMPONENT_NAME = ChargingStationComponent.NAME;
@@ -29,8 +25,7 @@ class ChargeProtocolVariableAccessorTest {
     private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.MIN_SET).build();
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.TARGET).build();
 
-    @InjectMocks
-    ChargeProtocolVariableAccessor variableAccessor;
+    ChargeProtocolVariableAccessor variableAccessor = new ChargeProtocolVariableAccessor(null, null);
 
     static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(

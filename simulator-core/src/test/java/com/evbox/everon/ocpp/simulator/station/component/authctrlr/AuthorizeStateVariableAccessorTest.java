@@ -1,27 +1,29 @@
 package com.evbox.everon.ocpp.simulator.station.component.authctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.util.HashMap;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.mock.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorizeStateVariableAccessorTest {
@@ -34,15 +36,24 @@ class AuthorizeStateVariableAccessorTest {
     private static final AttributePath MIN_SET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.MIN_SET).build();
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder().attributeType(AttributeType.TARGET).build();
 
-    @Mock(lenient = true)
-    Station stationMock;
-    @Mock(lenient = true)
-    StationStore stationStoreMock;
+    Station station;
+    StationStore stationStore;
 
-    @InjectMocks
     AuthorizeStateVariableAccessor authorizeAccessor;
 
+    @BeforeEach
+    void setUp() {
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        station = new Station(stationConfiguration);
+        stationStore = new StationStore(Clock.systemUTC(), 10, 100, new HashMap<>());
+        authorizeAccessor = new AuthorizeStateVariableAccessor(station, stationStore);
 
+    }
     static AttributePath.AttributePathBuilder attributePathBuilder() {
         return AttributePath.builder()
                 .component(new Component().withName(new CiString.CiString50(COMPONENT_NAME)))
@@ -110,11 +121,11 @@ class AuthorizeStateVariableAccessorTest {
         authorizeAccessor.setActualValue(new AttributePath(component, variable, attributeType), new CiString.CiString1000(String.valueOf(false)));
 
         //then
-        verify(stationMock).setAuthorizeState(false);
+        assertFalse(stationStore.isAuthEnabled());
     }
 
     private void initStationMockAuthEnabled() {
-        given(stationStoreMock.isAuthEnabled()).willReturn(true);
+        stationStore.setAuthorizeState(true);
     }
 
 }

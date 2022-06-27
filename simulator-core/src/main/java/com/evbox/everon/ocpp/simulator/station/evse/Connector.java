@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
+
 import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.OCCUPIED;
 

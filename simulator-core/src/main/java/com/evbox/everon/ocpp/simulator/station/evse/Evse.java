@@ -79,7 +79,7 @@ public class Evse {
      * @param connectors list of connectors for this evse
      */
     public Evse(int id, EvseStatus evseStatus, List<Connector> connectors) {
-        this(id, evseStatus, EvseTransaction.NONE, connectors);
+        this(id, evseStatus, new EvseTransaction(EvseTransactionStatus.NONE), connectors);
     }
 
     /**

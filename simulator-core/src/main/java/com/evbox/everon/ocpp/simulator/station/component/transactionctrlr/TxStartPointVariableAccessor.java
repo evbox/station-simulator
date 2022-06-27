@@ -14,7 +14,6 @@ import com.evbox.everon.ocpp.v201.message.centralserver.Attribute;
 import com.evbox.everon.ocpp.v201.message.centralserver.GetVariableResult;
 import com.evbox.everon.ocpp.v201.message.centralserver.GetVariableStatus;
 import com.evbox.everon.ocpp.v201.message.station.*;
-import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +91,7 @@ public class TxStartPointVariableAccessor extends VariableAccessor {
 
         Station station = getStation();
         station.updateTxStartPointValues(new OptionList<>(startPoints));
+        getStationStore().setTxStartPointValues(new OptionList<>(startPoints));
     }
 
     private GetVariableResult getActualValue(AttributePath attributePath) {

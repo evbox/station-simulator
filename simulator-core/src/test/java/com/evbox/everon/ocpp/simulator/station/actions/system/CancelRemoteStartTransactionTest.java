@@ -16,52 +16,54 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.util.Map;
+
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_CONNECTOR_ID;
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static com.evbox.everon.ocpp.simulator.station.evse.EvseTransactionStatus.STOPPED;
+import static org.assertj.core.util.Lists.emptyList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CancelRemoteStartTransactionTest {
+    Evse evse;
 
-    @Mock
-    Evse evseMock;
-    @Mock
-    StationStore stationStoreMock;
+    StationStore stationStore;
     @Mock
     StationMessageSender stationMessageSenderMock;
-    @Mock
-    StateManager stateManagerMock;
+
+    StateManager stateManager;
 
     private CancelRemoteStartTransaction cancelRemoteStartTransaction;
 
     @BeforeEach
     void setUp() {
+        evse = new Evse(DEFAULT_EVSE_ID, emptyList());
+        evse.setEvseState(new AvailableState());
+        stationStore = new StationStore(Clock.systemUTC(), 10, 100, Map.of(DEFAULT_EVSE_ID, evse));
         this.cancelRemoteStartTransaction = new CancelRemoteStartTransaction(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID);
-        this.stateManagerMock = new StateManager(null, stationStoreMock, stationMessageSenderMock);
-        when(evseMock.getEvseState()).thenReturn(new AvailableState());
-        when(stationStoreMock.findEvse(anyInt())).thenReturn(evseMock);
+        this.stateManager = new StateManager(null, stationStore, stationMessageSenderMock);
     }
 
     @Test
     void shouldReleaseConnector() {
+        evse.setEvseState(new WaitingForPlugState());
 
-        when(evseMock.getEvseState()).thenReturn(new WaitingForPlugState());
-
-        cancelRemoteStartTransaction.perform(stationStoreMock, stationMessageSenderMock, stateManagerMock);
+        cancelRemoteStartTransaction.perform(stationStore, stationMessageSenderMock, stateManager);
 
         verify(stationMessageSenderMock).sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, ConnectorStatus.AVAILABLE);
-        verify(evseMock).stopTransaction();
         verify(stationMessageSenderMock).sendTransactionEventEnded(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, TriggerReason.EV_CONNECT_TIMEOUT, Reason.TIMEOUT, 0L);
-        verify(evseMock).setEvseState(argThat(s -> s.getStateName().equals(AvailableState.NAME)));
+        assertEquals(evse.getEvseState().getStateName(), AvailableState.NAME);
+        assertEquals(evse.getTransaction().getStatus(), STOPPED);
     }
 
     @Test
     void verifyTransactionStatusNotification() {
+        evse.setEvseState(new ChargingState());
 
-        when(evseMock.getEvseState()).thenReturn(new ChargingState());
-
-        cancelRemoteStartTransaction.perform(stationStoreMock, stationMessageSenderMock, stateManagerMock);
+        cancelRemoteStartTransaction.perform(stationStore, stationMessageSenderMock, stateManager);
         verify(stationMessageSenderMock, times(0)).sendStatusNotification(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, ConnectorStatus.AVAILABLE);
 
     }

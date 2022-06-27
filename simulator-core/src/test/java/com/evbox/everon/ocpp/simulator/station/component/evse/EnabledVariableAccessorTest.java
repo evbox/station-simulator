@@ -2,29 +2,29 @@ package com.evbox.everon.ocpp.simulator.station.component.evse;
 
 import com.evbox.everon.ocpp.common.CiString;
 import com.evbox.everon.ocpp.mock.constants.StationConstants;
-import com.evbox.everon.ocpp.simulator.station.Station;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v201.message.centralserver.*;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.evbox.everon.ocpp.mock.assertion.CiStringAssert.assertCiString;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 
-@ExtendWith(MockitoExtension.class)
 class EnabledVariableAccessorTest {
 
     private static final int EVSE_ID = StationConstants.DEFAULT_EVSE_ID;
@@ -45,19 +45,16 @@ class EnabledVariableAccessorTest {
     private static final AttributePath TARGET_ATTRIBUTE = attributePathBuilder(EVSE_ID)
             .attributeType(AttributeType.TARGET).build();
 
-    @SuppressWarnings("unused")
-    @Mock(lenient = true)
-    Station stationMock;
-    @Mock(lenient = true)
-    StationStore stationStoreMock;
-    @SuppressWarnings("unused")
-    @Mock
-    Evse evseMock;
-
-    @InjectMocks
     EnabledVariableAccessor variableAccessor;
 
-    static Stream<Arguments> setVariableDatumProvider() {
+    @BeforeEach
+    void setup() {
+        StationStore stationStore = new StationStore(Clock.systemUTC(), 10, 100,
+                Map.of(DEFAULT_EVSE_ID, new Evse(DEFAULT_EVSE_ID, List.of(new Connector(1, UNPLUGGED, AVAILABLE)))));
+        variableAccessor = new EnabledVariableAccessor(null, stationStore);
+    }
+
+        static Stream<Arguments> setVariableDatumProvider() {
         return Stream.of(
                 arguments(ACTUAL_ATTRIBUTE, EnabledVariableAccessor.EVSE_ENABLED_STATUS, SetVariableStatus.REJECTED),
                 arguments(MAX_SET_ATTRIBUTE, EnabledVariableAccessor.EVSE_ENABLED_STATUS, SetVariableStatus.NOT_SUPPORTED_ATTRIBUTE_TYPE),
@@ -96,8 +93,6 @@ class EnabledVariableAccessorTest {
     @ParameterizedTest
     @MethodSource("getVariableDatumProvider")
     void shouldGetVariableDatum(AttributePath attributePath, GetVariableStatus expectedAttributeStatus, String expectedValue) {
-        //given
-        initEvseMock();
 
         //when
         GetVariableResult result = variableAccessor.get(attributePath);
@@ -108,11 +103,6 @@ class EnabledVariableAccessorTest {
         assertThat(result.getAttributeType()).isEqualTo(Attribute.fromValue(attributePath.getAttributeType().getName()));
         assertThat(result.getAttributeStatus()).isEqualTo(expectedAttributeStatus);
         assertCiString(result.getAttributeValue()).isEqualTo(expectedValue);
-    }
-
-    private void initEvseMock() {
-        given(stationStoreMock.hasEvse(eq(EVSE_ID))).willReturn(true);
-        given(stationStoreMock.hasEvse(eq(UNKNOWN_EVSE_ID))).willReturn(false);
     }
 
     static AttributePath.AttributePathBuilder attributePathBuilder(int evseId) {

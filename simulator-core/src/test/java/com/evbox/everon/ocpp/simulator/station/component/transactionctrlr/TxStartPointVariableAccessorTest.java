@@ -1,47 +1,66 @@
 package com.evbox.everon.ocpp.simulator.station.component.transactionctrlr;
 
 import com.evbox.everon.ocpp.common.CiString;
+import com.evbox.everon.ocpp.simulator.configuration.SimulatorConfiguration;
 import com.evbox.everon.ocpp.simulator.station.Station;
+import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.component.variable.SetVariableValidator;
 import com.evbox.everon.ocpp.simulator.station.component.variable.VariableSetter;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributePath;
 import com.evbox.everon.ocpp.simulator.station.component.variable.attribute.AttributeType;
+import com.evbox.everon.ocpp.simulator.station.evse.Connector;
+import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.v201.message.centralserver.Component;
 import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableResult;
 import com.evbox.everon.ocpp.v201.message.centralserver.SetVariableStatus;
 import com.evbox.everon.ocpp.v201.message.centralserver.Variable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.util.List;
+import java.util.Map;
+
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_CONNECTORS;
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.TRANSACTION_COMPONENT_NAME;
 import static com.evbox.everon.ocpp.mock.constants.VariableConstants.TX_START_POINT_VARIABLE_NAME;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-
-@ExtendWith(MockitoExtension.class)
 public class TxStartPointVariableAccessorTest {
 
     private static final String TX_START_POINT_VALUE = "EVConnected,Authorized";
 
     private static final CiString.CiString1000 TX_START_POINT_ATTRIBUTE = new CiString.CiString1000(TX_START_POINT_VALUE);
 
-    @Mock
-    Station stationMock;
+    StationStore stationStore;
+    Station station;
 
-    @InjectMocks
     TxStartPointVariableAccessor txStartPointVariableAccessor;
 
+    @BeforeEach
+    void setup() {
+        SimulatorConfiguration.StationConfiguration stationConfiguration = new SimulatorConfiguration.StationConfiguration();
+        stationConfiguration.setId(STATION_ID);
+        SimulatorConfiguration.Evse evse = new SimulatorConfiguration.Evse();
+        evse.setCount(DEFAULT_EVSE_COUNT);
+        evse.setConnectors(DEFAULT_EVSE_CONNECTORS);
+        stationConfiguration.setEvse(evse);
+        station = new Station(stationConfiguration);
+        stationStore = new StationStore(Clock.systemUTC(), DEFAULT_HEARTBEAT_INTERVAL, 100,
+                Map.of(DEFAULT_EVSE_ID, new Evse(DEFAULT_EVSE_ID, List.of(new Connector(1, UNPLUGGED, AVAILABLE)))));
+        txStartPointVariableAccessor = new TxStartPointVariableAccessor(station, stationStore);
+    }
     @Test
     void shouldUpdateTxStartPoint() {
         VariableSetter variableSetter = txStartPointVariableAccessor.getVariableSetters().get(AttributeType.ACTUAL);
 
         variableSetter.set(attributePath(), TX_START_POINT_ATTRIBUTE);
 
-        verify(stationMock).updateTxStartPointValues(argThat(arg -> arg.contains(TxStartStopPointVariableValues.AUTHORIZED) && arg.contains(TxStartStopPointVariableValues.EV_CONNECTED)));
+        assertThat(txStartPointVariableAccessor.getStationStore().getTxStartPointValues())
+                .hasSize(2)
+                .containsExactlyInAnyOrder(TxStartStopPointVariableValues.AUTHORIZED, TxStartStopPointVariableValues.EV_CONNECTED);
     }
 
     @Test

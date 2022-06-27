@@ -18,42 +18,46 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_EVSE_ID;
+import static com.evbox.everon.ocpp.mock.constants.StationConstants.DEFAULT_HEARTBEAT_INTERVAL;
+import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.UNPLUGGED;
+import static com.evbox.everon.ocpp.v201.message.station.ConnectorStatus.AVAILABLE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorizeHelperTest {
     private Evse evse;
 
-    @Mock
-    private StateManager stateManagerMock;
+    private StateManager stateManager;
 
     @Mock
     private StationMessageSender stationMessageSenderMock;
 
-    @Mock
-    private StationStore stationStoreMock;
+    private StationStore stationStore;
 
     @BeforeEach
     void setUp() {
         evse = new Evse(1, Collections.singletonList(new Connector(1, CableStatus.PLUGGED, ConnectorStatus.OCCUPIED)));
         evse.createTransaction("123");
-
-        when(stateManagerMock.getStationMessageSender()).thenReturn(stationMessageSenderMock);
-        when(stateManagerMock.getStationStore()).thenReturn(stationStoreMock);
+        stationStore = new StationStore(Clock.systemUTC(), DEFAULT_HEARTBEAT_INTERVAL, 100,
+                Map.of(DEFAULT_EVSE_ID, new Evse(DEFAULT_EVSE_ID, List.of(new Connector(1, UNPLUGGED, AVAILABLE)))));
+        stateManager = new StateManager(null, stationStore, stationMessageSenderMock);
     }
 
     @Test
     void testDeathorizeWithStopPointWithoutAuthorized() {
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(emptyList()));
+        stationStore.setTxStopPointValues(new OptionList<>(emptyList()));
 
-        AuthorizeHelper.handleFailedAuthorizeResponse(stateManagerMock, evse);
+        AuthorizeHelper.handleFailedAuthorizeResponse(stateManager, evse);
 
         verify(stationMessageSenderMock).sendTransactionEventUpdate(eq(1),
                 eq(1),
@@ -64,9 +68,9 @@ class AuthorizeHelperTest {
 
     @Test
     void testDeathorizeWithStopPointWithAuthorized() {
-        when(stationStoreMock.getTxStopPointValues()).thenReturn(new OptionList<>(singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
+        stationStore.setTxStopPointValues(new OptionList<>(singletonList(TxStartStopPointVariableValues.AUTHORIZED)));
 
-        AuthorizeHelper.handleFailedAuthorizeResponse(stateManagerMock, evse);
+        AuthorizeHelper.handleFailedAuthorizeResponse(stateManager, evse);
 
         verify(stationMessageSenderMock).sendTransactionEventEnded(eq(1),
                 eq(1),
