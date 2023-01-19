@@ -59,6 +59,12 @@ To build:
 $ ./gradlew build
 ```
 
+Build fat jar that can be executed without gradle or source code
+```shell
+./gradlew clean fatJar
+```
+Copy jar from `simulator-core/build/libs/simulator-core-0.5.16-all.jar`  
+
 ## Usage
 
 Starts the simulator with one station, which has a single EVSE and a single connector attached to it:
@@ -72,6 +78,11 @@ To start the simulator with a certificate installed on startup, follow the follo
 ```bash
  $ ./gradlew run -Parguments="ws://{ocpp_endpoint_url} --configuration {'stations':[{'id':'EVB-P17390866','evse':{'count':1,'connectors':1},'manufacturerCertificatePath':'{path_to_certificate}','keyPairPath':'{path_to_key_pair}'}]}"
 ````
+
+To start standalone jar file use
+```shell
+java -jar {path_to_jar_file} ws://{ocpp_endpoint_url} --configuration "{'stations':[{'id':'{station_identity_code}','evse':{'count':1,'connectors':1},'keyPairPath':'{path_to_key_pair}','manufacturerCertificatePath':'{path_to_certificate_chain}','hardwareConfiguration':{'serialNumber':'{station_hardware_serial_number}'}}]}"
+```
 ### Guide for Instant charging transaction with Everon
 
 Follow [Readme](docs/autostart/Autostart.md) for detailed steps
