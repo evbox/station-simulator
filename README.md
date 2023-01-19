@@ -74,7 +74,7 @@ To start the simulator with a certificate installed on startup, follow the follo
 ````
 ### Guide for Instant charging transaction with Everon
 
-Follow [Readme](autostart/Autostart.md) for detailed steps
+Follow [Readme](docs/autostart/Autostart.md) for detailed steps
 
 ## Full Documentation
 

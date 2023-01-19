@@ -1,4 +1,8 @@
 # Station Simulator Releases #
+
+### Version 0.5.16
+- Support for pem keys
+
 ### Version 0.5.15
 - Minor bug fix
 
