@@ -9,6 +9,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse;
 import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.evbox.everon.ocpp.simulator.station.exceptions.StationException;
 import com.evbox.everon.ocpp.simulator.station.model.Reservation;
+import com.evbox.everon.ocpp.simulator.station.support.security.PublicPrivateKeyUtils;
 import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
 import com.evbox.everon.ocpp.v201.message.station.NetworkConnectionProfile;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -33,7 +34,7 @@ import java.security.cert.X509Certificate;
 import java.time.*;
 import java.util.*;
 
-import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.*;
+import static com.evbox.everon.ocpp.simulator.station.support.security.CertificateUtils.*;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -78,13 +79,13 @@ public class StationStore {
         Optional.ofNullable(configuration.getKeyPairPath()).ifPresent(this::prepareStationKeyPair);
     }
 
-    private void prepareManufacturerCertificate(String certificatePath){
+    private void prepareManufacturerCertificate(String certificatePath) {
         extractCertificateDetails(loadCertificateChain(certificatePath));
     }
 
     private void prepareStationKeyPair(String keyPairPath) {
         try {
-            KeyPair keyPair = loadKeyPair(keyPairPath);
+            KeyPair keyPair = PublicPrivateKeyUtils.loadKeyPair(keyPairPath);
             this.stationPublicKey = keyPair.getPublic();
             this.stationPrivateKey = keyPair.getPrivate();
         } catch (Exception e) {
@@ -252,7 +253,7 @@ public class StationStore {
         return stationModel;
     }
 
-    public String getStationSerialNumber(){
+    public String getStationSerialNumber() {
         return stationSerialNumber;
     }
 
@@ -295,9 +296,9 @@ public class StationStore {
      */
     public Optional<Evse> tryFindEvseByTransactionId(String transactionId) {
         return evses.values()
-                    .stream()
-                    .filter(evse -> evse.hasOngoingTransaction() && evse.getTransaction().getTransactionId().equalsIgnoreCase(transactionId))
-                    .findAny();
+                .stream()
+                .filter(evse -> evse.hasOngoingTransaction() && evse.getTransaction().getTransactionId().equalsIgnoreCase(transactionId))
+                .findAny();
     }
 
     /**
@@ -307,9 +308,9 @@ public class StationStore {
      */
     public Optional<Evse> tryFindAvailableEvse() {
         return evses.values()
-                    .stream()
-                    .filter(evse -> !evse.hasOngoingTransaction())
-                    .findAny();
+                .stream()
+                .filter(evse -> !evse.hasOngoingTransaction())
+                .findAny();
     }
 
     public Optional<Reservation> tryFindReservationById(int reservationId) {
@@ -461,8 +462,8 @@ public class StationStore {
         @Override
         public String toString() {
             ObjectWriter prettyJSONWriter = new ObjectMapper()
-                                                    .findAndRegisterModules()
-                                                    .writerWithDefaultPrettyPrinter();
+                    .findAndRegisterModules()
+                    .writerWithDefaultPrettyPrinter();
             try {
                 return prettyJSONWriter.writeValueAsString(this);
             } catch (JsonProcessingException e) {

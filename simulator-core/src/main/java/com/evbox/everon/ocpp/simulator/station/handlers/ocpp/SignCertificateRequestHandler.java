@@ -6,8 +6,8 @@ import com.evbox.everon.ocpp.simulator.station.StationStore;
 import lombok.extern.slf4j.Slf4j;
 import java.security.*;
 
-import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.generateKeyPair;
-import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.generatePKCS10;
+import static com.evbox.everon.ocpp.simulator.station.support.security.CertificateUtils.generateKeyPair;
+import static com.evbox.everon.ocpp.simulator.station.support.security.CertificateUtils.generatePKCS10;
 
 @Slf4j
 public class SignCertificateRequestHandler implements Runnable {

@@ -1,8 +1,6 @@
-package com.evbox.everon.ocpp.simulator.station.support;
+package com.evbox.everon.ocpp.simulator.station.support.security;
 
-import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -20,12 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 public class CertificateUtils {
@@ -46,11 +42,10 @@ public class CertificateUtils {
 
     public static boolean isCertificateValid(X509Certificate certificate, boolean isHardwareCertificate, String stationSerialNumber) {
         try {
-            if(!isHardwareCertificate){
+            if (!isHardwareCertificate) {
                 certificate.checkValidity();
             }
-            String serialCode = StringUtils.removeStart(certificate.getSubjectDN().getName(), "CN=");
-            if (!stationSerialNumber.equals(serialCode)) {
+            if (!certificate.getSubjectDN().getName().contains(stationSerialNumber)) {
                 return false;
             }
         } catch (Exception e) {
@@ -60,7 +55,7 @@ public class CertificateUtils {
         return true;
     }
 
-    public static String loadCertificateChain(String path){
+    public static String loadCertificateChain(String path) {
         StringBuilder certificateChain = new StringBuilder();
         try (FileInputStream fis = new FileInputStream(path);
              InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
@@ -75,13 +70,13 @@ public class CertificateUtils {
     }
 
     public static String generatePKCS10(PublicKey publicKey, PrivateKey privateKey, String stationSerialNumber) throws IOException, OperatorCreationException {
-        X500Principal principal = new X500Principal( "CN=" + stationSerialNumber);
+        X500Principal principal = new X500Principal("CN=" + stationSerialNumber);
         PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(principal, publicKey);
         JcaContentSignerBuilder csBuilder = new JcaContentSignerBuilder(SIGNATURE_ALG);
         ContentSigner signer = csBuilder.build(privateKey);
         PKCS10CertificationRequest csr = p10Builder.build(signer);
-        try (StringWriter stringWriter = new StringWriter()){
-            try (JcaPEMWriter pemWriter = new JcaPEMWriter(stringWriter)){
+        try (StringWriter stringWriter = new StringWriter()) {
+            try (JcaPEMWriter pemWriter = new JcaPEMWriter(stringWriter)) {
                 pemWriter.writeObject(csr);
             }
             return stringWriter.toString();
@@ -89,7 +84,7 @@ public class CertificateUtils {
     }
 
     public static KeyPair generateKeyPair() {
-        try{
+        try {
             Security.addProvider(new BouncyCastleProvider());
 
             ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("prime256v1");
@@ -101,36 +96,4 @@ public class CertificateUtils {
             return null;
         }
     }
-
-    public static KeyPair loadKeyPair(String path)
-            throws IOException, NoSuchAlgorithmException,
-            InvalidKeySpecException, NoSuchProviderException {
-        // Read Public Key.
-        File filePublicKey = new File(path + "/public.key");
-        byte[] encodedPublicKey;
-        try(FileInputStream fis = new FileInputStream(path + "/public.key")) {
-            encodedPublicKey = new byte[(int) filePublicKey.length()];
-            fis.read(encodedPublicKey);
-        }
-        // Read Private Key.
-        File filePrivateKey = new File(path + "/private.key");
-        byte[] encodedPrivateKey;
-        try(FileInputStream fis = new FileInputStream(path + "/private.key")){
-            encodedPrivateKey = new byte[(int) filePrivateKey.length()];
-            fis.read(encodedPrivateKey);
-        }
-        // Generate KeyPair.
-        Security.addProvider(new BouncyCastleProvider());
-        KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
-                encodedPublicKey);
-        PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
-
-        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(
-                encodedPrivateKey);
-        PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
-
-        return new KeyPair(publicKey, privateKey);
-    }
-
 }

@@ -15,7 +15,7 @@ import com.evbox.everon.ocpp.simulator.station.schedulers.HeartbeatScheduler;
 import com.evbox.everon.ocpp.simulator.station.schedulers.MeterValuesScheduler;
 import com.evbox.everon.ocpp.simulator.station.schedulers.PeriodicEventScheduler;
 import com.evbox.everon.ocpp.simulator.station.subscription.SubscriptionRegistry;
-import com.evbox.everon.ocpp.simulator.station.support.SecurityUtils;
+import com.evbox.everon.ocpp.simulator.station.support.security.SecurityUtils;
 import com.evbox.everon.ocpp.simulator.websocket.LoggingInterceptor;
 import com.evbox.everon.ocpp.simulator.websocket.OkHttpWebSocketClient;
 import com.evbox.everon.ocpp.simulator.websocket.WebSocketClient;
@@ -77,7 +77,7 @@ public class Station {
      * Create a station using {@link SimulatorConfiguration.StationConfiguration}, {@link SimulatorConfiguration.WebSocketConfiguration} and defaultHeartBeatIntervalSec.
      *
      * @param stationConfiguration station configuration
-     * @param socketConfiguration socket configuration
+     * @param socketConfiguration  socket configuration
      */
     public Station(SimulatorConfiguration.StationConfiguration stationConfiguration, SimulatorConfiguration.WebSocketConfiguration socketConfiguration) {
         defaultHttpClientBuilder = new OkHttpClient.Builder()
@@ -121,7 +121,7 @@ public class Station {
 
     /**
      * Sends _connect_ request to the OCPP server using given base web-socket url.
-     *
+     * <p>
      * The connection url has the following structure: serverBaseUrl + stationId
      *
      * @param serverBaseUrl OCPP server base web-socket url
@@ -136,9 +136,8 @@ public class Station {
 
     /**
      * Station starts to receive incoming messages.
-     *
+     * <p>
      * Sends BootNotification.POWER_UP to the OCPP server.
-     *
      */
     public void run() {
 
@@ -211,7 +210,7 @@ public class Station {
      */
     public Future<UserMessageResult> executeUserCommand(UserMessage userCommand, int timeOutSec) {
         return userCommand.perform(stateManager)
-                            .completeOnTimeout(UserMessageResult.FAILED, timeOutSec, TimeUnit.SECONDS);
+                .completeOnTimeout(UserMessageResult.FAILED, timeOutSec, TimeUnit.SECONDS);
     }
 
     /**
@@ -262,6 +261,7 @@ public class Station {
 
     /**
      * Updates station txStartPoint values
+     *
      * @param txStartPointValues txStartPoint values to apply
      */
     public void updateTxStartPointValues(OptionList<TxStartStopPointVariableValues> txStartPointValues) {
@@ -270,6 +270,7 @@ public class Station {
 
     /**
      * Updates station txStopPoint values
+     *
      * @param txStopPointValues txStopPoint values to apply
      */
     public void updateTxStopPointValues(OptionList<TxStartStopPointVariableValues> txStopPointValues) {
@@ -278,6 +279,7 @@ public class Station {
 
     /**
      * Updates station network configuration priority values
+     *
      * @param networkConfigurationPriorityValues NetworkConfigurationPriority values to apply
      */
     public void updateNetworkConfigurationPriorityValues(Integer networkConfigurationPriorityValues) {
@@ -302,8 +304,9 @@ public class Station {
 
     /**
      * Reconnect station to the OCCP server, at most before timeout expires.
+     *
      * @param timeout timeout before reconnecting
-     * @param unit unit of the timeout
+     * @param unit    unit of the timeout
      */
     public void reconnect(long timeout, TimeUnit unit) {
         try {

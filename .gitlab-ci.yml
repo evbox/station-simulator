@@ -1,6 +1,4 @@
-
 variables:
-  SONAR_TOKEN: $SONAR_TOKEN
   GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
 
 default:
@@ -25,49 +23,3 @@ build:
       - reports
     reports:
       junit: ./junit/TEST-*.xml
-
-
-sonar:
-  stage: test
-  needs: [build]
-  script:
-    - ./gradlew sonarqube -Dsonar.login=$SONAR_TOKEN -Dsonar.branch.name=$CI_COMMIT_BRANCH
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    when: always
-    paths:
-      - ./*/build
-      - .gradle
-
-publish-simulator-core:
-  stage: deploy
-  needs: [sonar]
-  when: manual
-  script:
-    - ./gradlew simulator-core:publish
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    when: always
-    paths:
-      - ./*/build
-      - .gradle
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-
-publish-ocpp-model-201:
-  stage: deploy
-  needs: [sonar]
-  when: manual
-  script:
-    - ./gradlew payload:ocpp201:publish
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    when: always
-    paths:
-      - ./*/build
-      - .gradle
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'

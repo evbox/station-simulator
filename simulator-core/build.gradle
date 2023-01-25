@@ -8,8 +8,15 @@ plugins {
     id 'io.franzbecker.gradle-lombok'   version '2.0'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'jacoco'
-    id 'signing'
     id 'java-library'
+    id "maven-publish"
+    id "com.google.cloud.artifactregistry.gradle-plugin" version "2.1.5"
+}
+
+repositories {
+    maven {
+        url "artifactregistry://europe-west1-maven.pkg.dev/everon-test/everon-java"
+    }
 }
 
 apply plugin: 'application'
@@ -90,6 +97,19 @@ jar {
     }
 }
 
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
+    }
+    archiveClassifier = "all"
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    with jar
+}
+
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
     archiveClassifier = 'sources'
@@ -104,7 +124,7 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-version '0.5.15'
+version '0.5.18'
 
 publishing {
     publications {
@@ -115,51 +135,11 @@ publishing {
             groupId 'io.everon'
             artifactId 'ocpp-station-simulator'
             version project.version
-            pom {
-                name = 'ocpp-station-simulator'
-                packaging  = 'jar'
-                description = 'The simulator tool is designed to simulate charging station. It implements OCPP protocol and talks to Charging Station Management System (CSMS) via WebSocket protocol.'
-                url = 'https://github.com/everonhq/station-simulator'
-                licenses {
-                    license {
-                        name = 'MIT License'
-                        url = 'https://github.com/everonhq/station-simulator/blob/master/LICENSE'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'Rawan-Abdelaal'
-                        name = 'Rawan Abdelaal'
-                        email = 'rawan.abdelaal@everon.io'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://github.com/everonhq/station-simulator.git'
-                    developerConnection = 'scm:git:ssh://github.com:everonhq/station-simulator.git'
-                    url = 'https://github.com/everonhq/station-simulator/tree/master'
-                }
-            }
         }
     }
     repositories {
         maven {
-            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            name = 'maven'
-            credentials {
-                username = findProperty("OSSRH_USER") ?: System.getenv("OSSRH_USER") ?: 'return@configure'
-                password = findProperty("OSSRH_PASSWORD") ?: System.getenv("OSSRH_PASSWORD") ?: 'return@configure'
-            }
+            url "artifactregistry://europe-west1-maven.pkg.dev/everon-test/everon-java"
         }
     }
-}
-
-signing {
-    String signingKeyId = findProperty("SIGNING_KEY_ID") ?: System.getenv('SIGNING_KEY_ID') ?: 'your-key-id'
-    String signingKey = findProperty("SIGNING_KEY") ?: System.getenv('SIGNING_KEY') ?: ''
-    String signingPassword = findProperty("SIGNING_PASSWORD") ?: System.getenv('SIGNING_PASSWORD') ?: ''
-
-    useInMemoryPgpKeys(signingKeyId, new String(signingKey.decodeBase64()), new String(signingPassword.decodeBase64()))
-    sign publishing.publications.mavenJava
 }
