@@ -1,0 +1,70 @@
+import java.util.concurrent.TimeUnit
+
+class GoogleArtifactRegistryCredentials {
+
+    private final String username;
+    private final String password;
+
+    GoogleArtifactRegistryCredentials(String username, String password) {
+        this.username = username
+        this.password = password
+    }
+
+    String getUsername() {
+        return this.username
+    }
+
+    String getPassword() {
+        return this.password
+    }
+
+}
+
+class ResolveGoogleArtifactRegistryCredentialsAction implements Action<Credentials> {
+
+    def resolveGCARCredentials() {
+        def serviceAccountKeyFile = new File("${System.getenv('HOME')}/gcp-service-account-key.json")
+        if (serviceAccountKeyFile.exists()) {
+            return resolveSAKeyCredentials(serviceAccountKeyFile)
+        }
+
+        //SA key is not present on path `$HOME/gcp-service-account-key.json`.
+        //Fall back to using access token of any active account.
+        return resolveUserCredentials()
+    }
+
+    def resolveSAKeyCredentials(serviceAccountKeyFile) {
+        def username = "_json_key_base64"
+        def password = serviceAccountKeyFile.text.bytes.encodeBase64().toString()
+
+        return new GoogleArtifactRegistryCredentials(username, password)
+    }
+
+    def resolveUserCredentials() {
+        def sout = new StringBuilder(), serr = new StringBuilder()
+
+        try {
+            def proc = ['gcloud', 'auth', 'print-access-token'].execute(null, new File('.'))
+            proc.consumeProcessOutput(sout, serr)
+            proc.waitFor(5, TimeUnit.SECONDS)
+            if (!serr.allWhitespace) {
+                println "Unable to retrieve access token: ${serr.toString()}"
+            }
+            return new GoogleArtifactRegistryCredentials("oauth2accesstoken", sout.toString())
+        } catch (e) {
+            println "Errors returned by `gcloud auth print-access-token`: $serr, result: $sout"
+            throw new Exception('Unable to retrieve access token ', e)
+        }
+    }
+
+    @Override
+    void execute(Credentials credentials) {
+        def gCARCredentials = resolveGCARCredentials()
+        credentials.setUsername(gCARCredentials.getUsername())
+        credentials.setPassword(gCARCredentials.getPassword())
+    }
+}
+
+ext {
+    resolveGCARCredentialsAction = { new ResolveGoogleArtifactRegistryCredentialsAction() }
+}

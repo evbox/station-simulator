@@ -1,14 +1,6 @@
 # OCPP Station Simulator
 
-[Download](https://search.maven.org/artifact/io.everon/ocpp-station-simulator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=bugs)](https://sonarcloud.io/dashboard?id=station-simulator)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=station-simulator)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=coverage)](https://sonarcloud.io/dashboard?id=station-simulator)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=security_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=station-simulator&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=station-simulator)
 
 [GitHub](https://github.com/evbox/station-simulator) repository is readonly, for contribution please use [GitLab](https://gitlab.com/evbox/open-source/station-simulator)
 
@@ -24,7 +16,7 @@ System (CSMS) via WebSocket protocol.
 ## Installation
 
 ```bash
-$ git clone https://github.com/everonhq/station-simulator.git
+$ git clone git@gitlab.com:evbox/open-source/station-simulator.git
 $ cd station-simulator/
 $ ./gradlew build
 ```
@@ -59,6 +51,17 @@ To build:
 $ ./gradlew build
 ```
 
+Build fat jar that can be executed without gradle or source code
+```shell
+./gradlew clean fatJar
+```
+Copy jar from `simulator-core/build/libs/simulator-core-0.5.16-all.jar`  
+
+## Publish
+```shell
+./gradlew publish
+```
+
 ## Usage
 
 Starts the simulator with one station, which has a single EVSE and a single connector attached to it:
@@ -72,16 +75,16 @@ To start the simulator with a certificate installed on startup, follow the follo
 ```bash
  $ ./gradlew run -Parguments="ws://{ocpp_endpoint_url} --configuration {'stations':[{'id':'EVB-P17390866','evse':{'count':1,'connectors':1},'manufacturerCertificatePath':'{path_to_certificate}','keyPairPath':'{path_to_key_pair}'}]}"
 ````
+
+To start standalone jar file use
+```shell
+java -jar {path_to_jar_file} ws://{ocpp_endpoint_url} --configuration "{'stations':[{'id':'{station_identity_code}','evse':{'count':1,'connectors':1},'keyPairPath':'{path_to_key_pair}','manufacturerCertificatePath':'{path_to_certificate_chain}','hardwareConfiguration':{'serialNumber':'{station_hardware_serial_number}'}}]}"
+```
 ### Guide for Instant charging transaction with Everon
 
 Follow [Readme](docs/autostart/Autostart.md) for detailed steps
 
-## Full Documentation
-
-See the [Wiki](https://github.com/everonhq/station-simulator/wiki) for more examples, operational details, supported use
-cases and other information.
-
 ## Bugs and Feedback
 
 For bugs, questions and discussions please check for any existing issues created under
-the *[GitHub Issues](https://github.com/everonhq/station-simulator/issues)* section.
+the *[GitLab Issues](https://gitlab.com/evbox/open-source/station-simulator/-/issues)* section.
