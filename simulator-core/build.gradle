@@ -129,6 +129,7 @@ version '0.5.17'
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            from components.java
             artifact sourcesJar
             artifact javadocJar
             groupId 'io.everon'
