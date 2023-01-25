@@ -17,8 +17,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.convertStringToCertificates;
-import static com.evbox.everon.ocpp.simulator.station.support.CertificateUtils.isCertificateValid;
+import static com.evbox.everon.ocpp.simulator.station.support.security.CertificateUtils.convertStringToCertificates;
+import static com.evbox.everon.ocpp.simulator.station.support.security.CertificateUtils.isCertificateValid;
 
 /**
  * Handler for {@link CertificateSignedRequest} request.
