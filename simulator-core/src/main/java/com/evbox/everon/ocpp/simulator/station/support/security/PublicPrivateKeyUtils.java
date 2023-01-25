@@ -28,16 +28,16 @@ public class PublicPrivateKeyUtils {
 
     public static KeyPair loadKeyPair(String path) {
         String privateKeyPath = path + "/private.key";
-        PrivateKey privateKey = UnsafeSupplier.getSafe(() -> readPemPrivateKey(privateKeyPath))
+        PrivateKey privateKey = ThrowingSupplier.getAndSuppressException(() -> readPemPrivateKey(privateKeyPath))
                 .orElseGet(() ->
-                        UnsafeSupplier.getSafe(() -> getLegacyFormatPrivateKey(privateKeyPath))
+                        ThrowingSupplier.getAndSuppressException(() -> getLegacyFormatPrivateKey(privateKeyPath))
                                 .orElseThrow(() -> new RuntimeException("Private key cannot be loaded from " + privateKeyPath))
                 );
 
         String publicKetPath = path + "/public.key";
-        PublicKey publicKey = UnsafeSupplier.getSafe(() -> readPemPublicKey(publicKetPath))
+        PublicKey publicKey = ThrowingSupplier.getAndSuppressException(() -> readPemPublicKey(publicKetPath))
                 .orElseGet(() ->
-                        UnsafeSupplier.getSafe(() -> getLegacyStagingFormatPublicKey(publicKetPath))
+                        ThrowingSupplier.getAndSuppressException(() -> getLegacyStagingFormatPublicKey(publicKetPath))
                                 .orElseThrow(() -> new RuntimeException("Public key cannot be loaded from " + publicKetPath))
                 );
 
