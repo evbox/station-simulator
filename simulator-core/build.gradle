@@ -139,7 +139,7 @@ publishing {
     }
     repositories {
         maven {
-            url "artifactregistry://europe-west1-maven.pkg.dev/everon-test/everon-java"
+            url "artifactregistry://europe-west1-maven.pkg.dev/everon-eu/everon-java"
         }
     }
 }
