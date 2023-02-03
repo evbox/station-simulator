@@ -38,6 +38,7 @@ public enum ActionType {
     NOTIFY_CUSTOMER_INFORMATION("NotifyCustomerInformation", NotifyCustomerInformationRequest.class, NotifyCustomerInformationResponse.class),
     CANCEL_RESERVATION("CancelReservation", CancelReservationRequest.class, CancelReservationResponse.class),
     DATA_TRANSFER("DataTransfer", DataTransferRequest.class, DataTransferResponse.class),
+    INSTALL_CERTIFICATE("InstallCertificate", InstallCertificateRequest.class, InstallCertificateResponse.class),
     NOTIFY_EV_CHARGING_NEEDS("NotifyEVChargingNeeds", NotifyEVChargingNeedsRequest.class, NotifyEVChargingNeedsResponse.class);
 
     private final String actionTypeName;
