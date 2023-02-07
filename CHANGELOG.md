@@ -1,5 +1,8 @@
 # Station Simulator Releases #
 
+### Version 0.5.19
+- Dummy InstallCertificate handler
+
 ### Version 0.5.16, 0.5.17, 0.5.18
 - Support for pem keys
 

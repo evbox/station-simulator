@@ -53,6 +53,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(GetVariablesRequest.class, new GetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(SetVariablesRequest.class, new SetVariablesRequestHandler(stationComponentsHolder, stationMessageSender))
                 .put(ResetRequest.class, new ResetRequestHandler(stationStore, stationMessageSender))
+                .put(InstallCertificateRequest.class, new InstallCertificateRequestHandler(stationMessageSender))
                 .put(ChangeAvailabilityRequest.class, new ChangeAvailabilityRequestHandler(new AvailabilityManager(stationStore, stationMessageSender)))
                 .put(GetBaseReportRequest.class, new GetBaseReportRequestHandler(Clock.systemUTC(), stationComponentsHolder, stationMessageSender))
                 .put(RequestStopTransactionRequest.class, new RequestStopTransactionRequestHandler(stationStore, stationMessageSender, stateManager))
