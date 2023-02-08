@@ -61,21 +61,6 @@ class StationTest {
     }
 
     @Test
-    void verifyConnectionUrl() {
-
-        station.connectToServer(SERVER_BASE_URL);
-
-        ArgumentCaptor<String> urlCapture = ArgumentCaptor.forClass(String.class);
-
-        verify(webSocketClientMock).connect(urlCapture.capture());
-
-        String expectedUrl = SERVER_BASE_URL + "/" + STATION_ID;
-
-        assertEquals(expectedUrl, urlCapture.getValue());
-
-    }
-
-    @Test
     void testStationConfigurationParameters() {
 
         final int evConnectionTimeOut = 200;

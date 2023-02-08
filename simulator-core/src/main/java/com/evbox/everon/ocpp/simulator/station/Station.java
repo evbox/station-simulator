@@ -46,7 +46,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class Station {
 
-    private final OkHttpClient defaultHttpClient;
+    private OkHttpClient defaultHttpClient;
     private final OkHttpClient.Builder defaultHttpClientBuilder;
     private final OkHttpWebSocketClient okHttpWebSocketClient;
 
@@ -54,7 +54,7 @@ public class Station {
 
     private final StationStore state;
 
-    private final WebSocketClient webSocketClient;
+    private WebSocketClient webSocketClient;
 
     private final HeartbeatScheduler heartbeatScheduler;
 
@@ -63,6 +63,8 @@ public class Station {
     private final StateManager stateManager;
 
     private final StationMessageInbox stationMessageInbox = new StationMessageInbox();
+
+    private boolean isProfile3Active = false;
 
     /**
      * Create a station using {@link SimulatorConfiguration.StationConfiguration} and defaultHeartBeatIntervalSec.
@@ -128,10 +130,27 @@ public class Station {
      */
     public void connectToServer(String serverBaseUrl) {
 
+        try {
+            if (isProfile3Active) {
+                KeyStore trustStore = SecurityUtils.generateKeyStore(state.getStationCertificate(), state.getStationCertificateChain(), state.getStationPublicKey(), state.getStationPrivateKey());
+
+                X509TrustManager trustManager = SecurityUtils.createTrustManager(trustStore);
+                SSLContext sslContext = SecurityUtils.prepareSSLContext(trustStore);
+
+                this.defaultHttpClientBuilder.hostnameVerifier(new NullHostNameVerifier());
+                this.defaultHttpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
+                this.defaultHttpClient = this.defaultHttpClientBuilder.build();
+                this.okHttpWebSocketClient.setClient(this.defaultHttpClient);
+                this.webSocketClient = new WebSocketClient(stationMessageInbox, configuration.getId(), this.okHttpWebSocketClient);
+            }
+        } catch (Exception e) {
+            log.info("Exception while trying to connect with profile3", e);
+            throw new IllegalStateException(e);
+        }
+
+        webSocketClient.setWebSocketConnectionUrl(serverBaseUrl);
         String stationWebSocketUrl = serverBaseUrl + "/" + configuration.getId();
-
-        webSocketClient.connect(stationWebSocketUrl);
-
+        webSocketClient.getWebSocketClientAdapter().connect(stationWebSocketUrl);
     }
 
     /**
@@ -299,7 +318,8 @@ public class Station {
      * Reconnect station to the OCPP server, instantly.
      */
     public void reconnect() {
-        webSocketClient.reconnect();
+        webSocketClient.disconnect();
+        connectToServer(webSocketClient.getWebSocketConnectionUrl());
     }
 
     /**
@@ -326,23 +346,17 @@ public class Station {
      */
     public void switchToSecurityProfile3(String url) {
         if (isNull(state.getStationCertificate()) || isNull(state.getStationPublicKey()) || isNull(state.getStationPrivateKey())) {
+            isProfile3Active = false;
             throw new IllegalArgumentException("No station certificate found. Please request one!");
         }
 
+        isProfile3Active = true;
+
         try {
-            KeyStore trustStore = SecurityUtils.generateKeyStore(state.getStationCertificate(), state.getStationCertificateChain(), state.getStationPublicKey(), state.getStationPrivateKey());
-            X509TrustManager trustManager = SecurityUtils.createTrustManager(trustStore);
-            SSLContext sslContext = SecurityUtils.prepareSSLContext(trustStore);
-
-            this.defaultHttpClientBuilder.hostnameVerifier(new NullHostNameVerifier());
-            this.defaultHttpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
-            this.okHttpWebSocketClient.setClient(this.defaultHttpClientBuilder.build());
-
             connectToServer(url);
         } catch (Exception e) {
             log.info("Exception while trying to switch to a profile3 connection", e);
             throw new IllegalStateException(e);
         }
     }
-
 }

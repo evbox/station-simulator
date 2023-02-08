@@ -1,5 +1,10 @@
 # Station Simulator Releases #
 
+### Version 0.5.20
+- Refactored connect/reconnect flow
+- Reconnect in Profiile3 mode doesn't lose station certificate any more
+- Trust self-signed server certificates (private CA)
+
 ### Version 0.5.19
 - Dummy InstallCertificate handler
 

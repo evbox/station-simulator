@@ -24,7 +24,7 @@ public class WebSocketClient implements ChannelListener {
     private final WebSocketMessageSender messageSender;
     private final WebSocketMessageInbox webSocketMessageInbox;
 
-    private AtomicReference<String> webSocketConnectionUrl = new AtomicReference<>();
+    private final AtomicReference<String> webSocketConnectionUrl = new AtomicReference<>();
 
     public WebSocketClient(StationMessageInbox stationMessageInbox, String stationId, OkHttpWebSocketClient webSocketClientAdapter) {
         this(stationMessageInbox, stationId, webSocketClientAdapter, WebSocketClientConfiguration.DEFAULT_CONFIGURATION);
@@ -40,17 +40,6 @@ public class WebSocketClient implements ChannelListener {
         this.webSocketMessageInbox = new WebSocketMessageInbox();
 
         webSocketClientAdapter.setListener(this);
-    }
-
-    public void connect(String webSocketUrl) {
-
-        this.webSocketConnectionUrl.set(webSocketUrl);
-
-        getInbox().offer(new AbstractWebSocketClientInboxMessage.Connect());
-    }
-
-    public void reconnect() {
-        webSocketClientAdapter.reconnect(webSocketConnectionUrl.get());
     }
 
     public void disconnect() {
@@ -75,6 +64,10 @@ public class WebSocketClient implements ChannelListener {
 
     public String getWebSocketConnectionUrl() {
         return webSocketConnectionUrl.get();
+    }
+
+    public void setWebSocketConnectionUrl(String webSocketUrl) {
+        webSocketConnectionUrl.set(webSocketUrl);
     }
 
     public OkHttpWebSocketClient getWebSocketClientAdapter() {
@@ -108,7 +101,7 @@ public class WebSocketClient implements ChannelListener {
                 log.error(e.getMessage(), e);
             }
 
-            webSocketClientAdapter.connect(webSocketConnectionUrl.get());
+            webSocketClientAdapter.connect(webSocketConnectionUrl.get() + "/" + stationId);
         }
     }
 
