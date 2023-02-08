@@ -93,7 +93,8 @@ public class OkHttpWebSocketClient {
     }
 
     public void disconnect(String reason) {
-        webSocket.close(1000, reason);
+        if (webSocket != null)
+            webSocket.close(1000, reason);
     }
 
     public void reconnect(String url) {

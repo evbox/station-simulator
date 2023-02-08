@@ -11,13 +11,13 @@ import java.net.ConnectException;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.STATION_ID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class WebSocketClientTest {
+class WebSocketClientTest {
 
-    private long RECONNECT_INTERVAL_MS = 500;
+    private final long RECONNECT_INTERVAL_MS = 500;
 
     @Mock
     OkHttpWebSocketClient webSocketClientAdapterMock;
@@ -40,7 +40,7 @@ public class WebSocketClientTest {
         client.onFailure(new ConnectException(), "Unexpected failure");
 
         //then
-        verify(webSocketClientAdapterMock).connect(isNull());
+        verify(webSocketClientAdapterMock).connect(anyString());
     }
 
     @Test
@@ -51,10 +51,7 @@ public class WebSocketClientTest {
         client.onFailure(new ConnectException(), "Unexpected failure");
 
         //then
-        verify(webSocketClientAdapterMock).connect(isNull());
+        verify(webSocketClientAdapterMock).connect(anyString());
         assertThat(System.currentTimeMillis() - startTime).isGreaterThanOrEqualTo(RECONNECT_INTERVAL_MS);
     }
-
-
-
 }

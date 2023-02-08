@@ -124,7 +124,7 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-version '0.5.19'
+version '0.5.20'
 
 publishing {
     publications {
