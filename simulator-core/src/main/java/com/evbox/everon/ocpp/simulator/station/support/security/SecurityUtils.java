@@ -1,6 +1,7 @@
 package com.evbox.everon.ocpp.simulator.station.support.security;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.ssl.SSLContexts;
 import org.bouncycastle.asn1.DERBMPString;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -96,6 +97,7 @@ public final class SecurityUtils {
     public static SSLContext prepareSSLContext(KeyStore trustStore) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         return SSLContexts.custom()
                 .loadKeyMaterial(trustStore, new char[0])
+                .loadTrustMaterial(trustStore, TrustAllStrategy.INSTANCE)
                 .build();
     }
 
