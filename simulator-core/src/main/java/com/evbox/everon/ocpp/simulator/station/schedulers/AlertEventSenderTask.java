@@ -22,6 +22,8 @@ public class AlertEventSenderTask implements Runnable {
 
     private EventData generateEventDatum() {
         return new EventData()
+                .withTechCode(new CiString.CiString50("PowerMeterFailure"))
+                .withTechInfo(new CiString.CiString500("No meter value available."))
                 .withEventId(ThreadLocalRandom.current().nextInt(100))
                 .withTimestamp(ZonedDateTime.now(ZoneOffset.UTC))
                 .withTrigger(EventTrigger.ALERTING)

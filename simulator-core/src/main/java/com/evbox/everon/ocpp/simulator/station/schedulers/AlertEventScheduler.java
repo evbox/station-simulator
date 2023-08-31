@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 public class AlertEventScheduler {
 
-    private static final Duration INITIAL_TASK_DELAY = Duration.ofMinutes(1);
-    private static final Duration TASK_PERIOD = Duration.ofMinutes(ThreadLocalRandom.current().nextInt(2, 10));
+    private static final Duration INITIAL_TASK_DELAY = Duration.ofSeconds(10);
+    private static final Duration TASK_PERIOD = Duration.ofSeconds(30);
 
     private AlertEventSenderTask alertEventSenderTask;
 
