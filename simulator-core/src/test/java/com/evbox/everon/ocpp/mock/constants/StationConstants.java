@@ -1,5 +1,6 @@
 package com.evbox.everon.ocpp.mock.constants;
 
+import com.evbox.everon.ocpp.simulator.station.StationHardwareData;
 import com.evbox.everon.ocpp.simulator.station.subscription.Subscriber;
 
 public class StationConstants {
@@ -43,8 +44,8 @@ public class StationConstants {
     public static final Subscriber DEFAULT_SUBSCRIBER = (req, res) -> { };
 
     public static final String DEFAULT_SERIAL_NUMBER = "00000000000F";
-    public static final String DEFAULT_MODEL = "G5";
-    public static final String DEFAULT_FIRMWARE_VERSION = "G5-0.00.01";
+    public static final String DEFAULT_MODEL = StationHardwareData.MODEL;
+    public static final String DEFAULT_FIRMWARE_VERSION = StationHardwareData.FIRMWARE_VERSION;
 
     public static final String DEFAULT_CALL_ID = "7f38cd56-5916-4ebc-a01c-384c63b68fd0";
 
