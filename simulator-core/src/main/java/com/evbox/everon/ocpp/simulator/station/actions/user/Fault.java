@@ -16,7 +16,8 @@ public class Fault implements UserMessage {
         private final int evseId;
         private final int connectorId;
         private final String errorCode;
-        private final @Nullable String errorDescription;
+        @Nullable
+        private final String errorDescription;
 
         /**
         * Perform Fault logic.
