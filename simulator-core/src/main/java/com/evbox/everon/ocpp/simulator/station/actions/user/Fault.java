@@ -13,8 +13,8 @@ import java.util.concurrent.CompletableFuture;
 @Getter
 @AllArgsConstructor
 public class Fault implements UserMessage {
-        private final @Nullable Integer evseId;
-        private final @Nullable Integer connectorId;
+        private final int evseId;
+        private final int connectorId;
         private final String errorCode;
         private final @Nullable String errorDescription;
 

@@ -161,7 +161,7 @@ public class PayloadFactory {
         return notifyReportRequest;
     }
 
-    EventData createProblemEventData(Integer evseId, Integer connectorId, String errorCode, @Nullable String description, Instant timestamp) {
+    EventData createProblemEventData(int evseId, int connectorId, String errorCode, @Nullable String description, Instant timestamp) {
         Component component = new Component()
                 .withInstance(new CiString.CiString50("1"));
 

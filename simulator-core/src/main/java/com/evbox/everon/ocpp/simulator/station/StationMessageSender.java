@@ -107,7 +107,7 @@ public class StationMessageSender {
      * @param errorCode error code
      * @param errorDescription error description
      */
-    public void sendProblemNotifyEvent(Integer evseId, Integer connectorId, String errorCode, @Nullable String errorDescription) {
+    public void sendProblemNotifyEvent(int evseId, int connectorId, String errorCode, @Nullable String errorDescription) {
         EventData payload = payloadFactory.createProblemEventData(evseId, connectorId, errorCode, errorDescription, stationStore.getCurrentTime());
 
         sendNotifyEvent(Collections.singletonList(payload));
