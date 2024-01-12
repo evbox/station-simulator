@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.station.evse;
 import com.evbox.everon.ocpp.common.OptionList;
 import com.evbox.everon.ocpp.simulator.station.StationMessageSender;
 import com.evbox.everon.ocpp.simulator.station.StationStore;
+import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.component.transactionctrlr.TxStartStopPointVariableValues;
 import com.evbox.everon.ocpp.simulator.station.evse.states.ChargingState;
 import com.evbox.everon.ocpp.simulator.station.evse.states.*;
@@ -20,6 +21,7 @@ import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static com.evbox.everon.ocpp.mock.constants.StationConstants.*;
 import static com.evbox.everon.ocpp.simulator.station.evse.CableStatus.*;
@@ -228,6 +230,14 @@ class StateManagerTest {
 
         stateManager.remoteStop(DEFAULT_EVSE_ID);
         checkStateIs(RemotelyStoppedState.NAME);
+    }
+
+    @Test
+    void verifyFaulted() {
+        CompletableFuture<UserMessageResult> future = stateManager.faulted(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, "error", "error description");
+
+        verify(stationMessageSenderMock).sendProblemNotifyEvent(DEFAULT_EVSE_ID, DEFAULT_CONNECTOR_ID, "error", "error description");
+        assertEquals(UserMessageResult.SUCCESSFUL, future.join());
     }
 
     private void triggerAuthorizeAndGetResponse() {
