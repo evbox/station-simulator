@@ -47,6 +47,8 @@ public class StationConstants {
     public static final String DEFAULT_FIRMWARE_VERSION = "G5-0.00.01";
 
     public static final String DEFAULT_CALL_ID = "7f38cd56-5916-4ebc-a01c-384c63b68fd0";
+    public static final String DEFAULT_ERROR_CODE = "0x0102";
+    public static final String DEFAULT_ERROR_DESCRIPTION = "Auto-recoverable DC Leakage detected.";
 
     // Actions
     public static final String NOTIFY_REPORT_ACTION = "NotifyReport";
