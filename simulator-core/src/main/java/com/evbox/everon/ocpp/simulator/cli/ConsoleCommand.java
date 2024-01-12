@@ -151,7 +151,7 @@ public enum ConsoleCommand {
         checkArgument(args.size() > errorCodeIndex);
 
         String errorCode = args.get(errorCodeIndex);
-        checkArgument(errorCode.length() <= 50, "Expected error code length to be less than 50, but was '%s'", errorCode.length());
+        checkArgument(errorCode.length() <= 50, "Expected error code length to be at most 50, but was '%s'", errorCode.length());
     }
 
     private static void validateErrorDescription(@Nullable String errorDescription) {
@@ -159,7 +159,7 @@ public enum ConsoleCommand {
             return;
         }
 
-        checkArgument(errorDescription.length() <= 500, "Expected error description length to be less than 500, but was '%s'", errorDescription.length());
+        checkArgument(errorDescription.length() <= 500, "Expected error description length to be at most 500, but was '%s'", errorDescription.length());
     }
 
     private static void validateNumeric(int index, String arg) {
