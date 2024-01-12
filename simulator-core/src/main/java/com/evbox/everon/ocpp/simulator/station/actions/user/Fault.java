@@ -3,16 +3,16 @@ package com.evbox.everon.ocpp.simulator.station.actions.user;
 import com.evbox.everon.ocpp.simulator.station.evse.StateManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
-@Slf4j
+/**
+ * Represents Fault message.
+ */
 @Getter
 @AllArgsConstructor
 public class Fault implements UserMessage {
-
         private final @Nullable Integer evseId;
         private final @Nullable Integer connectorId;
         private final String errorCode;
