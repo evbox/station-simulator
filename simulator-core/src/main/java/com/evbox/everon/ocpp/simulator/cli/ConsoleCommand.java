@@ -3,6 +3,7 @@ package com.evbox.everon.ocpp.simulator.cli;
 import com.evbox.everon.ocpp.simulator.station.actions.user.*;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -91,6 +92,38 @@ public enum ConsoleCommand {
         void validateArgs(List<String> args) {
             validateLength(args, 1);
         }
+    },
+
+    FAULT {
+        private static final int EVSE_ID_INDEX = 0;
+        private static final int CONNECTOR_ID_INDEX = 1;
+        private static final int ERROR_CODE_INDEX = 2;
+
+        @Override
+        public UserMessage toUserMessage(List<String> args) {
+            validateArgs(args);
+
+            String errorDescription = getErrorDescription(args);
+            return new Fault(Integer.valueOf(args.get(EVSE_ID_INDEX)), Integer.valueOf(args.get(CONNECTOR_ID_INDEX)), args.get(ERROR_CODE_INDEX), errorDescription);
+        }
+
+        @Override
+        void validateArgs(List<String> args) {
+            checkArgument(args.size() >= 3, "Number of required parameters does not match. Expected at least '%s', actual '%s'", 3, args.size());
+
+            validateEvseAndConnector(args, EVSE_ID_INDEX, CONNECTOR_ID_INDEX);
+            validateErrorCode(args, ERROR_CODE_INDEX);
+            validateErrorDescription(getErrorDescription(args));
+        }
+
+        private @Nullable String getErrorDescription(List<String> args) {
+            if (args.size() < 4) {
+                return null;
+            }
+
+            List<String> errorDescriptionWords = args.subList(3, args.size());
+            return String.join(" ", errorDescriptionWords);
+        }
     };
 
     public static boolean contains(String commandName) {
@@ -110,6 +143,19 @@ public enum ConsoleCommand {
 
         validateNumeric(evseIdArgIndex, args.get(evseIdArgIndex));
         validateNumeric(connectorIdArgIndex, args.get(connectorIdArgIndex));
+    }
+
+    private static void validateErrorCode(List<String> args, int errorCodeIndex) {
+        String errorCode = args.get(errorCodeIndex);
+        checkArgument(errorCode.length() <= 50, "Expected error code length to be less than 50, but was '%s'", errorCode.length());
+    }
+
+    private static void validateErrorDescription(@Nullable String errorDescription) {
+        if (errorDescription == null) {
+            return;
+        }
+
+        checkArgument(errorDescription.length() <= 500, "Expected error description length to be less than 500, but was '%s'", errorDescription.length());
     }
 
     private static void validateNumeric(int index, String arg) {

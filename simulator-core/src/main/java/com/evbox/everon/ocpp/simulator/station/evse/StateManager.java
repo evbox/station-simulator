@@ -43,6 +43,12 @@ public class StateManager {
         return getState(evseId).onUnplug(evseId, connectorId);
     }
 
+    public CompletableFuture<UserMessageResult> faulted(Integer evseId, Integer connectorId, String errorCode, String errorDescription) {
+        stationMessageSender.sendProblemNotifyEvent(evseId, connectorId, errorCode, errorDescription);
+
+        return CompletableFuture.completedFuture(UserMessageResult.SUCCESSFUL);
+    }
+
     public void remoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
         getState(evseId).onRemoteStart(evseId, remoteStartId, tokenId, connector);
     }
