@@ -98,6 +98,7 @@ public enum ConsoleCommand {
         private static final int EVSE_ID_INDEX = 0;
         private static final int CONNECTOR_ID_INDEX = 1;
         private static final int ERROR_CODE_INDEX = 2;
+        private static final int ERROR_DESCRIPTION_START_INDEX = 3;
 
         @Override
         public UserMessage toUserMessage(List<String> args) {
@@ -116,12 +117,13 @@ public enum ConsoleCommand {
             validateErrorDescription(getErrorDescription(args));
         }
 
-        private @Nullable String getErrorDescription(List<String> args) {
-            if (args.size() < 4) {
+        @Nullable
+        private String getErrorDescription(List<String> args) {
+            if (args.size() <= ERROR_DESCRIPTION_START_INDEX) {
                 return null;
             }
 
-            List<String> errorDescriptionWords = args.subList(3, args.size());
+            List<String> errorDescriptionWords = args.subList(ERROR_DESCRIPTION_START_INDEX, args.size());
             return String.join(" ", errorDescriptionWords);
         }
     };
@@ -146,6 +148,8 @@ public enum ConsoleCommand {
     }
 
     private static void validateErrorCode(List<String> args, int errorCodeIndex) {
+        checkArgument(args.size() > errorCodeIndex);
+
         String errorCode = args.get(errorCodeIndex);
         checkArgument(errorCode.length() <= 50, "Expected error code length to be less than 50, but was '%s'", errorCode.length());
     }
