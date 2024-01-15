@@ -26,7 +26,7 @@ public class Fault implements UserMessage {
         */
         @Override
         public CompletableFuture<UserMessageResult> perform(StateManager stateManager) {
-            System.out.println("evse" + evseId + " connector " + connectorId + " faulted with `" + errorCode + "` \"" + errorDescription + "\""); //NOSONAR
+            System.out.println("evse " + evseId + " connector " + connectorId + " faulted with `" + errorCode + "` \"" + errorDescription + "\""); //NOSONAR
             return stateManager.faulted(evseId, connectorId, errorCode, errorDescription);
         }
 }
