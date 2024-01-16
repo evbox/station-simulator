@@ -1,12 +1,14 @@
 package com.evbox.everon.ocpp.simulator.cli;
 
 import com.evbox.everon.ocpp.simulator.station.actions.user.Authorize;
+import com.evbox.everon.ocpp.simulator.station.actions.user.Fault;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Plug;
 import com.evbox.everon.ocpp.simulator.station.actions.user.Unplug;
 import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -22,10 +24,12 @@ public class ConsoleCommandTest {
     private static final String PLUG_CMD = "plug";
     private static final String UNPLUG_CMD = "unplug";
     private static final String AUTH_CMD = "auth";
+    private static final String FAULT_CMD = "fault";
 
     private static final String TOKEN_ID = "045918E24B4D80";
     private static final Integer CONNECTOR_ID = 1;
     private static final Integer EVSE_ID = 1;
+    private static final String ERROR_CODE = "0x0102";
 
     private final Random randomizer = new Random();
 
@@ -169,6 +173,87 @@ public class ConsoleCommandTest {
 
         //then
         assertThat(throwable).hasMessage("Expected numeric argument at [1], but was '" + nonNumericEvseId + "'");
+    }
+
+    @Test
+    void shouldConvertFaultCommandToUserAction() {
+        //given
+        List <String> commandArgs = new ArrayList<>();
+        commandArgs.addAll(asList(EVSE_ID.toString(), CONNECTOR_ID.toString(), ERROR_CODE));
+        commandArgs.addAll(asList("Auto-recoverable", "DC", "Leakage", "detected."));
+
+        //when
+        UserMessage userMessage = ConsoleCommand.toUserMessage(FAULT_CMD, commandArgs);
+
+        //then
+        assertThat(((Fault) userMessage).getConnectorId()).isEqualTo(CONNECTOR_ID);
+        assertThat(((Fault) userMessage).getEvseId()).isEqualTo(EVSE_ID);
+        assertThat(((Fault) userMessage).getErrorCode()).isEqualTo(ERROR_CODE);
+        assertThat(((Fault) userMessage).getErrorDescription()).isEqualTo("Auto-recoverable DC Leakage detected.");
+    }
+
+    @Test
+    void shouldValidateNumberOfArgumentsForFaultCommand() {
+        //given
+        List<String> commandArgs = asList(EVSE_ID.toString(), CONNECTOR_ID.toString());
+
+        //when
+        Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(FAULT_CMD, commandArgs));
+
+        //then
+        assertThat(throwable).hasMessage("Number of required parameters does not match. Expected at least '3', actual '2'");
+    }
+
+    @Test
+    void shouldValidateEvseIdForFaultCommand() {
+        //given
+        String nonNumericEvseId = "x";
+        List<String> commandArgs = asList(nonNumericEvseId, CONNECTOR_ID.toString(), ERROR_CODE);
+
+        //when
+        Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(FAULT_CMD, commandArgs));
+
+        //then
+        assertThat(throwable).hasMessage(formatNumericError(0, nonNumericEvseId));
+    }
+
+    @Test
+    void shouldValidateConnectorIdForFaultCommand() {
+        //given
+        String nonNumericConnectorId = "x";
+        List<String> commandArgs = asList(EVSE_ID.toString(), nonNumericConnectorId, ERROR_CODE);
+
+        //when
+        Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(FAULT_CMD, commandArgs));
+
+        //then
+        assertThat(throwable).hasMessage(formatNumericError(1, nonNumericConnectorId));
+    }
+
+    @Test
+    void shouldValidateErrorCodeLengthForFaultCommand() {
+        //given
+        String tooLongErrorCode = Stream.generate(() -> ERROR_CODE.charAt(randomizer.nextInt(ERROR_CODE.length()))).map(Objects::toString).limit(51).collect(Collectors.joining());
+        List<String> commandArgs = asList(EVSE_ID.toString(), CONNECTOR_ID.toString(), tooLongErrorCode);
+
+        //when
+        Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(FAULT_CMD, commandArgs));
+
+        //then
+        assertThat(throwable).hasMessage("Expected error code length to be at most 50, but was '" + tooLongErrorCode.length() + "'");
+    }
+
+    @Test
+    void shouldValidateErrorDescriptionLengthForFaultCommand() {
+        //given
+        String tooLongErrorDescription = Stream.generate(() -> "x").limit(501).collect(Collectors.joining());
+        List<String> commandArgs = asList(EVSE_ID.toString(), CONNECTOR_ID.toString(), ERROR_CODE, tooLongErrorDescription);
+
+        //when
+        Throwable throwable = catchThrowable(() -> ConsoleCommand.toUserMessage(FAULT_CMD, commandArgs));
+
+        //then
+        assertThat(throwable).hasMessage("Expected error description length to be at most 500, but was '" + tooLongErrorDescription.length() + "'");
     }
 
     private static String formatNumericError(int index, String actual) {

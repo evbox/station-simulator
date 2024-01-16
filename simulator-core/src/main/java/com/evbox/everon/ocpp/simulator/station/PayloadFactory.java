@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.evbox.everon.ocpp.simulator.message.ObjectMapperHolder.JSON_OBJECT_MAPPER;
 import static com.evbox.everon.ocpp.v201.message.station.TransactionEvent.*;
@@ -158,6 +159,43 @@ public class PayloadFactory {
         notifyReportRequest.setRequestId(requestId);
 
         return notifyReportRequest;
+    }
+
+    EventData createProblemEventData(int evseId, int connectorId, String errorCode, @Nullable String description, Instant timestamp) {
+        Component component = new Component()
+                .withInstance(new CiString.CiString50("1"));
+
+        if (evseId != 0) {
+            EVSE evse = new EVSE().withId(evseId);
+
+            if (connectorId != 0) {
+                evse.withConnectorId(connectorId);
+            }
+
+            component
+                .withName(new CiString.CiString50("EVSE"))
+                .withEvse(evse);
+        } else {
+            component
+                .withName(new CiString.CiString50("Station"));
+        }
+
+        EventData eventData = new EventData()
+                .withEventNotificationType(EventNotification.HARD_WIRED_MONITOR)
+                .withTechCode(new CiString.CiString50(errorCode))
+                .withTimestamp(timestamp.atZone(ZoneOffset.UTC))
+                .withVariable(new Variable().withName(new CiString.CiString50("Problem")))
+                .withEventId(ThreadLocalRandom.current().nextInt(100))
+                .withCleared(false)
+                .withTrigger(EventTrigger.DELTA)
+                .withComponent(component)
+                .withActualValue(new CiString.CiString2500("true"));
+
+        if (description != null) {
+            eventData.setTechInfo(new CiString.CiString500(description));
+        }
+
+        return eventData;
     }
 
     private TransactionEventRequest createTransactionEvent(String stationId, Integer evseId, Integer connectorId, TriggerReason reason, Transaction transactionData,

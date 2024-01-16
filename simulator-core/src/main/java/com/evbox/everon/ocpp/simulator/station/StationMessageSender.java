@@ -100,6 +100,20 @@ public class StationMessageSender {
     }
 
     /**
+     * Send NotifyEventRequest event for an error.
+     *
+     * @param evseId evse identity
+     * @param connectorId connector identity
+     * @param errorCode error code
+     * @param errorDescription error description
+     */
+    public void sendProblemNotifyEvent(int evseId, int connectorId, String errorCode, @Nullable String errorDescription) {
+        EventData payload = payloadFactory.createProblemEventData(evseId, connectorId, errorCode, errorDescription, stationStore.getCurrentTime());
+
+        sendNotifyEvent(Collections.singletonList(payload));
+    }
+
+    /**
      * Send TransactionEventStart event.
      *
      * @param evseId  evse identity

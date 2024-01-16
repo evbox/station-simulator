@@ -29,6 +29,7 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -289,6 +290,27 @@ class StationMessageSenderTest {
                 () -> assertThat(actualPayload.getConnectorId()).isEqualTo(DEFAULT_EVSE_CONNECTORS)
         );
 
+    }
+
+    @Test
+    void verifySendProblemNotifyEvent() throws InterruptedException {
+        stationMessageSender.sendProblemNotifyEvent(DEFAULT_EVSE_ID, DEFAULT_EVSE_CONNECTORS, DEFAULT_ERROR_CODE, DEFAULT_ERROR_DESCRIPTION);
+
+        AbstractWebSocketClientInboxMessage actualMessage = queue.take();
+
+        Call actualCall = Call.fromJson(actualMessage.getData().get().toString());
+
+        NotifyEventRequest actualPayload = (NotifyEventRequest) actualCall.getPayload();
+        assertEquals(1, actualPayload.getEventData().size());
+        EventData eventData = actualPayload.getEventData().get(0);
+        EVSE evse = eventData.getComponent().getEvse();
+
+        assertAll(
+                () -> assertEquals(DEFAULT_EVSE_ID, evse.getId()),
+                () -> assertEquals(DEFAULT_EVSE_CONNECTORS, evse.getConnectorId()),
+                () -> assertEquals(DEFAULT_ERROR_CODE, eventData.getTechCode().toString()),
+                () -> assertEquals(DEFAULT_ERROR_DESCRIPTION, eventData.getTechInfo().toString())
+        );
     }
 
     @Test
