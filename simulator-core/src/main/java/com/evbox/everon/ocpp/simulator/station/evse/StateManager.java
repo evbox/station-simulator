@@ -6,6 +6,7 @@ import com.evbox.everon.ocpp.simulator.station.StationStore;
 import com.evbox.everon.ocpp.simulator.station.actions.user.UserMessageResult;
 import com.evbox.everon.ocpp.simulator.station.evse.states.AbstractEvseState;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -41,6 +42,12 @@ public class StateManager {
 
     public CompletableFuture<UserMessageResult> cableUnplugged(int evseId, int connectorId) {
         return getState(evseId).onUnplug(evseId, connectorId);
+    }
+
+    public CompletableFuture<UserMessageResult> faulted(int evseId, int connectorId, String errorCode, @Nullable String errorDescription) {
+        stationMessageSender.sendProblemNotifyEvent(evseId, connectorId, errorCode, errorDescription);
+
+        return CompletableFuture.completedFuture(UserMessageResult.SUCCESSFUL);
     }
 
     public void remoteStart(int evseId, int remoteStartId, String tokenId, Connector connector) {
