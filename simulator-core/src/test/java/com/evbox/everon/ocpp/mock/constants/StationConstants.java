@@ -43,8 +43,8 @@ public class StationConstants {
     public static final Subscriber DEFAULT_SUBSCRIBER = (req, res) -> { };
 
     public static final String DEFAULT_SERIAL_NUMBER = "00000000000F";
-    public static final String DEFAULT_MODEL = "G5";
-    public static final String DEFAULT_FIRMWARE_VERSION = "G5-0.00.01";
+    public static final String DEFAULT_MODEL = "Livo";
+    public static final String DEFAULT_FIRMWARE_VERSION = "v5.14.1;1.1.1";
 
     public static final String DEFAULT_CALL_ID = "7f38cd56-5916-4ebc-a01c-384c63b68fd0";
     public static final String DEFAULT_ERROR_CODE = "0x0102";

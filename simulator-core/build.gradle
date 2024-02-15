@@ -25,8 +25,8 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 17
+targetCompatibility = 17
 
 run {
     if (project.hasProperty('arguments')) {

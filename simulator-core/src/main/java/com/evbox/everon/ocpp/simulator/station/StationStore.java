@@ -62,6 +62,7 @@ public class StationStore {
     private PublicKey stationPublicKey;
     private PrivateKey stationPrivateKey;
     private Map<Integer, NetworkConnectionProfile> networkConnectionProfiles = new HashMap<>();
+    private Map<Integer, String> displayMessages = new HashMap<>();
     private List<Integer> networkConfigurationPriority = new ArrayList<>();
     private List<Reservation> reservations = new ArrayList<>();
 
@@ -375,7 +376,11 @@ public class StationStore {
     public StationStoreView createView() {
         List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
-        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, stationCertificate, evsesCopy);
+        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, stationCertificate, evsesCopy, this.displayMessages.values());
+    }
+
+    public void addDisplayMessage(Integer id, String content) {
+        displayMessages.put(id, content);
     }
 
     @Getter
@@ -388,6 +393,7 @@ public class StationStore {
         private final int evConnectionTimeOut;
         private final X509Certificate stationCertificate;
         private final List<EvseView> evses;
+        private final Collection<String> displayMessages;
 
         public boolean hasAuthorizedToken() {
             if (evses.size() > 1) {

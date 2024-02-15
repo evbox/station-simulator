@@ -39,7 +39,8 @@ public enum ActionType {
     CANCEL_RESERVATION("CancelReservation", CancelReservationRequest.class, CancelReservationResponse.class),
     DATA_TRANSFER("DataTransfer", DataTransferRequest.class, DataTransferResponse.class),
     INSTALL_CERTIFICATE("InstallCertificate", InstallCertificateRequest.class, InstallCertificateResponse.class),
-    NOTIFY_EV_CHARGING_NEEDS("NotifyEVChargingNeeds", NotifyEVChargingNeedsRequest.class, NotifyEVChargingNeedsResponse.class);
+    NOTIFY_EV_CHARGING_NEEDS("NotifyEVChargingNeeds", NotifyEVChargingNeedsRequest.class, NotifyEVChargingNeedsResponse.class),
+    SET_DISPLAY_MESSAGE("SetDisplayMessage", SetDisplayMessageRequest.class, SetDisplayMessageResponse.class);
 
     private final String actionTypeName;
     private final Class requestClazz;
