@@ -3,7 +3,7 @@ variables:
 
 default:
   image:
-    name: openjdk:17-alpine
+    name: openjdk:17-jdk-slim
 
 build:
   stage: build
