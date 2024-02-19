@@ -3,7 +3,7 @@ variables:
 
 default:
   image:
-    name: adoptopenjdk/openjdk11:jdk-11.0.11_9-alpine-slim
+    name: openjdk:17-jdk-slim
 
 build:
   stage: build

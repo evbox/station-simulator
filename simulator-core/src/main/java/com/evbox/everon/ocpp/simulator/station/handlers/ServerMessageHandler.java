@@ -70,6 +70,7 @@ public class ServerMessageHandler implements MessageHandler<String> {
                 .put(CancelReservationRequest.class, new CancelReservationRequestHandler(stationMessageSender, stationStore))
                 .put(ReserveNowRequest.class, (callId, request) -> stationMessageSender.sendCallResult(callId, new ReserveNowResponse().withStatus(ReserveNowStatus.REJECTED)))
                 .put(CustomerInformationRequest.class, new CustomerInformationRequestHandler(stationMessageSender))
+                .put(SetDisplayMessageRequest.class, new SetDisplayMessageHandler(stationMessageSender, stationStore))
                 .build();
     }
 

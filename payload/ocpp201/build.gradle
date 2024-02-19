@@ -13,14 +13,13 @@ buildscript {
 plugins {
     id 'java'
     id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id "maven-publish"
     id "com.google.cloud.artifactregistry.gradle-plugin" version "2.1.5"
 }
 
 apply plugin: 'java'
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 17
+targetCompatibility = 17
 
 plugins.withType(JsonSchemaPlugin).whenPluginAdded {
     jsonSchema2Pojo {
@@ -74,46 +73,4 @@ jsonSchema2Pojo {
 dependencies {
     api project(':payload:ocpp-data-types')
     api "com.fasterxml.jackson.core:jackson-annotations:2.13.3"
-}
-
-apply plugin: 'maven-publish'
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    archiveClassifier = 'sources'
-}
-
-task javadocJar(type: Jar) {
-    from javadoc.destinationDir
-    archiveClassifier = 'javadoc'
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
-}
-version '2.1.1'
-
-shadowJar {
-    baseName = 'ocpp-payload'
-    classifier = null
-    version = project.version
-}
-
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {  publication ->
-            from project.shadow.component(publication)
-            artifact sourcesJar
-            artifact javadocJar
-            groupId 'io.everon'
-            artifactId 'ocpp-payload'
-            version project.version
-        }
-    }
-    repositories {
-        maven {
-            url "artifactregistry://europe-west1-maven.pkg.dev/everon-test/everon-java"
-        }
-    }
 }
