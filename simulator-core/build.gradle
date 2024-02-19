@@ -6,7 +6,6 @@ buildscript {
 
 plugins {
     id 'io.franzbecker.gradle-lombok'   version '2.0'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'jacoco'
     id 'java-library'
     id "maven-publish"
@@ -25,8 +24,8 @@ apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 mainClassName = 'com.evbox.everon.ocpp.simulator.SimulatorLauncher'
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 17
+targetCompatibility = 17
 
 run {
     if (project.hasProperty('arguments')) {
@@ -78,16 +77,6 @@ test {
     useJUnitPlatform()
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled true
-    }
-}
-
-jacoco {
-    toolVersion = '0.8.8'
-}
-tasks['test'].finalizedBy 'jacocoTestReport'
 
 jar {
     manifest {

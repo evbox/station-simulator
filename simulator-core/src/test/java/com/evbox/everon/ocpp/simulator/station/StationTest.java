@@ -48,7 +48,7 @@ class StationTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         String statOutput = station.getStateView().toString();
-        Set<String> expectedFields = new HashSet<>(Arrays.asList("heartbeatInterval", "evses", "currentTime", "evConnectionTimeOut"));
+        Set<String> expectedFields = new HashSet<>(Arrays.asList("heartbeatInterval", "evses", "currentTime", "evConnectionTimeOut", "displayMessages"));
 
         JsonNode node = objectMapper.readTree(statOutput);
         Iterator<String> fieldsIterator = node.fieldNames();
