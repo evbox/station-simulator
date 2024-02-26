@@ -10,6 +10,7 @@ import com.evbox.everon.ocpp.simulator.station.evse.Evse.EvseView;
 import com.evbox.everon.ocpp.simulator.station.exceptions.StationException;
 import com.evbox.everon.ocpp.simulator.station.model.Reservation;
 import com.evbox.everon.ocpp.simulator.station.support.security.PublicPrivateKeyUtils;
+import com.evbox.everon.ocpp.v201.message.centralserver.MessageInfo;
 import com.evbox.everon.ocpp.v201.message.station.ConnectorStatus;
 import com.evbox.everon.ocpp.v201.message.station.NetworkConnectionProfile;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -62,7 +63,7 @@ public class StationStore {
     private PublicKey stationPublicKey;
     private PrivateKey stationPrivateKey;
     private Map<Integer, NetworkConnectionProfile> networkConnectionProfiles = new HashMap<>();
-    private Map<Integer, String> displayMessages = new HashMap<>();
+    private Map<Integer, MessageInfo> displayMessages = new HashMap<>();
     private List<Integer> networkConfigurationPriority = new ArrayList<>();
     private List<Reservation> reservations = new ArrayList<>();
 
@@ -376,11 +377,25 @@ public class StationStore {
     public StationStoreView createView() {
         List<EvseView> evsesCopy = evses.values().stream().map(Evse::createView).collect(toList());
 
-        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, stationCertificate, evsesCopy, this.displayMessages.values());
+        return new StationStoreView(clock, heartbeatInterval, evConnectionTimeOut, stationCertificate, evsesCopy,
+                getAllDisplayMessage().stream().map(x -> x.getMessage().getContent().toString()).collect(toList())
+        );
     }
 
-    public void addDisplayMessage(Integer id, String content) {
-        displayMessages.put(id, content);
+    public void addDisplayMessage(MessageInfo message) {
+        displayMessages.put(message.getId(), message);
+    }
+
+    public Optional<MessageInfo> getDisplayMessage(Integer messageId) {
+        return Optional.ofNullable(displayMessages.get(messageId));
+    }
+
+    public Collection<MessageInfo> getAllDisplayMessage() {
+        return displayMessages.values();
+    }
+
+    public boolean removeDisplayMessage(Integer messageId) {
+        return displayMessages.remove(messageId) != null;
     }
 
     @Getter
