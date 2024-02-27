@@ -40,7 +40,11 @@ public enum ActionType {
     DATA_TRANSFER("DataTransfer", DataTransferRequest.class, DataTransferResponse.class),
     INSTALL_CERTIFICATE("InstallCertificate", InstallCertificateRequest.class, InstallCertificateResponse.class),
     NOTIFY_EV_CHARGING_NEEDS("NotifyEVChargingNeeds", NotifyEVChargingNeedsRequest.class, NotifyEVChargingNeedsResponse.class),
-    SET_DISPLAY_MESSAGE("SetDisplayMessage", SetDisplayMessageRequest.class, SetDisplayMessageResponse.class);
+    SET_DISPLAY_MESSAGE("SetDisplayMessage", SetDisplayMessageRequest.class, SetDisplayMessageResponse.class),
+    GET_DISPLAY_MESSAGES("GetDisplayMessages", GetDisplayMessagesRequest.class, GetDisplayMessagesResponse.class),
+    CLEAR_DISPLAY_MESSAGE("ClearDisplayMessage", ClearDisplayMessageRequest.class, ClearDisplayMessageResponse.class),
+    NOTIFY_DISPLAY_MESSAGE("NotifyDisplayMessages", NotifyDisplayMessagesRequest.class, NotifyDisplayMessagesResponse.class),
+    UPDATE_FIRMWARE("UpdateFirmware", UpdateFirmwareRequest.class, UpdateFirmwareResponse.class);
 
     private final String actionTypeName;
     private final Class requestClazz;

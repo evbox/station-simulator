@@ -293,6 +293,10 @@ public class StationMessageSender {
         sendPayloadOfType(ActionType.BOOT_NOTIFICATION, payload);
     }
 
+    public void sendDisplayMessage(NotifyDisplayMessagesRequest displayMessagesRequest) {
+        sendPayloadOfType(ActionType.NOTIFY_DISPLAY_MESSAGE, displayMessagesRequest);
+    }
+
     /**
      * Send StatusNotification event and subscribe on response.
      *
